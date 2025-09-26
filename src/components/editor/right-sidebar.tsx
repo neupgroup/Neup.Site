@@ -26,7 +26,7 @@ import { Textarea } from '../ui/textarea';
 interface RightSidebarProps {
   selectedElementId: string | null;
   elements: CanvasElementData[];
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, recordHistory?: boolean) => void;
   deleteElement: (id: string) => void;
 }
 
@@ -54,6 +54,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [customCss, setCustomCss] = useState<string | undefined>(undefined);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const bgColorInputRef = useRef<HTMLInputElement>(null);
+  const isTyping = useRef(false);
+  const typingTimeout = useRef<NodeJS.Timeout | null>(null);
 
 
   useEffect(() => {
@@ -74,9 +76,18 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         delete newStyles.margin;
       }
       setStyles(newStyles);
+      
+      if (typingTimeout.current) clearTimeout(typingTimeout.current);
+      isTyping.current = true;
       if (selectedElementId) {
-          updateElement(selectedElementId, newStyles);
+          updateElement(selectedElementId, newStyles, undefined, undefined, undefined, false);
       }
+      typingTimeout.current = setTimeout(() => {
+          isTyping.current = false;
+          if (selectedElementId) {
+              updateElement(selectedElementId, newStyles);
+          }
+      }, 500);
   }
 
   const handlePropChange = (property: string, value: any) => {
@@ -89,16 +100,32 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   
   const handleContentChange = (value: string) => {
     setContent(value);
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    isTyping.current = true;
     if (selectedElementId) {
-        updateElement(selectedElementId, undefined, undefined, value);
+        updateElement(selectedElementId, undefined, undefined, value, undefined, false);
     }
+     typingTimeout.current = setTimeout(() => {
+          isTyping.current = false;
+          if (selectedElementId) {
+            updateElement(selectedElementId, undefined, undefined, value);
+          }
+      }, 500);
   }
 
   const handleCustomCssChange = (value: string) => {
     setCustomCss(value);
+     if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    isTyping.current = true;
     if (selectedElementId) {
-        updateElement(selectedElementId, undefined, undefined, undefined, value);
+        updateElement(selectedElementId, undefined, undefined, undefined, value, false);
     }
+     typingTimeout.current = setTimeout(() => {
+          isTyping.current = false;
+          if (selectedElementId) {
+            updateElement(selectedElementId, undefined, undefined, undefined, value);
+          }
+      }, 500);
   }
 
   const showFor = (types: (CanvasElementData['type'] | 'component')[]) => {

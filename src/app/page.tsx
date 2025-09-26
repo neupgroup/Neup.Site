@@ -102,12 +102,18 @@ const WebsiteBuilderPage: FC = () => {
   const elements = history[historyIndex];
   const [isCodeViewerOpen, setIsCodeViewerOpen] = useState(false);
 
-  const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[]) => {
+  const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
       const newElements = updater(history[historyIndex]);
-      const newHistory = history.slice(0, historyIndex + 1);
-      newHistory.push(newElements);
-      setHistory(newHistory);
-      setHistoryIndex(newHistory.length - 1);
+      if (recordHistory) {
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push(newElements);
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+      } else {
+        const newHistory = [...history];
+        newHistory[historyIndex] = newElements;
+        setHistory(newHistory);
+      }
   };
 
   const undo = useCallback(() => {
@@ -297,7 +303,7 @@ const WebsiteBuilderPage: FC = () => {
     });
   };
 
-  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string) => {
+  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, recordHistory = true) => {
     setElements(prev => {
       // Deep clone to avoid mutation
       const clonedPrev = JSON.parse(JSON.stringify(prev));
@@ -324,7 +330,7 @@ const WebsiteBuilderPage: FC = () => {
         });
       };
       return updateRecursively(clonedPrev);
-    });
+    }, recordHistory);
   };
   
   const deleteElement = useCallback((id: string) => {
