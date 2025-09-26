@@ -25,6 +25,7 @@ const initialElements: CanvasElementData[] = [
             textAlign: 'center',
             fontSize: '48px',
             fontWeight: 'bold',
+            display: 'block',
         }
     },
     {
@@ -36,7 +37,8 @@ const initialElements: CanvasElementData[] = [
             marginTop: '-32px',
             textAlign: 'center',
             fontSize: '18px',
-            color: 'hsl(var(--muted-foreground))'
+            color: 'hsl(var(--muted-foreground))',
+            display: 'block',
         }
     },
     {
@@ -47,6 +49,7 @@ const initialElements: CanvasElementData[] = [
             marginTop: '32px',
             textAlign: 'center',
             paddingBottom: '48px',
+            display: 'block',
         }
     },
     {
@@ -59,6 +62,7 @@ const initialElements: CanvasElementData[] = [
         },
         styles: {
             width: '100%',
+            display: 'block',
         }
     }
 ]
@@ -78,6 +82,7 @@ const WebsiteBuilderPage: FC = () => {
         type: elementType,
         styles: {
             padding: '10px',
+            display: 'block',
         }
     }
 
@@ -146,3 +151,5 @@ const WebsiteBuilderPage: FC = () => {
 };
 
 export default WebsiteBuilderPage;
+
+    

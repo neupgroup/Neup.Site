@@ -115,6 +115,21 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                   <AccordionTrigger className="px-4 text-sm font-medium">Layout</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-4">
                      <div className="space-y-2">
+                        <Label>Display</Label>
+                        <Select value={styles.display || ''} onValueChange={value => handleStyleChange('display', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select display type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="block">Block</SelectItem>
+                            <SelectItem value="inline-block">Inline Block</SelectItem>
+                            <SelectItem value="inline">Inline</SelectItem>
+                            <SelectItem value="flex">Flex</SelectItem>
+                            <SelectItem value="inline-flex">Inline Flex</SelectItem>
+                          </SelectContent>
+                      </Select>
+                    </div>
+                     <div className="space-y-2">
                         <Label>Alignment</Label>
                         <div className="grid grid-cols-3 gap-2">
                             <Button variant="outline" size="icon" onClick={() => handleStyleChange('margin', '0 auto 0 0')} title="Align Left">
@@ -251,3 +266,5 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 };
 
 export default RightSidebar;
+
+    
