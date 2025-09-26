@@ -2,7 +2,9 @@ import { FC } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2 } from 'lucide-react';
+import { CanvasElementData } from '@/app/page';
+import { cn } from '@/lib/utils';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string }> = ({ icon, label, type }) => (
   <div
@@ -18,12 +20,74 @@ const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string }> =
   </div>
 );
 
-const LeftSidebar: FC = () => {
+const getIconForType = (type: CanvasElementData['type']) => {
+    switch(type) {
+        case 'text': return <Type className="h-4 w-4" />;
+        case 'image':
+        case 'feature-image':
+             return <ImageIcon className="h-4 w-4" />;
+        case 'button': 
+        case 'hero-cta':
+            return <MousePointerClick className="h-4 w-4" />;
+        case 'section': return <LayoutTemplate className="h-4 w-4" />;
+        case 'div': return <Box className="h-4 w-4" />;
+        case 'container': return <Container className="h-4 w-4" />;
+        case 'input': return <FormInput className="h-4 w-4" />;
+        case 'hero': return <Heading1 className="h-4 w-4" />;
+        case 'hero-subtitle': return <Heading2 className="h-4 w-4" />;
+        default: return <Component className="h-4 w-4" />;
+    }
+}
+
+const LayerItem: FC<{ 
+    element: CanvasElementData, 
+    level: number, 
+    selectedElement: string | null,
+    onSelectElement: (id: string) => void,
+}> = ({ element, level, selectedElement, onSelectElement }) => {
+    return (
+        <div>
+            <div 
+                className={cn(
+                    "flex items-center gap-2 py-1 px-2 rounded-md cursor-pointer hover:bg-secondary",
+                    { "bg-secondary": selectedElement === element.id }
+                )}
+                style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectElement(element.id);
+                }}
+            >
+                {getIconForType(element.type)}
+                <span className="text-sm truncate">{element.type}</span>
+            </div>
+            {element.children && element.children.map(child => (
+                <LayerItem 
+                    key={child.id} 
+                    element={child} 
+                    level={level + 1}
+                    selectedElement={selectedElement}
+                    onSelectElement={onSelectElement}
+                />
+            ))}
+        </div>
+    );
+};
+
+
+interface LeftSidebarProps {
+    elements: CanvasElementData[];
+    selectedElement: string | null;
+    onSelectElement: (id: string | null) => void;
+}
+
+const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement }) => {
   return (
     <aside className="w-72 border-r bg-card">
       <Tabs defaultValue="add" className="flex h-full flex-col">
-        <TabsList className="grid w-full grid-cols-3 rounded-none border-b">
+        <TabsList className="grid w-full grid-cols-4 rounded-none border-b">
           <TabsTrigger value="add">Add</TabsTrigger>
+          <TabsTrigger value="layers"><Layers className="h-4 w-4"/></TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
         </TabsList>
@@ -52,6 +116,19 @@ const LeftSidebar: FC = () => {
                     <ContentBlock icon={<FormInput className="h-6 w-6" />} label="Input" type="input" />
                   </div>
               </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="layers" className="p-2">
+            <div className="space-y-1">
+                {elements.map(el => (
+                    <LayerItem 
+                        key={el.id} 
+                        element={el} 
+                        level={0}
+                        selectedElement={selectedElement}
+                        onSelectElement={(id) => onSelectElement(id)}
+                    />
+                ))}
             </div>
           </TabsContent>
           <TabsContent value="templates" className="p-4">

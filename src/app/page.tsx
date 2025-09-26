@@ -178,7 +178,11 @@ const WebsiteBuilderPage: FC = () => {
     <div className="flex h-screen w-full flex-col bg-background text-foreground">
       <EditorHeader />
       <div className="flex flex-1 overflow-hidden">
-        <LeftSidebar />
+        <LeftSidebar 
+            elements={elements}
+            selectedElement={selectedElement}
+            onSelectElement={setSelectedElement}
+        />
         <main className="flex-1 overflow-y-auto bg-background">
           <Canvas 
             elements={elements} 
