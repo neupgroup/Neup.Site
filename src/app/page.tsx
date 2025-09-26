@@ -72,11 +72,25 @@ const WebsiteBuilderPage: FC = () => {
   const [elements, setElements] = useState<CanvasElementData[]>(initialElements);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const elementType = e.dataTransfer.getData('text/plain') as CanvasElementData['type'];
-    if (!elementType) return;
+  const moveElement = (draggedId: string, dropZoneId: string) => {
+    const draggedIndex = elements.findIndex(el => el.id === draggedId);
+    const dropIndex = elements.findIndex(el => el.id === dropZoneId);
+    
+    if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) {
+      return;
+    }
 
+    setElements(prev => {
+        const newElements = [...prev];
+        const [draggedElement] = newElements.splice(draggedIndex, 1);
+        
+        const newDropIndex = newElements.findIndex(el => el.id === dropZoneId);
+        newElements.splice(newDropIndex, 0, draggedElement);
+        return newElements;
+    });
+  };
+
+  const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string) => {
     const newElement: CanvasElementData = {
         id: `${elementType}-${Date.now()}`,
         type: elementType,
@@ -103,11 +117,17 @@ const WebsiteBuilderPage: FC = () => {
         };
     }
     
-    setElements(prev => [...prev, newElement]);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
+    setElements(prev => {
+        if (dropZoneId) {
+            const dropIndex = prev.findIndex(el => el.id === dropZoneId);
+            if (dropIndex !== -1) {
+                const newElements = [...prev];
+                newElements.splice(dropIndex, 0, newElement);
+                return newElements;
+            }
+        }
+        return [...prev, newElement];
+    });
   };
 
   const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
@@ -132,12 +152,14 @@ const WebsiteBuilderPage: FC = () => {
       <EditorHeader />
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar />
-        <main className="flex-1 overflow-y-auto bg-background" onDrop={handleDrop} onDragOver={handleDragOver}>
+        <main className="flex-1 overflow-y-auto bg-background">
           <Canvas 
             elements={elements} 
             selectedElement={selectedElement} 
             onSelectElement={setSelectedElement}
             updateElement={updateElement}
+            moveElement={moveElement}
+            addElement={addElement}
             />
         </main>
         <RightSidebar 
@@ -151,5 +173,3 @@ const WebsiteBuilderPage: FC = () => {
 };
 
 export default WebsiteBuilderPage;
-
-    

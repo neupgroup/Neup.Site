@@ -8,7 +8,10 @@ const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string }> =
   <div
     className="flex cursor-grab flex-col items-center gap-2 rounded-lg border bg-card p-4 transition-colors hover:bg-secondary hover:border-primary active:cursor-grabbing"
     draggable
-    onDragStart={(e) => e.dataTransfer.setData('text/plain', type)}
+    onDragStart={(e) => {
+      const data = { type: 'sidebar-element', elementType: type };
+      e.dataTransfer.setData('application/json', JSON.stringify(data));
+    }}
   >
     {icon}
     <span className="text-xs font-medium">{label}</span>
