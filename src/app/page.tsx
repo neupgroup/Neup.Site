@@ -445,6 +445,7 @@ const WebsiteBuilderPage: FC = () => {
             elements={elements}
             selectedElement={selectedElement}
             onSelectElement={setSelectedElement}
+            moveElement={moveElement}
         />
         <main className="flex-1 overflow-y-auto bg-background">
           <Canvas 

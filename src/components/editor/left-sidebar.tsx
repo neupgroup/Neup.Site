@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -39,14 +39,72 @@ const getIconForType = (type: CanvasElementData['type']) => {
     }
 }
 
+const DropIndicator: FC<{className?: string}> = ({className}) => (
+    <div className={cn("relative h-0.5 w-full bg-primary rounded-full", className)} />
+)
+
 const LayerItem: FC<{ 
     element: CanvasElementData, 
     level: number, 
     selectedElement: string | null,
     onSelectElement: (id: string) => void,
-}> = ({ element, level, selectedElement, onSelectElement }) => {
+    onDrop: (draggedId: string, dropZoneId: string, parentId?: string | null) => void;
+    parentId: string | null;
+}> = ({ element, level, selectedElement, onSelectElement, onDrop, parentId }) => {
+    const [isDraggedOver, setIsDraggedOver] = useState(false);
+    const [dragCounter, setDragCounter] = useState(0);
+
+    const handleDragStart = (e: React.DragEvent) => {
+        e.stopPropagation();
+        e.dataTransfer.setData('application/json', JSON.stringify({ id: element.id, type: 'canvas-element' }));
+    };
+
+    const handleDragEnter = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragCounter(prev => prev + 1);
+        setIsDraggedOver(true);
+    };
+    
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragCounter(prev => prev - 1);
+        if (dragCounter === 1) {
+            setIsDraggedOver(false);
+        }
+    };
+    
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggedOver(true);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const data = JSON.parse(e.dataTransfer.getData('application/json'));
+        if (data.type === 'canvas-element' && data.id !== element.id) {
+            onDrop(data.id, element.id, parentId);
+        }
+        setIsDraggedOver(false);
+        setDragCounter(0);
+    };
+
+    const isContainer = ['section', 'div', 'container'].includes(element.type);
+
     return (
-        <div>
+        <div
+            draggable
+            onDragStart={handleDragStart}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            className="relative"
+        >
+            {isDraggedOver && <DropIndicator className="absolute -top-px left-0" />}
             <div 
                 className={cn(
                     "flex items-center gap-2 py-1 px-2 rounded-md cursor-pointer hover:bg-secondary",
@@ -61,15 +119,21 @@ const LayerItem: FC<{
                 {getIconForType(element.type)}
                 <span className="text-sm truncate">{element.type}</span>
             </div>
-            {element.children && element.children.map(child => (
-                <LayerItem 
-                    key={child.id} 
-                    element={child} 
-                    level={level + 1}
-                    selectedElement={selectedElement}
-                    onSelectElement={onSelectElement}
-                />
-            ))}
+            {isContainer && element.children && (
+                 <div style={{ paddingLeft: `${level * 1 + 0.5}rem` }}>
+                    {element.children.map(child => (
+                        <LayerItem 
+                            key={child.id} 
+                            element={child} 
+                            level={level + 1}
+                            selectedElement={selectedElement}
+                            onSelectElement={onSelectElement}
+                            onDrop={onDrop}
+                            parentId={element.id}
+                        />
+                    ))}
+                 </div>
+            )}
         </div>
     );
 };
@@ -79,9 +143,15 @@ interface LeftSidebarProps {
     elements: CanvasElementData[];
     selectedElement: string | null;
     onSelectElement: (id: string | null) => void;
+    moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
 }
 
-const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement }) => {
+const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement, moveElement }) => {
+  
+  const handleDrop = (draggedId: string, dropZoneId: string, parentId?: string | null) => {
+      moveElement(draggedId, dropZoneId, parentId || undefined);
+  }
+
   return (
     <aside className="w-72 border-r bg-card">
       <Tabs defaultValue="add" className="flex h-full flex-col">
@@ -127,6 +197,8 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                         level={0}
                         selectedElement={selectedElement}
                         onSelectElement={(id) => onSelectElement(id)}
+                        onDrop={handleDrop}
+                        parentId={null}
                     />
                 ))}
             </div>
