@@ -12,12 +12,12 @@ interface CanvasProps {
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
   updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => void;
-  moveElement: (draggedId: string, dropZoneId: string) => void;
+  moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
   addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
 }
 
-const DropIndicator: FC = () => (
-    <div className="relative h-1 w-full my-2 bg-primary rounded-full" />
+const DropIndicator: FC<{className?: string}> = ({className}) => (
+    <div className={cn("relative h-1 w-full my-2 bg-primary rounded-full", className)} />
 )
 
 interface ResizingState {
@@ -38,9 +38,11 @@ const CanvasElementWrapper: FC<{
   className?: string;
   style?: React.CSSProperties;
   onDragStart: (e: React.DragEvent, id: string) => void;
-  onDragEnter: (id: string) => void;
+  onDragEnter: (e: React.DragEvent, id: string) => void;
+  onDragLeave: (e: React.DragEvent) => void;
   onResizeStart: (e: React.MouseEvent, handle: ResizingState['handle']) => void;
-}> = ({ id, selectedElement, onSelectElement, children, className, style, onDragStart, onDragEnter, onResizeStart }) => {
+  isContainer?: boolean;
+}> = ({ id, selectedElement, onSelectElement, children, className, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer }) => {
   const isSelected = selectedElement === id;
   return (
     <div
@@ -48,10 +50,12 @@ const CanvasElementWrapper: FC<{
       style={style}
       draggable
       onDragStart={(e) => onDragStart(e, id)}
-      onDragEnter={() => onDragEnter(id)}
+      onDragEnter={(e) => onDragEnter(e, id)}
+      onDragLeave={onDragLeave}
       className={cn(
         'relative cursor-pointer transition-all group',
         isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:ring-1 hover:ring-primary/50',
+        {'min-h-[20px]': isContainer},
         className
       )}
       onClick={(e) => {
@@ -79,9 +83,10 @@ const CanvasElementWrapper: FC<{
 
 const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, updateElement, moveElement, addElement }) => {
     const [draggedId, setDraggedId] = useState<string | null>(null);
-    const [dropZoneId, setDropZoneId] = useState<string | null>(null);
+    const [dropZone, setDropZone] = useState<{parentId: string | null, elementId: string | null}>({parentId: null, elementId: null});
     const [resizingState, setResizingState] = useState<ResizingState | null>(null);
     const canvasRef = useRef<HTMLDivElement>(null);
+    const dragCounter = useRef(0);
 
     const handleSaveText = (id: string, newContent: string) => {
         updateElement(id, undefined, undefined, newContent);
@@ -89,6 +94,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 
     const handleDragStart = (e: React.DragEvent, id: string) => {
         e.dataTransfer.setData('application/json', JSON.stringify({id, type: 'canvas-element'}));
+        e.stopPropagation();
         setDraggedId(id);
     }
     
@@ -96,8 +102,19 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         e.dataTransfer.setData('application/json', JSON.stringify({ type: 'sidebar-element', elementType: type }));
     }
 
-    const handleDragOver = (e: React.DragEvent) => {
+    const handleDragOver = (e: React.DragEvent, parentId: string | null = null) => {
         e.preventDefault();
+        e.stopPropagation();
+
+        const target = e.target as HTMLElement;
+        const closestElement = target.closest('[draggable="true"]');
+        let elementId = closestElement ? closestElement.id : null;
+
+        if (elementId === draggedId) {
+          elementId = null;
+        }
+        
+        setDropZone({ parentId, elementId });
     }
     
     const handleDrop = (e: React.DragEvent, parentId?: string) => {
@@ -105,15 +122,33 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         e.stopPropagation();
         const data = JSON.parse(e.dataTransfer.getData('application/json'));
 
-        if (data.type === 'canvas-element' && draggedId && dropZoneId) {
-            moveElement(draggedId, dropZoneId);
+        const targetId = dropZone.elementId;
+
+        if (data.type === 'canvas-element' && draggedId) {
+            moveElement(draggedId, targetId!, parentId);
         } else if (data.type === 'sidebar-element') {
-            addElement(data.elementType, dropZoneId ?? undefined, parentId);
+            addElement(data.elementType, targetId ?? undefined, parentId);
         }
         
         setDraggedId(null);
-        setDropZoneId(null);
+        setDropZone({parentId: null, elementId: null});
+        dragCounter.current = 0;
     }
+    
+    const handleDragEnter = (e: React.DragEvent<Element>, id: string, parentId: string | null = null) => {
+        e.stopPropagation();
+        dragCounter.current++;
+        setDropZone({parentId: parentId, elementId: id});
+    }
+
+    const handleDragLeave = (e: React.DragEvent<Element>) => {
+        e.stopPropagation();
+        dragCounter.current--;
+        if (dragCounter.current === 0) {
+            setDropZone({parentId: null, elementId: null});
+        }
+    }
+
 
     const handleResizeStart = useCallback((e: React.MouseEvent, handle: ResizingState['handle']) => {
         if (!selectedElement) return;
@@ -141,8 +176,18 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 
         const dx = e.clientX - resizingState.initialX;
         const dy = e.clientY - resizingState.initialY;
-
-        const elToUpdate = elements.find(el => el.id === resizingState.elementId);
+        
+        const findElement = (els: CanvasElementData[], id: string): CanvasElementData | undefined => {
+          for (const el of els) {
+            if (el.id === id) return el;
+            if (el.children) {
+              const found = findElement(el.children, id);
+              if (found) return found;
+            }
+          }
+        }
+        
+        const elToUpdate = findElement(elements, resizingState.elementId);
         if (!elToUpdate) return;
         
         let newWidth = resizingState.initialWidth;
@@ -185,8 +230,10 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         };
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
-    const renderElement = (element: CanvasElementData, isChild: boolean = false) => {
+    const renderElement = (element: CanvasElementData, parentId: string | null = null) => {
         const { id, type, content, styles, props, children } = element;
+        const isContainer = ['section', 'div', 'container'].includes(type);
+
         const wrapperProps = {
             id,
             selectedElement,
@@ -194,9 +241,13 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             style: styles,
             key: id,
             onDragStart: handleDragStart,
-            onDragEnter: setDropZoneId,
+            onDragEnter: (e: React.DragEvent) => handleDragEnter(e, id, parentId),
+            onDragLeave: handleDragLeave,
             onResizeStart: handleResizeStart,
+            isContainer
         };
+        
+        const showDropIndicator = dropZone.elementId === id && dropZone.parentId === parentId && id !== draggedId;
 
         const elementComponent = (() => {
             switch (type) {
@@ -227,7 +278,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 case 'text':
                     return (
                         <CanvasElementWrapper {...wrapperProps}>
-                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign}} />
+                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} />
                         </CanvasElementWrapper>
                     );
                 case 'button':
@@ -247,9 +298,19 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 case 'container':
                   const Tag = type === 'section' ? 'section' : 'div';
                   return (
-                    <CanvasElementWrapper {...wrapperProps} className={cn({'p-4': children?.length === 0})}>
-                      <Tag onDrop={(e) => handleDrop(e, id)} onDragOver={handleDragOver} className="min-h-full">
-                        {children && children.length > 0 ? children.map(child => renderElement(child, true)) : <span className="text-muted-foreground text-sm">Drag elements here</span>}
+                    <CanvasElementWrapper {...wrapperProps} className={cn({'p-4': children?.length === 0, 'container': type === 'container'})}>
+                      <Tag 
+                        onDrop={(e) => handleDrop(e, id)} 
+                        onDragOver={(e) => handleDragOver(e, id)} 
+                        className="min-h-full h-full"
+                      >
+                        {children && children.length > 0 
+                            ? children.map(child => renderElement(child, id)) 
+                            : <span className="text-muted-foreground text-sm pointer-events-none">Drag elements here</span>
+                        }
+                        {dropZone.parentId === id && !dropZone.elementId && (
+                            <DropIndicator className="!my-0" />
+                        )}
                       </Tag>
                     </CanvasElementWrapper>
                   )
@@ -264,17 +325,12 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             }
         })();
 
-        if (isChild) {
-            return elementComponent;
-        }
-
         return (
             <div key={id}>
-                {dropZoneId === id && <DropIndicator />}
+                {showDropIndicator && <DropIndicator />}
                 {elementComponent}
             </div>
         )
-
     }
   
   return (
@@ -284,10 +340,10 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e)}
-        onDragEnter={() => {
-            if (!draggedId) { 
-                setDropZoneId(null);
-            }
+        onDragEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dragCounter.current++;
         }}
     >
       <div className="rounded-lg bg-card shadow-lg">
@@ -295,11 +351,11 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         {elements.length === 0 && (
              <div 
                 className="flex items-center justify-center h-48 border-2 border-dashed border-muted rounded-lg"
-                onDragEnter={() => setDropZoneId('canvas-end')}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDropZone({parentId: null, elementId: 'canvas-end'}) }}
                 onDrop={(e) => handleDrop(e)}
             >
                 <p className="text-muted-foreground">Drag elements here to start building</p>
-                {dropZoneId === 'canvas-end' && <DropIndicator/>}
+                {dropZone.elementId === 'canvas-end' && <DropIndicator/>}
             </div>
         )}
       </div>

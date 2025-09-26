@@ -18,89 +18,149 @@ export interface CanvasElementData {
 
 const initialElements: CanvasElementData[] = [
     {
-        id: "hero",
-        type: 'hero',
-        content: "Build Your Website Visually",
+        id: 'main-section',
+        type: 'section',
         styles: {
-            paddingTop: '48px',
-            paddingRight: '20px',
-            paddingLeft: '20px',
+            paddingTop: '20px',
             paddingBottom: '20px',
-            textAlign: 'center',
-            fontSize: '48px',
-            fontWeight: 'bold',
-            display: 'block',
-        }
-    },
-    {
-        id: "hero-subtitle",
-        type: 'hero-subtitle',
-        content: "Create stunning, professional websites with our intuitive drag-and-drop editor. No code required.",
-        styles: {
-            paddingTop: '0px',
-            paddingRight: '48px',
-            paddingBottom: '0px',
-            paddingLeft: '48px',
-            marginTop: '-32px',
-            textAlign: 'center',
-            fontSize: '18px',
-            color: 'hsl(var(--muted-foreground))',
-            display: 'block',
-        }
-    },
-    {
-        id: "hero-cta",
-        type: "hero-cta",
-        content: "Get Started Now",
-        styles: {
-            marginTop: '32px',
-            textAlign: 'center',
-            paddingTop: '0px',
-            paddingRight: '0px',
-            paddingBottom: '48px',
-            paddingLeft: '0px',
-            display: 'block',
-        }
-    },
-    {
-        id: "feature-image",
-        type: 'feature-image',
-        props: {
-            src: PlaceHolderImages.find(p => p.id === 'feature-1')?.imageUrl,
-            alt: PlaceHolderImages.find(p => p.id === 'feature-1')?.description,
-            'data-ai-hint': PlaceHolderImages.find(p => p.id === 'feature-1')?.imageHint
+            paddingLeft: '20px',
+            paddingRight: '20px',
+            minHeight: '100px',
         },
-        styles: {
-            width: '100%',
-            display: 'block',
-        }
+        children: [
+            {
+                id: "hero",
+                type: 'hero',
+                content: "Build Your Website Visually",
+                styles: {
+                    paddingTop: '48px',
+                    paddingRight: '20px',
+                    paddingLeft: '20px',
+                    paddingBottom: '20px',
+                    textAlign: 'center',
+                    fontSize: '48px',
+                    fontWeight: 'bold',
+                    display: 'block',
+                }
+            },
+            {
+                id: "hero-subtitle",
+                type: 'hero-subtitle',
+                content: "Create stunning, professional websites with our intuitive drag-and-drop editor. No code required.",
+                styles: {
+                    paddingTop: '0px',
+                    paddingRight: '48px',
+                    paddingBottom: '0px',
+                    paddingLeft: '48px',
+                    marginTop: '-32px',
+                    textAlign: 'center',
+                    fontSize: '18px',
+                    color: 'hsl(var(--muted-foreground))',
+                    display: 'block',
+                }
+            },
+            {
+                id: "hero-cta",
+                type: "hero-cta",
+                content: "Get Started Now",
+                styles: {
+                    marginTop: '32px',
+                    textAlign: 'center',
+                    paddingTop: '0px',
+                    paddingRight: '0px',
+                    paddingBottom: '48px',
+                    paddingLeft: '0px',
+                    display: 'block',
+                }
+            },
+            {
+                id: "feature-image",
+                type: 'feature-image',
+                props: {
+                    src: PlaceHolderImages.find(p => p.id === 'feature-1')?.imageUrl,
+                    alt: PlaceHolderImages.find(p => p.id === 'feature-1')?.description,
+                    'data-ai-hint': PlaceHolderImages.find(p => p.id === 'feature-1')?.imageHint
+                },
+                styles: {
+                    width: '100%',
+                    display: 'block',
+                }
+            }
+        ]
     }
-]
+];
 
 
 const WebsiteBuilderPage: FC = () => {
   const [elements, setElements] = useState<CanvasElementData[]>(initialElements);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
 
-  const moveElement = (draggedId: string, dropZoneId: string) => {
-    const draggedIndex = elements.findIndex(el => el.id === draggedId);
-    const dropIndex = elements.findIndex(el => el.id === dropZoneId);
-    
-    if (draggedIndex === -1 || dropIndex === -1 || draggedIndex === dropIndex) {
-      return;
-    }
+  const moveElement = (draggedId: string, dropZoneId: string, parentId?: string) => {
+    let draggedElement: CanvasElementData | undefined;
 
-    setElements(prev => {
-        const newElements = [...prev];
-        const [draggedElement] = newElements.splice(draggedIndex, 1);
-        
-        const newDropIndex = newElements.findIndex(el => el.id === dropZoneId);
-        newElements.splice(newDropIndex, 0, draggedElement);
-        return newElements;
-    });
+    const removeElement = (els: CanvasElementData[], id: string): CanvasElementData[] => {
+      return els.reduce((acc, el) => {
+        if (el.id === id) {
+          draggedElement = el;
+          return acc;
+        }
+        if (el.children) {
+          el.children = removeElement(el.children, id);
+        }
+        acc.push(el);
+        return acc;
+      }, [] as CanvasElementData[]);
+    };
+
+    const newElements = removeElement([...elements], draggedId);
+
+    if (!draggedElement) return;
+
+    const addElementToParent = (els: CanvasElementData[], pId: string, element: CanvasElementData): boolean => {
+      for (let i = 0; i < els.length; i++) {
+        if (els[i].id === pId && els[i].children) {
+          // Find drop zone and insert
+          const dropIndex = els[i].children!.findIndex(child => child.id === dropZoneId);
+          if (dropIndex !== -1) {
+            els[i].children!.splice(dropIndex, 0, element);
+          } else {
+             els[i].children!.push(element);
+          }
+          return true;
+        }
+        if (els[i].children && addElementToParent(els[i].children, pId, element)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    const insertElement = (els: CanvasElementData[], dZoneId: string, element: CanvasElementData): CanvasElementData[] => {
+        const dropIndex = els.findIndex(el => el.id === dZoneId);
+        if (dropIndex !== -1) {
+            const newEls = [...els];
+            newEls.splice(dropIndex, 0, element);
+            return newEls;
+        }
+
+        return els.map(el => {
+            if (el.children) {
+                return { ...el, children: insertElement(el.children, dZoneId, element) };
+            }
+            return el;
+        });
+    };
+
+    if (parentId) {
+      if(addElementToParent(newElements, parentId, draggedElement)) {
+        setElements(newElements);
+      }
+    } else {
+      setElements(insertElement(newElements, dropZoneId, draggedElement));
+    }
   };
 
-  const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string) => {
+  const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => {
     const newElement: CanvasElementData = {
         id: `${elementType}-${Date.now()}`,
         type: elementType,
@@ -145,6 +205,28 @@ const WebsiteBuilderPage: FC = () => {
     }
     
     setElements(prev => {
+        const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+            return els.map(el => {
+                if (el.id === parentId && el.children) {
+                    const dropIndex = dropZoneId ? el.children.findIndex(child => child.id === dropZoneId) : -1;
+                    const newChildren = [...el.children];
+                    if (dropIndex !== -1) {
+                        newChildren.splice(dropIndex, 0, newElement);
+                    } else {
+                        newChildren.push(newElement);
+                    }
+                    return { ...el, children: newChildren };
+                } else if (el.children) {
+                    return { ...el, children: addRecursively(el.children) };
+                }
+                return el;
+            });
+        };
+
+        if (parentId) {
+            return addRecursively(prev);
+        }
+
         if (dropZoneId) {
             const dropIndex = prev.findIndex(el => el.id === dropZoneId);
             if (dropIndex !== -1) {
@@ -158,21 +240,28 @@ const WebsiteBuilderPage: FC = () => {
   };
 
   const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
-    setElements(prev => prev.map(el => {
+    const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+      return els.map(el => {
         if (el.id === id) {
-            const updatedElement = {
-                ...el, 
-                styles: newStyles !== undefined ? newStyles : el.styles,
-                props: newProps !== undefined ? newProps : el.props
-            };
-            if (newContent !== undefined) {
-                updatedElement.content = newContent;
-            }
-            return updatedElement;
+          const updatedElement = {
+            ...el,
+            styles: newStyles !== undefined ? newStyles : el.styles,
+            props: newProps !== undefined ? newProps : el.props,
+          };
+          if (newContent !== undefined) {
+            updatedElement.content = newContent;
+          }
+          return updatedElement;
+        }
+        if (el.children) {
+          return { ...el, children: updateRecursively(el.children) };
         }
         return el;
-    }));
+      });
+    };
+    setElements(prev => updateRecursively(prev));
   };
+
 
   return (
     <div className="flex h-screen w-full flex-col bg-background text-foreground">

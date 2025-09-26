@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Pin } from 'lucide-react';
+import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
 import { CanvasElementData } from '@/app/page';
 import {
@@ -29,7 +29,22 @@ interface RightSidebarProps {
 }
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement }) => {
-  const selectedElement = elements.find(el => el.id === selectedElementId);
+  
+  const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
+    for (const el of els) {
+      if (el.id === id) {
+        return el;
+      }
+      if (el.children) {
+        const found = findElementRecursive(id, el.children);
+        if (found) {
+          return found;
+        }
+      }
+    }
+  };
+  
+  const selectedElement = selectedElementId ? findElementRecursive(selectedElementId, elements) : undefined;
 
   const [styles, setStyles] = useState<React.CSSProperties>({});
   const [props, setProps] = useState<Record<string, any>>({});
