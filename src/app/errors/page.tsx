@@ -46,10 +46,12 @@ const ErrorsPage = () => {
         setErrors(errorsList.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
       } catch (e: any) {
         console.error("Error fetching errors: ", e);
-        if (e.code === 'permission-denied') {
-            setFetchError("Permission denied. Please check your Firestore security rules. You may need to create the 'errors' collection and set up rules in the Firebase Console.");
+        if (e.code === 'permission-denied' || e.code === 'unauthenticated') {
+            setFetchError("Permission denied. Please check your Firestore security rules in the Firebase Console. You may need to create the 'errors' collection and ensure your rules allow read access.");
+        } else if (e.message.includes('firestore/unavailable')) {
+            setFetchError('Failed to connect to Firestore. Please ensure Firestore is enabled and properly configured for your project in the Firebase Console.');
         } else {
-            setFetchError('Failed to fetch errors from Firestore. Make sure Firestore is enabled and configured correctly in the Firebase Console.');
+            setFetchError('An unexpected error occurred while fetching error logs from Firestore.');
         }
       } finally {
         setLoading(false);
@@ -72,7 +74,7 @@ const ErrorsPage = () => {
             {fetchError && (
                  <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
+                    <AlertTitle>Error Fetching Logs</AlertTitle>
                     <AlertDescription>{fetchError}</AlertDescription>
                 </Alert>
             )}
