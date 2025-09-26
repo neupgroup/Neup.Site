@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Rows, Columns, File } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File } from 'lucide-react';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string }> = ({ icon, label, type }) => (
   <div
@@ -29,10 +29,29 @@ const LeftSidebar: FC = () => {
         </TabsList>
         <ScrollArea className="flex-1">
           <TabsContent value="add" className="p-4">
-            <div className="grid grid-cols-2 gap-4">
-              <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
-              <ContentBlock icon={<ImageIcon className="h-6 w-6" />} label="Image" type="image" />
-              <ContentBlock icon={<MousePointerClick className="h-6 w-6" />} label="Button" type="button" />
+            <div className="space-y-4">
+              <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Layout</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <ContentBlock icon={<LayoutTemplate className="h-6 w-6" />} label="Section" type="section" />
+                    <ContentBlock icon={<Box className="h-6 w-6" />} label="Div Block" type="div" />
+                    <ContentBlock icon={<Container className="h-6 w-6" />} label="Container" type="container" />
+                  </div>
+              </div>
+              <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Basic</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
+                    <ContentBlock icon={<ImageIcon className="h-6 w-6" />} label="Image" type="image" />
+                    <ContentBlock icon={<MousePointerClick className="h-6 w-6" />} label="Button" type="button" />
+                  </div>
+              </div>
+               <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Forms</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <ContentBlock icon={<FormInput className="h-6 w-6" />} label="Input" type="input" />
+                  </div>
+              </div>
             </div>
           </TabsContent>
           <TabsContent value="templates" className="p-4">

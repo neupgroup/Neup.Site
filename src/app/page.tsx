@@ -9,10 +9,11 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export interface CanvasElementData {
   id: string;
-  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image';
+  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input';
   content?: string;
   styles: React.CSSProperties;
   props?: Record<string, any>;
+  children?: CanvasElementData[];
 }
 
 const initialElements: CanvasElementData[] = [
@@ -36,7 +37,9 @@ const initialElements: CanvasElementData[] = [
         type: 'hero-subtitle',
         content: "Create stunning, professional websites with our intuitive drag-and-drop editor. No code required.",
         styles: {
+            paddingTop: '0px',
             paddingRight: '48px',
+            paddingBottom: '0px',
             paddingLeft: '48px',
             marginTop: '-32px',
             textAlign: 'center',
@@ -52,7 +55,10 @@ const initialElements: CanvasElementData[] = [
         styles: {
             marginTop: '32px',
             textAlign: 'center',
+            paddingTop: '0px',
+            paddingRight: '0px',
             paddingBottom: '48px',
+            paddingLeft: '0px',
             display: 'block',
         }
     },
@@ -104,8 +110,6 @@ const WebsiteBuilderPage: FC = () => {
             paddingLeft: '10px',
             paddingRight: '10px',
             display: 'block',
-            width: '200px',
-            height: 'auto'
         }
     }
 
@@ -125,6 +129,19 @@ const WebsiteBuilderPage: FC = () => {
             'data-ai-hint': placeholder?.imageHint,
         };
         newElement.styles.height = '100px';
+    } else if (elementType === 'section' || elementType === 'div' || elementType === 'container') {
+      newElement.children = [];
+      newElement.styles.minHeight = '100px';
+      newElement.styles.border = '1px dashed hsl(var(--border))';
+      if (elementType === 'container') {
+        newElement.styles.maxWidth = '1100px';
+        newElement.styles.marginLeft = 'auto';
+        newElement.styles.marginRight = 'auto';
+      }
+    } else if (elementType === 'input') {
+      newElement.props = { placeholder: 'Enter text...' };
+      newElement.styles.height = '40px';
+      newElement.styles.width = '200px';
     }
     
     setElements(prev => {

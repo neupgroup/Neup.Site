@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { CanvasElementData } from '@/app/page';
 import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
+import { Input } from '../ui/input';
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -12,7 +13,7 @@ interface CanvasProps {
   onSelectElement: (id: string | null) => void;
   updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => void;
   moveElement: (draggedId: string, dropZoneId: string) => void;
-  addElement: (elementType: CanvasElementData['type'], dropZoneId?: string) => void;
+  addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
 }
 
 const DropIndicator: FC = () => (
@@ -99,7 +100,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         e.preventDefault();
     }
     
-    const handleDrop = (e: React.DragEvent) => {
+    const handleDrop = (e: React.DragEvent, parentId?: string) => {
         e.preventDefault();
         e.stopPropagation();
         const data = JSON.parse(e.dataTransfer.getData('application/json'));
@@ -107,7 +108,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         if (data.type === 'canvas-element' && draggedId && dropZoneId) {
             moveElement(draggedId, dropZoneId);
         } else if (data.type === 'sidebar-element') {
-            addElement(data.elementType, dropZoneId ?? undefined);
+            addElement(data.elementType, dropZoneId ?? undefined, parentId);
         }
         
         setDraggedId(null);
@@ -184,8 +185,8 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         };
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
-    const renderElement = (element: CanvasElementData) => {
-        const { id, type, content, styles, props } = element;
+    const renderElement = (element: CanvasElementData, isChild: boolean = false) => {
+        const { id, type, content, styles, props, children } = element;
         const wrapperProps = {
             id,
             selectedElement,
@@ -241,10 +242,31 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                             {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
                         </CanvasElementWrapper>
                      );
+                case 'section':
+                case 'div':
+                case 'container':
+                  const Tag = type === 'section' ? 'section' : 'div';
+                  return (
+                    <CanvasElementWrapper {...wrapperProps} className={cn({'p-4': children?.length === 0})}>
+                      <Tag onDrop={(e) => handleDrop(e, id)} onDragOver={handleDragOver} className="min-h-full">
+                        {children && children.length > 0 ? children.map(child => renderElement(child, true)) : <span className="text-muted-foreground text-sm">Drag elements here</span>}
+                      </Tag>
+                    </CanvasElementWrapper>
+                  )
+                case 'input':
+                    return (
+                        <CanvasElementWrapper {...wrapperProps}>
+                           <Input {...props} className="w-full h-full bg-background" />
+                        </CanvasElementWrapper>
+                    );
                 default:
                     return null;
             }
         })();
+
+        if (isChild) {
+            return elementComponent;
+        }
 
         return (
             <div key={id}>
@@ -261,19 +283,20 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8" 
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
-        onDrop={handleDrop}
+        onDrop={(e) => handleDrop(e)}
         onDragEnter={() => {
-            if (!draggedId) { // Only set drop zone to null if not dragging an internal element
+            if (!draggedId) { 
                 setDropZoneId(null);
             }
         }}
     >
       <div className="rounded-lg bg-card shadow-lg">
-        {elements.map(renderElement)}
+        {elements.map(el => renderElement(el))}
         {elements.length === 0 && (
              <div 
                 className="flex items-center justify-center h-48 border-2 border-dashed border-muted rounded-lg"
                 onDragEnter={() => setDropZoneId('canvas-end')}
+                onDrop={(e) => handleDrop(e)}
             >
                 <p className="text-muted-foreground">Drag elements here to start building</p>
                 {dropZoneId === 'canvas-end' && <DropIndicator/>}

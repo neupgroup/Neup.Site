@@ -99,7 +99,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="style" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'position', 'typography', 'color', 'spacing', 'image']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'position', 'typography', 'color', 'spacing', 'image', 'attributes']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -113,6 +113,18 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                         <AccordionContent className="px-4 space-y-2">
                             <Label>Text</Label>
                             <Input value={content || ''} onChange={e => handleContentChange(e.target.value)} />
+                        </AccordionContent>
+                    </AccordionItem>
+                )}
+
+                {showFor(['input']) && (
+                    <AccordionItem value="attributes">
+                        <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
+                        <AccordionContent className="px-4 space-y-4">
+                            <div className="space-y-2">
+                                <Label>Placeholder</Label>
+                                <Input value={props.placeholder || ''} onChange={e => handlePropChange('placeholder', e.target.value)} />
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 )}
@@ -139,13 +151,13 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                      <div className="space-y-2">
                         <Label>Alignment</Label>
                         <div className="grid grid-cols-3 gap-2">
-                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', '0'); handleStyleChange('marginRight', 'auto'); handleStyleChange('float', 'left')}} title="Align Left">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', '0'); handleStyleChange('marginRight', 'auto');}} title="Align Left">
                                 <ArrowLeftRight className="h-4 w-4 rotate-90" />
                             </Button>
-                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', 'auto'); handleStyleChange('float', 'none')}} title="Align Center">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', 'auto');}} title="Align Center">
                                 <AlignCenter className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', '0'); handleStyleChange('float', 'right')}} title="Align Right">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', '0');}} title="Align Right">
                                 <ArrowLeftRight className="h-4 w-4 -rotate-90" />
                             </Button>
                         </div>
