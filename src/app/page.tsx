@@ -5,6 +5,7 @@ import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
+import CodeViewer from '@/components/editor/code-viewer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export interface CanvasElementData {
@@ -99,6 +100,7 @@ const WebsiteBuilderPage: FC = () => {
   const [history, setHistory] = useState<CanvasElementData[][]>([initialElements]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const elements = history[historyIndex];
+  const [isCodeViewerOpen, setIsCodeViewerOpen] = useState(false);
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[]) => {
       const newElements = updater(history[historyIndex]);
@@ -484,6 +486,7 @@ const WebsiteBuilderPage: FC = () => {
         onRedo={redo}
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
+        onViewCode={() => setIsCodeViewerOpen(true)}
       />
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 
@@ -509,6 +512,11 @@ const WebsiteBuilderPage: FC = () => {
             deleteElement={deleteElement}
         />
       </div>
+      <CodeViewer
+        isOpen={isCodeViewerOpen}
+        onClose={() => setIsCodeViewerOpen(false)}
+        elements={elements}
+      />
     </div>
   );
 };
