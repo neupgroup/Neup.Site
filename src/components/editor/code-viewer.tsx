@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { CanvasElementData } from '@/app/page';
-import { processCssAction } from '@/app/actions';
+import { processCssAction, logErrorToFirestore } from '@/app/actions';
 import { Skeleton } from '../ui/skeleton';
 
 const globalCss = `
@@ -230,8 +230,9 @@ const CodeViewer: FC<CodeViewerProps> = ({ isOpen, onClose, elements }) => {
 </html>
         `.trim();
         setFullHtmlCode(html);
-    } catch(e) {
+    } catch(e: any) {
         console.error(e);
+        logErrorToFirestore({ message: e.message, stack: e.stack });
         toast({
             variant: 'destructive',
             title: 'Error generating code',
