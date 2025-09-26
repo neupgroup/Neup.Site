@@ -105,10 +105,14 @@ const WebsiteBuilderPage: FC = () => {
     e.preventDefault();
   };
 
-  const updateElement = (id: string, newStyles: React.CSSProperties, newContent?: string) => {
+  const updateElement = (id: string, newStyles: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
     setElements(prev => prev.map(el => {
         if (el.id === id) {
-            const updatedElement = {...el, styles: {...el.styles, ...newStyles}};
+            const updatedElement = {
+                ...el, 
+                styles: {...el.styles, ...newStyles},
+                props: {...el.props, ...newProps}
+            };
             if (newContent !== undefined) {
                 updatedElement.content = newContent;
             }
