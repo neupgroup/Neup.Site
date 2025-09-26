@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal } from 'lucide-react';
+import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Pin } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
 import { CanvasElementData } from '@/app/page';
 import {
@@ -92,7 +92,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="style" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'typography', 'color', 'spacing', 'image']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'position', 'typography', 'color', 'spacing', 'image']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -152,6 +152,54 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                            </Button>
                         </div>
                     </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="position">
+                  <AccordionTrigger className="px-4 text-sm font-medium">Positioning</AccordionTrigger>
+                  <AccordionContent className="px-4 space-y-4">
+                     <div className="space-y-2">
+                        <Label>Position</Label>
+                        <Select value={styles.position || ''} onValueChange={value => handleStyleChange('position', value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select position" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="static">Static</SelectItem>
+                            <SelectItem value="relative">Relative</SelectItem>
+                            <SelectItem value="absolute">Absolute</SelectItem>
+                            <SelectItem value="fixed">Fixed</SelectItem>
+                            <SelectItem value="sticky">Sticky</SelectItem>
+                          </SelectContent>
+                      </Select>
+                    </div>
+
+                    {styles.position && styles.position !== 'static' && (
+                        <>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-2">
+                                <Label>Top</Label>
+                                <Input value={styles.top as string || ''} onChange={e => handleStyleChange('top', e.target.value)} placeholder="auto" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label>Right</Label>
+                                <Input value={styles.right as string || ''} onChange={e => handleStyleChange('right', e.target.value)} placeholder="auto" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label>Bottom</Label>
+                                <Input value={styles.bottom as string || ''} onChange={e => handleStyleChange('bottom', e.target.value)} placeholder="auto" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label>Left</Label>
+                                <Input value={styles.left as string || ''} onChange={e => handleStyleChange('left', e.target.value)} placeholder="auto" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Z-Index</Label>
+                             <Input type="number" value={styles.zIndex || ''} onChange={e => handleStyleChange('zIndex', e.target.value)} placeholder="auto" />
+                        </div>
+                        </>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
 
