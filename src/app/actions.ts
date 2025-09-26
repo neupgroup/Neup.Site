@@ -59,8 +59,7 @@ export async function logErrorToFirestore(error: { message: string, stack?: stri
 
 export async function saveSite(elements: any) {
     try {
-        const sitesCollectionRef = collection(db, 'sites');
-        const siteRef = doc(sitesCollectionRef, 'published-site');
+        const siteRef = doc(db, 'sites', 'published-site');
         await setDoc(siteRef, {
             elements,
             publishedAt: serverTimestamp()
