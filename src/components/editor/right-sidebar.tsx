@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2 } from 'lucide-react';
+import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
 import { CanvasElementData } from '@/app/page';
 import {
@@ -51,6 +51,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [props, setProps] = useState<Record<string, any>>({});
   const [content, setContent] = useState<string | undefined>(undefined);
   const colorInputRef = useRef<HTMLInputElement>(null);
+  const bgColorInputRef = useRef<HTMLInputElement>(null);
 
 
   useEffect(() => {
@@ -115,7 +116,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="style" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'position', 'typography', 'color', 'spacing', 'image', 'attributes']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -311,6 +312,26 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </AccordionContent>
                 </AccordionItem>
                 )}
+                
+                 <AccordionItem value="background">
+                    <AccordionTrigger className="px-4 text-sm font-medium">Background</AccordionTrigger>
+                    <AccordionContent className="px-4 space-y-2">
+                        <Label>Background Color</Label>
+                        <div className="flex items-center gap-2">
+                           <Input value={styles.backgroundColor || ''} onChange={e => handleStyleChange('backgroundColor', e.target.value)} className="flex-1" placeholder="e.g. #FFFFFF or hsl(var(--...))"/>
+                           <Button variant="outline" size="icon" onClick={() => bgColorInputRef.current?.click()}>
+                              <Brush className="h-4 w-4" />
+                              <input
+                                ref={bgColorInputRef}
+                                type="color"
+                                value={typeof styles.backgroundColor === 'string' ? styles.backgroundColor : '#FFFFFF'}
+                                onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
+                                className="absolute h-0 w-0 opacity-0"
+                                />
+                           </Button>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
 
                 <AccordionItem value="spacing">
                     <AccordionTrigger className="px-4 text-sm font-medium">Spacing</AccordionTrigger>
@@ -324,6 +345,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                             <Input value={(styles.paddingLeft as string) || ''} onChange={e => handleStyleChange('paddingLeft', e.target.value)} placeholder="Left" />
                           </div>
                         </div>
+
                         <div className="space-y-2">
                           <Label>Margin</Label>
                           <div className="grid grid-cols-2 gap-2">
