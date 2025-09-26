@@ -434,7 +434,7 @@ const WebsiteBuilderPage: FC = () => {
                 deleteElement(selectedElement);
             }
         } else if (e.ctrlKey || e.metaKey) {
-            switch(e.key) {
+            switch(e.key.toLowerCase()) {
                 case 'c':
                     e.preventDefault();
                     copyElement();
@@ -503,3 +503,5 @@ const WebsiteBuilderPage: FC = () => {
 };
 
 export default WebsiteBuilderPage;
+
+    
