@@ -2,9 +2,13 @@ import { FC, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6 } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Sparkles } from 'lucide-react';
 import { CanvasElementData } from '@/app/site/editor/page';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { generateSiteSectionAction } from '@/app/actions';
+import { Textarea } from '../ui/textarea';
+import { logErrorToFirestore } from '@/app/actions';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
   <div
@@ -139,15 +143,81 @@ const LayerItem: FC<{
     );
 };
 
+const AiGenerator: FC<{addGeneratedElement: (element: CanvasElementData) => void}> = ({ addGeneratedElement }) => {
+    const [prompt, setPrompt] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
+
+    const handleGenerate = async () => {
+        if (!prompt.trim()) {
+            toast({
+                variant: 'destructive',
+                title: 'Prompt is empty',
+                description: 'Please describe the section you want to generate.',
+            });
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const result = await generateSiteSectionAction({ prompt });
+            if (result && result.section) {
+                addGeneratedElement(result.section);
+                toast({
+                    title: 'Section Generated!',
+                    description: 'The new section has been added to the bottom of your page.',
+                });
+                setPrompt('');
+            } else {
+                 throw new Error('AI did not return a valid section.');
+            }
+        } catch (error: any) {
+            console.error("Error generating site section:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Generation Failed',
+                description: error.message || 'An unknown error occurred while generating the section.',
+            });
+            logErrorToFirestore({ message: error.message, stack: error.stack });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div>
+            <p className="text-sm font-medium text-muted-foreground mb-2">AI Generate</p>
+            <div className="space-y-2">
+                <Textarea 
+                    placeholder="e.g., A two-column feature section with an image on the left and text on the right."
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    rows={4}
+                />
+                <Button onClick={handleGenerate} disabled={isLoading} className="w-full">
+                    {isLoading ? (
+                        'Generating...'
+                    ) : (
+                       <>
+                         <Sparkles className="mr-2 h-4 w-4" />
+                         Generate
+                       </>
+                    )}
+                </Button>
+            </div>
+        </div>
+    );
+}
+
 
 interface LeftSidebarProps {
     elements: CanvasElementData[];
     selectedElement: string | null;
     onSelectElement: (id: string | null) => void;
     moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
+    addGeneratedElement: (element: CanvasElementData) => void;
 }
 
-const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement, moveElement }) => {
+const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement, moveElement, addGeneratedElement }) => {
   
   const handleDrop = (draggedId: string, dropZoneId: string, parentId?: string | null) => {
       moveElement(draggedId, dropZoneId, parentId || undefined);
@@ -165,6 +235,15 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
         <ScrollArea className="flex-1">
           <TabsContent value="add" className="p-4">
             <div className="space-y-4">
+               <AiGenerator addGeneratedElement={addGeneratedElement} />
+               <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">Or add manually</span>
+                    </div>
+                </div>
               <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Layout</p>
                   <div className="grid grid-cols-2 gap-4">

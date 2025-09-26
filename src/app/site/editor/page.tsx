@@ -322,6 +322,31 @@ const WebsiteBuilderPage: FC = () => {
     }
   };
 
+  const addGeneratedElement = (element: CanvasElementData) => {
+    try {
+        const deepCopyAndNewIds = (el: CanvasElementData): CanvasElementData => {
+            const newEl = {
+                ...el,
+                id: `${el.type}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+            };
+            if (el.children) {
+                newEl.children = el.children.map(deepCopyAndNewIds);
+            }
+            return newEl;
+        };
+
+        const newElement = deepCopyAndNewIds(element);
+
+        setElements(prev => {
+            const clonedPrev = JSON.parse(JSON.stringify(prev));
+            return [...clonedPrev, newElement];
+        });
+    } catch (e: any) {
+        console.error("Error adding generated element:", e);
+        logErrorToFirestore({ message: e.message, stack: e.stack });
+    }
+  };
+
   const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, recordHistory = true) => {
     try {
         setElements(prev => {
@@ -571,6 +596,7 @@ const WebsiteBuilderPage: FC = () => {
             selectedElement={selectedElement}
             onSelectElement={setSelectedElement}
             moveElement={moveElement}
+            addGeneratedElement={addGeneratedElement}
         />
         <main className="flex-1 overflow-y-auto bg-background">
           <Canvas 

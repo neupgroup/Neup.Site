@@ -6,6 +6,11 @@ import {
   type AiDesignSuggestionsOutput,
 } from '@/ai/flows/ai-design-suggestions';
 import {
+  generateSiteSection,
+  type GenerateSiteSectionInput,
+  type GenerateSiteSectionOutput,
+} from '@/ai/flows/generate-site-section';
+import {
   processCss,
   type ProcessCssInput,
   type ProcessCssOutput,
@@ -19,6 +24,13 @@ export async function getAiDesignSuggestionsAction(
   // Here you could add authentication or validation logic
   const suggestions = await getAiDesignSuggestions(input);
   return suggestions;
+}
+
+export async function generateSiteSectionAction(
+    input: GenerateSiteSectionInput
+): Promise<GenerateSiteSectionOutput> {
+    const result = await generateSiteSection(input);
+    return result;
 }
 
 export async function processCssAction(
