@@ -6,12 +6,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { CanvasElementData } from '@/app/page';
 
-interface CodeViewerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  elements: CanvasElementData[];
-}
-
 const globalCss = `
 @tailwind base;
 @tailwind components;
