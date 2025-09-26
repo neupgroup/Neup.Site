@@ -1,9 +1,10 @@
-import { type FC, useState } from 'react';
+import { type FC, useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { CanvasElementData } from '@/app/page';
 import { EditableText } from './editable-text';
+import ResizeHandle from './resize-handle';
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -18,6 +19,16 @@ const DropIndicator: FC = () => (
     <div className="relative h-1 w-full my-2 bg-primary rounded-full" />
 )
 
+interface ResizingState {
+    elementId: string;
+    handle: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top' | 'right' | 'bottom' | 'left';
+    initialX: number;
+    initialY: number;
+    initialWidth: number;
+    initialHeight: number;
+}
+
+
 const CanvasElementWrapper: FC<{
   id: string;
   selectedElement: string | null;
@@ -27,10 +38,12 @@ const CanvasElementWrapper: FC<{
   style?: React.CSSProperties;
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDragEnter: (id: string) => void;
-}> = ({ id, selectedElement, onSelectElement, children, className, style, onDragStart, onDragEnter }) => {
+  onResizeStart: (e: React.MouseEvent, handle: ResizingState['handle']) => void;
+}> = ({ id, selectedElement, onSelectElement, children, className, style, onDragStart, onDragEnter, onResizeStart }) => {
   const isSelected = selectedElement === id;
   return (
     <div
+      id={id}
       style={style}
       draggable
       onDragStart={(e) => onDragStart(e, id)}
@@ -46,6 +59,18 @@ const CanvasElementWrapper: FC<{
       }}
     >
       {children}
+      {isSelected && (
+          <>
+            <ResizeHandle position="top-left" onMouseDown={(e) => onResizeStart(e, 'top-left')} />
+            <ResizeHandle position="top" onMouseDown={(e) => onResizeStart(e, 'top')} />
+            <ResizeHandle position="top-right" onMouseDown={(e) => onResizeStart(e, 'top-right')} />
+            <ResizeHandle position="left" onMouseDown={(e) => onResizeStart(e, 'left')} />
+            <ResizeHandle position="right" onMouseDown={(e) => onResizeStart(e, 'right')} />
+            <ResizeHandle position="bottom-left" onMouseDown={(e) => onResizeStart(e, 'bottom-left')} />
+            <ResizeHandle position="bottom" onMouseDown={(e) => onResizeStart(e, 'bottom')} />
+            <ResizeHandle position="bottom-right" onMouseDown={(e) => onResizeStart(e, 'bottom-right')} />
+          </>
+      )}
     </div>
   );
 };
@@ -54,6 +79,8 @@ const CanvasElementWrapper: FC<{
 const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, updateElement, moveElement, addElement }) => {
     const [draggedId, setDraggedId] = useState<string | null>(null);
     const [dropZoneId, setDropZoneId] = useState<string | null>(null);
+    const [resizingState, setResizingState] = useState<ResizingState | null>(null);
+    const canvasRef = useRef<HTMLDivElement>(null);
 
     const handleSaveText = (id: string, newContent: string) => {
         updateElement(id, undefined, undefined, newContent);
@@ -86,6 +113,76 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         setDraggedId(null);
         setDropZoneId(null);
     }
+
+    const handleResizeStart = useCallback((e: React.MouseEvent, handle: ResizingState['handle']) => {
+        if (!selectedElement) return;
+        e.stopPropagation();
+        e.preventDefault();
+
+        const element = document.getElementById(selectedElement);
+        if (!element) return;
+
+        const rect = element.getBoundingClientRect();
+        
+        setResizingState({
+            elementId: selectedElement,
+            handle,
+            initialX: e.clientX,
+            initialY: e.clientY,
+            initialWidth: rect.width,
+            initialHeight: rect.height,
+        });
+
+    }, [selectedElement]);
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (!resizingState) return;
+
+        const dx = e.clientX - resizingState.initialX;
+        const dy = e.clientY - resizingState.initialY;
+
+        const elToUpdate = elements.find(el => el.id === resizingState.elementId);
+        if (!elToUpdate) return;
+        
+        let newWidth = resizingState.initialWidth;
+        let newHeight = resizingState.initialHeight;
+
+        if (resizingState.handle.includes('right')) {
+            newWidth = resizingState.initialWidth + dx;
+        } else if (resizingState.handle.includes('left')) {
+            newWidth = resizingState.initialWidth - dx;
+        }
+
+        if (resizingState.handle.includes('bottom')) {
+            newHeight = resizingState.initialHeight + dy;
+        } else if (resizingState.handle.includes('top')) {
+            newHeight = resizingState.initialHeight - dy;
+        }
+
+        const newStyles = {
+            ...elToUpdate.styles,
+            width: `${Math.max(20, newWidth)}px`,
+            height: `${Math.max(20, newHeight)}px`,
+        };
+
+        updateElement(resizingState.elementId, newStyles);
+
+    }, [resizingState, elements, updateElement]);
+
+    const handleMouseUp = useCallback(() => {
+        setResizingState(null);
+    }, []);
+
+    useEffect(() => {
+        if (resizingState) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [resizingState, handleMouseMove, handleMouseUp]);
     
     const renderElement = (element: CanvasElementData) => {
         const { id, type, content, styles, props } = element;
@@ -96,7 +193,8 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             style: styles,
             key: id,
             onDragStart: handleDragStart,
-            onDragEnter: setDropZoneId
+            onDragEnter: setDropZoneId,
+            onResizeStart: handleResizeStart,
         };
 
         const elementComponent = (() => {
@@ -134,13 +232,13 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 case 'button':
                     return (
                         <CanvasElementWrapper {...wrapperProps}>
-                            <Button>{content}</Button>
+                            <Button className="w-full h-full">{content}</Button>
                         </CanvasElementWrapper>
                     );
                 case 'image':
                      return (
                         <CanvasElementWrapper {...wrapperProps}>
-                            {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} {...props} />}
+                            {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
                         </CanvasElementWrapper>
                      );
                 default:
@@ -159,6 +257,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
   
   return (
     <div 
+        ref={canvasRef}
         className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8" 
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}

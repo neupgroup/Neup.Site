@@ -104,6 +104,8 @@ const WebsiteBuilderPage: FC = () => {
             paddingLeft: '10px',
             paddingRight: '10px',
             display: 'block',
+            width: '200px',
+            height: 'auto'
         }
     }
 
@@ -111,17 +113,18 @@ const WebsiteBuilderPage: FC = () => {
         newElement.content = 'New Text';
         newElement.styles.fontSize = '16px';
         newElement.styles.textAlign = 'left';
+        newElement.styles.height = '40px';
     } else if (elementType === 'button') {
         newElement.content = 'New Button';
+        newElement.styles.height = '40px';
     } else if (elementType === 'image') {
         const placeholder = PlaceHolderImages.find(p => p.id === 'feature-2');
         newElement.props = {
             src: placeholder?.imageUrl,
             alt: placeholder?.description,
             'data-ai-hint': placeholder?.imageHint,
-            width: 200,
-            height: 100
         };
+        newElement.styles.height = '100px';
     }
     
     setElements(prev => {
