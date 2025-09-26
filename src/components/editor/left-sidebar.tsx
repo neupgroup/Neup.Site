@@ -4,10 +4,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Rows, Columns, File } from 'lucide-react';
 
-const ContentBlock: FC<{ icon: React.ReactNode; label: string }> = ({ icon, label }) => (
+const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string }> = ({ icon, label, type }) => (
   <div
     className="flex cursor-grab flex-col items-center gap-2 rounded-lg border bg-card p-4 transition-colors hover:bg-secondary hover:border-primary active:cursor-grabbing"
     draggable
+    onDragStart={(e) => e.dataTransfer.setData('text/plain', type)}
   >
     {icon}
     <span className="text-xs font-medium">{label}</span>
@@ -26,12 +27,9 @@ const LeftSidebar: FC = () => {
         <ScrollArea className="flex-1">
           <TabsContent value="add" className="p-4">
             <div className="grid grid-cols-2 gap-4">
-              <ContentBlock icon={<LayoutTemplate className="h-6 w-6" />} label="Section" />
-              <ContentBlock icon={<Rows className="h-6 w-6" />} label="Container" />
-              <ContentBlock icon={<Columns className="h-6 w-6" />} label="Columns" />
-              <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" />
-              <ContentBlock icon={<ImageIcon className="h-6 w-6" />} label="Image" />
-              <ContentBlock icon={<MousePointerClick className="h-6 w-6" />} label="Button" />
+              <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
+              <ContentBlock icon={<ImageIcon className="h-6 w-6" />} label="Image" type="image" />
+              <ContentBlock icon={<MousePointerClick className="h-6 w-6" />} label="Button" type="button" />
             </div>
           </TabsContent>
           <TabsContent value="templates" className="p-4">
