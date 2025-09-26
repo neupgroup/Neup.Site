@@ -4,17 +4,15 @@
  * @fileOverview Provides an AI-powered service to generate website section designs.
  *
  * - generateSiteSection - A function that generates a site section based on a user prompt.
- * - GenerateSiteSectionInput - The input type for the generateSiteSection function.
- * - GenerateSiteSectionOutput - The return type for the generateSiteSection function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateSiteSectionInputSchema = z.object({
+const GenerateSiteSectionInputSchema = z.object({
   prompt: z.string().describe('A user prompt describing the desired website section.'),
 });
-export type GenerateSiteSectionInput = z.infer<typeof GenerateSiteSectionInputSchema>;
+type GenerateSiteSectionInput = z.infer<typeof GenerateSiteSectionInputSchema>;
 
 
 const CanvasElementDataSchema: z.ZodType<any> = z.lazy(() => z.object({
@@ -27,10 +25,10 @@ const CanvasElementDataSchema: z.ZodType<any> = z.lazy(() => z.object({
     customCss: z.string().optional().describe("A string of raw CSS to be applied directly to the element. Use this for advanced styles like pseudo-classes (:hover) or complex selectors."),
 }));
 
-export const GenerateSiteSectionOutputSchema = z.object({
+const GenerateSiteSectionOutputSchema = z.object({
   section: CanvasElementDataSchema.describe('The generated website section as a single root CanvasElementData object, which should be of type "section".'),
 });
-export type GenerateSiteSectionOutput = z.infer<typeof GenerateSiteSectionOutputSchema>;
+type GenerateSiteSectionOutput = z.infer<typeof GenerateSiteSectionOutputSchema>;
 
 export async function generateSiteSection(input: GenerateSiteSectionInput): Promise<GenerateSiteSectionOutput> {
   return generateSiteSectionFlow(input);

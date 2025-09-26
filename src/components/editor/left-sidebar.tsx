@@ -6,7 +6,7 @@ import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box,
 import { CanvasElementData } from '@/app/site/editor/page';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { generateSiteSectionAction } from '@/app/actions';
+import { generateSiteSectionAction, type GenerateSiteSectionInput } from '@/app/actions';
 import { Textarea } from '../ui/textarea';
 import { logErrorToFirestore } from '@/app/actions';
 
@@ -255,12 +255,12 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
               <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Typography</p>
                    <div className="grid grid-cols-2 gap-4">
-                        <ContentBlock icon={<Heading1 className="h-6 w-6" />} label="Heading 1" type="heading" props={{ level: 1 }} />
-                        <ContentBlock icon={<Heading2 className="h-6 w-6" />} label="Heading 2" type="heading" props={{ level: 2 }} />
-                        <ContentBlock icon={<Heading3 className="h-6 w-6" />} label="Heading 3" type="heading" props={{ level: 3 }} />
-                        <ContentBlock icon={<Heading4 className="h-6 w-6" />} label="Heading 4" type="heading" props={{ level: 4 }} />
-                        <ContentBlock icon={<Heading5 className="h-6 w-6" />} label="Heading 5" type="heading" props={{ level: 5 }} />
-                        <ContentBlock icon={<Heading6 className="h-6 w-6" />} label="Heading 6" type="heading" props={{ level: 6 }} />
+                        <ContentBlock icon={<Heading1 className="h-6 w-6" />} label="Heading 1" type="heading" props={ { level: 1 } } />
+                        <ContentBlock icon={<Heading2 className="h-6 w-6" />} label="Heading 2" type="heading" props={ { level: 2 } } />
+                        <ContentBlock icon={<Heading3 className="h-6 w-6" />} label="Heading 3" type="heading" props={ { level: 3 } } />
+                        <ContentBlock icon={<Heading4 className="h-6 w-6" />} label="Heading 4" type="heading" props={ { level: 4 } } />
+                        <ContentBlock icon={<Heading5 className="h-6 w-6" />} label="Heading 5" type="heading" props={ { level: 5 } } />
+                        <ContentBlock icon={<Heading6 className="h-6 w-6" />} label="Heading 6" type="heading" props={ { level: 6 } } />
                         <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
                    </div>
               </div>
