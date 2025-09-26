@@ -100,13 +100,11 @@ const WebsiteBuilderPage: FC = () => {
   const elements = history[historyIndex];
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[]) => {
-      setHistory(prevHistory => {
-          const newElements = updater(prevHistory[historyIndex]);
-          const newHistory = prevHistory.slice(0, historyIndex + 1);
-          newHistory.push(newElements);
-          setHistoryIndex(newHistory.length - 1);
-          return newHistory;
-      });
+      const newElements = updater(history[historyIndex]);
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(newElements);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
   };
 
   const undo = useCallback(() => {
@@ -142,6 +140,8 @@ const WebsiteBuilderPage: FC = () => {
   const moveElement = (draggedId: string, dropZoneId: string, parentId?: string) => {
     setElements(prevElements => {
       let draggedElement: CanvasElementData | undefined;
+      // Deep clone to avoid mutation
+      const clonedElements = JSON.parse(JSON.stringify(prevElements)) as CanvasElementData[];
 
       const removeElement = (els: CanvasElementData[], id: string): CanvasElementData[] => {
         return els.reduce((acc, el) => {
@@ -157,7 +157,7 @@ const WebsiteBuilderPage: FC = () => {
         }, [] as CanvasElementData[]);
       };
 
-      const newElements = removeElement([...prevElements], draggedId);
+      const newElements = removeElement(clonedElements, draggedId);
 
       if (!draggedElement) return prevElements;
 
@@ -257,6 +257,9 @@ const WebsiteBuilderPage: FC = () => {
     }
     
     setElements(prev => {
+        // Deep clone to avoid mutation
+        const clonedPrev = JSON.parse(JSON.stringify(prev));
+
         const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
             return els.map(el => {
                 if (el.id === parentId && el.children) {
@@ -276,23 +279,25 @@ const WebsiteBuilderPage: FC = () => {
         };
 
         if (parentId) {
-            return addRecursively(prev);
+            return addRecursively(clonedPrev);
         }
 
         if (dropZoneId) {
-            const dropIndex = prev.findIndex(el => el.id === dropZoneId);
+            const dropIndex = clonedPrev.findIndex(el => el.id === dropZoneId);
             if (dropIndex !== -1) {
-                const newElements = [...prev];
+                const newElements = [...clonedPrev];
                 newElements.splice(dropIndex, 0, newElement);
                 return newElements;
             }
         }
-        return [...prev, newElement];
+        return [...clonedPrev, newElement];
     });
   };
 
   const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
     setElements(prev => {
+      // Deep clone to avoid mutation
+      const clonedPrev = JSON.parse(JSON.stringify(prev));
       const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
         return els.map(el => {
           if (el.id === id) {
@@ -312,12 +317,14 @@ const WebsiteBuilderPage: FC = () => {
           return el;
         });
       };
-      return updateRecursively(prev);
+      return updateRecursively(clonedPrev);
     });
   };
   
   const deleteElement = useCallback((id: string) => {
     setElements(prev => {
+      // Deep clone to avoid mutation
+      const clonedPrev = JSON.parse(JSON.stringify(prev));
       const deleteRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
           return els.filter(el => {
               if (el.id === id) {
@@ -329,7 +336,7 @@ const WebsiteBuilderPage: FC = () => {
               return true;
           });
       };
-      return deleteRecursively(prev);
+      return deleteRecursively(clonedPrev);
     });
     setSelectedElement(null);
   }, []);
@@ -356,15 +363,17 @@ const WebsiteBuilderPage: FC = () => {
   const pasteElement = useCallback(() => {
     if (!clipboard) return;
     setElements(prev => {
+        // Deep clone to avoid mutation
+        const clonedPrev = JSON.parse(JSON.stringify(prev));
         const newClipboard = { ...clipboard, id: `${clipboard.type}-${Date.now()}` };
 
         if (!selectedElement) {
             // Paste at the root level
-            return [...prev, newClipboard];
+            return [...clonedPrev, newClipboard];
         }
 
-        const result = findElementRecursive(prev, selectedElement);
-        if (!result) return [...prev, newClipboard];
+        const result = findElementRecursive(clonedPrev, selectedElement);
+        if (!result) return [...clonedPrev, newClipboard];
 
         const { element: selectedEl, parent } = result;
 
@@ -381,26 +390,25 @@ const WebsiteBuilderPage: FC = () => {
                     return el;
                 });
             };
-            return addInside(prev);
+            return addInside(clonedPrev);
         } else {
-            // Paste after selected element
-            const addSibling = (els: CanvasElementData[]): CanvasElementData[] => {
-                 for (let i = 0; i < els.length; i++) {
-                    if (els[i].id === (parent?.id || '')) {
-                        const targetIdx = els[i].children!.findIndex(c => c.id === selectedEl.id);
-                        els[i].children!.splice(targetIdx + 1, 0, newClipboard);
-                        return els;
-                    }
-                    if (els[i].children) {
-                        const newChildren = addSibling(els[i].children!);
-                        if (newChildren !== els[i].children) {
-                          return els;
+             // Paste after selected element
+            const addSibling = (els: CanvasElementData[], targetId: string, parentId?: string): CanvasElementData[] => {
+                if (parentId) {
+                    for (let i = 0; i < els.length; i++) {
+                        if (els[i].id === parentId && els[i].children) {
+                            const targetIdx = els[i].children!.findIndex(c => c.id === targetId);
+                            if (targetIdx !== -1) {
+                                els[i].children!.splice(targetIdx + 1, 0, newClipboard);
+                            }
+                            return els;
+                        }
+                        if (els[i].children) {
+                           addSibling(els[i].children, targetId, parentId);
                         }
                     }
-                }
-                // Handle root elements
-                if(!parent) {
-                    const rootIndex = els.findIndex(c => c.id === selectedEl.id);
+                } else { // root level
+                    const rootIndex = els.findIndex(c => c.id === targetId);
                     if (rootIndex !== -1) {
                        els.splice(rootIndex + 1, 0, newClipboard);
                     }
@@ -408,8 +416,7 @@ const WebsiteBuilderPage: FC = () => {
                 return els;
             };
 
-            const newEls = [...prev];
-            return addSibling(newEls);
+            return addSibling(clonedPrev, selectedEl.id, parent?.id);
         }
     });
 
@@ -503,5 +510,7 @@ const WebsiteBuilderPage: FC = () => {
 };
 
 export default WebsiteBuilderPage;
+
+    
 
     
