@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
@@ -34,6 +34,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [styles, setStyles] = useState<React.CSSProperties>({});
   const [props, setProps] = useState<Record<string, any>>({});
   const [content, setContent] = useState<string | undefined>(undefined);
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
 
   useEffect(() => {
@@ -138,13 +139,13 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                      <div className="space-y-2">
                         <Label>Alignment</Label>
                         <div className="grid grid-cols-3 gap-2">
-                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', '0'); handleStyleChange('marginRight', 'auto')}} title="Align Left">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', '0'); handleStyleChange('marginRight', 'auto'); handleStyleChange('float', 'left')}} title="Align Left">
                                 <ArrowLeftRight className="h-4 w-4 rotate-90" />
                             </Button>
-                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', 'auto')}} title="Align Center">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', 'auto'); handleStyleChange('float', 'none')}} title="Align Center">
                                 <AlignCenter className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', '0')}} title="Align Right">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', '0'); handleStyleChange('float', 'right')}} title="Align Right">
                                 <ArrowLeftRight className="h-4 w-4 -rotate-90" />
                             </Button>
                         </div>
@@ -255,8 +256,15 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     <AccordionContent className="px-4 space-y-2">
                         <div className="flex items-center gap-2">
                            <Input value={styles.color || ''} onChange={e => handleStyleChange('color', e.target.value)} className="flex-1" placeholder="e.g. #FFFFFF or hsl(var(--...))"/>
-                           <Button variant="outline" size="icon">
+                           <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
                               <Blend className="h-4 w-4" />
+                              <input
+                                ref={colorInputRef}
+                                type="color"
+                                value={typeof styles.color === 'string' ? styles.color : '#000000'}
+                                onChange={(e) => handleStyleChange('color', e.target.value)}
+                                className="absolute h-0 w-0 opacity-0"
+                                />
                            </Button>
                         </div>
                     </AccordionContent>
