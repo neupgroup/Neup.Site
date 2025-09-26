@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal } from 'lucide-react';
+import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2 } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
 import { CanvasElementData } from '@/app/page';
 import {
@@ -26,9 +26,10 @@ interface RightSidebarProps {
   selectedElementId: string | null;
   elements: CanvasElementData[];
   updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => void;
+  deleteElement: (id: string) => void;
 }
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement }) => {
   
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
@@ -118,7 +119,12 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
-                    <p className="text-xs text-muted-foreground break-words">{selectedElement.id}</p>
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground break-words">{selectedElement.id}</p>
+                        <Button variant="destructive" size="icon" className="h-7 w-7" onClick={() => deleteElement(selectedElement.id)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
 

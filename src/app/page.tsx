@@ -261,6 +261,22 @@ const WebsiteBuilderPage: FC = () => {
     };
     setElements(prev => updateRecursively(prev));
   };
+  
+  const deleteElement = (id: string) => {
+    const deleteRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+        return els.filter(el => {
+            if (el.id === id) {
+                return false;
+            }
+            if (el.children) {
+                el.children = deleteRecursively(el.children);
+            }
+            return true;
+        });
+    };
+    setElements(prev => deleteRecursively(prev));
+    setSelectedElement(null);
+  };
 
 
   return (
@@ -286,6 +302,7 @@ const WebsiteBuilderPage: FC = () => {
             selectedElementId={selectedElement} 
             elements={elements}
             updateElement={updateElement}
+            deleteElement={deleteElement}
         />
       </div>
     </div>
