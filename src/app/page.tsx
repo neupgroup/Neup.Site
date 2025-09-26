@@ -86,7 +86,6 @@ const initialElements: CanvasElementData[] = [
                     'data-ai-hint': PlaceHolderImages.find(p => p.id === 'feature-1')?.imageHint
                 },
                 styles: {
-                    width: '100%',
                     display: 'block',
                 }
             }
