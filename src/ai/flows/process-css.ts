@@ -10,7 +10,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
-import tailwindConfig from '../../../tailwind.config';
+import tailwindConfig from '../../../tailwind.config.ts';
 
 const ProcessCssInputSchema = z.object({
   css: z.string().describe('The CSS content including Tailwind directives like @tailwind base;'),
