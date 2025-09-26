@@ -46,6 +46,12 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   const handleStyleChange = (property: keyof React.CSSProperties, value: string) => {
       const newStyles = {...styles, [property]: value};
+      if (property.toLowerCase().includes('padding')) {
+        delete newStyles.padding;
+      }
+      if (property.toLowerCase().includes('margin')) {
+        delete newStyles.margin;
+      }
       setStyles(newStyles);
       if (selectedElementId) {
           updateElement(selectedElementId, newStyles);
@@ -132,13 +138,13 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                      <div className="space-y-2">
                         <Label>Alignment</Label>
                         <div className="grid grid-cols-3 gap-2">
-                            <Button variant="outline" size="icon" onClick={() => handleStyleChange('margin', '0 auto 0 0')} title="Align Left">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', '0'); handleStyleChange('marginRight', 'auto')}} title="Align Left">
                                 <ArrowLeftRight className="h-4 w-4 rotate-90" />
                             </Button>
-                            <Button variant="outline" size="icon" onClick={() => handleStyleChange('margin', '0 auto')} title="Align Center">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', 'auto')}} title="Align Center">
                                 <AlignCenter className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="icon" onClick={() => handleStyleChange('margin', '0 0 0 auto')} title="Align Right">
+                            <Button variant="outline" size="icon" onClick={() => {handleStyleChange('marginLeft', 'auto'); handleStyleChange('marginRight', '0')}} title="Align Right">
                                 <ArrowLeftRight className="h-4 w-4 -rotate-90" />
                             </Button>
                         </div>
@@ -314,5 +320,3 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 };
 
 export default RightSidebar;
-
-    

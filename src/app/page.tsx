@@ -21,7 +21,10 @@ const initialElements: CanvasElementData[] = [
         type: 'hero',
         content: "Build Your Website Visually",
         styles: {
-            padding: '48px 20px 20px',
+            paddingTop: '48px',
+            paddingRight: '20px',
+            paddingLeft: '20px',
+            paddingBottom: '20px',
             textAlign: 'center',
             fontSize: '48px',
             fontWeight: 'bold',
@@ -33,7 +36,8 @@ const initialElements: CanvasElementData[] = [
         type: 'hero-subtitle',
         content: "Create stunning, professional websites with our intuitive drag-and-drop editor. No code required.",
         styles: {
-            padding: '0 48px',
+            paddingRight: '48px',
+            paddingLeft: '48px',
             marginTop: '-32px',
             textAlign: 'center',
             fontSize: '18px',
@@ -95,7 +99,10 @@ const WebsiteBuilderPage: FC = () => {
         id: `${elementType}-${Date.now()}`,
         type: elementType,
         styles: {
-            padding: '10px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            paddingLeft: '10px',
+            paddingRight: '10px',
             display: 'block',
         }
     }
