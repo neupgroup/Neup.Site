@@ -11,7 +11,7 @@ interface CanvasProps {
   elements: CanvasElementData[];
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string) => void;
   moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
   addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
 }
@@ -44,11 +44,14 @@ const CanvasElementWrapper: FC<{
   onDragLeave: (e: React.DragEvent) => void;
   onResizeStart: (e: React.MouseEvent, handle: ResizingState['handle']) => void;
   isContainer?: boolean;
-}> = ({ id, selectedElement, onSelectElement, children, className, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer }) => {
+  customCss?: string;
+}> = ({ id, selectedElement, onSelectElement, children, className, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer, customCss }) => {
   const isSelected = selectedElement === id;
+  const customCssId = `custom-css-${id}`;
   return (
     <div
       id={id}
+      data-custom-css-id={customCssId}
       style={style}
       draggable
       onDragStart={(e) => onDragStart(e, id)}
@@ -65,6 +68,11 @@ const CanvasElementWrapper: FC<{
         onSelectElement(id);
       }}
     >
+      {customCss && (
+        <style>
+          {`[data-custom-css-id="${customCssId}"] { ${customCss} }`}
+        </style>
+      )}
       {children}
       {isSelected && (
           <>
@@ -244,7 +252,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
     const renderElement = (element: CanvasElementData, parentId: string | null = null) => {
-        const { id, type, content, styles, props, children } = element;
+        const { id, type, content, styles, props, children, customCss } = element;
         const isContainer = ['section', 'div', 'container'].includes(type);
 
         const wrapperProps = {
@@ -257,7 +265,8 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             onDragEnter: (e: React.DragEvent) => handleDragEnter(e, id, parentId),
             onDragLeave: handleDragLeave,
             onResizeStart: handleResizeStart,
-            isContainer
+            isContainer,
+            customCss
         };
         
         const showDropIndicator = dropZone.elementId === id && dropZone.parentId === parentId && id !== draggedId;
@@ -388,5 +397,3 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 };
 
 export default Canvas;
-
-    

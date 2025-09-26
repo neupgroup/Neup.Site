@@ -20,12 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from '../ui/textarea';
 
 
 interface RightSidebarProps {
   selectedElementId: string | null;
   elements: CanvasElementData[];
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string) => void;
   deleteElement: (id: string) => void;
 }
 
@@ -50,6 +51,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [styles, setStyles] = useState<React.CSSProperties>({});
   const [props, setProps] = useState<Record<string, any>>({});
   const [content, setContent] = useState<string | undefined>(undefined);
+  const [customCss, setCustomCss] = useState<string | undefined>(undefined);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const bgColorInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +61,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         setStyles(selectedElement.styles);
         setProps(selectedElement.props || {});
         setContent(selectedElement.content)
+        setCustomCss(selectedElement.customCss)
     }
   }, [selectedElement]);
 
@@ -91,6 +94,13 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     }
   }
 
+  const handleCustomCssChange = (value: string) => {
+    setCustomCss(value);
+    if (selectedElementId) {
+        updateElement(selectedElementId, undefined, undefined, undefined, value);
+    }
+  }
+
   const showFor = (types: (CanvasElementData['type'] | 'component')[]) => {
       if (!selectedElement) return false;
       if (types.includes('component')) {
@@ -116,7 +126,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="customize" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'content', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'content', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes', 'custom-css']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -423,6 +433,19 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </AccordionContent>
                   </AccordionItem>
                 )}
+                
+                <AccordionItem value="custom-css">
+                  <AccordionTrigger className="px-4 text-sm font-medium">Custom CSS</AccordionTrigger>
+                  <AccordionContent className="px-4 space-y-2">
+                      <Label>Add your own CSS</Label>
+                      <Textarea 
+                        value={customCss || ''} 
+                        onChange={e => handleCustomCssChange(e.target.value)}
+                        placeholder={`/* Example */\n:hover {\n  opacity: 0.8;\n}`}
+                        rows={5}
+                      />
+                  </AccordionContent>
+                </AccordionItem>
 
               </Accordion>
             ) : (

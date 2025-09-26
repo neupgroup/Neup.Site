@@ -14,6 +14,7 @@ export interface CanvasElementData {
   styles: React.CSSProperties;
   props?: Record<string, any>;
   children?: CanvasElementData[];
+  customCss?: string;
 }
 
 const initialElements: CanvasElementData[] = [
@@ -294,7 +295,7 @@ const WebsiteBuilderPage: FC = () => {
     });
   };
 
-  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
+  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string) => {
     setElements(prev => {
       // Deep clone to avoid mutation
       const clonedPrev = JSON.parse(JSON.stringify(prev));
@@ -308,6 +309,9 @@ const WebsiteBuilderPage: FC = () => {
             };
             if (newContent !== undefined) {
               updatedElement.content = newContent;
+            }
+            if (newCustomCss !== undefined) {
+                updatedElement.customCss = newCustomCss;
             }
             return updatedElement;
           }
@@ -339,7 +343,7 @@ const WebsiteBuilderPage: FC = () => {
       return deleteRecursively(clonedPrev);
     });
     setSelectedElement(null);
-  }, []);
+  }, [setElements]);
 
   const copyElement = useCallback(() => {
     if (!selectedElement) return;
@@ -420,7 +424,7 @@ const WebsiteBuilderPage: FC = () => {
         }
     });
 
-  }, [clipboard, selectedElement]);
+  }, [clipboard, selectedElement, setElements]);
 
   const cutElement = useCallback(() => {
     if (!selectedElement) return;
@@ -510,7 +514,3 @@ const WebsiteBuilderPage: FC = () => {
 };
 
 export default WebsiteBuilderPage;
-
-    
-
-    
