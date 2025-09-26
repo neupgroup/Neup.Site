@@ -27,6 +27,8 @@ interface ResizingState {
     initialY: number;
     initialWidth: number;
     initialHeight: number;
+    initialTop: number;
+    initialLeft: number;
 }
 
 
@@ -167,6 +169,8 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             initialY: e.clientY,
             initialWidth: rect.width,
             initialHeight: rect.height,
+            initialTop: rect.top,
+            initialLeft: rect.left,
         });
 
     }, [selectedElement]);
@@ -190,26 +194,31 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         const elToUpdate = findElement(elements, resizingState.elementId);
         if (!elToUpdate) return;
         
+        const newStyles = { ...elToUpdate.styles };
+        
         let newWidth = resizingState.initialWidth;
         let newHeight = resizingState.initialHeight;
 
         if (resizingState.handle.includes('right')) {
             newWidth = resizingState.initialWidth + dx;
-        } else if (resizingState.handle.includes('left')) {
+        }
+        if (resizingState.handle.includes('left')) {
             newWidth = resizingState.initialWidth - dx;
         }
-
         if (resizingState.handle.includes('bottom')) {
             newHeight = resizingState.initialHeight + dy;
-        } else if (resizingState.handle.includes('top')) {
+        }
+        if (resizingState.handle.includes('top')) {
             newHeight = resizingState.initialHeight - dy;
         }
 
-        const newStyles = {
-            ...elToUpdate.styles,
-            width: `${Math.max(20, newWidth)}px`,
-            height: `${Math.max(20, newHeight)}px`,
-        };
+        if (newWidth) {
+          newStyles.width = `${Math.max(20, newWidth)}px`;
+        }
+        if (newHeight) {
+          newStyles.height = `${Math.max(20, newHeight)}px`;
+        }
+
 
         updateElement(resizingState.elementId, newStyles);
 
@@ -373,3 +382,5 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 };
 
 export default Canvas;
+
+    
