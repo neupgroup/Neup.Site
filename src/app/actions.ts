@@ -42,7 +42,8 @@ export async function processCssAction(
 
 export async function logErrorToFirestore(error: { message: string, stack?: string, componentStack?: string }) {
     try {
-        await addDoc(collection(db, "errors"), {
+        const errorsCollectionRef = collection(db, "errors");
+        await addDoc(errorsCollectionRef, {
             message: error.message,
             stack: error.stack,
             componentStack: error.componentStack,
@@ -58,7 +59,8 @@ export async function logErrorToFirestore(error: { message: string, stack?: stri
 
 export async function saveSite(elements: any) {
     try {
-        const siteRef = doc(db, 'sites', 'published-site');
+        const sitesCollectionRef = collection(db, 'sites');
+        const siteRef = doc(sitesCollectionRef, 'published-site');
         await setDoc(siteRef, {
             elements,
             publishedAt: serverTimestamp()
