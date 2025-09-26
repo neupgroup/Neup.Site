@@ -9,9 +9,10 @@ interface EditorHeaderProps {
   canUndo: boolean;
   canRedo: boolean;
   onViewCode: () => void;
+  onPublish: () => void;
 }
 
-const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo, onViewCode }) => {
+const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo, onViewCode, onPublish }) => {
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card px-4 md:px-6">
       <div className="flex items-center gap-4">
@@ -39,7 +40,7 @@ const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo,
           <Eye className="mr-2 h-4 w-4" />
           Preview
         </Button>
-        <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground">
+        <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground" onClick={onPublish}>
           Publish
         </Button>
       </div>

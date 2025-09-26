@@ -7,7 +7,8 @@ import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
 import CodeViewer from '@/components/editor/code-viewer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { logErrorToFirestore } from '@/app/actions';
+import { logErrorToFirestore, saveSite } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
 
 export interface CanvasElementData {
   id: string;
@@ -102,6 +103,7 @@ const WebsiteBuilderPage: FC = () => {
   const [historyIndex, setHistoryIndex] = useState(0);
   const elements = history[historyIndex];
   const [isCodeViewerOpen, setIsCodeViewerOpen] = useState(false);
+  const { toast } = useToast();
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -530,6 +532,28 @@ const WebsiteBuilderPage: FC = () => {
     };
   }, [selectedElement, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
 
+  const handlePublish = async () => {
+    try {
+        const result = await saveSite(elements);
+        if (result.success) {
+            toast({
+                title: 'Site Published!',
+                description: 'Your website has been saved successfully.',
+            });
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error: any) {
+        console.error("Error publishing site:", error);
+        toast({
+            variant: 'destructive',
+            title: 'Publishing Failed',
+            description: error.message || 'An unknown error occurred while publishing.',
+        });
+        logErrorToFirestore({ message: error.message, stack: error.stack });
+    }
+  };
+
 
   return (
     <div className="flex h-screen w-full flex-col bg-background text-foreground">
@@ -539,6 +563,7 @@ const WebsiteBuilderPage: FC = () => {
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
         onViewCode={() => setIsCodeViewerOpen(true)}
+        onPublish={handlePublish}
       />
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 
