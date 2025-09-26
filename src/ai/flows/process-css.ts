@@ -3,14 +3,14 @@
 /**
  * @fileOverview Provides a service to process CSS with Tailwind directives.
  *
- * - processCss - A function that takes CSS content with Tailwind directives and returns processed, standard CSS.
+ * - processCss - a function that takes CSS content with Tailwind directives and returns processed, standard CSS.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
-import tailwindConfig from '../../../tailwind.config.ts';
+import path from 'path';
 
 const ProcessCssInputSchema = z.object({
   css: z.string().describe('The CSS content including Tailwind directives like @tailwind base;'),
@@ -35,7 +35,9 @@ const processCssFlow = ai.defineFlow(
     outputSchema: ProcessCssOutputSchema,
   },
   async (input) => {
-    const result = await postcss([tailwindcss(tailwindConfig as any)]).process(input.css, { from: undefined });
+    // Resolve the path to the Tailwind config file relative to the current file
+    const tailwindConfigPath = path.resolve(process.cwd(), 'tailwind.config.ts');
+    const result = await postcss([tailwindcss(tailwindConfigPath)]).process(input.css, { from: undefined });
     return { processedCss: result.css };
   }
 );
