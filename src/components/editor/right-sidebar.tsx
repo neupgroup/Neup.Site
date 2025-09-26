@@ -279,6 +279,14 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                           </SelectContent>
                       </Select>
                     </div>
+                    <div className="space-y-2">
+                      <Label>Line Height</Label>
+                      <Input value={styles.lineHeight as string || ''} onChange={e => handleStyleChange('lineHeight', e.target.value)} placeholder="normal" />
+                    </div>
+                     <div className="space-y-2">
+                      <Label>Letter Spacing</Label>
+                      <Input value={styles.letterSpacing as string || ''} onChange={e => handleStyleChange('letterSpacing', e.target.value)} placeholder="normal" />
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
                 )}
