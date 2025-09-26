@@ -1,10 +1,12 @@
 
 'use client';
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { CanvasElementData } from '@/app/page';
+import { processCssAction } from '@/app/actions';
+import { Skeleton } from '../ui/skeleton';
 
 const globalCss = `
 @tailwind base;
@@ -104,9 +106,9 @@ const generateHtmlBody = (elements: CanvasElementData[]): string => {
       .join(' ');
   };
 
-  const getTag = (element: CanvasElementData): string => {
-    switch (element.type) {
-      case 'heading': return `h${(element.props?.level || 1)}`;
+  const getTag = (el: CanvasElementData): string => {
+    switch (el.type) {
+      case 'heading': return `h${(el.props?.level || 1)}`;
       case 'text':
       case 'hero-subtitle':
          return 'p';
@@ -178,11 +180,28 @@ const generateCss = (elements: CanvasElementData[]): string => {
   return css;
 };
 
-const generateFullHtml = (elements: CanvasElementData[]) => {
+
+interface CodeViewerProps {
+    isOpen: boolean;
+    onClose: () => void;
+    elements: CanvasElementData[];
+}
+
+const CodeViewer: FC<CodeViewerProps> = ({ isOpen, onClose, elements }) => {
+  const { toast } = useToast();
+  const [fullHtmlCode, setFullHtmlCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const generateFullHtml = async (elements: CanvasElementData[]) => {
+    setIsLoading(true);
     const bodyContent = generateHtmlBody(elements);
     const dynamicCss = generateCss(elements);
+    const combinedCss = `${globalCss}\n\n${dynamicCss}`;
+    
+    try {
+        const { processedCss } = await processCssAction({ css: combinedCss });
 
-    return `
+        const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -194,7 +213,6 @@ const generateFullHtml = (elements: CanvasElementData[]) => {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-        /* Base styles from globals.css */
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -203,28 +221,42 @@ const generateFullHtml = (elements: CanvasElementData[]) => {
            font-family: 'Space Grotesk', sans-serif;
         }
 
-        /* Dynamically generated styles */
-        ${dynamicCss}
+        ${processedCss}
     </style>
 </head>
 <body class="font-body antialiased">
     ${bodyContent}
 </body>
 </html>
-    `.trim();
-}
+        `.trim();
+        setFullHtmlCode(html);
+    } catch(e) {
+        console.error(e);
+        toast({
+            variant: 'destructive',
+            title: 'Error generating code',
+            description: 'Could not process CSS. Please try again.'
+        })
+        setFullHtmlCode('Error generating code.');
+    } finally {
+        setIsLoading(false);
+    }
+  }
 
-
-const CodeViewer: FC<CodeViewerProps> = ({ isOpen, onClose, elements }) => {
-  const { toast } = useToast();
-  const fullHtmlCode = useMemo(() => generateFullHtml(elements), [elements]);
+  useEffect(() => {
+    if (isOpen) {
+        generateFullHtml(elements);
+    }
+  }, [isOpen, elements]);
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(fullHtmlCode);
-    toast({
-      title: 'Copied to clipboard!',
-      description: `The full HTML code has been copied.`,
-    });
+    if (fullHtmlCode) {
+        navigator.clipboard.writeText(fullHtmlCode);
+        toast({
+            title: 'Copied to clipboard!',
+            description: `The full HTML code has been copied.`,
+        });
+    }
   };
 
   return (
@@ -238,16 +270,28 @@ const CodeViewer: FC<CodeViewerProps> = ({ isOpen, onClose, elements }) => {
         </DialogHeader>
         <div className="flex-1 overflow-hidden relative">
             <Button
-            variant="outline"
-            size="sm"
-            className="absolute top-2 right-2 z-10"
-            onClick={copyToClipboard}
+                variant="outline"
+                size="sm"
+                className="absolute top-2 right-2 z-10"
+                onClick={copyToClipboard}
+                disabled={isLoading || !fullHtmlCode}
             >
             Copy
             </Button>
-            <pre className="h-full overflow-auto rounded-md bg-muted p-4">
-                <code className="text-sm">{fullHtmlCode}</code>
-            </pre>
+            <div className="h-full w-full rounded-md bg-muted">
+                {isLoading ? (
+                    <div className="p-4 space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-5/6" />
+                        <Skeleton className="h-4 w-2/3" />
+                    </div>
+                ) : (
+                    <pre className="h-full overflow-auto p-4">
+                        <code className="text-sm">{fullHtmlCode}</code>
+                    </pre>
+                )}
+            </div>
         </div>
       </DialogContent>
     </Dialog>
