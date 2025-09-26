@@ -4,7 +4,7 @@ import { FC, useMemo, useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { CanvasElementData } from '@/app/page';
+import { CanvasElementData } from '@/app/site/editor/page';
 import { processCssAction, logErrorToFirestore } from '@/app/actions';
 import { Skeleton } from '../ui/skeleton';
 

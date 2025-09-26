@@ -2,7 +2,7 @@ import { type FC, useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { CanvasElementData } from '@/app/page';
+import { CanvasElementData } from '@/app/site/editor/page';
 import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
 import { Input } from '../ui/input';

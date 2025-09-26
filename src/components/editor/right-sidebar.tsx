@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
-import { CanvasElementData } from '@/app/page';
+import { CanvasElementData } from '@/app/site/editor/page';
 import {
   Accordion,
   AccordionContent,

@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <nav className="bg-card border-b p-4">
             <ul className="flex space-x-4">
-                <li><Link href="/" className="text-sm text-foreground hover:text-primary">Editor</Link></li>
+                <li><Link href="/site/editor" className="text-sm text-foreground hover:text-primary">Editor</Link></li>
                 <li><Link href="/landing" className="text-sm text-foreground hover:text-primary">Landing</Link></li>
                 <li><Link href="/errors" className="text-sm text-foreground hover:text-primary">Errors</Link></li>
             </ul>
@@ -35,5 +35,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    
