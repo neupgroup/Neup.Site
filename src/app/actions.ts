@@ -55,6 +55,6 @@ export async function saveSite(elements: any) {
     } catch (error: any) {
         console.error("Failed to save site:", error);
         await logErrorToFirestore({ message: 'Failed to save site: ' + error.message, stack: error.stack });
-        return { success: false, error: 'Failed to save site.' };
+        return { success: false, error: error.message || 'Failed to save site.' };
     }
 }
