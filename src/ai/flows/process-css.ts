@@ -7,10 +7,9 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
-import path from 'path';
 
 const ProcessCssInputSchema = z.object({
   css: z.string().describe('The CSS content including Tailwind directives like @tailwind base;'),
@@ -35,9 +34,8 @@ const processCssFlow = ai.defineFlow(
     outputSchema: ProcessCssOutputSchema,
   },
   async (input) => {
-    // Resolve the path to the Tailwind config file relative to the current file
-    const tailwindConfigPath = path.resolve(process.cwd(), 'tailwind.config.ts');
-    const result = await postcss([tailwindcss(tailwindConfigPath)]).process(input.css, { from: undefined });
+    const processor = postcss([tailwindcss('tailwind.config.ts' as any)]);
+    const result = await processor.process(input.css, { from: undefined });
     return { processedCss: result.css };
   }
 );
