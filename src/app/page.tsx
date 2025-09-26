@@ -103,6 +103,7 @@ const WebsiteBuilderPage: FC = () => {
   const [isCodeViewerOpen, setIsCodeViewerOpen] = useState(false);
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
+    try {
       const newElements = updater(history[historyIndex]);
       if (recordHistory) {
         const newHistory = history.slice(0, historyIndex + 1);
@@ -114,6 +115,11 @@ const WebsiteBuilderPage: FC = () => {
         newHistory[historyIndex] = newElements;
         setHistory(newHistory);
       }
+    } catch(e) {
+        console.error("Error updating elements:", e);
+        // Here you could also call a server action to log the error to Firestore
+        throw e; // Re-throw to be caught by a higher-level boundary if needed
+    }
   };
 
   const undo = useCallback(() => {
@@ -443,38 +449,43 @@ const WebsiteBuilderPage: FC = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-        if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
-            return;
-        }
+        try {
+            if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
+                return;
+            }
 
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-            if (selectedElement) {
-                e.preventDefault();
-                deleteElement(selectedElement);
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (selectedElement) {
+                    e.preventDefault();
+                    deleteElement(selectedElement);
+                }
+            } else if (e.ctrlKey || e.metaKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'c':
+                        e.preventDefault();
+                        copyElement();
+                        break;
+                    case 'x':
+                        e.preventDefault();
+                        cutElement();
+                        break;
+                    case 'v':
+                        e.preventDefault();
+                        pasteElement();
+                        break;
+                    case 'z':
+                        e.preventDefault();
+                        undo();
+                        break;
+                    case 'y':
+                        e.preventDefault();
+                        redo();
+                        break;
+                }
             }
-        } else if (e.ctrlKey || e.metaKey) {
-            switch(e.key.toLowerCase()) {
-                case 'c':
-                    e.preventDefault();
-                    copyElement();
-                    break;
-                case 'x':
-                     e.preventDefault();
-                    cutElement();
-                    break;
-                case 'v':
-                     e.preventDefault();
-                    pasteElement();
-                    break;
-                case 'z':
-                    e.preventDefault();
-                    undo();
-                    break;
-                case 'y':
-                    e.preventDefault();
-                    redo();
-                    break;
-            }
+        } catch (error) {
+            console.error("Error during keydown event:", error);
+            // Optionally, log this error to your database
         }
     };
 
