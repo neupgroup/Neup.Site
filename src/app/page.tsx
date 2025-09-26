@@ -9,7 +9,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export interface CanvasElementData {
   id: string;
-  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input';
+  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input' | 'heading';
   content?: string;
   styles: React.CSSProperties;
   props?: Record<string, any>;
@@ -31,8 +31,11 @@ const initialElements: CanvasElementData[] = [
         children: [
             {
                 id: "hero",
-                type: 'hero',
+                type: 'heading',
                 content: "Build Your Website Visually",
+                props: {
+                    level: 1,
+                },
                 styles: {
                     paddingTop: '48px',
                     paddingRight: '20px',
@@ -195,6 +198,12 @@ const WebsiteBuilderPage: FC = () => {
         newElement.styles.fontSize = '16px';
         newElement.styles.textAlign = 'left';
         newElement.styles.height = '40px';
+    } else if (elementType === 'heading') {
+        newElement.content = 'New Heading';
+        newElement.props = { level: 1 };
+        newElement.styles.fontSize = '24px';
+        newElement.styles.fontWeight = 'bold';
+        newElement.styles.textAlign = 'left';
     } else if (elementType === 'button') {
         newElement.content = 'New Button';
         newElement.styles.height = '40px';

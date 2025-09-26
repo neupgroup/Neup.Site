@@ -2,16 +2,16 @@ import { FC, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2 } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6 } from 'lucide-react';
 import { CanvasElementData } from '@/app/page';
 import { cn } from '@/lib/utils';
 
-const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string }> = ({ icon, label, type }) => (
+const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
   <div
     className="flex cursor-grab flex-col items-center gap-2 rounded-lg border bg-card p-4 transition-colors hover:bg-secondary hover:border-primary active:cursor-grabbing"
     draggable
     onDragStart={(e) => {
-      const data = { type: 'sidebar-element', elementType: type };
+      const data = { type: 'sidebar-element', elementType: type, props };
       e.dataTransfer.setData('application/json', JSON.stringify(data));
     }}
   >
@@ -34,6 +34,7 @@ const getIconForType = (type: CanvasElementData['type']) => {
         case 'container': return <Container className="h-4 w-4" />;
         case 'input': return <FormInput className="h-4 w-4" />;
         case 'hero': return <Heading1 className="h-4 w-4" />;
+        case 'heading': return <Heading1 className="h-4 w-4" />;
         case 'hero-subtitle': return <Heading2 className="h-4 w-4" />;
         default: return <Component className="h-4 w-4" />;
     }
@@ -173,9 +174,20 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                   </div>
               </div>
               <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Typography</p>
+                   <div className="grid grid-cols-2 gap-4">
+                        <ContentBlock icon={<Heading1 className="h-6 w-6" />} label="Heading 1" type="heading" props={{ level: 1 }} />
+                        <ContentBlock icon={<Heading2 className="h-6 w-6" />} label="Heading 2" type="heading" props={{ level: 2 }} />
+                        <ContentBlock icon={<Heading3 className="h-6 w-6" />} label="Heading 3" type="heading" props={{ level: 3 }} />
+                        <ContentBlock icon={<Heading4 className="h-6 w-6" />} label="Heading 4" type="heading" props={{ level: 4 }} />
+                        <ContentBlock icon={<Heading5 className="h-6 w-6" />} label="Heading 5" type="heading" props={{ level: 5 }} />
+                        <ContentBlock icon={<Heading6 className="h-6 w-6" />} label="Heading 6" type="heading" props={{ level: 6 }} />
+                        <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
+                   </div>
+              </div>
+              <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Basic</p>
                   <div className="grid grid-cols-2 gap-4">
-                    <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
                     <ContentBlock icon={<ImageIcon className="h-6 w-6" />} label="Image" type="image" />
                     <ContentBlock icon={<MousePointerClick className="h-6 w-6" />} label="Button" type="button" />
                   </div>

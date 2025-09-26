@@ -251,12 +251,21 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 
         const elementComponent = (() => {
             switch (type) {
-                case 'hero':
+                case 'hero': // This case can be removed if we are sure `hero` is obsolete
                     return (
                         <CanvasElementWrapper {...wrapperProps} className="text-center">
                             <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight}} className="font-headline tracking-tight" />
                         </CanvasElementWrapper>
                     )
+                case 'heading':
+                    const HeadingTag = `h${props?.level || 1}` as keyof JSX.IntrinsicElements;
+                    return (
+                        <CanvasElementWrapper {...wrapperProps}>
+                             <HeadingTag>
+                                <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
+                            </HeadingTag>
+                        </CanvasElementWrapper>
+                    );
                 case 'hero-subtitle':
                     return (
                          <CanvasElementWrapper {...wrapperProps} className="text-center">

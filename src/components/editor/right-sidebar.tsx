@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush } from 'lucide-react';
+import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
 import { CanvasElementData } from '@/app/page';
 import {
@@ -102,11 +102,11 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   return (
     <aside className="w-80 border-l bg-card">
-      <Tabs defaultValue="style" className="flex h-full flex-col">
+      <Tabs defaultValue="customize" className="flex h-full flex-col">
         <TabsList className="grid w-full grid-cols-2 rounded-none border-b">
-          <TabsTrigger value="style">
-            <Palette className="mr-2 h-4 w-4" />
-            Style
+          <TabsTrigger value="customize">
+            <Settings className="mr-2 h-4 w-4" />
+            Customize
           </TabsTrigger>
           <TabsTrigger value="ai">
             <Sparkles className="mr-2 h-4 w-4" />
@@ -114,9 +114,9 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
           </TabsTrigger>
         </TabsList>
         <ScrollArea className="flex-1">
-          <TabsContent value="style" className="p-0">
+          <TabsContent value="customize" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'content', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -129,12 +129,36 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                   </AccordionContent>
                 </AccordionItem>
 
-                 {showFor(['text', 'button', 'hero', 'hero-subtitle', 'hero-cta']) && (
+                 {showFor(['text', 'button', 'hero', 'hero-subtitle', 'hero-cta', 'heading']) && (
                     <AccordionItem value="content">
                         <AccordionTrigger className="px-4 text-sm font-medium">Content</AccordionTrigger>
                         <AccordionContent className="px-4 space-y-2">
                             <Label>Text</Label>
                             <Input value={content || ''} onChange={e => handleContentChange(e.target.value)} />
+                        </AccordionContent>
+                    </AccordionItem>
+                )}
+
+                {showFor(['heading']) && (
+                    <AccordionItem value="heading">
+                        <AccordionTrigger className="px-4 text-sm font-medium">Heading</AccordionTrigger>
+                        <AccordionContent className="px-4 space-y-2">
+                             <div className="space-y-2">
+                                <Label>Level</Label>
+                                <Select value={props.level ? String(props.level) : '1'} onValueChange={value => handlePropChange('level', parseInt(value, 10))}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select level" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="1">H1</SelectItem>
+                                    <SelectItem value="2">H2</SelectItem>
+                                    <SelectItem value="3">H3</SelectItem>
+                                    <SelectItem value="4">H4</SelectItem>
+                                    <SelectItem value="5">H5</SelectItem>
+                                    <SelectItem value="6">H6</SelectItem>
+                                  </SelectContent>
+                              </Select>
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 )}
@@ -244,7 +268,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                   </AccordionContent>
                 </AccordionItem>
 
-                {(showFor(['text', 'button', 'hero', 'hero-subtitle'])) && (
+                {(showFor(['text', 'button', 'hero', 'hero-subtitle', 'heading'])) && (
                 <AccordionItem value="typography">
                   <AccordionTrigger className="px-4 text-sm font-medium">Typography</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-4">
@@ -272,8 +296,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                       <Select value={styles.textAlign as string || ''} onValueChange={value => handleStyleChange('textAlign', value)}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select alignment" />
-                          </SelectTrigger>
-                          <SelectContent>
+                          </SelectTrigger>                          <SelectContent>
                             <SelectItem value="left">Left</SelectItem>
                             <SelectItem value="center">Center</SelectItem>
                             <SelectItem value="right">Right</SelectItem>
@@ -292,7 +315,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 </AccordionItem>
                 )}
                 
-                {(showFor(['text', 'hero', 'hero-subtitle'])) && (
+                {(showFor(['text', 'hero', 'hero-subtitle', 'heading'])) && (
                  <AccordionItem value="color">
                     <AccordionTrigger className="px-4 text-sm font-medium">Color</AccordionTrigger>
                     <AccordionContent className="px-4 space-y-2">
