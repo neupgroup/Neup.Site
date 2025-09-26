@@ -233,7 +233,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                             <SelectItem value="static">Static</SelectItem>
                             <SelectItem value="relative">Relative</SelectItem>
                             <SelectItem value="absolute">Absolute</SelectItem>
-                            <SelectItem value="fixed">Fixed</SelectItem>
                             <SelectItem value="sticky">Sticky</SelectItem>
                           </SelectContent>
                       </Select>
@@ -338,20 +337,48 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 
                  <AccordionItem value="background">
                     <AccordionTrigger className="px-4 text-sm font-medium">Background</AccordionTrigger>
-                    <AccordionContent className="px-4 space-y-2">
-                        <Label>Background Color</Label>
-                        <div className="flex items-center gap-2">
-                           <Input value={styles.backgroundColor || ''} onChange={e => handleStyleChange('backgroundColor', e.target.value)} className="flex-1" placeholder="e.g. #FFFFFF or hsl(var(--...))"/>
-                           <Button variant="outline" size="icon" onClick={() => bgColorInputRef.current?.click()}>
-                              <Brush className="h-4 w-4" />
-                              <input
-                                ref={bgColorInputRef}
-                                type="color"
-                                value={typeof styles.backgroundColor === 'string' ? styles.backgroundColor : '#FFFFFF'}
-                                onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
-                                className="absolute h-0 w-0 opacity-0"
-                                />
-                           </Button>
+                    <AccordionContent className="px-4 space-y-4">
+                        <div className="space-y-2">
+                          <Label>Background Color</Label>
+                          <div className="flex items-center gap-2">
+                            <Input value={styles.backgroundColor || ''} onChange={e => handleStyleChange('backgroundColor', e.target.value)} className="flex-1" placeholder="e.g. #FFFFFF or hsl(var(--...))"/>
+                            <Button variant="outline" size="icon" onClick={() => bgColorInputRef.current?.click()}>
+                                <Brush className="h-4 w-4" />
+                                <input
+                                  ref={bgColorInputRef}
+                                  type="color"
+                                  value={typeof styles.backgroundColor === 'string' ? styles.backgroundColor : '#FFFFFF'}
+                                  onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
+                                  className="absolute h-0 w-0 opacity-0"
+                                  />
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Background Image</Label>
+                          <Input 
+                            value={styles.backgroundImage?.replace(/url\(['"]?(.*?)['"]?\)/, '$1') || ''} 
+                            onChange={e => handleStyleChange('backgroundImage', e.target.value ? `url('${e.target.value}')` : '')} 
+                            placeholder="Image URL" 
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label>Background Repeat</Label>
+                          <Select value={styles.backgroundRepeat || ''} onValueChange={value => handleStyleChange('backgroundRepeat', value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select repeat" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="no-repeat">No Repeat</SelectItem>
+                              <SelectItem value="repeat">Repeat</SelectItem>
+                              <SelectItem value="repeat-x">Repeat X</SelectItem>
+                              <SelectItem value="repeat-y">Repeat Y</SelectItem>
+                              <SelectItem value="space">Space</SelectItem>
+                              <SelectItem value="round">Round</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                     </AccordionContent>
                 </AccordionItem>

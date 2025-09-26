@@ -176,7 +176,9 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }, [selectedElement]);
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
-        if (!resizingState) return;
+        if (!resizingState || !canvasRef.current) return;
+        const canvasRect = canvasRef.current.getBoundingClientRect();
+
 
         const dx = e.clientX - resizingState.initialX;
         const dy = e.clientY - resizingState.initialY;
@@ -204,12 +206,14 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         }
         if (resizingState.handle.includes('left')) {
             newWidth = resizingState.initialWidth - dx;
+            // newStyles.left = `${resizingState.initialLeft + dx - canvasRect.left}px`;
         }
         if (resizingState.handle.includes('bottom')) {
             newHeight = resizingState.initialHeight + dy;
         }
         if (resizingState.handle.includes('top')) {
             newHeight = resizingState.initialHeight - dy;
+            // newStyles.top = `${resizingState.initialTop + dy - canvasRect.top}px`;
         }
 
         if (newWidth) {
@@ -353,7 +357,6 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
   
   return (
     <div 
-        ref={canvasRef}
         className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8" 
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
@@ -364,7 +367,10 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
           dragCounter.current++;
         }}
     >
-      <div className="rounded-lg bg-card shadow-lg">
+      <div 
+        ref={canvasRef}
+        className="rounded-lg bg-card shadow-lg relative"
+      >
         {elements.map(el => renderElement(el))}
         {elements.length === 0 && (
              <div 
