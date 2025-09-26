@@ -1,6 +1,6 @@
 'use client';
 import type { FC } from 'react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
@@ -94,6 +94,22 @@ const initialElements: CanvasElementData[] = [
 const WebsiteBuilderPage: FC = () => {
   const [elements, setElements] = useState<CanvasElementData[]>(initialElements);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [clipboard, setClipboard] = useState<CanvasElementData | null>(null);
+
+  const findElementRecursive = (elements: CanvasElementData[], id: string): {element: CanvasElementData, parent?: CanvasElementData} | null => {
+      for (const el of elements) {
+          if (el.id === id) {
+              return {element: el};
+          }
+          if (el.children) {
+              const found = findElementRecursive(el.children, id);
+              if (found) {
+                  return {element: found.element, parent: found.parent || el};
+              }
+          }
+      }
+      return null;
+  }
 
   const moveElement = (draggedId: string, dropZoneId: string, parentId?: string) => {
     let draggedElement: CanvasElementData | undefined;
@@ -262,7 +278,7 @@ const WebsiteBuilderPage: FC = () => {
     setElements(prev => updateRecursively(prev));
   };
   
-  const deleteElement = (id: string) => {
+  const deleteElement = useCallback((id: string) => {
     const deleteRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
         return els.filter(el => {
             if (el.id === id) {
@@ -276,7 +292,148 @@ const WebsiteBuilderPage: FC = () => {
     };
     setElements(prev => deleteRecursively(prev));
     setSelectedElement(null);
-  };
+  }, []);
+
+  const copyElement = useCallback(() => {
+    if (!selectedElement) return;
+    const result = findElementRecursive(elements, selectedElement);
+    if (result) {
+        // Deep copy and generate new IDs
+        const deepCopy = (el: CanvasElementData): CanvasElementData => {
+            const newEl = {
+                ...el,
+                id: `${el.type}-${Date.now()}-${Math.random()}`
+            };
+            if (el.children) {
+                newEl.children = el.children.map(deepCopy);
+            }
+            return newEl;
+        };
+        setClipboard(deepCopy(result.element));
+    }
+  }, [selectedElement, elements]);
+
+  const pasteElement = useCallback(() => {
+    if (!clipboard) return;
+
+    const pasteRecursively = (els: CanvasElementData[], targetId: string, parentEl?: CanvasElementData): CanvasElementData[] => {
+        const targetIndex = els.findIndex(el => el.id === targetId);
+
+        if (targetIndex !== -1) {
+            const newElements = [...els];
+            newElements.splice(targetIndex + 1, 0, clipboard);
+            return newElements;
+        }
+
+        return els.map(el => {
+            if (el.children) {
+                return { ...el, children: pasteRecursively(el.children, targetId, el) };
+            }
+            return el;
+        });
+    };
+
+    setElements(prev => {
+        if (!selectedElement) {
+            // Paste at the root level
+            return [...prev, clipboard];
+        }
+
+        const result = findElementRecursive(prev, selectedElement);
+        if (!result) return [...prev, clipboard];
+
+        const { element: selectedEl, parent } = result;
+
+        if (selectedEl && ['section', 'div', 'container'].includes(selectedEl.type)) {
+            // Paste inside container as last element
+            const newElements = [...prev];
+            const addInside = (els: CanvasElementData[]) => {
+                return els.map(el => {
+                    if (el.id === selectedEl.id) {
+                        return { ...el, children: [...(el.children || []), clipboard] };
+                    }
+                    if (el.children) {
+                        return { ...el, children: addInside(el.children) };
+                    }
+                    return el;
+                });
+            };
+            return addInside(newElements);
+        } else {
+            // Paste after selected element
+            const parentChildren = parent ? parent.children || [] : prev;
+            const targetIndex = parentChildren.findIndex(el => el.id === selectedEl.id);
+
+            const addSibling = (els: CanvasElementData[]) => {
+                 for (let i = 0; i < els.length; i++) {
+                    if (els[i].id === (parent?.id || '')) {
+                        const targetIdx = els[i].children!.findIndex(c => c.id === selectedEl.id);
+                        els[i].children!.splice(targetIdx + 1, 0, clipboard);
+                        return prev;
+                    }
+                    if (els[i].children) {
+                        addSibling(els[i].children!);
+                    }
+                }
+                // Handle root elements
+                if(!parent) {
+                    const rootIndex = els.findIndex(c => c.id === selectedEl.id);
+                    if (rootIndex !== -1) {
+                       els.splice(rootIndex + 1, 0, clipboard);
+                    }
+                }
+                return prev;
+            };
+
+            const newEls = [...prev];
+            addSibling(newEls);
+            return newEls;
+        }
+    });
+
+  }, [clipboard, selectedElement, elements]);
+
+  const cutElement = useCallback(() => {
+    if (!selectedElement) return;
+    copyElement();
+    deleteElement(selectedElement);
+  }, [selectedElement, copyElement, deleteElement]);
+
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
+            return;
+        }
+
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            if (selectedElement) {
+                e.preventDefault();
+                deleteElement(selectedElement);
+            }
+        } else if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case 'c':
+                    e.preventDefault();
+                    copyElement();
+                    break;
+                case 'x':
+                     e.preventDefault();
+                    cutElement();
+                    break;
+                case 'v':
+                     e.preventDefault();
+                    pasteElement();
+                    break;
+            }
+        }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedElement, deleteElement, copyElement, cutElement, pasteElement]);
 
 
   return (
