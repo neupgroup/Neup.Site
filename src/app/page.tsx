@@ -26,6 +26,7 @@ const initialElements: CanvasElementData[] = [
             paddingLeft: '20px',
             paddingRight: '20px',
             minHeight: '100px',
+            backgroundColor: 'white'
         },
         children: [
             {
