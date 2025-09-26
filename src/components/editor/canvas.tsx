@@ -255,7 +255,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         const { id, type, content, styles, props, children, customCss } = element;
         const isContainer = ['section', 'div', 'container'].includes(type);
 
-        const wrapperProps = {
+        const {key, ...restWrapperProps} = {
             id,
             selectedElement,
             onSelectElement,
@@ -275,14 +275,14 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             switch (type) {
                 case 'hero': // This case can be removed if we are sure `hero` is obsolete
                     return (
-                        <CanvasElementWrapper {...wrapperProps} className="text-center">
+                        <CanvasElementWrapper {...restWrapperProps} key={key} className="text-center">
                             <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight}} className="font-headline tracking-tight" />
                         </CanvasElementWrapper>
                     )
                 case 'heading':
                     const HeadingTag = `h${props?.level || 1}` as keyof JSX.IntrinsicElements;
                     return (
-                        <CanvasElementWrapper {...wrapperProps}>
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
                              <HeadingTag>
                                 <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
                             </HeadingTag>
@@ -290,37 +290,37 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                     );
                 case 'hero-subtitle':
                     return (
-                         <CanvasElementWrapper {...wrapperProps} className="text-center">
+                         <CanvasElementWrapper {...restWrapperProps} key={key} className="text-center">
                             <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize}} className="mx-auto max-w-2xl text-muted-foreground"/>
                         </CanvasElementWrapper>
                     )
                 case 'hero-cta':
                      return (
-                         <CanvasElementWrapper {...wrapperProps} className="text-center">
+                         <CanvasElementWrapper {...restWrapperProps} key={key} className="text-center">
                             <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">{content}</Button>
                         </CanvasElementWrapper>
                     )
                 case 'feature-image':
                     return (
-                        <CanvasElementWrapper {...wrapperProps}>
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
                            {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 1200} height={props.height || 600} className="aspect-[2/1] w-full object-cover" {...props} />}
                         </CanvasElementWrapper>
                     )
                 case 'text':
                     return (
-                        <CanvasElementWrapper {...wrapperProps}>
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
                             <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} />
                         </CanvasElementWrapper>
                     );
                 case 'button':
                     return (
-                        <CanvasElementWrapper {...wrapperProps}>
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
                             <Button className="w-full h-full">{content}</Button>
                         </CanvasElementWrapper>
                     );
                 case 'image':
                      return (
-                        <CanvasElementWrapper {...wrapperProps}>
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
                             {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
                         </CanvasElementWrapper>
                      );
@@ -329,7 +329,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 case 'container':
                   const Tag = type === 'section' ? 'section' : 'div';
                   return (
-                    <CanvasElementWrapper {...wrapperProps} className={cn({'p-4': children?.length === 0, 'container': type === 'container'})}>
+                    <CanvasElementWrapper {...restWrapperProps} key={key} className={cn({'p-4': children?.length === 0, 'container': type === 'container'})}>
                       <Tag 
                         onDrop={(e) => handleDrop(e, id)} 
                         onDragOver={(e) => handleDragOver(e, id)} 
@@ -347,7 +347,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                   )
                 case 'input':
                     return (
-                        <CanvasElementWrapper {...wrapperProps}>
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
                            <Input {...props} className="w-full h-full bg-background" />
                         </CanvasElementWrapper>
                     );
