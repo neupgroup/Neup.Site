@@ -95,7 +95,32 @@ const initialElements: CanvasElementData[] = [
 
 
 const WebsiteBuilderPage: FC = () => {
-  const [elements, setElements] = useState<CanvasElementData[]>(initialElements);
+  const [history, setHistory] = useState<CanvasElementData[][]>([initialElements]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const elements = history[historyIndex];
+
+  const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[]) => {
+      setHistory(prevHistory => {
+          const newElements = updater(prevHistory[historyIndex]);
+          const newHistory = prevHistory.slice(0, historyIndex + 1);
+          newHistory.push(newElements);
+          setHistoryIndex(newHistory.length - 1);
+          return newHistory;
+      });
+  };
+
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      setHistoryIndex(prev => prev - 1);
+    }
+  }, [historyIndex]);
+
+  const redo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(prev => prev + 1);
+    }
+  }, [historyIndex, history.length]);
+
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [clipboard, setClipboard] = useState<CanvasElementData | null>(null);
 
@@ -115,68 +140,70 @@ const WebsiteBuilderPage: FC = () => {
   }
 
   const moveElement = (draggedId: string, dropZoneId: string, parentId?: string) => {
-    let draggedElement: CanvasElementData | undefined;
+    setElements(prevElements => {
+      let draggedElement: CanvasElementData | undefined;
 
-    const removeElement = (els: CanvasElementData[], id: string): CanvasElementData[] => {
-      return els.reduce((acc, el) => {
-        if (el.id === id) {
-          draggedElement = el;
-          return acc;
-        }
-        if (el.children) {
-          el.children = removeElement(el.children, id);
-        }
-        acc.push(el);
-        return acc;
-      }, [] as CanvasElementData[]);
-    };
-
-    const newElements = removeElement([...elements], draggedId);
-
-    if (!draggedElement) return;
-
-    const addElementToParent = (els: CanvasElementData[], pId: string, element: CanvasElementData): boolean => {
-      for (let i = 0; i < els.length; i++) {
-        if (els[i].id === pId && els[i].children) {
-          // Find drop zone and insert
-          const dropIndex = els[i].children!.findIndex(child => child.id === dropZoneId);
-          if (dropIndex !== -1) {
-            els[i].children!.splice(dropIndex, 0, element);
-          } else {
-             els[i].children!.push(element);
+      const removeElement = (els: CanvasElementData[], id: string): CanvasElementData[] => {
+        return els.reduce((acc, el) => {
+          if (el.id === id) {
+            draggedElement = el;
+            return acc;
           }
-          return true;
-        }
-        if (els[i].children && addElementToParent(els[i].children, pId, element)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    
-    const insertElement = (els: CanvasElementData[], dZoneId: string, element: CanvasElementData): CanvasElementData[] => {
-        const dropIndex = els.findIndex(el => el.id === dZoneId);
-        if (dropIndex !== -1) {
-            const newEls = [...els];
-            newEls.splice(dropIndex, 0, element);
-            return newEls;
-        }
+          if (el.children) {
+            el.children = removeElement(el.children, id);
+          }
+          acc.push(el);
+          return acc;
+        }, [] as CanvasElementData[]);
+      };
 
-        return els.map(el => {
-            if (el.children) {
-                return { ...el, children: insertElement(el.children, dZoneId, element) };
+      const newElements = removeElement([...prevElements], draggedId);
+
+      if (!draggedElement) return prevElements;
+
+      const addElementToParent = (els: CanvasElementData[], pId: string, element: CanvasElementData): boolean => {
+        for (let i = 0; i < els.length; i++) {
+          if (els[i].id === pId && els[i].children) {
+            const dropIndex = els[i].children!.findIndex(child => child.id === dropZoneId);
+            if (dropIndex !== -1) {
+              els[i].children!.splice(dropIndex, 0, element);
+            } else {
+              els[i].children!.push(element);
             }
-            return el;
-        });
-    };
-
-    if (parentId) {
-      if(addElementToParent(newElements, parentId, draggedElement)) {
-        setElements(newElements);
+            return true;
+          }
+          if (els[i].children && addElementToParent(els[i].children, pId, element)) {
+            return true;
+          }
+        }
+        return false;
       }
-    } else {
-      setElements(insertElement(newElements, dropZoneId, draggedElement));
-    }
+      
+      const insertElement = (els: CanvasElementData[], dZoneId: string, element: CanvasElementData): CanvasElementData[] => {
+          const dropIndex = els.findIndex(el => el.id === dZoneId);
+          if (dropIndex !== -1) {
+              const newEls = [...els];
+              newEls.splice(dropIndex, 0, element);
+              return newEls;
+          }
+
+          return els.map(el => {
+              if (el.children) {
+                  return { ...el, children: insertElement(el.children, dZoneId, element) };
+              }
+              return el;
+          });
+      };
+
+      if (parentId) {
+        if(addElementToParent(newElements, parentId, draggedElement)) {
+          return newElements;
+        }
+      } else {
+        return insertElement(newElements, dropZoneId, draggedElement);
+      }
+      return newElements;
+    });
   };
 
   const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => {
@@ -265,41 +292,45 @@ const WebsiteBuilderPage: FC = () => {
   };
 
   const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
-    const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-      return els.map(el => {
-        if (el.id === id) {
-          const updatedElement = {
-            ...el,
-            styles: newStyles !== undefined ? newStyles : el.styles,
-            props: newProps !== undefined ? newProps : el.props,
-          };
-          if (newContent !== undefined) {
-            updatedElement.content = newContent;
+    setElements(prev => {
+      const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+        return els.map(el => {
+          if (el.id === id) {
+            const updatedElement = {
+              ...el,
+              styles: newStyles !== undefined ? newStyles : el.styles,
+              props: newProps !== undefined ? newProps : el.props,
+            };
+            if (newContent !== undefined) {
+              updatedElement.content = newContent;
+            }
+            return updatedElement;
           }
-          return updatedElement;
-        }
-        if (el.children) {
-          return { ...el, children: updateRecursively(el.children) };
-        }
-        return el;
-      });
-    };
-    setElements(prev => updateRecursively(prev));
+          if (el.children) {
+            return { ...el, children: updateRecursively(el.children) };
+          }
+          return el;
+        });
+      };
+      return updateRecursively(prev);
+    });
   };
   
   const deleteElement = useCallback((id: string) => {
-    const deleteRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-        return els.filter(el => {
-            if (el.id === id) {
-                return false;
-            }
-            if (el.children) {
-                el.children = deleteRecursively(el.children);
-            }
-            return true;
-        });
-    };
-    setElements(prev => deleteRecursively(prev));
+    setElements(prev => {
+      const deleteRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+          return els.filter(el => {
+              if (el.id === id) {
+                  return false;
+              }
+              if (el.children) {
+                  el.children = deleteRecursively(el.children);
+              }
+              return true;
+          });
+      };
+      return deleteRecursively(prev);
+    });
     setSelectedElement(null);
   }, []);
 
@@ -324,42 +355,25 @@ const WebsiteBuilderPage: FC = () => {
 
   const pasteElement = useCallback(() => {
     if (!clipboard) return;
-
-    const pasteRecursively = (els: CanvasElementData[], targetId: string, parentEl?: CanvasElementData): CanvasElementData[] => {
-        const targetIndex = els.findIndex(el => el.id === targetId);
-
-        if (targetIndex !== -1) {
-            const newElements = [...els];
-            newElements.splice(targetIndex + 1, 0, clipboard);
-            return newElements;
-        }
-
-        return els.map(el => {
-            if (el.children) {
-                return { ...el, children: pasteRecursively(el.children, targetId, el) };
-            }
-            return el;
-        });
-    };
-
     setElements(prev => {
+        const newClipboard = { ...clipboard, id: `${clipboard.type}-${Date.now()}` };
+
         if (!selectedElement) {
             // Paste at the root level
-            return [...prev, clipboard];
+            return [...prev, newClipboard];
         }
 
         const result = findElementRecursive(prev, selectedElement);
-        if (!result) return [...prev, clipboard];
+        if (!result) return [...prev, newClipboard];
 
         const { element: selectedEl, parent } = result;
 
         if (selectedEl && ['section', 'div', 'container'].includes(selectedEl.type)) {
             // Paste inside container as last element
-            const newElements = [...prev];
-            const addInside = (els: CanvasElementData[]) => {
+            const addInside = (els: CanvasElementData[]): CanvasElementData[] => {
                 return els.map(el => {
                     if (el.id === selectedEl.id) {
-                        return { ...el, children: [...(el.children || []), clipboard] };
+                        return { ...el, children: [...(el.children || []), newClipboard] };
                     }
                     if (el.children) {
                         return { ...el, children: addInside(el.children) };
@@ -367,40 +381,39 @@ const WebsiteBuilderPage: FC = () => {
                     return el;
                 });
             };
-            return addInside(newElements);
+            return addInside(prev);
         } else {
             // Paste after selected element
-            const parentChildren = parent ? parent.children || [] : prev;
-            const targetIndex = parentChildren.findIndex(el => el.id === selectedEl.id);
-
-            const addSibling = (els: CanvasElementData[]) => {
+            const addSibling = (els: CanvasElementData[]): CanvasElementData[] => {
                  for (let i = 0; i < els.length; i++) {
                     if (els[i].id === (parent?.id || '')) {
                         const targetIdx = els[i].children!.findIndex(c => c.id === selectedEl.id);
-                        els[i].children!.splice(targetIdx + 1, 0, clipboard);
-                        return prev;
+                        els[i].children!.splice(targetIdx + 1, 0, newClipboard);
+                        return els;
                     }
                     if (els[i].children) {
-                        addSibling(els[i].children!);
+                        const newChildren = addSibling(els[i].children!);
+                        if (newChildren !== els[i].children) {
+                          return els;
+                        }
                     }
                 }
                 // Handle root elements
                 if(!parent) {
                     const rootIndex = els.findIndex(c => c.id === selectedEl.id);
                     if (rootIndex !== -1) {
-                       els.splice(rootIndex + 1, 0, clipboard);
+                       els.splice(rootIndex + 1, 0, newClipboard);
                     }
                 }
-                return prev;
+                return els;
             };
 
             const newEls = [...prev];
-            addSibling(newEls);
-            return newEls;
+            return addSibling(newEls);
         }
     });
 
-  }, [clipboard, selectedElement, elements]);
+  }, [clipboard, selectedElement]);
 
   const cutElement = useCallback(() => {
     if (!selectedElement) return;
@@ -434,6 +447,14 @@ const WebsiteBuilderPage: FC = () => {
                      e.preventDefault();
                     pasteElement();
                     break;
+                case 'z':
+                    e.preventDefault();
+                    undo();
+                    break;
+                case 'y':
+                    e.preventDefault();
+                    redo();
+                    break;
             }
         }
     };
@@ -442,12 +463,17 @@ const WebsiteBuilderPage: FC = () => {
     return () => {
         window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedElement, deleteElement, copyElement, cutElement, pasteElement]);
+  }, [selectedElement, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
 
 
   return (
     <div className="flex h-screen w-full flex-col bg-background text-foreground">
-      <EditorHeader />
+      <EditorHeader 
+        onUndo={undo}
+        onRedo={redo}
+        canUndo={historyIndex > 0}
+        canRedo={historyIndex < history.length - 1}
+      />
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 
             elements={elements}

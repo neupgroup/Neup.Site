@@ -1,9 +1,16 @@
 import { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Eye, Rocket, Code } from 'lucide-react';
+import { Eye, Rocket, Undo, Redo } from 'lucide-react';
 
-const EditorHeader: FC = () => {
+interface EditorHeaderProps {
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+}
+
+const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo }) => {
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card px-4 md:px-6">
       <div className="flex items-center gap-4">
@@ -13,6 +20,14 @@ const EditorHeader: FC = () => {
         </div>
         <Separator orientation="vertical" className="h-6" />
         <span className="text-sm text-muted-foreground">Page: Home</span>
+      </div>
+       <div className="flex items-center gap-2">
+        <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
+          <Undo className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo}>
+          <Redo className="h-4 w-4" />
+        </Button>
       </div>
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm">
