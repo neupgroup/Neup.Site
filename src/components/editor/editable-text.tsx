@@ -1,13 +1,15 @@
 'use client';
 import { useState, useRef, useEffect, FC } from 'react';
-
+import { cn } from '@/lib/utils';
 interface EditableTextProps {
     id: string;
     initialValue: string;
     onSave: (id: string, value: string) => void;
+    className?: string;
+    style?: React.CSSProperties;
 }
 
-export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave }) => {
+export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, className, style }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(initialValue);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -17,6 +19,11 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave }
             inputRef.current.focus();
         }
     }, [isEditing]);
+    
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
+
 
     const handleDoubleClick = () => {
         setIsEditing(true);
@@ -46,13 +53,14 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave }
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                className="bg-transparent border-0 outline-none w-full"
+                className={cn("bg-transparent border-0 outline-none w-full", className)}
+                style={style}
             />
         );
     }
 
     return (
-        <div onDoubleClick={handleDoubleClick} className="w-full">
+        <div onDoubleClick={handleDoubleClick} className={cn("w-full", className)} style={style}>
             {value}
         </div>
     );

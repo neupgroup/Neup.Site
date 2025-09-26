@@ -9,6 +9,7 @@ interface CanvasProps {
   elements: CanvasElementData[];
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => void;
 }
 
 const CanvasElementWrapper: FC<{
@@ -39,8 +40,12 @@ const CanvasElementWrapper: FC<{
 };
 
 
-const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement }) => {
+const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, updateElement }) => {
   
+    const handleSaveText = (id: string, newContent: string) => {
+        updateElement(id, undefined, undefined, newContent);
+    }
+    
     const renderElement = (element: CanvasElementData) => {
         const { id, type, content, styles, props } = element;
         const wrapperProps = {
@@ -55,13 +60,13 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement })
             case 'hero':
                 return (
                     <CanvasElementWrapper {...wrapperProps} className="text-center">
-                        <h1 className="font-headline text-4xl font-bold tracking-tight md:text-6xl">{content}</h1>
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight}} className="font-headline tracking-tight" />
                     </CanvasElementWrapper>
                 )
             case 'hero-subtitle':
                 return (
                      <CanvasElementWrapper {...wrapperProps} className="text-center">
-                        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">{content}</p>
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize}} className="mx-auto max-w-2xl text-muted-foreground"/>
                     </CanvasElementWrapper>
                 )
             case 'hero-cta':
@@ -79,7 +84,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement })
             case 'text':
                 return (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <EditableText id={id} initialValue={content || ''} onSave={() => {}} />
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign}} />
                     </CanvasElementWrapper>
                 );
             case 'button':

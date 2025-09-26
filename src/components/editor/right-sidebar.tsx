@@ -25,7 +25,7 @@ import {
 interface RightSidebarProps {
   selectedElementId: string | null;
   elements: CanvasElementData[];
-  updateElement: (id: string, styles: React.CSSProperties, props?: Record<string, any>) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => void;
 }
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement }) => {
@@ -33,12 +33,14 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   const [styles, setStyles] = useState<React.CSSProperties>({});
   const [props, setProps] = useState<Record<string, any>>({});
+  const [content, setContent] = useState<string | undefined>(undefined);
 
 
   useEffect(() => {
     if (selectedElement) {
         setStyles(selectedElement.styles);
         setProps(selectedElement.props || {});
+        setContent(selectedElement.content)
     }
   }, [selectedElement]);
 
@@ -46,7 +48,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
       const newStyles = {...styles, [property]: value};
       setStyles(newStyles);
       if (selectedElementId) {
-          updateElement(selectedElementId, newStyles, props);
+          updateElement(selectedElementId, newStyles);
       }
   }
 
@@ -54,7 +56,14 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     const newProps = {...props, [property]: value};
     setProps(newProps);
     if (selectedElementId) {
-        updateElement(selectedElementId, styles, newProps);
+        updateElement(selectedElementId, undefined, newProps);
+    }
+  }
+  
+  const handleContentChange = (value: string) => {
+    setContent(value);
+    if (selectedElementId) {
+        updateElement(selectedElementId, undefined, undefined, value);
     }
   }
 
@@ -83,13 +92,24 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="style" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'layout', 'typography', 'color', 'spacing', 'image']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'content', 'layout', 'typography', 'color', 'spacing', 'image']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
                     <p className="text-xs text-muted-foreground break-words">{selectedElement.id}</p>
                   </AccordionContent>
                 </AccordionItem>
+
+                 {showFor(['text', 'button', 'hero', 'hero-subtitle', 'hero-cta']) && (
+                    <AccordionItem value="content">
+                        <AccordionTrigger className="px-4 text-sm font-medium">Content</AccordionTrigger>
+                        <AccordionContent className="px-4 space-y-2">
+                            <Label>Text</Label>
+                            <Input value={content || ''} onChange={e => handleContentChange(e.target.value)} />
+                        </AccordionContent>
+                    </AccordionItem>
+                )}
+
 
                 <AccordionItem value="layout">
                   <AccordionTrigger className="px-4 text-sm font-medium">Layout</AccordionTrigger>

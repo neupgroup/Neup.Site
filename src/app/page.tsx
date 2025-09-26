@@ -105,13 +105,13 @@ const WebsiteBuilderPage: FC = () => {
     e.preventDefault();
   };
 
-  const updateElement = (id: string, newStyles: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
+  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string) => {
     setElements(prev => prev.map(el => {
         if (el.id === id) {
             const updatedElement = {
                 ...el, 
-                styles: {...el.styles, ...newStyles},
-                props: {...el.props, ...newProps}
+                styles: newStyles !== undefined ? newStyles : el.styles,
+                props: newProps !== undefined ? newProps : el.props
             };
             if (newContent !== undefined) {
                 updatedElement.content = newContent;
@@ -132,6 +132,7 @@ const WebsiteBuilderPage: FC = () => {
             elements={elements} 
             selectedElement={selectedElement} 
             onSelectElement={setSelectedElement}
+            updateElement={updateElement}
             />
         </main>
         <RightSidebar 
