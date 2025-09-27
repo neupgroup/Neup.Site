@@ -10,6 +10,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { logErrorToFirestore } from '@/actions/logging';
 import { saveSite } from '@/actions/editor/site';
 import { useToast } from '@/hooks/use-toast';
+import type { Template } from '@/lib/schemas';
 
 export interface CanvasElementData {
   id: string;
@@ -253,7 +254,6 @@ const WebsiteBuilderPage: FC = () => {
             newElement.content = 'New Text';
             newElement.styles.fontSize = '16px';
             newElement.styles.textAlign = 'left';
-            newElement.styles.height = '40px';
         } else if (elementType === 'heading') {
             newElement.content = 'New Heading';
             newElement.props = { level: 1 };
@@ -262,7 +262,6 @@ const WebsiteBuilderPage: FC = () => {
             newElement.styles.textAlign = 'left';
         } else if (elementType === 'button') {
             newElement.content = 'New Button';
-            newElement.styles.height = '40px';
         } else if (elementType === 'image') {
             const placeholder = PlaceHolderImages.find(p => p.id === 'feature-2');
             newElement.props = {
@@ -715,6 +714,7 @@ const WebsiteBuilderPage: FC = () => {
             updateElement={updateElement}
             deleteElement={deleteElement}
             updateElementId={updateElementId}
+            addGeneratedElement={addGeneratedElement}
         />
       </div>
       <CodeViewer

@@ -5,8 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code, Save } from 'lucide-react';
-import AiAssistant from '@/components/editor/ai-assistant';
-import { CanvasElementData, Template } from '@/app/site/editor/page';
+import AiGenerator from '@/components/editor/ai-generator';
+import type { CanvasElementData } from '@/app/site/editor/page';
 import {
   Accordion,
   AccordionContent,
@@ -35,7 +35,7 @@ interface SaveTemplateDialogProps {
 const SaveTemplateDialog: FC<SaveTemplateDialogProps> = ({ isOpen, onOpenChange, element }) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [type, setType] = useState<'section' | 'element'>('element');
+    const [type, setType] = useState<'section' | 'page' | 'element'>('element');
     const [isSaving, setIsSaving] = useState(false);
     const { toast } = useToast();
 
@@ -92,6 +92,7 @@ const SaveTemplateDialog: FC<SaveTemplateDialogProps> = ({ isOpen, onOpenChange,
                             </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="section">Section</SelectItem>
+                            <SelectItem value="page">Page</SelectItem>
                             <SelectItem value="element">Element</SelectItem>
                           </SelectContent>
                         </Select>
@@ -114,9 +115,10 @@ interface RightSidebarProps {
   updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string, recordHistory?: boolean) => void;
   deleteElement: (id: string) => void;
   updateElementId: (oldId: string, newId: string) => void;
+  addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, addGeneratedElement }) => {
   
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
@@ -671,7 +673,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             )}
           </TabsContent>
           <TabsContent value="ai" className="p-0">
-            <AiAssistant />
+            <AiGenerator addGeneratedElement={addGeneratedElement} />
           </TabsContent>
         </ScrollArea>
       </Tabs>
