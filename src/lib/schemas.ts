@@ -22,3 +22,15 @@ export const GenerateSiteSectionOutputSchema = z.object({
   section: CanvasElementDataSchema.describe('The generated website section as a single root CanvasElementData object, which should be of type "section".'),
 });
 export type GenerateSiteSectionOutput = z.infer<typeof GenerateSiteSectionOutputSchema>;
+
+export const TemplateSchema = z.object({
+  id: z.string().optional(),
+  name: z.string(),
+  description: z.string().optional(),
+  elements: z.array(CanvasElementDataSchema),
+  type: z.enum(['section', 'page', 'element']),
+  createdBy: z.string().optional(), // Assuming user ID will be stored here
+  createdAt: z.any().optional(), // serverTimestamp will be used
+});
+
+export type Template = z.infer<typeof TemplateSchema>;
