@@ -26,11 +26,12 @@ import { Textarea } from '../ui/textarea';
 interface RightSidebarProps {
   selectedElementId: string | null;
   elements: CanvasElementData[];
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, recordHistory?: boolean) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, recordHistory?: boolean) => void;
   deleteElement: (id: string) => void;
+  updateElementId: (oldId: string, newId: string) => void;
 }
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId }) => {
   
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
@@ -52,6 +53,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [props, setProps] = useState<Record<string, any>>({});
   const [content, setContent] = useState<string | undefined>(undefined);
   const [customCss, setCustomCss] = useState<string | undefined>(undefined);
+  const [className, setClassName] = useState<string | undefined>(undefined);
+  const [elementId, setElementId] = useState<string | undefined>(undefined);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const bgColorInputRef = useRef<HTMLInputElement>(null);
   const isTyping = useRef(false);
@@ -64,6 +67,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         setProps(selectedElement.props || {});
         setContent(selectedElement.content)
         setCustomCss(selectedElement.customCss)
+        setClassName(selectedElement.className);
+        setElementId(selectedElement.id);
     }
   }, [selectedElement]);
 
@@ -80,7 +85,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
       if (typingTimeout.current) clearTimeout(typingTimeout.current);
       isTyping.current = true;
       if (selectedElementId) {
-          updateElement(selectedElementId, newStyles, undefined, undefined, undefined, false);
+          updateElement(selectedElementId, newStyles, undefined, undefined, undefined, undefined, false);
       }
       typingTimeout.current = setTimeout(() => {
           isTyping.current = false;
@@ -103,7 +108,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     if (typingTimeout.current) clearTimeout(typingTimeout.current);
     isTyping.current = true;
     if (selectedElementId) {
-        updateElement(selectedElementId, undefined, undefined, value, undefined, false);
+        updateElement(selectedElementId, undefined, undefined, value, undefined, undefined, false);
     }
      typingTimeout.current = setTimeout(() => {
           isTyping.current = false;
@@ -118,7 +123,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
      if (typingTimeout.current) clearTimeout(typingTimeout.current);
     isTyping.current = true;
     if (selectedElementId) {
-        updateElement(selectedElementId, undefined, undefined, undefined, value, false);
+        updateElement(selectedElementId, undefined, undefined, undefined, value, undefined, false);
     }
      typingTimeout.current = setTimeout(() => {
           isTyping.current = false;
@@ -126,6 +131,31 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             updateElement(selectedElementId, undefined, undefined, undefined, value);
           }
       }, 500);
+  }
+
+    const handleClassNameChange = (value: string) => {
+    setClassName(value);
+     if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    isTyping.current = true;
+    if (selectedElementId) {
+        updateElement(selectedElementId, undefined, undefined, undefined, undefined, value, false);
+    }
+     typingTimeout.current = setTimeout(() => {
+          isTyping.current = false;
+          if (selectedElementId) {
+            updateElement(selectedElementId, undefined, undefined, undefined, undefined, value);
+          }
+      }, 500);
+  }
+
+  const handleIdChange = (value: string) => {
+      setElementId(value);
+  }
+  
+  const handleIdBlur = () => {
+    if (selectedElementId && elementId) {
+        updateElementId(selectedElementId, elementId);
+    }
   }
 
   const showFor = (types: CanvasElementData['type'][]) => {
@@ -150,7 +180,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="customize" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'content', 'link', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes', 'custom-css']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'attributes', 'content', 'link', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'custom-css']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -162,6 +192,21 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </div>
                   </AccordionContent>
                 </AccordionItem>
+                
+                 <AccordionItem value="attributes">
+                    <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
+                    <AccordionContent className="px-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>ID</Label>
+                            <Input value={elementId || ''} onChange={e => handleIdChange(e.target.value)} onBlur={handleIdBlur} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Classes</Label>
+                            <Input value={className || ''} onChange={e => handleClassNameChange(e.target.value)} />
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+
 
                  {showFor(['text', 'button', 'heading', 'link', 'label', 'list-item']) && (
                     <AccordionItem value="content">
@@ -210,8 +255,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 )}
 
                 {showFor(['input', 'textarea']) && (
-                    <AccordionItem value="attributes">
-                        <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
+                    <AccordionItem value="input-attributes">
+                        <AccordionTrigger className="px-4 text-sm font-medium">Input Attributes</AccordionTrigger>
                         <AccordionContent className="px-4 space-y-4">
                             <div className="space-y-2">
                                 <Label>Placeholder</Label>

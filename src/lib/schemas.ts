@@ -15,6 +15,7 @@ const CanvasElementDataSchema: z.ZodType<any> = z.lazy(() => z.object({
     props: z.any().optional().describe("A map of additional properties for the element. For 'heading', use 'level' (1-6). For 'image', use 'src' and 'alt'. For 'input', use 'placeholder'."),
     children: z.array(CanvasElementDataSchema).optional().describe("An array of child elements, for container-type elements like 'section', 'div', or 'container'."),
     customCss: z.string().optional().describe("A string of raw CSS to be applied directly to the element. Use this for advanced styles like pseudo-classes (:hover) or complex selectors."),
+    className: z.string().optional().describe("A string of CSS classes to apply to the element."),
 }));
 
 export const GenerateSiteSectionOutputSchema = z.object({

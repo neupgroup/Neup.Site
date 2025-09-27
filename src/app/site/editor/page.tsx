@@ -19,6 +19,7 @@ export interface CanvasElementData {
   props?: Record<string, any>;
   children?: CanvasElementData[];
   customCss?: string;
+  className?: string;
 }
 
 const initialElements: CanvasElementData[] = [
@@ -369,7 +370,7 @@ const WebsiteBuilderPage: FC = () => {
     }
   };
 
-  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, recordHistory = true) => {
+  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, recordHistory = true) => {
     try {
         setElements(prev => {
         // Deep clone to avoid mutation
@@ -388,6 +389,9 @@ const WebsiteBuilderPage: FC = () => {
                 if (newCustomCss !== undefined) {
                     updatedElement.customCss = newCustomCss;
                 }
+                if (newClassName !== undefined) {
+                    updatedElement.className = newClassName;
+                }
                 return updatedElement;
             }
             if (el.children) {
@@ -400,6 +404,42 @@ const WebsiteBuilderPage: FC = () => {
         }, recordHistory);
     } catch (e: any) {
         console.error("Error updating element:", e);
+        logErrorToFirestore({ message: e.message, stack: e.stack });
+    }
+  };
+
+  const updateElementId = (oldId: string, newId: string) => {
+    if (!newId || oldId === newId) return;
+    
+    // Check for uniqueness
+    if (findElementRecursive(elements, newId)) {
+        toast({
+            variant: 'destructive',
+            title: 'ID already exists',
+            description: 'Please choose a unique ID for the element.',
+        });
+        return;
+    }
+
+    try {
+      setElements(prev => {
+        const clonedPrev = JSON.parse(JSON.stringify(prev));
+        const updateIdRecursive = (els: CanvasElementData[]): CanvasElementData[] => {
+            return els.map(el => {
+            if (el.id === oldId) {
+                return { ...el, id: newId };
+            }
+            if (el.children) {
+                return { ...el, children: updateIdRecursive(el.children) };
+            }
+            return el;
+            });
+        };
+        return updateIdRecursive(clonedPrev);
+      });
+      setSelectedElement(newId);
+    } catch (e: any) {
+        console.error("Error updating element ID:", e);
         logErrorToFirestore({ message: e.message, stack: e.stack });
     }
   };
@@ -635,6 +675,7 @@ const WebsiteBuilderPage: FC = () => {
             elements={elements}
             updateElement={updateElement}
             deleteElement={deleteElement}
+            updateElementId={updateElementId}
         />
       </div>
       <CodeViewer

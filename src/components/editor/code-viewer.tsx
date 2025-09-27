@@ -134,7 +134,10 @@ const generateHtmlBody = (elements: CanvasElementData[]): string => {
     const tag = getTag(element);
     const isSelfClosing = ['img', 'input', 'video'].includes(tag);
     
-    let attributes = `class="${element.id}"`;
+    let attributes = `id="${element.id}"`;
+    if (element.className) {
+        attributes += ` class="${element.className}"`
+    }
     if (element.props) {
       attributes += ` ${formatAttributes(element.props)}`;
     }
@@ -169,7 +172,7 @@ const generateCss = (elements: CanvasElementData[]): string => {
   let css = '';
   const traverse = (els: CanvasElementData[]) => {
       for (const element of els) {
-          css += `.${element.id} {\n`;
+          css += `#${element.id} {\n`;
           if (element.styles) {
             for (const [key, value] of Object.entries(element.styles)) {
                 css += `  ${toKebabCase(key)}: ${value};\n`;

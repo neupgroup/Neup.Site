@@ -36,10 +36,10 @@ interface ResizingState {
 
 const CanvasElementWrapper: FC<{
   id: string;
+  className?: string;
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
   children: React.ReactNode;
-  className?: string;
   style?: React.CSSProperties;
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDragEnter: (e: React.DragEvent, id: string) => void;
@@ -47,7 +47,7 @@ const CanvasElementWrapper: FC<{
   onResizeStart: (e: React.MouseEvent, handle: ResizingState['handle']) => void;
   isContainer?: boolean;
   customCss?: string;
-}> = ({ id, selectedElement, onSelectElement, children, className, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer, customCss }) => {
+}> = ({ id, className, selectedElement, onSelectElement, children, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer, customCss }) => {
   const isSelected = selectedElement === id;
   const customCssId = `custom-css-${id}`;
   return (
@@ -254,11 +254,12 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
     const renderElement = (element: CanvasElementData, parentId: string | null = null) => {
-        const { id, type, content, styles, props, children, customCss } = element;
+        const { id, type, content, styles, props, children, customCss, className } = element;
         const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
 
         const {key, ...restWrapperProps} = {
             id,
+            className,
             selectedElement,
             onSelectElement,
             style: styles,
@@ -325,7 +326,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                   if (type === 'list') Tag = 'ul';
 
                   return (
-                    <CanvasElementWrapper {...restWrapperProps} key={key} className={cn({'p-4': children?.length === 0, 'container': type === 'container'})}>
+                    <CanvasElementWrapper {...restWrapperProps} key={key} className={cn({'p-4': children?.length === 0, 'container': type === 'container'}, className)}>
                       <Tag 
                         onDrop={(e) => handleDrop(e, id)} 
                         onDragOver={(e) => handleDragOver(e, id)} 
