@@ -1,5 +1,4 @@
 'use client';
-import { usePathname } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
@@ -17,9 +16,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const showNav = pathname !== '/site/editor';
-
   return (
     <html lang="en">
       <head>
@@ -31,15 +27,6 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {showNav && (
-            <nav className="bg-card border-b p-4">
-                <ul className="flex space-x-4">
-                    <li key="/site/editor"><Link href="/site/editor" className="text-sm text-foreground hover:text-primary">Editor</Link></li>
-                    <li key="/landing"><Link href="/landing" className="text-sm text-foreground hover:text-primary">Landing</Link></li>
-                    <li key="/errors"><Link href="/errors" className="text-sm text-foreground hover:text-primary">Errors</Link></li>
-                </ul>
-            </nav>
-        )}
         {children}
         <Toaster />
       </body>
