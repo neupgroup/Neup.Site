@@ -102,6 +102,7 @@ body {
 
 const generateHtmlBody = (elements: CanvasElementData[]): string => {
   const formatAttributes = (props: Record<string, any>): string => {
+    if (!props) return '';
     return Object.entries(props)
       .map(([key, value]) => `${key}="${value}"`)
       .join(' ');
@@ -110,19 +111,20 @@ const generateHtmlBody = (elements: CanvasElementData[]): string => {
   const getTag = (el: CanvasElementData): string => {
     switch (el.type) {
       case 'heading': return `h${(el.props?.level || 1)}`;
-      case 'text':
-      case 'hero-subtitle':
-         return 'p';
-      case 'image':
-      case 'feature-image':
-        return 'img';
-      case 'button':
-      case 'hero-cta':
-        return 'button';
+      case 'text': return 'p';
+      case 'image': return 'img';
+      case 'button': return 'button';
       case 'section': return 'section';
       case 'container':
       case 'div': return 'div';
       case 'input': return 'input';
+      case 'link': return 'a';
+      case 'video': return 'video';
+      case 'list': return 'ul';
+      case 'list-item': return 'li';
+      case 'form': return 'form';
+      case 'label': return 'label';
+      case 'textarea': return 'textarea';
       default: return 'div';
     }
   }
@@ -130,7 +132,7 @@ const generateHtmlBody = (elements: CanvasElementData[]): string => {
   let html = '';
   for (const element of elements) {
     const tag = getTag(element);
-    const isSelfClosing = ['img', 'input'].includes(tag);
+    const isSelfClosing = ['img', 'input', 'video'].includes(tag);
     
     let attributes = `class="${element.id}"`;
     if (element.props) {
@@ -140,6 +142,9 @@ const generateHtmlBody = (elements: CanvasElementData[]): string => {
        if (element.props?.placeholder) {
           attributes += ` placeholder="${element.props.placeholder}"`;
        }
+    }
+    if (isSelfClosing && tag === 'video') {
+       attributes += ` controls`;
     }
 
     if (isSelfClosing) {
@@ -165,8 +170,10 @@ const generateCss = (elements: CanvasElementData[]): string => {
   const traverse = (els: CanvasElementData[]) => {
       for (const element of els) {
           css += `.${element.id} {\n`;
-          for (const [key, value] of Object.entries(element.styles)) {
-              css += `  ${toKebabCase(key)}: ${value};\n`;
+          if (element.styles) {
+            for (const [key, value] of Object.entries(element.styles)) {
+                css += `  ${toKebabCase(key)}: ${value};\n`;
+            }
           }
           if (element.customCss) {
               css += `  ${element.customCss}\n`

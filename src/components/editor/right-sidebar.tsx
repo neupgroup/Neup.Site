@@ -128,11 +128,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
       }, 500);
   }
 
-  const showFor = (types: (CanvasElementData['type'] | 'component')[]) => {
+  const showFor = (types: CanvasElementData['type'][]) => {
       if (!selectedElement) return false;
-      if (types.includes('component')) {
-          return selectedElement.type.includes('hero') || selectedElement.type.includes('feature');
-      }
       return types.includes(selectedElement.type);
   }
 
@@ -153,7 +150,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="customize" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'content', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes', 'custom-css']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'content', 'link', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'attributes', 'custom-css']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -166,12 +163,24 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                   </AccordionContent>
                 </AccordionItem>
 
-                 {showFor(['text', 'button', 'hero', 'hero-subtitle', 'hero-cta', 'heading']) && (
+                 {showFor(['text', 'button', 'heading', 'link', 'label', 'list-item']) && (
                     <AccordionItem value="content">
                         <AccordionTrigger className="px-4 text-sm font-medium">Content</AccordionTrigger>
                         <AccordionContent className="px-4 space-y-2">
                             <Label>Text</Label>
                             <Input value={content || ''} onChange={e => handleContentChange(e.target.value)} />
+                        </AccordionContent>
+                    </AccordionItem>
+                )}
+
+                {showFor(['link']) && (
+                    <AccordionItem value="link">
+                        <AccordionTrigger className="px-4 text-sm font-medium">Link</AccordionTrigger>
+                        <AccordionContent className="px-4 space-y-2">
+                             <div className="space-y-2">
+                                <Label>URL (href)</Label>
+                                <Input value={props.href || ''} onChange={e => handlePropChange('href', e.target.value)} placeholder="#" />
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 )}
@@ -200,7 +209,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </AccordionItem>
                 )}
 
-                {showFor(['input']) && (
+                {showFor(['input', 'textarea']) && (
                     <AccordionItem value="attributes">
                         <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                         <AccordionContent className="px-4 space-y-4">
@@ -304,7 +313,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                   </AccordionContent>
                 </AccordionItem>
 
-                {(showFor(['text', 'button', 'hero', 'hero-subtitle', 'heading'])) && (
+                {showFor(['text', 'button', 'heading', 'link', 'label', 'list-item']) && (
                 <AccordionItem value="typography">
                   <AccordionTrigger className="px-4 text-sm font-medium">Typography</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-4">
@@ -351,7 +360,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 </AccordionItem>
                 )}
                 
-                {(showFor(['text', 'hero', 'hero-subtitle', 'heading'])) && (
+                {showFor(['text', 'heading', 'link', 'label', 'list-item']) && (
                  <AccordionItem value="color">
                     <AccordionTrigger className="px-4 text-sm font-medium">Color</AccordionTrigger>
                     <AccordionContent className="px-4 space-y-2">
@@ -445,7 +454,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </AccordionContent>
                 </AccordionItem>
 
-                {showFor(['image', 'feature-image']) && (
+                {showFor(['image']) && (
                    <AccordionItem value="image">
                     <AccordionTrigger className="px-4 text-sm font-medium">Image</AccordionTrigger>
                     <AccordionContent className="px-4 space-y-4">
@@ -456,6 +465,17 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                         <div className="space-y-2">
                           <Label>Alt Text</Label>
                           <Input value={props.alt || ''} onChange={e => handlePropChange('alt', e.target.value)} />
+                        </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+                 {showFor(['video']) && (
+                   <AccordionItem value="video">
+                    <AccordionTrigger className="px-4 text-sm font-medium">Video</AccordionTrigger>
+                    <AccordionContent className="px-4 space-y-4">
+                        <div className="space-y-2">
+                          <Label>Source URL</Label>
+                          <Input value={props.src || ''} onChange={e => handlePropChange('src', e.target.value)} />
                         </div>
                     </AccordionContent>
                   </AccordionItem>

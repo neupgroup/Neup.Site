@@ -9,7 +9,7 @@ export type GenerateSiteSectionInput = z.infer<typeof GenerateSiteSectionInputSc
 
 const CanvasElementDataSchema: z.ZodType<any> = z.lazy(() => z.object({
     id: z.string().describe("A unique identifier for the element. Should be a descriptive slug, e.g., 'hero-title-123'."),
-    type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading']).describe("The type of the element."),
+    type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'link', 'video', 'list', 'list-item', 'form', 'label', 'textarea']).describe("The type of the element."),
     content: z.string().optional().describe("Text content for elements like text, button, or heading."),
     styles: z.any().describe("A map of CSS properties and their values. Use camelCase for property names (e.g., 'fontSize'). You can use standard CSS values, including pixels ('px'), percentages ('%'), and HSL variables like 'hsl(var(--primary))'."),
     props: z.any().optional().describe("A map of additional properties for the element. For 'heading', use 'level' (1-6). For 'image', use 'src' and 'alt'. For 'input', use 'placeholder'."),

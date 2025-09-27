@@ -6,6 +6,7 @@ import { CanvasElementData } from '@/app/site/editor/page';
 import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -253,7 +254,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     
     const renderElement = (element: CanvasElementData, parentId: string | null = null) => {
         const { id, type, content, styles, props, children, customCss } = element;
-        const isContainer = ['section', 'div', 'container'].includes(type);
+        const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
 
         const {key, ...restWrapperProps} = {
             id,
@@ -273,12 +274,6 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 
         const elementComponent = (() => {
             switch (type) {
-                case 'hero': // This case can be removed if we are sure `hero` is obsolete
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps} key={key} className="text-center">
-                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight}} className="font-headline tracking-tight" />
-                        </CanvasElementWrapper>
-                    )
                 case 'heading':
                     const HeadingTag = `h${props?.level || 1}` as keyof JSX.IntrinsicElements;
                     return (
@@ -288,34 +283,22 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                             </HeadingTag>
                         </CanvasElementWrapper>
                     );
-                case 'hero-subtitle':
-                    return (
-                         <CanvasElementWrapper {...restWrapperProps} key={key} className="text-center">
-                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize}} className="mx-auto max-w-2xl text-muted-foreground"/>
-                        </CanvasElementWrapper>
-                    )
-                case 'hero-cta':
-                     return (
-                         <CanvasElementWrapper {...restWrapperProps} key={key} className="text-center">
-                            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">{content}</Button>
-                        </CanvasElementWrapper>
-                    )
-                case 'feature-image':
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps} key={key}>
-                           {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 1200} height={props.height || 600} className="aspect-[2/1] w-full object-cover" {...props} />}
-                        </CanvasElementWrapper>
-                    )
                 case 'text':
                     return (
                         <CanvasElementWrapper {...restWrapperProps} key={key}>
                             <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} />
                         </CanvasElementWrapper>
                     );
+                case 'link':
+                    return (
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
+                            <a href={props?.href || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} /></a>
+                        </CanvasElementWrapper>
+                    );
                 case 'button':
                     return (
                         <CanvasElementWrapper {...restWrapperProps} key={key}>
-                            <Button className="w-full h-full">{content}</Button>
+                            <Button className="w-full h-full"><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></Button>
                         </CanvasElementWrapper>
                     );
                 case 'image':
@@ -324,10 +307,22 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                             {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
                         </CanvasElementWrapper>
                      );
+                case 'video':
+                     return (
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
+                            <video controls src={props?.src} className="w-full h-full" />
+                        </CanvasElementWrapper>
+                     );
                 case 'section':
                 case 'div':
                 case 'container':
-                  const Tag = type === 'section' ? 'section' : 'div';
+                case 'form':
+                case 'list':
+                  let Tag: 'section' | 'div' | 'form' | 'ul' = 'div';
+                  if (type === 'section') Tag = 'section';
+                  if (type === 'form') Tag = 'form';
+                  if (type === 'list') Tag = 'ul';
+
                   return (
                     <CanvasElementWrapper {...restWrapperProps} key={key} className={cn({'p-4': children?.length === 0, 'container': type === 'container'})}>
                       <Tag 
@@ -345,13 +340,41 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                       </Tag>
                     </CanvasElementWrapper>
                   )
+                case 'list-item':
+                  return (
+                    <CanvasElementWrapper {...restWrapperProps} key={key}>
+                      <li>
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} />
+                      </li>
+                    </CanvasElementWrapper>
+                  )
                 case 'input':
                     return (
                         <CanvasElementWrapper {...restWrapperProps} key={key}>
                            <Input {...props} className="w-full h-full bg-background" />
                         </CanvasElementWrapper>
                     );
+                case 'textarea':
+                    return (
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
+                           <Textarea {...props} className="w-full h-full bg-background" />
+                        </CanvasElementWrapper>
+                    );
+                case 'label':
+                    return (
+                        <CanvasElementWrapper {...restWrapperProps} key={key}>
+                            <label><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></label>
+                        </CanvasElementWrapper>
+                    );
                 default:
+                     // Fallback for obsolete types
+                    if ((type as string).startsWith('hero') || (type as string).startsWith('feature')) {
+                         return (
+                            <CanvasElementWrapper {...restWrapperProps} key={key}>
+                                <div className="text-muted-foreground p-4 border border-dashed">Obsolete Component: {type}</div>
+                            </CanvasElementWrapper>
+                        )
+                    }
                     return null;
             }
         })();

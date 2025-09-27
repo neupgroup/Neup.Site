@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface CanvasElementData {
   id: string;
-  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input' | 'heading';
+  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'link' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea';
   content?: string;
   styles: React.CSSProperties;
   props?: Record<string, any>;
@@ -54,7 +54,7 @@ const initialElements: CanvasElementData[] = [
             },
             {
                 id: "hero-subtitle",
-                type: 'hero-subtitle',
+                type: 'text',
                 content: "Create stunning, professional websites with our intuitive drag-and-drop editor. No code required.",
                 styles: {
                     paddingTop: '0px',
@@ -70,7 +70,7 @@ const initialElements: CanvasElementData[] = [
             },
             {
                 id: "hero-cta",
-                type: "hero-cta",
+                type: "button",
                 content: "Get Started Now",
                 styles: {
                     marginTop: '32px',
@@ -80,11 +80,14 @@ const initialElements: CanvasElementData[] = [
                     paddingBottom: '48px',
                     paddingLeft: '0px',
                     display: 'block',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    width: 'fit-content'
                 }
             },
             {
                 id: "feature-image",
-                type: 'feature-image',
+                type: 'image',
                 props: {
                     src: PlaceHolderImages.find(p => p.id === 'feature-1')?.imageUrl,
                     alt: PlaceHolderImages.find(p => p.id === 'feature-1')?.description,
@@ -266,19 +269,37 @@ const WebsiteBuilderPage: FC = () => {
                 'data-ai-hint': placeholder?.imageHint,
             };
             newElement.styles.height = '100px';
-        } else if (elementType === 'section' || elementType === 'div' || elementType === 'container') {
-        newElement.children = [];
-        newElement.styles.minHeight = '100px';
-        newElement.styles.border = '1px dashed hsl(var(--border))';
-        if (elementType === 'container') {
-            newElement.styles.maxWidth = '1100px';
-            newElement.styles.marginLeft = 'auto';
-            newElement.styles.marginRight = 'auto';
-        }
+        } else if (elementType === 'section' || elementType === 'div' || elementType === 'container' || elementType === 'form' || elementType === 'list' || elementType === 'list-item') {
+            newElement.children = [];
+            newElement.styles.minHeight = '100px';
+            newElement.styles.border = '1px dashed hsl(var(--border))';
+            if (elementType === 'container') {
+                newElement.styles.maxWidth = '1100px';
+                newElement.styles.marginLeft = 'auto';
+                newElement.styles.marginRight = 'auto';
+            }
+            if (elementType === 'list-item') {
+              newElement.content = "List Item";
+              newElement.styles.minHeight = 'auto';
+            }
         } else if (elementType === 'input') {
-        newElement.props = { placeholder: 'Enter text...' };
-        newElement.styles.height = '40px';
-        newElement.styles.width = '200px';
+            newElement.props = { placeholder: 'Enter text...' };
+            newElement.styles.height = '40px';
+            newElement.styles.width = '200px';
+        } else if (elementType === 'link') {
+            newElement.content = 'Link';
+            newElement.props = { href: '#' };
+            newElement.styles.textDecoration = 'underline';
+        } else if (elementType === 'video') {
+            newElement.props = { src: 'https://www.w3schools.com/html/mov_bbb.mp4' };
+            newElement.styles.width = '320px';
+            newElement.styles.height = '240px';
+        } else if (elementType === 'textarea') {
+            newElement.props = { placeholder: 'Enter more text...' };
+            newElement.styles.height = '80px';
+            newElement.styles.width = '200px';
+        } else if (elementType === 'label') {
+            newElement.content = 'Label';
         }
         
         setElements(prev => {
@@ -450,7 +471,7 @@ const WebsiteBuilderPage: FC = () => {
 
             const { element: selectedEl, parent } = result;
 
-            if (selectedEl && ['section', 'div', 'container'].includes(selectedEl.type)) {
+            if (selectedEl && ['section', 'div', 'container', 'form', 'list'].includes(selectedEl.type)) {
                 // Paste inside container as last element
                 const addInside = (els: CanvasElementData[]): CanvasElementData[] => {
                     return els.map(el => {

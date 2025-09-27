@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Sparkles } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Sparkles, Link as LinkIcon, Video, List, ListOrdered, TextQuote, Pilcrow, MessageSquare, Square, CheckSquare, CircleDot, CaseSensitive, ListIcon, ListVideo } from 'lucide-react';
 import { CanvasElementData } from '@/app/site/editor/page';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -41,6 +41,13 @@ const getIconForType = (type: CanvasElementData['type']) => {
         case 'hero': return <Heading1 className="h-4 w-4" />;
         case 'heading': return <Heading1 className="h-4 w-4" />;
         case 'hero-subtitle': return <Heading2 className="h-4 w-4" />;
+        case 'link': return <LinkIcon className="h-4 w-4" />;
+        case 'video': return <Video className="h-4 w-4" />;
+        case 'list': return <List className="h-4 w-4" />;
+        case 'list-item': return <Pilcrow className="h-4 w-4" />;
+        case 'form': return <MessageSquare className="h-4 w-4" />;
+        case 'label': return <CaseSensitive className="h-4 w-4" />;
+        case 'textarea': return <Square className="h-4 w-4" />;
         default: return <Component className="h-4 w-4" />;
     }
 }
@@ -98,7 +105,7 @@ const LayerItem: FC<{
         setDragCounter(0);
     };
 
-    const isContainer = ['section', 'div', 'container'].includes(element.type);
+    const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(element.type);
 
     return (
         <div
@@ -263,19 +270,31 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                         <ContentBlock icon={<Heading5 className="h-6 w-6" />} label="Heading 5" type="heading" props={ { level: 5 } } />
                         <ContentBlock icon={<Heading6 className="h-6 w-6" />} label="Heading 6" type="heading" props={ { level: 6 } } />
                         <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
+                        <ContentBlock icon={<LinkIcon className="h-6 w-6" />} label="Link" type="link" />
                    </div>
+              </div>
+               <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Lists</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <ContentBlock icon={<List className="h-6 w-6" />} label="List" type="list" />
+                    <ContentBlock icon={<Pilcrow className="h-6 w-6" />} label="List Item" type="list-item" />
+                  </div>
               </div>
               <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Basic</p>
                   <div className="grid grid-cols-2 gap-4">
                     <ContentBlock icon={<ImageIcon className="h-6 w-6" />} label="Image" type="image" />
                     <ContentBlock icon={<MousePointerClick className="h-6 w-6" />} label="Button" type="button" />
+                    <ContentBlock icon={<Video className="h-6 w-6" />} label="Video" type="video" />
                   </div>
               </div>
                <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Forms</p>
                   <div className="grid grid-cols-2 gap-4">
+                    <ContentBlock icon={<MessageSquare className="h-6 w-6" />} label="Form" type="form" />
                     <ContentBlock icon={<FormInput className="h-6 w-6" />} label="Input" type="input" />
+                    <ContentBlock icon={<Square className="h-6 w-6" />} label="Textarea" type="textarea" />
+                    <ContentBlock icon={<CaseSensitive className="h-6 w-6" />} label="Label" type="label" />
                   </div>
               </div>
             </div>
