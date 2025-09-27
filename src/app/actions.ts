@@ -5,11 +5,7 @@ import {
   type AiDesignSuggestionsInput,
   type AiDesignSuggestionsOutput,
 } from '@/ai/flows/ai-design-suggestions';
-import { 
-  generateSiteSection,
-  type GenerateSiteSectionInput,
-  type GenerateSiteSectionOutput 
-} from '@/ai/flows/generate-site-section';
+import { generateSiteSection } from '@/ai/flows/generate-site-section';
 import {
   processCss,
   type ProcessCssInput,
@@ -17,6 +13,8 @@ import {
 } from '@/ai/flows/process-css';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { type GenerateSiteSectionInput, type GenerateSiteSectionOutput } from '@/lib/schemas';
+
 
 export async function getAiDesignSuggestionsAction(
   input: AiDesignSuggestionsInput
