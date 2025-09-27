@@ -2,7 +2,6 @@
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
-import Link from 'next/link';
 
 // Note: Metadata is not supported in client components.
 // If you need to set metadata, you would move this to a server component parent.
