@@ -38,7 +38,7 @@ export const TemplateSchema = z.object({
   templateHtml: z.string(),
   type: z.enum(['section', 'page', 'element']),
   createdBy: z.string().optional(), // Assuming user ID will be stored here
-  createdAt: z.any().optional(), // serverTimestamp will be used
+  createdAt: z.string().optional(), // serverTimestamp will be used
 });
 
 export type Template = z.infer<typeof TemplateSchema>;

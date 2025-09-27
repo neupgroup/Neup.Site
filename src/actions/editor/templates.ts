@@ -10,6 +10,7 @@ import {
   getDoc,
   deleteDoc,
   serverTimestamp,
+  Timestamp,
 } from 'firebase/firestore';
 import type { Template } from '@/lib/schemas';
 import { logErrorToFirestore } from '../logging';
@@ -54,10 +55,21 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
 export async function getTemplates() {
   try {
     const querySnapshot = await getDocs(collection(db, TEMPLATES_COLLECTION));
-    const templates = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Template[];
+    const templates = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      const createdAt = data.createdAt;
+      
+      // Convert Timestamp to a serializable format (ISO string)
+      const serializableData = {
+        ...data,
+        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+      };
+
+      return {
+        id: doc.id,
+        ...serializableData,
+      };
+    }) as Template[];
     return { success: true, templates };
   } catch (error: any) {
     console.error('Failed to fetch templates:', error);
@@ -80,8 +92,17 @@ export async function getTemplate(id: string) {
         if (!docSnap.exists()) {
             return { success: false, error: 'Template not found.' };
         }
+        
+        const data = docSnap.data();
+        const createdAt = data.createdAt;
 
-        const template = { id: docSnap.id, ...docSnap.data() } as Template;
+        // Convert Timestamp to a serializable format (ISO string)
+        const serializableData = {
+            ...data,
+            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+        };
+
+        const template = { id: docSnap.id, ...serializableData } as Template;
         return { success: true, template };
     } catch (error: any) {
         console.error(`Failed to fetch template with ID ${id}:`, error);
