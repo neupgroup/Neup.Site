@@ -7,7 +7,8 @@ import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
 import CodeViewer from '@/components/editor/code-viewer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { logErrorToFirestore, saveSite } from '@/app/actions';
+import { logErrorToFirestore } from '@/app/actions/logging';
+import { saveSite } from '@/app/actions/editor/site';
 import { useToast } from '@/hooks/use-toast';
 
 export interface CanvasElementData {

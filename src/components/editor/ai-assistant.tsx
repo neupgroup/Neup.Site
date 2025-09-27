@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getAiDesignSuggestionsAction } from '@/app/actions';
+import { getAiDesignSuggestionsAction } from '@/app/actions/ai/design';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Sparkles, Palette, Type, Layout, FileText } from 'lucide-react';
+import { type AiDesignSuggestionsOutput } from '@/ai/flows/ai-design-suggestions';
 
 const suggestionSchema = z.object({
   designDescription: z.string().min(10, 'Please provide a more detailed description.'),
@@ -17,10 +18,9 @@ const suggestionSchema = z.object({
 });
 
 type SuggestionFormValues = z.infer<typeof suggestionSchema>;
-type AiSuggestions = Awaited<ReturnType<typeof getAiDesignSuggestionsAction>>;
 
 const AiAssistant = () => {
-  const [suggestions, setSuggestions] = useState<AiSuggestions | null>(null);
+  const [suggestions, setSuggestions] = useState<AiDesignSuggestionsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
