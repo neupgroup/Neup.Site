@@ -104,32 +104,34 @@ const LayerItem: FC<{
     const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(element.type);
 
     return (
-        <div
-            draggable
-            onDragStart={handleDragStart}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            className="relative"
-        >
-            {isDraggedOver && <DropIndicator className="absolute -top-px left-0" />}
-            <div 
-                className={cn(
-                    "flex items-center gap-2 py-1 px-2 rounded-md cursor-pointer hover:bg-secondary",
-                    { "bg-secondary": selectedElement === element.id }
-                )}
-                style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectElement(element.id);
-                }}
+        <div>
+            <div
+                draggable
+                onDragStart={handleDragStart}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className="relative"
             >
-                {getIconForType(element.type)}
-                <span className="text-sm truncate">{element.id} ({element.type})</span>
+                {isDraggedOver && <DropIndicator className="absolute -top-px left-0" />}
+                <div 
+                    className={cn(
+                        "flex items-center gap-2 py-1 px-2 rounded-md cursor-pointer hover:bg-secondary",
+                        { "bg-secondary": selectedElement === element.id }
+                    )}
+                    style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectElement(element.id);
+                    }}
+                >
+                    {getIconForType(element.type)}
+                    <span className="text-sm truncate">{element.id} ({element.type})</span>
+                </div>
             </div>
             {isContainer && element.children && (
-                 <div style={{ paddingLeft: `${level * 1 + 0.5}rem` }}>
+                 <div className="relative">
                     {element.children.map(child => (
                         <LayerItem 
                             key={child.id} 

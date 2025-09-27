@@ -16,15 +16,15 @@ export interface CanvasElementData {
 
 // Now, define the Zod schema using the TypeScript type.
 export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
-    id: z.string().describe("A unique identifier for the element. Should be a descriptive slug, e.g., 'hero-title-123'."),
-    type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'link', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']).describe("The type of the element."),
-    content: z.string().optional().describe("Text content for elements like text, button, or heading."),
-    htmlContent: z.string().optional().describe("Raw HTML content for 'html' type elements."),
-    styles: z.any().describe("A map of CSS properties and their values. Use camelCase for property names (e.g., 'fontSize'). You can use standard CSS values, including pixels ('px'), percentages ('%'), and HSL variables like 'hsl(var(--primary))'."),
-    props: z.any().optional().describe("A map of additional properties for the element. For 'heading', use 'level' (1-6). For 'image', use 'src' and 'alt'. For 'input', use 'placeholder'."),
-    children: z.array(CanvasElementDataSchema).optional().describe("An array of child elements, for container-type elements like 'section', 'div', or 'container'."),
-    customCss: z.string().optional().describe("A string of raw CSS to be applied directly to the element. Use this for advanced styles like pseudo-classes (:hover) or complex selectors."),
-    className: z.string().optional().describe("A string of CSS classes to apply to the element."),
+    id: z.string(),
+    type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'link', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']),
+    content: z.string().optional(),
+    htmlContent: z.string().optional(),
+    styles: z.any(),
+    props: z.any().optional(),
+    children: z.array(CanvasElementDataSchema).optional(),
+    customCss: z.string().optional(),
+    className: z.string().optional(),
 }));
 
 export const TemplateSchema = z.object({

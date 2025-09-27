@@ -46,11 +46,10 @@ const CanvasElementWrapper: FC<{
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDragEnter: (e: React.DragEvent, id: string) => void;
   onDragLeave: (e: React.DragEvent) => void;
-  onResizeStart: (e: React.MouseEvent, handle: ResizingState['handle']) => void;
   isContainer?: boolean;
   customCss?: string;
   dangerouslySetInnerHTML?: { __html: string };
-}> = ({ id, className, selectedElement, onSelectElement, children, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer, customCss, dangerouslySetInnerHTML }) => {
+}> = ({ id, className, selectedElement, onSelectElement, children, style, onDragStart, onDragEnter, onDragLeave, isContainer, customCss, dangerouslySetInnerHTML }) => {
   const isSelected = selectedElement === id;
   const customCssId = `custom-css-${id}`;
 
@@ -270,12 +269,24 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             onDragStart: handleDragStart,
             onDragEnter: (e: React.DragEvent) => handleDragEnter(e, id, parentId),
             onDragLeave: handleDragLeave,
-            onResizeStart: handleResizeStart,
             isContainer,
             customCss
         };
         
         const showDropIndicator = dropZone.elementId === id && dropZone.parentId === parentId && id !== draggedId;
+
+        const renderResizeHandles = () => isSelected && (
+            <>
+              <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
+              <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
+              <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
+              <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
+              <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
+              <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
+              <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
+              <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
+            </>
+        );
 
         let elementComponent: React.ReactNode;
 
@@ -287,6 +298,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                          <HeadingTag>
                             <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
                         </HeadingTag>
+                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
@@ -294,6 +306,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                         <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} />
+                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
@@ -301,6 +314,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                         <a href={props?.href || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} /></a>
+                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
@@ -308,6 +322,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                         <Button className="w-full h-full"><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></Button>
+                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
@@ -315,6 +330,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                  elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                         {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
+                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                  );
                  break;
@@ -322,6 +338,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                  elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                         <video controls src={props?.src} className="w-full h-full" />
+                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                  );
                  break;
@@ -350,6 +367,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                         <DropIndicator className="!my-0" />
                     )}
                   </Tag>
+                  {renderResizeHandles()}
                 </CanvasElementWrapper>
               );
               break;
@@ -359,6 +377,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                   <li>
                     <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} />
                   </li>
+                  {renderResizeHandles()}
                 </CanvasElementWrapper>
               );
               break;
@@ -366,6 +385,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                        <Input {...props} className="w-full h-full bg-background" />
+                       {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
@@ -373,6 +393,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                        <Textarea {...props} className="w-full h-full bg-background" />
+                       {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
@@ -380,12 +401,15 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                         <label><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></label>
+                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
             case 'html':
                 elementComponent = (
-                    <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
+                    <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} >
+                      {renderResizeHandles()}
+                    </CanvasElementWrapper>
                 );
                 break;
             default:
@@ -396,25 +420,13 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             <div key={id}>
                 {showDropIndicator && <DropIndicator />}
                 {elementComponent}
-                {isSelected && (
-                  <>
-                    <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
-                    <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
-                    <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
-                    <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
-                    <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
-                    <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
-                    <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
-                    <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
-                  </>
-                )}
             </div>
         );
     }
   
   return (
     <div 
-        className="mx-auto h-full w-full max-w-screen-xl px-4 md:px-8 py-10" 
+        className="mx-auto h-full w-full max-w-screen-xl py-10 px-4 md:px-8" 
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e)}

@@ -149,7 +149,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
     }
   };
 
-  const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string, htmlContent?: string) => {
+  const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => {
     try {
         const newElement: CanvasElementData = {
             id: `${elementType}-${Date.now()}`,
@@ -215,7 +215,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         } else if (elementType === 'label') {
             newElement.content = 'Label';
         } else if (elementType === 'html') {
-            newElement.htmlContent = htmlContent || '<div>Template HTML</div>';
+            newElement.htmlContent = '<div>Generated HTML</div>';
             newElement.styles.minHeight = '50px';
         }
         
