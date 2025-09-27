@@ -1,9 +1,5 @@
 'use server';
-
-import {
-  htmlToJson,
-  type HtmlToJsonInput,
-} from '@/ai/flows/html-to-json';
+import { htmlToJson, type HtmlToJsonInput } from '@/ai/flows/html-to-json';
 import { type GenerateSiteSectionOutput } from '@/lib/schemas';
 
 

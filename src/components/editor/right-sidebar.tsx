@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings } from 'lucide-react';
+import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
 import { CanvasElementData } from '@/app/site/editor/page';
 import {
@@ -26,7 +26,7 @@ import { Textarea } from '../ui/textarea';
 interface RightSidebarProps {
   selectedElementId: string | null;
   elements: CanvasElementData[];
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, recordHistory?: boolean) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string, recordHistory?: boolean) => void;
   deleteElement: (id: string) => void;
   updateElementId: (oldId: string, newId: string) => void;
 }
@@ -52,6 +52,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [styles, setStyles] = useState<React.CSSProperties>({});
   const [props, setProps] = useState<Record<string, any>>({});
   const [content, setContent] = useState<string | undefined>(undefined);
+  const [htmlContent, setHtmlContent] = useState<string | undefined>(undefined);
   const [customCss, setCustomCss] = useState<string | undefined>(undefined);
   const [className, setClassName] = useState<string | undefined>(undefined);
   const [elementId, setElementId] = useState<string | undefined>(undefined);
@@ -65,8 +66,9 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     if (selectedElement) {
         setStyles(selectedElement.styles);
         setProps(selectedElement.props || {});
-        setContent(selectedElement.content)
-        setCustomCss(selectedElement.customCss)
+        setContent(selectedElement.content);
+        setHtmlContent(selectedElement.htmlContent);
+        setCustomCss(selectedElement.customCss);
         setClassName(selectedElement.className);
         setElementId(selectedElement.id);
     }
@@ -85,7 +87,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
       if (typingTimeout.current) clearTimeout(typingTimeout.current);
       isTyping.current = true;
       if (selectedElementId) {
-          updateElement(selectedElementId, newStyles, undefined, undefined, undefined, undefined, false);
+          updateElement(selectedElementId, newStyles, undefined, undefined, undefined, undefined, undefined, false);
       }
       typingTimeout.current = setTimeout(() => {
           isTyping.current = false;
@@ -108,7 +110,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     if (typingTimeout.current) clearTimeout(typingTimeout.current);
     isTyping.current = true;
     if (selectedElementId) {
-        updateElement(selectedElementId, undefined, undefined, value, undefined, undefined, false);
+        updateElement(selectedElementId, undefined, undefined, value, undefined, undefined, undefined, false);
     }
      typingTimeout.current = setTimeout(() => {
           isTyping.current = false;
@@ -118,12 +120,27 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
       }, 500);
   }
 
+  const handleHtmlContentChange = (value: string) => {
+    setHtmlContent(value);
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    isTyping.current = true;
+    if (selectedElementId) {
+        updateElement(selectedElementId, undefined, undefined, undefined, undefined, undefined, value, false);
+    }
+     typingTimeout.current = setTimeout(() => {
+          isTyping.current = false;
+          if (selectedElementId) {
+            updateElement(selectedElementId, undefined, undefined, undefined, undefined, undefined, value);
+          }
+      }, 500);
+  }
+
   const handleCustomCssChange = (value: string) => {
     setCustomCss(value);
      if (typingTimeout.current) clearTimeout(typingTimeout.current);
     isTyping.current = true;
     if (selectedElementId) {
-        updateElement(selectedElementId, undefined, undefined, undefined, value, undefined, false);
+        updateElement(selectedElementId, undefined, undefined, undefined, value, undefined, undefined, false);
     }
      typingTimeout.current = setTimeout(() => {
           isTyping.current = false;
@@ -138,7 +155,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
      if (typingTimeout.current) clearTimeout(typingTimeout.current);
     isTyping.current = true;
     if (selectedElementId) {
-        updateElement(selectedElementId, undefined, undefined, undefined, undefined, value, false);
+        updateElement(selectedElementId, undefined, undefined, undefined, undefined, value, undefined, false);
     }
      typingTimeout.current = setTimeout(() => {
           isTyping.current = false;
@@ -180,7 +197,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="customize" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'attributes', 'content', 'link', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'custom-css']} className="w-full">
+              <Accordion type="multiple" defaultValue={['element-id', 'attributes', 'content', 'html-content', 'link', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'custom-css']} className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -214,6 +231,20 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                         <AccordionContent className="px-4 space-y-2">
                             <Label>Text</Label>
                             <Input value={content || ''} onChange={e => handleContentChange(e.target.value)} />
+                        </AccordionContent>
+                    </AccordionItem>
+                )}
+
+                {showFor(['html']) && (
+                    <AccordionItem value="html-content">
+                        <AccordionTrigger className="px-4 text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4" /> Raw HTML</AccordionTrigger>
+                        <AccordionContent className="px-4 space-y-2">
+                            <Textarea 
+                              value={htmlContent || ''} 
+                              onChange={(e) => handleHtmlContentChange(e.target.value)}
+                              rows={10}
+                              placeholder="<p>Your HTML here...</p>"
+                            />
                         </AccordionContent>
                     </AccordionItem>
                 )}

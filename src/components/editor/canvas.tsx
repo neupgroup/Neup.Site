@@ -16,9 +16,9 @@ interface CanvasProps {
   elements: CanvasElementData[];
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newHtmlContent?: string) => void;
   moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
-  addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
+  addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string, htmlContent?: string) => void;
   addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
@@ -51,35 +51,43 @@ const CanvasElementWrapper: FC<{
   onResizeStart: (e: React.MouseEvent, handle: ResizingState['handle']) => void;
   isContainer?: boolean;
   customCss?: string;
-}> = ({ id, className, selectedElement, onSelectElement, children, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer, customCss }) => {
+  dangerouslySetInnerHTML?: { __html: string };
+}> = ({ id, className, selectedElement, onSelectElement, children, style, onDragStart, onDragEnter, onDragLeave, onResizeStart, isContainer, customCss, dangerouslySetInnerHTML }) => {
   const isSelected = selectedElement === id;
   const customCssId = `custom-css-${id}`;
+
+  const finalProps: any = {
+    id,
+    'data-custom-css-id': customCssId,
+    style,
+    draggable: true,
+    onDragStart: (e: React.DragEvent) => onDragStart(e, id),
+    onDragEnter: (e: React.DragEvent) => onDragEnter(e, id),
+    onDragLeave,
+    className: cn(
+      'relative cursor-pointer transition-all group',
+      isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:ring-1 hover:ring-primary/50',
+      {'min-h-[20px]': isContainer},
+      className
+    ),
+    onClick: (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onSelectElement(id);
+    },
+  };
+
+  if (dangerouslySetInnerHTML) {
+    finalProps.dangerouslySetInnerHTML = dangerouslySetInnerHTML;
+  }
+
   return (
-    <div
-      id={id}
-      data-custom-css-id={customCssId}
-      style={style}
-      draggable
-      onDragStart={(e) => onDragStart(e, id)}
-      onDragEnter={(e) => onDragEnter(e, id)}
-      onDragLeave={onDragLeave}
-      className={cn(
-        'relative cursor-pointer transition-all group',
-        isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:ring-1 hover:ring-primary/50',
-        {'min-h-[20px]': isContainer},
-        className
-      )}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelectElement(id);
-      }}
-    >
+    <div {...finalProps}>
       {customCss && (
         <style>
           {`[data-custom-css-id="${customCssId}"] { ${customCss} }`}
         </style>
       )}
-      {children}
+      {!dangerouslySetInnerHTML && children}
       {isSelected && (
           <>
             <ResizeHandle position="top-left" onMouseDown={(e) => onResizeStart(e, 'top-left')} />
@@ -148,24 +156,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         } else if (data.type === 'sidebar-element') {
             addElement(data.elementType, targetId ?? undefined, parentId);
         } else if (data.type === 'template-element') {
-            try {
-                toast({ title: 'Importing Template...', description: 'AI is converting the template to a component.' });
-                const result = await htmlToJsonAction({ html: data.html });
-                if (result && result.section) {
-                    addGeneratedElement(result.section, targetId ?? undefined, parentId);
-                    toast({ title: 'Template Imported!', description: 'The template has been added to your page.' });
-                } else {
-                    throw new Error('AI did not return a valid section from the HTML.');
-                }
-            } catch (error: any) {
-                console.error("Error converting template HTML:", error);
-                toast({
-                    variant: 'destructive',
-                    title: 'Import Failed',
-                    description: error.message || 'Could not convert the template HTML.',
-                });
-                logErrorToFirestore({ message: error.message, stack: error.stack });
-            }
+            addElement('html', targetId ?? undefined, parentId, data.html);
         }
         
         setDraggedId(null);
@@ -280,7 +271,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
     const renderElement = (element: CanvasElementData, parentId: string | null = null) => {
-        const { id, type, content, styles, props, children, customCss, className } = element;
+        const { id, type, content, htmlContent, styles, props, children, customCss, className } = element;
         const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
 
         const {key, ...restWrapperProps} = {
@@ -394,6 +385,16 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                             <label><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></label>
                         </CanvasElementWrapper>
                     );
+                case 'html':
+                    return (
+                        <CanvasElementWrapper 
+                            {...restWrapperProps} 
+                            key={key} 
+                            dangerouslySetInnerHTML={{ __html: htmlContent || '' }}
+                        >
+                          {/* Children are not rendered for 'html' type */}
+                        </CanvasElementWrapper>
+                    );
                 default:
                      // Fallback for obsolete types
                     if ((type as string).startsWith('hero') || (type as string).startsWith('feature')) {
@@ -417,7 +418,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
   
   return (
     <div 
-        className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8 mb-16" 
+        className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8" 
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e)}
@@ -429,7 +430,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     >
       <div 
         ref={canvasRef}
-        className="rounded-lg bg-card shadow-lg relative"
+        className="rounded-lg bg-card shadow-lg relative mb-16"
       >
         {elements.map(el => renderElement(el))}
         {elements.length === 0 && (

@@ -13,8 +13,9 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface CanvasElementData {
   id: string;
-  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'link' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea';
+  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'link' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea' | 'html';
   content?: string;
+  htmlContent?: string;
   styles: React.CSSProperties;
   props?: Record<string, any>;
   children?: CanvasElementData[];
@@ -234,7 +235,7 @@ const WebsiteBuilderPage: FC = () => {
     }
   };
 
-  const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => {
+  const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string, htmlContent?: string) => {
     try {
         const newElement: CanvasElementData = {
             id: `${elementType}-${Date.now()}`,
@@ -301,6 +302,9 @@ const WebsiteBuilderPage: FC = () => {
             newElement.styles.width = '200px';
         } else if (elementType === 'label') {
             newElement.content = 'Label';
+        } else if (elementType === 'html') {
+            newElement.htmlContent = htmlContent || '<div>Template HTML</div>';
+            newElement.styles.minHeight = '50px';
         }
         
         setElements(prev => {
@@ -401,7 +405,7 @@ const WebsiteBuilderPage: FC = () => {
     }
   };
 
-  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, recordHistory = true) => {
+  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string, recordHistory = true) => {
     try {
         setElements(prev => {
         // Deep clone to avoid mutation
@@ -409,19 +413,22 @@ const WebsiteBuilderPage: FC = () => {
         const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
             return els.map(el => {
             if (el.id === id) {
-                const updatedElement = {
-                ...el,
-                styles: newStyles !== undefined ? newStyles : el.styles,
-                props: newProps !== undefined ? newProps : el.props,
+                const updatedElement: CanvasElementData = {
+                  ...el,
+                  styles: newStyles !== undefined ? newStyles : el.styles,
+                  props: newProps !== undefined ? newProps : el.props,
                 };
                 if (newContent !== undefined) {
-                updatedElement.content = newContent;
+                  updatedElement.content = newContent;
                 }
                 if (newCustomCss !== undefined) {
                     updatedElement.customCss = newCustomCss;
                 }
                 if (newClassName !== undefined) {
                     updatedElement.className = newClassName;
+                }
+                if (newHtmlContent !== undefined) {
+                    updatedElement.htmlContent = newHtmlContent;
                 }
                 return updatedElement;
             }

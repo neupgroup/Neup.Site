@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Sparkles, Link as LinkIcon, Video, List, ListOrdered, TextQuote, Pilcrow, MessageSquare, Square, CheckSquare, CircleDot, CaseSensitive, ListIcon, ListVideo } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Sparkles, Link as LinkIcon, Video, List, ListOrdered, TextQuote, Pilcrow, MessageSquare, Square, CheckSquare, CircleDot, CaseSensitive, ListIcon, ListVideo, Code } from 'lucide-react';
 import { CanvasElementData } from '@/app/site/editor/page';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -53,6 +53,7 @@ const getIconForType = (type: CanvasElementData['type']) => {
         case 'form': return <MessageSquare className="h-4 w-4" />;
         case 'label': return <CaseSensitive className="h-4 w-4" />;
         case 'textarea': return <Square className="h-4 w-4" />;
+        case 'html': return <Code className="h-4 w-4" />;
         default: return <Component className="h-4 w-4" />;
     }
 }
@@ -135,7 +136,7 @@ const LayerItem: FC<{
                 }}
             >
                 {getIconForType(element.type)}
-                <span className="text-sm truncate">{element.type}</span>
+                <span className="text-sm truncate">{element.id} ({element.type})</span>
             </div>
             {isContainer && element.children && (
                  <div style={{ paddingLeft: `${level * 1 + 0.5}rem` }}>
