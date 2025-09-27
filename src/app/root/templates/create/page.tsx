@@ -117,7 +117,7 @@ export default function CreateTemplatePage() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl">
+    <div className="grid grid-cols-1 gap-8 w-full max-w-4xl">
       <Card>
         <CardHeader>
           <CardTitle>Create New Template</CardTitle>
