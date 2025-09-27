@@ -25,10 +25,6 @@ export async function generateTemplateFromImageAction(
   input: GenerateTemplateFromImageInput
 ): Promise<GenerateSiteSectionOutput> {
   const output = await generateTemplateFromImage(input);
-  if (!output) {
-    throw new Error(
-      'Failed to generate site section. The AI model did not return any output.'
-    );
-  }
+  // The null check is now inside generateTemplateFromImage, so we can just return the result.
   return output;
 }

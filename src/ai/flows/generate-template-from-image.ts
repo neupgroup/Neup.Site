@@ -5,7 +5,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { GenerateSiteSectionOutputSchema, GenerateTemplateFromImageInputSchema, type GenerateTemplateFromImageInput } from '@/lib/schemas';
+import { GenerateSiteSectionOutputSchema, type GenerateTemplateFromImageInput } from '@/lib/schemas';
 
 const systemPrompt = `You are an expert web designer AI. Your task is to generate the JSON structure for a single website section based on a user's prompt and an optional accompanying image. The output must be a single root element of type "section".
 
@@ -20,14 +20,7 @@ const systemPrompt = `You are an expert web designer AI. Your task is to generat
 `;
 
 
-const generateTemplateFromImageFlow = ai.defineFlow(
-  {
-    name: 'generateTemplateFromImageFlow',
-    inputSchema: GenerateTemplateFromImageInputSchema,
-    outputSchema: GenerateSiteSectionOutputSchema,
-  },
-  async (input) => {
-    
+export async function generateTemplateFromImage(input: GenerateTemplateFromImageInput) {
     const { prompt, imageDataUri } = input;
     
     let fullPrompt: any[] = [{text: systemPrompt}, {text: `User Prompt: ${prompt}`}];
@@ -44,11 +37,9 @@ const generateTemplateFromImageFlow = ai.defineFlow(
       },
     });
     
-    return output!;
-  }
-);
+    if (!output) {
+        throw new Error('Failed to generate template. The AI model did not return any output.');
+    }
 
-
-export async function generateTemplateFromImage(input: GenerateTemplateFromImageInput) {
-    return generateTemplateFromImageFlow(input);
+    return output;
 }
