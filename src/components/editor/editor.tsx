@@ -75,7 +75,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
       return null;
   }
 
-  const moveElement = (draggedId: string, dropZoneId: string, parentId?: string) => {
+  const moveElement = (draggedId: string, dropZoneId: string | null, parentId?: string) => {
     try {
         setElements(prevElements => {
         let draggedElement: CanvasElementData | undefined;
@@ -103,7 +103,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         const addElementToParent = (els: CanvasElementData[], pId: string, element: CanvasElementData): boolean => {
             for (let i = 0; i < els.length; i++) {
             if (els[i].id === pId && els[i].children) {
-                const dropIndex = els[i].children!.findIndex(child => child.id === dropZoneId);
+                const dropIndex = dropZoneId ? els[i].children!.findIndex(child => child.id === dropZoneId) : -1;
                 if (dropIndex !== -1) {
                 els[i].children!.splice(dropIndex, 0, element);
                 } else {
@@ -594,3 +594,5 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 };
 
 export default Editor;
+
+    

@@ -57,7 +57,7 @@ const LayerItem: FC<{
     level: number, 
     selectedElement: string | null,
     onSelectElement: (id: string) => void,
-    onDrop: (draggedId: string, dropZoneId: string, parentId?: string | null) => void;
+    onDrop: (draggedId: string, dropZoneId: string | null, parentId?: string | null) => void;
     parentId: string | null;
 }> = ({ element, level, selectedElement, onSelectElement, onDrop, parentId }) => {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
@@ -95,7 +95,12 @@ const LayerItem: FC<{
         e.stopPropagation();
         const data = JSON.parse(e.dataTransfer.getData('application/json'));
         if (data.type === 'canvas-element' && data.id !== element.id) {
-            onDrop(data.id, element.id, parentId);
+            // If dropping on a container, drop inside it. Otherwise, drop before it.
+            if (isContainer) {
+                onDrop(data.id, null, element.id);
+            } else {
+                onDrop(data.id, element.id, parentId);
+            }
         }
         setIsDraggedOver(false);
         setDragCounter(0);
@@ -114,11 +119,12 @@ const LayerItem: FC<{
                 onDrop={handleDrop}
                 className="relative"
             >
-                {isDraggedOver && <DropIndicator className="absolute -top-px left-0" />}
+                {isDraggedOver && !isContainer && <DropIndicator className="absolute -top-px left-0" />}
                 <div 
                     className={cn(
                         "flex items-center gap-2 py-1 px-2 rounded-md cursor-pointer hover:bg-secondary",
-                        { "bg-secondary": selectedElement === element.id }
+                        { "bg-secondary ring-1 ring-primary": selectedElement === element.id },
+                        { "ring-1 ring-primary": isDraggedOver && isContainer }
                     )}
                     style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
                     onClick={(e) => {
@@ -234,13 +240,13 @@ interface LeftSidebarProps {
     elements: CanvasElementData[];
     selectedElement: string | null;
     onSelectElement: (id: string | null) => void;
-    moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
+    moveElement: (draggedId: string, dropZoneId: string | null, parentId?: string) => void;
     addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
 const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement, moveElement, addGeneratedElement }) => {
   
-  const handleDrop = (draggedId: string, dropZoneId: string, parentId?: string | null) => {
+  const handleDrop = (draggedId: string, dropZoneId: string | null, parentId?: string | null) => {
       moveElement(draggedId, dropZoneId, parentId || undefined);
   }
 
@@ -344,3 +350,5 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
 };
 
 export default LeftSidebar;
+
+    
