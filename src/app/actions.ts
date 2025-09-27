@@ -5,7 +5,7 @@ import {
   type AiDesignSuggestionsInput,
   type AiDesignSuggestionsOutput,
 } from '@/ai/flows/ai-design-suggestions';
-import { generateSiteSection } from '@/ai/flows/generate-site-section';
+import { generateSiteSectionPrompt } from '@/ai/flows/generate-site-section';
 import {
   processCss,
   type ProcessCssInput,
@@ -27,8 +27,11 @@ export async function getAiDesignSuggestionsAction(
 export async function generateSiteSectionAction(
     input: GenerateSiteSectionInput
 ): Promise<GenerateSiteSectionOutput> {
-    const result = await generateSiteSection(input);
-    return result;
+    const { output } = await generateSiteSectionPrompt(input);
+     if (!output) {
+      throw new Error('Failed to generate site section. The AI model did not return any output.');
+    }
+    return output;
 }
 
 export async function processCssAction(

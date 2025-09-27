@@ -3,18 +3,14 @@
 /**
  * @fileOverview Provides an AI-powered service to generate website section designs.
  *
- * - generateSiteSection - A function that generates a site section based on a user prompt.
+ * - generateSiteSectionPrompt - A Genkit prompt that generates a site section based on a user prompt.
  */
 
 import {ai} from '@/ai/genkit';
 import { GenerateSiteSectionInputSchema, GenerateSiteSectionOutputSchema, type GenerateSiteSectionInput, type GenerateSiteSectionOutput } from '@/lib/schemas';
 
 
-export async function generateSiteSection(input: GenerateSiteSectionInput): Promise<GenerateSiteSectionOutput> {
-  return generateSiteSectionFlow(input);
-}
-
-const prompt = ai.definePrompt({
+export const generateSiteSectionPrompt = ai.definePrompt({
   name: 'generateSiteSectionPrompt',
   input: {schema: GenerateSiteSectionInputSchema},
   output: {schema: GenerateSiteSectionOutputSchema},
@@ -31,18 +27,3 @@ const prompt = ai.definePrompt({
   User Prompt: {{{prompt}}}
   `,
 });
-
-const generateSiteSectionFlow = ai.defineFlow(
-  {
-    name: 'generateSiteSectionFlow',
-    inputSchema: GenerateSiteSectionInputSchema,
-    outputSchema: GenerateSiteSectionOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error('Failed to generate site section. The AI model did not return any output.');
-    }
-    return output;
-  }
-);
