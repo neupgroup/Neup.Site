@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Save } from 'lucide-react';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Label } from '@/components/ui/label';
+import AiPrompt from '@/components/editor/ai-prompt';
 
 export default function CreateTemplatePage() {
   const [isSaving, setIsSaving] = useState(false);
@@ -52,14 +53,19 @@ export default function CreateTemplatePage() {
     }
     setIsSaving(false);
   };
+  
+  const handleAiGeneration = (generatedJson: string) => {
+      setElementsJson(generatedJson);
+  }
 
   return (
     <div className="w-full max-w-2xl space-y-6">
+        <AiPrompt onGenerate={handleAiGeneration} />
         <Card>
             <CardHeader>
               <CardTitle>Create New Template</CardTitle>
               <CardDescription>
-                Define the details for your new template.
+                Define the details for your new template. You can generate the structure using the AI prompt above.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
