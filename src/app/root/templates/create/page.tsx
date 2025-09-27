@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,16 +9,18 @@ import { useRouter } from 'next/navigation';
 import { generateTemplateFromImageAction } from '@/actions/ai/generation';
 import { saveTemplate } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Sparkles, Upload, Image as ImageIcon } from 'lucide-react';
+import { Sparkles, Upload, Image as ImageIcon, Save } from 'lucide-react';
 import Canvas from '@/components/editor/canvas';
 import { type CanvasElementData } from '@/app/site/editor/page';
 
 const createTemplateSchema = z.object({
+  name: z.string().min(3, 'Template name must be at least 3 characters.'),
+  description: z.string().optional(),
   prompt: z.string().min(10, 'Please provide a more detailed prompt.'),
   image: z.any().optional(),
 });
@@ -29,7 +32,8 @@ const dummyFunction = () => {};
 
 export default function CreateTemplatePage() {
   const [generatedElement, setGeneratedElement] = useState<CanvasElementData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -37,12 +41,14 @@ export default function CreateTemplatePage() {
   const form = useForm<CreateTemplateFormValues>({
     resolver: zodResolver(createTemplateSchema),
     defaultValues: {
+      name: '',
+      description: '',
       prompt: '',
     },
   });
 
-  const onSubmit: SubmitHandler<CreateTemplateFormValues> = async (data) => {
-    setIsLoading(true);
+  const handleGenerate: SubmitHandler<CreateTemplateFormValues> = async (data) => {
+    setIsGenerating(true);
     setGeneratedElement(null);
     let imageDataUri: string | undefined = undefined;
 
@@ -65,7 +71,7 @@ export default function CreateTemplatePage() {
       const result = await generateTemplateFromImageAction({ prompt: data.prompt, imageDataUri });
       if (result.section) {
         setGeneratedElement(result.section);
-        toast({ title: 'Success', description: 'Template structure generated. You can now save it.' });
+        toast({ title: 'Preview Generated', description: 'AI has generated a preview. You can now save it as a template.' });
       } else {
         throw new Error('AI did not return a valid section.');
       }
@@ -74,103 +80,139 @@ export default function CreateTemplatePage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to generate template. Please try again.',
+        description: 'Failed to generate template preview. Please try again.',
       });
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
   const handleSave = async () => {
     if (!generatedElement) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No element to save.' });
+        toast({ variant: 'destructive', title: 'Error', description: 'Please generate an element before saving.' });
         return;
     }
     
-    // For simplicity, we'll use the prompt as the name
-    const templateName = form.getValues('prompt').substring(0, 50);
+    const { name, description } = form.getValues();
+    if (!name.trim()) {
+        form.setError('name', { type: 'manual', message: 'Template name is required.'});
+        return;
+    }
 
+    setIsSaving(true);
     const result = await saveTemplate({
-        name: templateName,
-        description: `Generated from prompt: "${templateName}..."`,
+        name,
+        description,
         elements: [generatedElement],
-        type: 'section',
+        type: 'section', // Currently hardcoded, can be a form field later
     });
 
     if (result.success) {
-        toast({ title: 'Template Saved!', description: `Template "${templateName}" has been saved.` });
+        toast({ title: 'Template Saved!', description: `Template "${name}" has been saved.` });
         router.push('/root/templates');
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
+    setIsSaving(false);
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl">
       <Card>
         <CardHeader>
-          <CardTitle>Create AI-Powered Template</CardTitle>
-          <CardDescription>Generate a new template section using a text prompt and an optional image.</CardDescription>
+          <CardTitle>Create New Template</CardTitle>
+          <CardDescription>Manually define your template and use AI to generate the initial structure if you like.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
+            <form onSubmit={form.handleSubmit(handleGenerate)} className="space-y-6">
+               <FormField
                 control={form.control}
-                name="prompt"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prompt</FormLabel>
+                    <FormLabel>Template Name</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="e.g., a modern hero section with a dark background and a glowing button" {...field} rows={4} />
+                      <Input placeholder="e.g., 'Hero Section Dark Mode'" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
+               <FormField
                 control={form.control}
-                name="image"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reference Image (Optional)</FormLabel>
+                    <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
-                        <Input type="file" accept="image/*" onChange={(e) => {
-                            field.onChange(e.target.files);
-                            if (e.target.files && e.target.files[0]) {
-                                setImagePreview(URL.createObjectURL(e.target.files[0]));
-                            } else {
-                                setImagePreview(null);
-                            }
-                        }} />
+                      <Textarea placeholder="A short description of this template" {...field} />
                     </FormControl>
-                     <FormMessage />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
-             {imagePreview && (
-                <div className="relative w-full h-48 rounded-md border overflow-hidden">
-                   <img src={imagePreview} alt="Image Preview" className="w-full h-full object-cover" />
-                </div>
-              )}
+              <div className="space-y-4 rounded-lg border p-4">
+                 <h3 className="text-sm font-medium text-muted-foreground">AI Generation (Optional)</h3>
+                  <FormField
+                    control={form.control}
+                    name="prompt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>AI Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="e.g., a modern hero section with a dark background..." {...field} rows={3} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reference Image</FormLabel>
+                        <FormControl>
+                            <Input type="file" accept="image/*" onChange={(e) => {
+                                field.onChange(e.target.files);
+                                if (e.target.files && e.target.files[0]) {
+                                    setImagePreview(URL.createObjectURL(e.target.files[0]));
+                                } else {
+                                    setImagePreview(null);
+                                }
+                            }} />
+                        </FormControl>
+                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                <Sparkles className="mr-2 h-4 w-4" />
-                {isLoading ? 'Generating...' : 'Generate Template'}
-              </Button>
+                 {imagePreview && (
+                    <div className="relative w-full h-32 rounded-md border overflow-hidden">
+                       <img src={imagePreview} alt="Image Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={isGenerating}>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {isGenerating ? 'Generating...' : 'Generate with AI'}
+                  </Button>
+              </div>
+
             </form>
           </Form>
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle>Preview</CardTitle>
-          <CardDescription>This is a preview of the generated template. Save it to add it to your library.</CardDescription>
+          <CardTitle>Preview & Save</CardTitle>
+          <CardDescription>The generated element will appear here. Once you are happy with it, save the template.</CardDescription>
         </CardHeader>
-        <CardContent className="relative">
-            {isLoading && (
+        <CardContent className="relative flex-1">
+            {isGenerating && (
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                     <p className="flex items-center gap-2"><Sparkles className="h-5 w-5 animate-spin" /> Generating...</p>
                 </div>
@@ -188,16 +230,17 @@ export default function CreateTemplatePage() {
             ) : (
                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                     <ImageIcon className="h-12 w-12 mb-4" />
-                    <p>Your generated preview will appear here.</p>
+                    <p>Generate an element using AI to see a preview.</p>
                 </div>
             )}
            </div>
         </CardContent>
-        {generatedElement && (
-            <CardContent>
-                 <Button onClick={handleSave} className="w-full">Save Template</Button>
-            </CardContent>
-        )}
+        <CardFooter>
+            <Button onClick={handleSave} disabled={!generatedElement || isSaving} className="w-full">
+                <Save className="mr-2 h-4 w-4" />
+                {isSaving ? 'Saving...' : 'Save Template'}
+            </Button>
+        </CardFooter>
       </Card>
     </div>
   );
