@@ -175,6 +175,12 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             newElement.styles.textAlign = 'left';
         } else if (elementType === 'button') {
             newElement.content = 'New Button';
+            newElement.styles.backgroundColor = 'hsl(var(--primary))';
+            newElement.styles.color = 'hsl(var(--primary-foreground))';
+            newElement.styles.textAlign = 'center';
+            newElement.styles.padding = '10px 20px';
+            newElement.styles.borderRadius = 'var(--radius)';
+            newElement.styles.display = 'inline-block';
         } else if (elementType === 'image') {
             const placeholder = PlaceHolderImages.find(p => p.id === 'feature-2');
             newElement.props = {

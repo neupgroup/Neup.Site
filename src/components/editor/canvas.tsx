@@ -321,7 +321,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'button':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <Button className="w-full h-full"><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></Button>
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, color: styles.color, textAlign: styles.textAlign as any}} />
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -406,11 +406,18 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 );
                 break;
             case 'html':
-                elementComponent = (
-                    <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} >
-                      {renderResizeHandles()}
-                    </CanvasElementWrapper>
-                );
+                 elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
+                 );
+                 if (isSelected) {
+                     return (
+                         <div key={id}>
+                            {showDropIndicator && <DropIndicator />}
+                            {elementComponent}
+                            {renderResizeHandles()}
+                         </div>
+                     );
+                 }
                 break;
             default:
                 return null;
