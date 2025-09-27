@@ -591,22 +591,11 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     <AccordionContent className="px-4 space-y-4">
                         <div className="space-y-2">
                           <Label>Padding</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <Input value={(styles.paddingTop as string) || ''} onChange={e => handleStyleChange('paddingTop', e.target.value)} placeholder="Top" />
-                            <Input value={(styles.paddingRight as string) || ''} onChange={e => handleStyleChange('paddingRight', e.target.value)} placeholder="Right" />
-                            <Input value={(styles.paddingBottom as string) || ''} onChange={e => handleStyleChange('paddingBottom', e.target.value)} placeholder="Bottom" />
-                            <Input value={(styles.paddingLeft as string) || ''} onChange={e => handleStyleChange('paddingLeft', e.target.value)} placeholder="Left" />
-                          </div>
+                          <Input value={styles.padding as string || ''} onChange={e => handleStyleChange('padding', e.target.value)} placeholder="10px or 10px 20px" />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Margin</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <Input value={(styles.marginTop as string) || ''} onChange={e => handleStyleChange('marginTop', e.target.value)} placeholder="Top" />
-                            <Input value={(styles.marginRight as string) || ''} onChange={e => handleStyleChange('marginRight', e.target.value)} placeholder="Right" />
-                            <Input value={(styles.marginBottom as string) || ''} onChange={e => handleStyleChange('marginBottom', e.target.value)} placeholder="Bottom" />
-                            <Input value={(styles.marginLeft as string) || ''} onChange={e => handleStyleChange('marginLeft', e.target.value)} placeholder="Left" />
-                          </div>
+                          <Input value={styles.margin as string || ''} onChange={e => handleStyleChange('margin', e.target.value)} placeholder="10px or 10px 20px" />
                         </div>
                     </AccordionContent>
                 </AccordionItem>
