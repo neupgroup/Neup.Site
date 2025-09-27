@@ -392,7 +392,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                             key={key} 
                             dangerouslySetInnerHTML={{ __html: htmlContent || '' }}
                         >
-                          {/* Children are not rendered for 'html' type */}
+                          {/* Children are intentionally not rendered for 'html' type to avoid conflicts */}
                         </CanvasElementWrapper>
                     );
                 default:
@@ -449,5 +449,3 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 };
 
 export default Canvas;
-
-    
