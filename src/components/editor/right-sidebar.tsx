@@ -197,7 +197,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         <ScrollArea className="flex-1">
           <TabsContent value="customize" className="p-0">
             {selectedElement ? (
-              <Accordion type="multiple" defaultValue={['element-id', 'attributes', 'content', 'html-content', 'link', 'heading', 'layout', 'position', 'typography', 'color', 'background', 'spacing', 'image', 'custom-css']} className="w-full">
+              <Accordion type="multiple" className="w-full">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -548,7 +548,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                  {showFor(['video']) && (
                    <AccordionItem value="video">
                     <AccordionTrigger className="px-4 text-sm font-medium">Video</AccordionTrigger>
-                    <AccordionContent className="px-4 space-y-4">
+                    <AccordionContent className="px-ax-4 space-y-4">
                         <div className="space-y-2">
                           <Label>Source URL</Label>
                           <Input value={props.src || ''} onChange={e => handlePropChange('src', e.target.value)} />

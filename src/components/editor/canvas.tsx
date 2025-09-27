@@ -375,23 +375,23 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                         </CanvasElementWrapper>
                     );
                 case 'html':
-                    return (
-                        <div className="relative">
-                            <CanvasElementWrapper {...restWrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
-                            {isSelected && (
-                            <>
-                                <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
-                                <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
-                                <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
-                                <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
-                                <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
-                                <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
-                                <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
-                                <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
-                            </>
-                            )}
-                        </div>
-                    );
+                  return (
+                      <div className="relative">
+                          <CanvasElementWrapper {...restWrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
+                          {isSelected && (
+                          <>
+                              <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
+                              <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
+                              <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
+                              <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
+                              <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
+                              <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
+                              <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
+                              <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
+                          </>
+                          )}
+                      </div>
+                  );
                 default:
                      // Fallback for obsolete types
                     if ((type as string).startsWith('hero') || (type as string).startsWith('feature')) {
@@ -415,7 +415,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
   
   return (
     <div 
-        className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8" 
+        className="mx-auto h-full w-full max-w-screen-xl px-4 md:px-8 py-10" 
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e)}
@@ -429,7 +429,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         ref={canvasRef}
         className="rounded-lg bg-card shadow-lg relative mb-16"
       >
-        {elements.map(el => renderElement(el))}
+        {elements.map(el => <div key={el.id}>{renderElement(el)}</div>)}
         {elements.length === 0 && (
              <div 
                 className="flex items-center justify-center h-48 border-2 border-dashed border-muted rounded-lg"
