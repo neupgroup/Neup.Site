@@ -6,9 +6,9 @@ import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box,
 import { CanvasElementData } from '@/app/site/editor/page';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { generateSiteSectionAction } from '@/app/actions/ai/generation';
+import { generateSiteSectionAction } from '@/actions/ai/generation';
 import { Textarea } from '../ui/textarea';
-import { logErrorToFirestore } from '@/app/actions/logging';
+import { logErrorToFirestore } from '@/actions/logging';
 import { type GenerateSiteSectionInput } from '@/lib/schemas';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (

@@ -5,8 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { CanvasElementData } from '@/app/site/editor/page';
-import { processCssAction } from '@/app/actions/editor/css';
-import { logErrorToFirestore } from '@/app/actions/logging';
+import { processCssAction } from '@/actions/editor/css';
+import { logErrorToFirestore } from '@/actions/logging';
 import { Skeleton } from '../ui/skeleton';
 
 const globalCss = `
