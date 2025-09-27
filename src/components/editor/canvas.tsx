@@ -8,6 +8,9 @@ import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
+import { htmlToJsonAction } from '@/actions/ai/conversion';
+import { useToast } from '@/hooks/use-toast';
+import { logErrorToFirestore } from '@/actions/logging';
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -16,6 +19,7 @@ interface CanvasProps {
   updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string) => void;
   moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
   addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
+  addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
 const DropIndicator: FC<{className?: string}> = ({className}) => (
@@ -93,12 +97,13 @@ const CanvasElementWrapper: FC<{
 };
 
 
-const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, updateElement, moveElement, addElement }) => {
+const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, updateElement, moveElement, addElement, addGeneratedElement }) => {
     const [draggedId, setDraggedId] = useState<string | null>(null);
     const [dropZone, setDropZone] = useState<{parentId: string | null, elementId: string | null}>({parentId: null, elementId: null});
     const [resizingState, setResizingState] = useState<ResizingState | null>(null);
     const canvasRef = useRef<HTMLDivElement>(null);
     const dragCounter = useRef(0);
+    const { toast } = useToast();
 
     const handleSaveText = (id: string, newContent: string) => {
         updateElement(id, undefined, undefined, newContent);
@@ -129,10 +134,12 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         setDropZone({ parentId, elementId });
     }
     
-    const handleDrop = (e: React.DragEvent, parentId?: string) => {
+    const handleDrop = async (e: React.DragEvent, parentId?: string) => {
         e.preventDefault();
         e.stopPropagation();
-        const data = JSON.parse(e.dataTransfer.getData('application/json'));
+        const dataStr = e.dataTransfer.getData('application/json');
+        if (!dataStr) return;
+        const data = JSON.parse(dataStr);
 
         const targetId = dropZone.elementId;
 
@@ -140,6 +147,25 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             moveElement(draggedId, targetId!, parentId);
         } else if (data.type === 'sidebar-element') {
             addElement(data.elementType, targetId ?? undefined, parentId);
+        } else if (data.type === 'template-element') {
+            try {
+                toast({ title: 'Importing Template...', description: 'AI is converting the template to a component.' });
+                const result = await htmlToJsonAction({ html: data.html });
+                if (result && result.section) {
+                    addGeneratedElement(result.section, targetId ?? undefined, parentId);
+                    toast({ title: 'Template Imported!', description: 'The template has been added to your page.' });
+                } else {
+                    throw new Error('AI did not return a valid section from the HTML.');
+                }
+            } catch (error: any) {
+                console.error("Error converting template HTML:", error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Import Failed',
+                    description: error.message || 'Could not convert the template HTML.',
+                });
+                logErrorToFirestore({ message: error.message, stack: error.stack });
+            }
         }
         
         setDraggedId(null);

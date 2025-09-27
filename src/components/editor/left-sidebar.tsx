@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,12 @@ import { useToast } from '@/hooks/use-toast';
 import { generateSiteSectionAction } from '@/actions/ai/generation';
 import { Textarea } from '../ui/textarea';
 import { logErrorToFirestore } from '@/actions/logging';
-import { type GenerateSiteSectionInput } from '@/lib/schemas';
+import { type Template, type GenerateSiteSectionInput } from '@/lib/schemas';
 import Link from 'next/link';
+import { getTemplates } from '@/actions/editor/templates';
+import { Skeleton } from '../ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
   <div
@@ -217,13 +221,90 @@ const AiGenerator: FC<{addGeneratedElement: (element: CanvasElementData) => void
     );
 }
 
+const TemplateLibrary = () => {
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await getTemplates();
+        if (result.success && result.templates) {
+          setTemplates(result.templates);
+        } else {
+          setError(result.error || 'Failed to fetch templates.');
+        }
+      } catch (e: any) {
+        setError('An unexpected error occurred.');
+        logErrorToFirestore({ message: e.message, stack: e.stack });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTemplates();
+  }, []);
+
+  const handleDragStart = (e: React.DragEvent, template: Template) => {
+    const data = {
+      type: 'template-element',
+      html: template.templateHtml,
+    };
+    e.dataTransfer.setData('application/json', JSON.stringify(data));
+  };
+  
+  if (loading) {
+    return <div className="space-y-2">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+    </div>
+  }
+
+  if (error) {
+    return <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+    </Alert>
+  }
+  
+  return (
+    <div className="space-y-2">
+        <div className="flex justify-between items-center mb-2">
+             <p className="text-sm font-medium text-muted-foreground">My Templates</p>
+             <Button variant="outline" size="sm" asChild>
+                <Link href="/root/templates">Manage</Link>
+             </Button>
+        </div>
+      {templates.length > 0 ? (
+        templates.map(template => (
+          <div
+            key={template.id}
+            className="flex items-center gap-2 cursor-grab rounded-lg border bg-card p-2 transition-colors hover:bg-secondary hover:border-primary active:cursor-grabbing"
+            draggable
+            onDragStart={(e) => handleDragStart(e, template)}
+          >
+            <Layers className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium truncate">{template.name}</span>
+          </div>
+        ))
+      ) : (
+        <p className="text-sm text-muted-foreground text-center p-4">No templates found.</p>
+      )}
+    </div>
+  );
+};
+
 
 interface LeftSidebarProps {
     elements: CanvasElementData[];
     selectedElement: string | null;
     onSelectElement: (id: string | null) => void;
     moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
-    addGeneratedElement: (element: CanvasElementData) => void;
+    addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
 const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement, moveElement, addGeneratedElement }) => {
@@ -251,9 +332,7 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
         <TabsList className="grid w-full grid-cols-4 rounded-none border-b">
           <TabsTrigger value="add">Add</TabsTrigger>
           <TabsTrigger value="layers"><Layers className="h-4 w-4"/></TabsTrigger>
-          <TabsTrigger value="templates">
-            <Link href="/root/templates">Templates</Link>
-          </TabsTrigger>
+          <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
         </TabsList>
         <ScrollArea className="flex-1">
@@ -329,6 +408,9 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                     />
                 ))}
             </div>
+          </TabsContent>
+          <TabsContent value="templates" className="p-4">
+            <TemplateLibrary />
           </TabsContent>
           <TabsContent value="pages" className="p-4">
             <div className="space-y-2">

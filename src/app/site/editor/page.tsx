@@ -345,7 +345,7 @@ const WebsiteBuilderPage: FC = () => {
     }
   };
 
-  const addGeneratedElement = (element: CanvasElementData) => {
+  const addGeneratedElement = (element: CanvasElementData, dropZoneId?: string, parentId?: string) => {
     try {
         const deepCopyAndNewIds = (el: CanvasElementData): CanvasElementData => {
             const newEl = {
@@ -362,6 +362,37 @@ const WebsiteBuilderPage: FC = () => {
 
         setElements(prev => {
             const clonedPrev = JSON.parse(JSON.stringify(prev));
+
+            const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+                return els.map(el => {
+                    if (el.id === parentId && el.children) {
+                        const dropIndex = dropZoneId ? el.children.findIndex(child => child.id === dropZoneId) : -1;
+                        const newChildren = [...el.children];
+                        if (dropIndex !== -1) {
+                            newChildren.splice(dropIndex, 0, newElement);
+                        } else {
+                            newChildren.push(newElement);
+                        }
+                        return { ...el, children: newChildren };
+                    } else if (el.children) {
+                        return { ...el, children: addRecursively(el.children) };
+                    }
+                    return el;
+                });
+            };
+
+            if (parentId) {
+                return addRecursively(clonedPrev);
+            }
+
+            if (dropZoneId) {
+                const dropIndex = clonedPrev.findIndex(el => el.id === dropZoneId);
+                if (dropIndex !== -1) {
+                    const newElements = [...clonedPrev];
+                    newElements.splice(dropIndex, 0, newElement);
+                    return newElements;
+                }
+            }
             return [...clonedPrev, newElement];
         });
     } catch (e: any) {
@@ -668,6 +699,7 @@ const WebsiteBuilderPage: FC = () => {
             updateElement={updateElement}
             moveElement={moveElement}
             addElement={addElement}
+            addGeneratedElement={addGeneratedElement}
             />
         </main>
         <RightSidebar 
