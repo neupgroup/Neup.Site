@@ -376,7 +376,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                     );
                 case 'html':
                   return (
-                      <div className="relative">
+                      <>
                           <CanvasElementWrapper {...restWrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
                           {isSelected && (
                           <>
@@ -390,7 +390,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                               <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
                           </>
                           )}
-                      </div>
+                      </>
                   );
                 default:
                      // Fallback for obsolete types
@@ -427,9 +427,9 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     >
       <div 
         ref={canvasRef}
-        className="rounded-lg bg-card shadow-lg relative mb-16"
+        className="rounded-lg bg-card shadow-lg relative mb-32"
       >
-        {elements.map(el => <div key={el.id}>{renderElement(el)}</div>)}
+        {elements.map(el => renderElement(el))}
         {elements.length === 0 && (
              <div 
                 className="flex items-center justify-center h-48 border-2 border-dashed border-muted rounded-lg"
