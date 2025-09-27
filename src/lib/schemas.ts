@@ -7,7 +7,21 @@ export const GenerateSiteSectionInputSchema = z.object({
 export type GenerateSiteSectionInput = z.infer<typeof GenerateSiteSectionInputSchema>;
 
 
-export const CanvasElementDataSchema: z.ZodType<any> = z.lazy(() => z.object({
+// Define the TypeScript type for a canvas element first.
+export interface CanvasElementData {
+  id: string;
+  type: 'text' | 'image' | 'button' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'link' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea' | 'html';
+  content?: string;
+  htmlContent?: string;
+  styles: React.CSSProperties;
+  props?: Record<string, any>;
+  children?: CanvasElementData[];
+  customCss?: string;
+  className?: string;
+}
+
+// Now, define the Zod schema using the TypeScript type.
+export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
     id: z.string().describe("A unique identifier for the element. Should be a descriptive slug, e.g., 'hero-title-123'."),
     type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'link', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']).describe("The type of the element."),
     content: z.string().optional().describe("Text content for elements like text, button, or heading."),

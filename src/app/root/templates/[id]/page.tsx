@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { getTemplate } from '@/actions/editor/templates';
-import type { Template } from '@/lib/schemas';
+import type { Template, CanvasElementData } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, ArrowLeft, Pencil } from 'lucide-react';
 import Canvas from '@/components/editor/canvas';
-import { CanvasElementData } from '@/app/site/editor/page';
+
 
 const emptyFn = () => {};
 
@@ -90,7 +90,7 @@ export default function TemplateDetailPage() {
                     onSelectElement={emptyFn}
                     updateElement={emptyFn}
                     moveElement={emptyFn}
-                    addElement={empty.fn}
+                    addElement={emptyFn}
                     addGeneratedElement={emptyFn}
                 />
             </div>

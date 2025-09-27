@@ -2,7 +2,7 @@ import { type FC, useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { CanvasElementData } from '@/app/site/editor/page';
+import type { CanvasElementData } from '@/lib/schemas';
 import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
 import { Input } from '../ui/input';
@@ -389,24 +389,14 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 );
                 break;
             default:
-                 // Fallback for obsolete types
-                if ((type as string).startsWith('hero') || (type as string).startsWith('feature')) {
-                     elementComponent = (
-                        <CanvasElementWrapper {...wrapperProps}>
-                            <div className="text-muted-foreground p-4 border border-dashed">Obsolete Component: {type}</div>
-                        </CanvasElementWrapper>
-                    );
-                } else {
-                  return null;
-                }
-                break;
+                return null;
         }
 
         return (
             <div key={id}>
                 {showDropIndicator && <DropIndicator />}
                 {elementComponent}
-                {isSelected && type === 'html' && (
+                {isSelected && (
                   <>
                     <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
                     <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />

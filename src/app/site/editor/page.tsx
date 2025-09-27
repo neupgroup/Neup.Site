@@ -10,19 +10,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { logErrorToFirestore } from '@/actions/logging';
 import { saveSite } from '@/actions/editor/site';
 import { useToast } from '@/hooks/use-toast';
-import type { Template } from '@/lib/schemas';
-
-export interface CanvasElementData {
-  id: string;
-  type: 'text' | 'image' | 'button' | 'hero' | 'hero-subtitle' | 'hero-cta' | 'feature-image' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'link' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea' | 'html';
-  content?: string;
-  htmlContent?: string;
-  styles: React.CSSProperties;
-  props?: Record<string, any>;
-  children?: CanvasElementData[];
-  customCss?: string;
-  className?: string;
-}
+import type { Template, CanvasElementData } from '@/lib/schemas';
 
 const initialElements: CanvasElementData[] = [
     {

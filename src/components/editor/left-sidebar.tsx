@@ -3,13 +3,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Sparkles, Link as LinkIcon, Video, List, ListOrdered, TextQuote, Pilcrow, MessageSquare, Square, CheckSquare, CircleDot, CaseSensitive, ListIcon, ListVideo, Code } from 'lucide-react';
-import { CanvasElementData } from '@/app/site/editor/page';
+import type { CanvasElementData, Template } from '@/lib/schemas';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { generateSiteSectionAction } from '@/actions/ai/generation';
 import { Textarea } from '../ui/textarea';
 import { logErrorToFirestore } from '@/actions/logging';
-import { type Template, type GenerateSiteSectionInput } from '@/lib/schemas';
 import Link from 'next/link';
 import { getTemplates } from '@/actions/editor/templates';
 import { Skeleton } from '../ui/skeleton';
@@ -33,19 +32,13 @@ const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, pro
 const getIconForType = (type: CanvasElementData['type']) => {
     switch(type) {
         case 'text': return <Type className="h-4 w-4" />;
-        case 'image':
-        case 'feature-image':
-             return <ImageIcon className="h-4 w-4" />;
-        case 'button': 
-        case 'hero-cta':
-            return <MousePointerClick className="h-4 w-4" />;
+        case 'image': return <ImageIcon className="h-4 w-4" />;
+        case 'button': return <MousePointerClick className="h-4 w-4" />;
         case 'section': return <LayoutTemplate className="h-4 w-4" />;
         case 'div': return <Box className="h-4 w-4" />;
         case 'container': return <Container className="h-4 w-4" />;
         case 'input': return <FormInput className="h-4 w-4" />;
-        case 'hero': return <Heading1 className="h-4 w-4" />;
         case 'heading': return <Heading1 className="h-4 w-4" />;
-        case 'hero-subtitle': return <Heading2 className="h-4 w-4" />;
         case 'link': return <LinkIcon className="h-4 w-4" />;
         case 'video': return <Video className="h-4 w-4" />;
         case 'list': return <List className="h-4 w-4" />;
