@@ -23,6 +23,13 @@ export const GenerateSiteSectionOutputSchema = z.object({
 });
 export type GenerateSiteSectionOutput = z.infer<typeof GenerateSiteSectionOutputSchema>;
 
+export const GenerateTemplateFromImageInputSchema = z.object({
+    prompt: z.string().describe('A user prompt describing the desired website section.'),
+    imageDataUri: z.string().optional().describe("An optional image of a website section, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
+});
+export type GenerateTemplateFromImageInput = z.infer<typeof GenerateTemplateFromImageInputSchema>;
+
+
 export const TemplateSchema = z.object({
   id: z.string().optional(),
   name: z.string(),

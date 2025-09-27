@@ -7,6 +7,7 @@ import {
   doc,
   setDoc,
   getDocs,
+  getDoc,
   deleteDoc,
   serverTimestamp,
 } from 'firebase/firestore';
@@ -66,6 +67,30 @@ export async function getTemplates() {
     });
     return { success: false, error: error.message || 'Failed to fetch templates.' };
   }
+}
+
+/**
+ * Fetches a single template from Firestore by its ID.
+ */
+export async function getTemplate(id: string) {
+    try {
+        const templateRef = doc(db, TEMPLATES_COLLECTION, id);
+        const docSnap = await getDoc(templateRef);
+
+        if (!docSnap.exists()) {
+            return { success: false, error: 'Template not found.' };
+        }
+
+        const template = { id: docSnap.id, ...docSnap.data() } as Template;
+        return { success: true, template };
+    } catch (error: any) {
+        console.error(`Failed to fetch template with ID ${id}:`, error);
+        await logErrorToFirestore({
+            message: `Failed to fetch template with ID ${id}: ` + error.message,
+            stack: error.stack,
+        });
+        return { success: false, error: error.message || 'Failed to fetch template.' };
+    }
 }
 
 
