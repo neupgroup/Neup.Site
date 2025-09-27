@@ -6,11 +6,11 @@ import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { logErrorToFirestore } from '@/actions/logging';
 import { saveSite, createSite } from '@/actions/editor/site';
 import { useToast } from '@/hooks/use-toast';
-import type { Template, CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/lib/schemas';
+import { elementDefinitions } from '@/elements';
 
 interface EditorProps {
     initialElements: CanvasElementData[];
@@ -138,8 +138,12 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             if(addElementToParent(newElements, parentId, draggedElement)) {
             return newElements;
             }
-        } else {
+        } else if (dropZoneId) {
             return insertElement(newElements, dropZoneId, draggedElement);
+        } else {
+          // If no drop zone, add to the end of the root
+          newElements.push(draggedElement);
+          return newElements;
         }
         return newElements;
         });
@@ -151,79 +155,16 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 
   const addElement = (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => {
     try {
-        const newElement: CanvasElementData = {
-            id: `${elementType}-${Date.now()}`,
-            type: elementType,
-            styles: {
-                paddingTop: '10px',
-                paddingBottom: '10px',
-                paddingLeft: '10px',
-                paddingRight: '10px',
-                display: 'block',
-            }
+        const definition = elementDefinitions[elementType];
+        if (!definition) {
+            console.error(`No definition for element type: ${elementType}`);
+            return;
         }
 
-        if (elementType === 'text') {
-            newElement.content = 'New Text';
-            newElement.styles.fontSize = '16px';
-            newElement.styles.textAlign = 'left';
-        } else if (elementType === 'heading') {
-            newElement.content = 'New Heading';
-            newElement.props = { level: 1 };
-            newElement.styles.fontSize = '24px';
-            newElement.styles.fontWeight = 'bold';
-            newElement.styles.textAlign = 'left';
-        } else if (elementType === 'button') {
-            newElement.content = 'New Button';
-            newElement.styles.backgroundColor = 'hsl(var(--primary))';
-            newElement.styles.color = 'hsl(var(--primary-foreground))';
-            newElement.styles.textAlign = 'center';
-            newElement.styles.padding = '10px 20px';
-            newElement.styles.borderRadius = 'var(--radius)';
-            newElement.styles.display = 'inline-block';
-        } else if (elementType === 'image') {
-            const placeholder = PlaceHolderImages.find(p => p.id === 'feature-2');
-            newElement.props = {
-                src: placeholder?.imageUrl,
-                alt: placeholder?.description,
-                'data-ai-hint': placeholder?.imageHint,
-            };
-            newElement.styles.height = '100px';
-        } else if (elementType === 'section' || elementType === 'div' || elementType === 'container' || elementType === 'form' || elementType === 'list' || elementType === 'list-item') {
-            newElement.children = [];
-            newElement.styles.minHeight = '100px';
-            newElement.styles.border = '1px dashed hsl(var(--border))';
-            if (elementType === 'container') {
-                newElement.styles.maxWidth = '1100px';
-                newElement.styles.marginLeft = 'auto';
-                newElement.styles.marginRight = 'auto';
-            }
-            if (elementType === 'list-item') {
-              newElement.content = "List Item";
-              newElement.styles.minHeight = 'auto';
-            }
-        } else if (elementType === 'input') {
-            newElement.props = { placeholder: 'Enter text...' };
-            newElement.styles.height = '40px';
-            newElement.styles.width = '200px';
-        } else if (elementType === 'link') {
-            newElement.content = 'Link';
-            newElement.props = { href: '#' };
-            newElement.styles.textDecoration = 'underline';
-        } else if (elementType === 'video') {
-            newElement.props = { src: 'https://www.w3schools.com/html/mov_bbb.mp4' };
-            newElement.styles.width = '320px';
-            newElement.styles.height = '240px';
-        } else if (elementType === 'textarea') {
-            newElement.props = { placeholder: 'Enter more text...' };
-            newElement.styles.height = '80px';
-            newElement.styles.width = '200px';
-        } else if (elementType === 'label') {
-            newElement.content = 'Label';
-        } else if (elementType === 'html') {
-            newElement.htmlContent = '<div>Generated HTML</div>';
-            newElement.styles.minHeight = '50px';
-        }
+        const newElement: CanvasElementData = {
+            ...JSON.parse(JSON.stringify(definition)), // Deep copy definition
+            id: `${elementType}-${Date.now()}`
+        };
         
         setElements(prev => {
             // Deep clone to avoid mutation
