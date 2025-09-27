@@ -88,18 +88,6 @@ const CanvasElementWrapper: FC<{
         </style>
       )}
       {!dangerouslySetInnerHTML && children}
-      {isSelected && !dangerouslySetInnerHTML && (
-          <>
-            <ResizeHandle position="top-left" onMouseDown={(e) => onResizeStart(e, 'top-left')} />
-            <ResizeHandle position="top" onMouseDown={(e) => onResizeStart(e, 'top')} />
-            <ResizeHandle position="top-right" onMouseDown={(e) => onResizeStart(e, 'top-right')} />
-            <ResizeHandle position="left" onMouseDown={(e) => onResizeStart(e, 'left')} />
-            <ResizeHandle position="right" onMouseDown={(e) => onResizeStart(e, 'right')} />
-            <ResizeHandle position="bottom-left" onMouseDown={(e) => onResizeStart(e, 'bottom-left')} />
-            <ResizeHandle position="bottom" onMouseDown={(e) => onResizeStart(e, 'bottom')} />
-            <ResizeHandle position="bottom-right" onMouseDown={(e) => onResizeStart(e, 'bottom-right')} />
-          </>
-      )}
     </div>
   );
 };
@@ -394,9 +382,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                     };
                     return (
                         <div className="relative">
-                            <CanvasElementWrapper {...wrapperProps}>
-                              {/* Intentionally empty */}
-                            </CanvasElementWrapper>
+                            <CanvasElementWrapper {...wrapperProps} />
                              {isSelected && (
                                 <>
                                     <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
@@ -465,5 +451,3 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 };
 
 export default Canvas;
-
-    
