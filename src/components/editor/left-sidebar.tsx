@@ -11,6 +11,7 @@ import { Textarea } from '../ui/textarea';
 import { logErrorToFirestore } from '@/actions/logging';
 import { type GenerateSiteSectionInput } from '@/lib/schemas';
 import TemplateManager from './template-manager';
+import Link from 'next/link';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
   <div
@@ -345,7 +346,7 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                 <Button variant="ghost" className="w-full justify-start text-muted-foreground">
                     <File className="mr-2 h-4 w-4" /> Contact
                 </Button>
-                <Button variant="outline" size="sm" className="mt-4 w-full">
+                 <Button variant="outline" size="sm" className="mt-4 w-full">
                     <Plus className="mr-2 h-4 w-4" /> Add New Page
                 </Button>
             </div>

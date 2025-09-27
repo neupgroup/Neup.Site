@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Sparkles, Upload, Image as ImageIcon, Save } from 'lucide-react';
 import Canvas from '@/components/editor/canvas';
 import { type CanvasElementData } from '@/app/site/editor/page';
+import Link from 'next/link';
 
 const createTemplateSchema = z.object({
   name: z.string().min(3, 'Template name must be at least 3 characters.'),
@@ -70,6 +71,8 @@ export default function CreateTemplatePage() {
     try {
       const result = await generateTemplateFromImageAction({ prompt: data.prompt, imageDataUri });
       if (result.section) {
+        // Also pre-fill the name from the prompt for convenience
+        form.setValue('name', data.prompt.substring(0, 50));
         setGeneratedElement(result.section);
         toast({ title: 'Preview Generated', description: 'AI has generated a preview. You can now save it as a template.' });
       } else {
@@ -120,12 +123,64 @@ export default function CreateTemplatePage() {
     <div className="grid grid-cols-1 gap-8 w-full max-w-4xl">
       <Card>
         <CardHeader>
-          <CardTitle>Create New Template</CardTitle>
-          <CardDescription>Manually define your template and use AI to generate the initial structure if you like.</CardDescription>
+          <CardTitle>Create New Template with AI</CardTitle>
+          <CardDescription>
+            Use AI to generate an initial structure from a prompt and/or an image. 
+            You can also create templates manually by saving a selection in the 
+            <Button variant="link" asChild className="p-0 h-auto ml-1"><Link href="/site/editor">main editor</Link></Button>.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleGenerate)} className="space-y-6">
+              <div className="space-y-4 rounded-lg border p-4">
+                 <h3 className="text-sm font-medium text-muted-foreground">AI Generation</h3>
+                  <FormField
+                    control={form.control}
+                    name="prompt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>AI Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="e.g., a modern hero section with a dark background..." {...field} rows={3} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reference Image (Optional)</FormLabel>
+                        <FormControl>
+                            <Input type="file" accept="image/*" onChange={(e) => {
+                                field.onChange(e.target.files);
+                                if (e.target.files && e.target.files[0]) {
+                                    setImagePreview(URL.createObjectURL(e.target.files[0]));
+                                } else {
+                                    setImagePreview(null);
+                                }
+                            }} />
+                        </FormControl>
+                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                 {imagePreview && (
+                    <div className="relative w-full h-32 rounded-md border overflow-hidden">
+                       <img src={imagePreview} alt="Image Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={isGenerating}>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {isGenerating ? 'Generating...' : 'Generate Preview'}
+                  </Button>
+              </div>
+
                <FormField
                 control={form.control}
                 name="name"
@@ -152,55 +207,6 @@ export default function CreateTemplatePage() {
                   </FormItem>
                 )}
               />
-
-              <div className="space-y-4 rounded-lg border p-4">
-                 <h3 className="text-sm font-medium text-muted-foreground">AI Generation (Optional)</h3>
-                  <FormField
-                    control={form.control}
-                    name="prompt"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>AI Prompt</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="e.g., a modern hero section with a dark background..." {...field} rows={3} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="image"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Reference Image</FormLabel>
-                        <FormControl>
-                            <Input type="file" accept="image/*" onChange={(e) => {
-                                field.onChange(e.target.files);
-                                if (e.target.files && e.target.files[0]) {
-                                    setImagePreview(URL.createObjectURL(e.target.files[0]));
-                                } else {
-                                    setImagePreview(null);
-                                }
-                            }} />
-                        </FormControl>
-                         <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                 {imagePreview && (
-                    <div className="relative w-full h-32 rounded-md border overflow-hidden">
-                       <img src={imagePreview} alt="Image Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-
-                  <Button type="submit" className="w-full" disabled={isGenerating}>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    {isGenerating ? 'Generating...' : 'Generate with AI'}
-                  </Button>
-              </div>
-
             </form>
           </Form>
         </CardContent>
@@ -230,7 +236,7 @@ export default function CreateTemplatePage() {
             ) : (
                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                     <ImageIcon className="h-12 w-12 mb-4" />
-                    <p>Generate an element using AI to see a preview.</p>
+                    <p>Generate a preview using the AI tools above.</p>
                 </div>
             )}
            </div>

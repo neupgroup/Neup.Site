@@ -20,6 +20,7 @@ import {
   DialogFooter,
   DialogClose
 } from "@/components/ui/dialog";
+import Link from 'next/link';
 
 interface TemplateManagerProps {
   selectedElement: CanvasElementData | null;
@@ -123,6 +124,13 @@ const TemplateManager: FC<TemplateManagerProps> = ({ selectedElement, addGenerat
         <Plus className="mr-2 h-4 w-4" />
         Save Selection as Template
       </Button>
+
+       <Button variant="outline" className="w-full" asChild>
+        <Link href="/root/templates/create">
+            <Plus className="mr-2 h-4 w-4" />
+            Create with AI
+        </Link>
+      </Button>
        
       <h3 className="font-semibold text-muted-foreground text-sm pt-4">My Templates</h3>
 
@@ -173,9 +181,9 @@ const TemplateManager: FC<TemplateManagerProps> = ({ selectedElement, addGenerat
       <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Save as Template</DialogTitle>
+                <DialogTitle>Save Selection as Template</DialogTitle>
                 <DialogDescription>
-                    Save the currently selected element as a reusable template.
+                    This will save the currently selected element and its children as a reusable template.
                 </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -192,7 +200,7 @@ const TemplateManager: FC<TemplateManagerProps> = ({ selectedElement, addGenerat
                 <DialogClose asChild>
                     <Button variant="ghost">Cancel</Button>
                 </DialogClose>
-                <Button onClick={handleSaveTemplate}>Save Template</Button>
+                <Button onClick={handleSaveTemplate} disabled={!newTemplateName.trim()}>Save Template</Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>
