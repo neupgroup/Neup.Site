@@ -9,58 +9,38 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Sparkles } from 'lucide-react';
-import type { CanvasElementData } from '@/app/site/editor/page';
-import { generateSiteSectionAction } from '@/actions/ai/generation';
-import { logErrorToFirestore } from '@/actions/logging';
+import { Save } from 'lucide-react';
+import type { CanvasElementData } from '@/lib/schemas';
 import { Label } from '@/components/ui/label';
 
 export default function CreateTemplatePage() {
   const [isSaving, setIsSaving] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<'section' | 'page' | 'element'>('section');
-  const [elements, setElements] = useState<CanvasElementData[]>([]);
-  const [prompt, setPrompt] = useState('');
-
-  const handleGenerate = async () => {
-    if (!prompt.trim()) {
-        toast({ variant: 'destructive', title: 'Prompt is required' });
-        return;
-    }
-    setIsGenerating(true);
-    try {
-        const result = await generateSiteSectionAction({ prompt });
-        if (result && result.section) {
-            setElements([result.section]);
-            if (!name) {
-                setName(result.section.id);
-            }
-            toast({ title: 'Generation Complete', description: 'Template structure has been generated.' });
-        } else {
-            throw new Error('AI did not return a valid section.');
-        }
-    } catch(e: any) {
-        logErrorToFirestore({message: 'Failed to generate template structure: ' + e.message, stack: e.stack});
-        toast({variant: 'destructive', title: 'Error', description: 'Failed to generate template from prompt.'});
-    } finally {
-        setIsGenerating(false);
-    }
-  };
+  const [elementsJson, setElementsJson] = useState('[]');
   
   const handleSave = async () => {
     if (!name.trim()) {
       toast({ variant: 'destructive', title: 'Name is required' });
       return;
     }
-    if (elements.length === 0) {
-      toast({ variant: 'destructive', title: 'Template is empty', description: 'Please generate a template structure first.' });
-      return;
+    
+    let elements: CanvasElementData[];
+    try {
+        elements = JSON.parse(elementsJson);
+        if (!Array.isArray(elements) || elements.length === 0) {
+            toast({ variant: 'destructive', title: 'Invalid Structure', description: 'The JSON structure must be a non-empty array of elements.' });
+            return;
+        }
+    } catch(e) {
+        toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The element structure is not valid JSON.' });
+        return;
     }
+
     setIsSaving(true);
     const result = await saveTemplate({ name, description, type, elements });
 
@@ -77,36 +57,9 @@ export default function CreateTemplatePage() {
     <div className="w-full max-w-2xl space-y-6">
         <Card>
             <CardHeader>
-                <CardTitle>1. Generate with AI</CardTitle>
-                <CardDescription>
-                    Describe the template you want to create. The AI will generate the underlying JSON structure for you.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="ai-prompt">Prompt</Label>
-                    <Textarea 
-                        id="ai-prompt"
-                        placeholder="e.g., A hero section with a large centered title, a subtitle, a CTA button, and a background image."
-                        value={prompt}
-                        onChange={e => setPrompt(e.target.value)}
-                        rows={4}
-                    />
-                </div>
-            </CardContent>
-            <CardFooter>
-                <Button onClick={handleGenerate} disabled={isGenerating} className="w-full">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    {isGenerating ? 'Generating...' : 'Generate Template Structure'}
-                </Button>
-            </CardFooter>
-        </Card>
-        
-        <Card>
-            <CardHeader>
-              <CardTitle>2. Review and Save</CardTitle>
+              <CardTitle>Create New Template</CardTitle>
               <CardDescription>
-                Provide the final details for your template and save it.
+                Define the details for your new template.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -132,17 +85,18 @@ export default function CreateTemplatePage() {
                     </Select>
                 </div>
                  <div className="space-y-2">
-                    <Label>Generated Structure (JSON)</Label>
+                    <Label>Structure (JSON)</Label>
                     <Textarea
-                        value={elements.length > 0 ? JSON.stringify(elements, null, 2) : 'Generate a template above to see the JSON structure.'}
-                        rows={10}
-                        readOnly
+                        value={elementsJson}
+                        onChange={(e) => setElementsJson(e.target.value)}
+                        rows={15}
                         className="font-mono text-xs bg-muted/50"
+                        placeholder='[{"id": "element-1", "type": "text", "content": "Hello World"}]'
                       />
                 </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSave} disabled={isSaving || elements.length === 0} className="w-full">
+              <Button onClick={handleSave} disabled={isSaving} className="w-full">
                 <Save className="mr-2 h-4 w-4" />
                 {isSaving ? 'Saving...' : 'Save Template'}
               </Button>

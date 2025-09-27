@@ -32,10 +32,6 @@ const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo,
         </Button>
       </div>
       <div className="flex items-center gap-2">
-         <Button variant="outline" size="sm" onClick={onViewCode}>
-          <Code className="mr-2 h-4 w-4" />
-          View Code
-        </Button>
         <Button variant="outline" size="sm">
           <Eye className="mr-2 h-4 w-4" />
           Preview

@@ -6,7 +6,6 @@ import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
-import CodeViewer from '@/components/editor/code-viewer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { logErrorToFirestore } from '@/actions/logging';
 import { saveSite, createSite } from '@/actions/editor/site';
@@ -24,7 +23,6 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
   const [history, setHistory] = useState<CanvasElementData[][]>([initialElements]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const elements = history[historyIndex];
-  const [isCodeViewerOpen, setIsCodeViewerOpen] = useState(false);
   const { toast } = useToast();
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
@@ -614,7 +612,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         onRedo={redo}
         canUndo={historyIndex > 0}
         canRedo={historyIndex < history.length - 1}
-        onViewCode={() => setIsCodeViewerOpen(true)}
+        onViewCode={() => {}}
         onPublish={handlePublish}
       />
       <div className="flex flex-1 overflow-hidden">
@@ -642,14 +640,8 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             updateElement={updateElement}
             deleteElement={deleteElement}
             updateElementId={updateElementId}
-            addGeneratedElement={addGeneratedElement}
         />
       </div>
-      <CodeViewer
-        isOpen={isCodeViewerOpen}
-        onClose={() => setIsCodeViewerOpen(false)}
-        elements={elements}
-      />
     </div>
   );
 };

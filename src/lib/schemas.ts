@@ -1,12 +1,6 @@
 'use client';
 import { z } from 'zod';
 
-export const GenerateSiteSectionInputSchema = z.object({
-  prompt: z.string().describe('A user prompt describing the desired website section.'),
-});
-export type GenerateSiteSectionInput = z.infer<typeof GenerateSiteSectionInputSchema>;
-
-
 // Define the TypeScript type for a canvas element first.
 export interface CanvasElementData {
   id: string;
@@ -32,18 +26,6 @@ export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() =
     customCss: z.string().optional().describe("A string of raw CSS to be applied directly to the element. Use this for advanced styles like pseudo-classes (:hover) or complex selectors."),
     className: z.string().optional().describe("A string of CSS classes to apply to the element."),
 }));
-
-export const GenerateSiteSectionOutputSchema = z.object({
-  section: CanvasElementDataSchema.describe('The generated website section as a single root CanvasElementData object, which should be of type "section".'),
-});
-export type GenerateSiteSectionOutput = z.infer<typeof GenerateSiteSectionOutputSchema>;
-
-export const GenerateTemplateFromImageInputSchema = z.object({
-    prompt: z.string().describe('A user prompt describing the desired website section.'),
-    imageDataUri: z.string().optional().describe("An optional image of a website section, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
-});
-export type GenerateTemplateFromImageInput = z.infer<typeof GenerateTemplateFromImageInputSchema>;
-
 
 export const TemplateSchema = z.object({
   id: z.string().optional(),

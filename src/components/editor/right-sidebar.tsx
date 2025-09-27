@@ -4,9 +4,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code, Save } from 'lucide-react';
-import AiGenerator from '@/components/editor/ai-generator';
-import type { CanvasElementData } from '@/app/site/editor/page';
+import { Palette, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code, Save } from 'lucide-react';
+import type { CanvasElementData } from '@/lib/schemas';
 import {
   Accordion,
   AccordionContent,
@@ -115,10 +114,9 @@ interface RightSidebarProps {
   updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string, recordHistory?: boolean) => void;
   deleteElement: (id: string) => void;
   updateElementId: (oldId: string, newId: string) => void;
-  addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, addGeneratedElement }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId }) => {
   
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
@@ -272,21 +270,9 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   return (
     <aside className="w-80 border-l bg-card">
         {selectedElement && <SaveTemplateDialog isOpen={isSaveTemplateOpen} onOpenChange={setIsSaveTemplateOpen} element={selectedElement} />}
-      <Tabs defaultValue="customize" className="flex h-full flex-col">
-        <TabsList className="grid w-full grid-cols-2 rounded-none border-b">
-          <TabsTrigger value="customize">
-            <Settings className="mr-2 h-4 w-4" />
-            Customize
-          </TabsTrigger>
-          <TabsTrigger value="ai">
-            <Sparkles className="mr-2 h-4 w-4" />
-            AI
-          </TabsTrigger>
-        </TabsList>
-        <ScrollArea className="flex-1">
-          <TabsContent value="customize" className="p-0">
+      <ScrollArea className="h-full">
             {selectedElement ? (
-              <Accordion type="multiple" className="w-full">
+              <Accordion type="multiple" className="w-full" defaultValue={['element-id', 'layout', 'typography', 'background', 'spacing']}>
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -668,15 +654,12 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
               </Accordion>
             ) : (
               <div className="flex h-full flex-col items-center justify-center text-center text-sm text-muted-foreground p-4">
-                <p>Select an element on the canvas to edit its styles.</p>
+                <Settings className="h-10 w-10 mb-4" />
+                <p className="font-semibold">Customize Element</p>
+                <p>Select an element on the canvas to edit its styles and properties.</p>
               </div>
             )}
-          </TabsContent>
-          <TabsContent value="ai" className="p-0">
-            <AiGenerator addGeneratedElement={addGeneratedElement} />
-          </TabsContent>
-        </ScrollArea>
-      </Tabs>
+      </ScrollArea>
     </aside>
   );
 };
