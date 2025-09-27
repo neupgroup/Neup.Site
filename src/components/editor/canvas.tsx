@@ -88,7 +88,7 @@ const CanvasElementWrapper: FC<{
         </style>
       )}
       {!dangerouslySetInnerHTML && children}
-      {isSelected && (
+      {isSelected && !dangerouslySetInnerHTML && (
           <>
             <ResizeHandle position="top-left" onMouseDown={(e) => onResizeStart(e, 'top-left')} />
             <ResizeHandle position="top" onMouseDown={(e) => onResizeStart(e, 'top')} />
@@ -273,6 +273,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     const renderElement = (element: CanvasElementData, parentId: string | null = null) => {
         const { id, type, content, htmlContent, styles, props, children, customCss, className } = element;
         const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
+        const isSelected = selectedElement === id;
 
         const {key, ...restWrapperProps} = {
             id,
@@ -386,14 +387,29 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                         </CanvasElementWrapper>
                     );
                 case 'html':
+                    const wrapperProps: any = {
+                        ...restWrapperProps,
+                        key,
+                        dangerouslySetInnerHTML: { __html: htmlContent || '' }
+                    };
                     return (
-                        <CanvasElementWrapper 
-                            {...restWrapperProps} 
-                            key={key} 
-                            dangerouslySetInnerHTML={{ __html: htmlContent || '' }}
-                        >
-                          {/* Children are intentionally not rendered for 'html' type to avoid conflicts */}
-                        </CanvasElementWrapper>
+                        <div className="relative">
+                            <CanvasElementWrapper {...wrapperProps}>
+                              {/* Intentionally empty */}
+                            </CanvasElementWrapper>
+                             {isSelected && (
+                                <>
+                                    <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
+                                    <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
+                                    <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
+                                    <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
+                                    <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
+                                    <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
+                                    <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
+                                    <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
+                                </>
+                            )}
+                        </div>
                     );
                 default:
                      // Fallback for obsolete types
@@ -449,3 +465,5 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 };
 
 export default Canvas;
+
+    
