@@ -34,9 +34,9 @@ export default function RootLayout({
         {showNav && (
             <nav className="bg-card border-b p-4">
                 <ul className="flex space-x-4">
-                    <li><Link href="/site/editor" className="text-sm text-foreground hover:text-primary">Editor</Link></li>
-                    <li><Link href="/landing" className="text-sm text-foreground hover:text-primary">Landing</Link></li>
-                    <li><Link href="/errors" className="text-sm text-foreground hover:text-primary">Errors</Link></li>
+                    <li key="/site/editor"><Link href="/site/editor" className="text-sm text-foreground hover:text-primary">Editor</Link></li>
+                    <li key="/landing"><Link href="/landing" className="text-sm text-foreground hover:text-primary">Landing</Link></li>
+                    <li key="/errors"><Link href="/errors" className="text-sm text-foreground hover:text-primary">Errors</Link></li>
                 </ul>
             </nav>
         )}
