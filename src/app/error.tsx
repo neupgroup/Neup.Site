@@ -20,12 +20,17 @@ export default function GlobalError({
     const logError = async () => {
         console.error("Caught an error:", error);
         try {
-            await addDoc(collection(db, "errors"), {
+            const errorData: any = {
                 message: error.message,
                 stack: error.stack,
                 timestamp: serverTimestamp(),
-                digest: error.digest,
-            });
+            };
+
+            if (error.digest) {
+                errorData.digest = error.digest;
+            }
+
+            await addDoc(collection(db, "errors"), errorData);
             console.log("Error logged to Firestore.");
         } catch (dbError) {
             console.error("Failed to log error to Firestore:", dbError);
