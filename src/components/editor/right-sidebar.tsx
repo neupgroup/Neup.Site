@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code, Save } from 'lucide-react';
+import { Palette, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code, Save, Square as SquareIcon } from 'lucide-react';
 import type { CanvasElementData } from '@/lib/schemas';
 import {
   Accordion,
@@ -162,12 +162,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   const handleStyleChange = (property: keyof React.CSSProperties, value: string) => {
       const newStyles = {...styles, [property]: value};
-      if (property.toLowerCase().includes('padding')) {
-        delete newStyles.padding;
-      }
-      if (property.toLowerCase().includes('margin')) {
-        delete newStyles.margin;
-      }
       setStyles(newStyles);
       
       if (typingTimeout.current) clearTimeout(typingTimeout.current);
@@ -272,7 +266,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         {selectedElement && <SaveTemplateDialog isOpen={isSaveTemplateOpen} onOpenChange={setIsSaveTemplateOpen} element={selectedElement} />}
       <ScrollArea className="h-full">
             {selectedElement ? (
-              <Accordion type="multiple" className="w-full" defaultValue={['element-id', 'layout', 'typography', 'background', 'spacing']}>
+              <Accordion type="multiple" className="w-full" defaultValue={['element-id', 'layout', 'typography', 'background', 'spacing', 'border']}>
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
@@ -600,6 +594,20 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </AccordionContent>
                 </AccordionItem>
 
+                 <AccordionItem value="border">
+                    <AccordionTrigger className="px-4 text-sm font-medium">Borders</AccordionTrigger>
+                    <AccordionContent className="px-4 space-y-4">
+                        <div className="space-y-2">
+                          <Label>Border</Label>
+                          <Input value={styles.border as string || ''} onChange={e => handleStyleChange('border', e.target.value)} placeholder="1px solid #000" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Cornering (Radius)</Label>
+                          <Input value={styles.borderRadius as string || ''} onChange={e => handleStyleChange('borderRadius', e.target.value)} placeholder="8px" />
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+
                 {showFor(['image']) && (
                    <AccordionItem value="image">
                     <AccordionTrigger className="px-4 text-sm font-medium">Image</AccordionTrigger>
@@ -617,8 +625,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 )}
                  {showFor(['video']) && (
                    <AccordionItem value="video">
-                    <AccordionTrigger className="px-4 text-sm font-medium">Video</AccordionTrigger>
-                    <AccordionContent className="px-ax-4 space-y-4">
+                    <AccordionTrigger className="px-ax-4 text-sm font-medium">Video</AccordionTrigger>
+                    <AccordionContent className="px-4 space-y-4">
                         <div className="space-y-2">
                           <Label>Source URL</Label>
                           <Input value={props.src || ''} onChange={e => handlePropChange('src', e.target.value)} />
