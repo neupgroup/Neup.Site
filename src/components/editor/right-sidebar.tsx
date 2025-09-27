@@ -266,7 +266,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
         {selectedElement && <SaveTemplateDialog isOpen={isSaveTemplateOpen} onOpenChange={setIsSaveTemplateOpen} element={selectedElement} />}
       <ScrollArea className="h-full">
             {selectedElement ? (
-              <Accordion type="multiple" className="w-full" defaultValue={['element-id', 'layout', 'typography', 'background', 'spacing', 'border']}>
+              <Accordion type="single" collapsible className="w-full" defaultValue="element-id">
                  <AccordionItem value="element-id">
                   <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
                   <AccordionContent className="px-4 space-y-2">
