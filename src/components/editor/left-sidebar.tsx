@@ -10,7 +10,6 @@ import { generateSiteSectionAction } from '@/actions/ai/generation';
 import { Textarea } from '../ui/textarea';
 import { logErrorToFirestore } from '@/actions/logging';
 import { type GenerateSiteSectionInput } from '@/lib/schemas';
-import TemplateManager from './template-manager';
 import Link from 'next/link';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
@@ -252,7 +251,9 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
         <TabsList className="grid w-full grid-cols-4 rounded-none border-b">
           <TabsTrigger value="add">Add</TabsTrigger>
           <TabsTrigger value="layers"><Layers className="h-4 w-4"/></TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger value="templates">
+            <Link href="/root/templates">Templates</Link>
+          </TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
         </TabsList>
         <ScrollArea className="flex-1">
@@ -328,12 +329,6 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                     />
                 ))}
             </div>
-          </TabsContent>
-          <TabsContent value="templates" className="p-4">
-            <TemplateManager 
-              selectedElement={selectedElementData}
-              addGeneratedElement={addGeneratedElement}
-            />
           </TabsContent>
           <TabsContent value="pages" className="p-4">
             <div className="space-y-2">

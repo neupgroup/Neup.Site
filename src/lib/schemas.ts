@@ -34,7 +34,7 @@ export const TemplateSchema = z.object({
   id: z.string().optional(),
   name: z.string(),
   description: z.string().optional(),
-  elements: z.array(CanvasElementDataSchema),
+  templateHtml: z.string(),
   type: z.enum(['section', 'page', 'element']),
   createdBy: z.string().optional(), // Assuming user ID will be stored here
   createdAt: z.any().optional(), // serverTimestamp will be used

@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function EditTemplatePage() {
   const params = useParams();
@@ -21,12 +22,14 @@ export default function EditTemplatePage() {
   const { toast } = useToast();
   const id = params.id as string;
 
-  const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const [templateHtml, setTemplateHtml] = useState('');
+  const [type, setType] = useState<'section' | 'page' | 'element'>('section');
 
 
   useEffect(() => {
@@ -35,9 +38,11 @@ export default function EditTemplatePage() {
       setLoading(true);
       const result = await getTemplate(id);
       if (result.success && result.template) {
-        setTemplate(result.template);
-        setName(result.template.name);
-        setDescription(result.template.description || '');
+        const { template } = result;
+        setName(template.name);
+        setDescription(template.description || '');
+        setTemplateHtml(template.templateHtml || '');
+        setType(template.type);
       } else {
         setError(result.error || 'Failed to fetch template');
       }
@@ -48,19 +53,21 @@ export default function EditTemplatePage() {
   }, [id]);
   
   const handleSaveChanges = async () => {
-      if (!template) return;
+      if (!id) return;
       setIsSaving(true);
       
-      const updatedTemplateData: Partial<Template> = {
+      const updatedTemplateData = {
           name,
           description,
+          templateHtml,
+          type
       };
 
-      const result = await saveTemplate(updatedTemplateData, template.id);
+      const result = await saveTemplate(updatedTemplateData, id);
 
       if (result.success) {
           toast({ title: 'Success', description: 'Template updated successfully.'});
-          router.push(`/root/templates/${template.id}`);
+          router.push(`/root/templates/${id}`);
       } else {
           toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
@@ -102,15 +109,11 @@ export default function EditTemplatePage() {
     );
   }
 
-  if (!template) {
-    return null;
-  }
-
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle>Edit Template</CardTitle>
-        <CardDescription>Editing template: {template.name}</CardDescription>
+        <CardDescription>Editing template: {name}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -120,6 +123,23 @@ export default function EditTemplatePage() {
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
           <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+            <Label>Type</Label>
+            <Select value={type} onValueChange={(value: any) => setType(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a template type" />
+                </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="section">Section</SelectItem>
+                <SelectItem value="page">Page</SelectItem>
+                <SelectItem value="element">Element</SelectItem>
+              </SelectContent>
+            </Select>
+        </div>
+         <div className="space-y-2">
+          <Label htmlFor="templateHtml">Template HTML</Label>
+          <Textarea id="templateHtml" value={templateHtml} onChange={(e) => setTemplateHtml(e.target.value)} rows={10} />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
