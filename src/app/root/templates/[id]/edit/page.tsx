@@ -28,8 +28,9 @@ export default function EditTemplatePage() {
   
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [templateHtml, setTemplateHtml] = useState('');
+  const [elementsJson, setElementsJson] = useState('');
   const [type, setType] = useState<'section' | 'page' | 'element'>('section');
+  const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
 
 
   useEffect(() => {
@@ -39,9 +40,10 @@ export default function EditTemplatePage() {
       const result = await getTemplate(id);
       if (result.success && result.template) {
         const { template } = result;
+        setOriginalTemplate(template);
         setName(template.name);
         setDescription(template.description || '');
-        setTemplateHtml(template.templateHtml || '');
+        setElementsJson(JSON.stringify(template.elements, null, 2));
         setType(template.type);
       } else {
         setError(result.error || 'Failed to fetch template');
@@ -53,14 +55,17 @@ export default function EditTemplatePage() {
   }, [id]);
   
   const handleSaveChanges = async () => {
-      if (!id) return;
+      if (!id || !originalTemplate) return;
       setIsSaving(true);
       
       const updatedTemplateData = {
+          ...originalTemplate,
           name,
           description,
-          templateHtml,
-          type
+          type,
+          // Note: We don't allow editing elements JSON here for safety.
+          // This would require robust validation.
+          // elements: JSON.parse(elementsJson) 
       };
 
       const result = await saveTemplate(updatedTemplateData, id);
@@ -138,8 +143,9 @@ export default function EditTemplatePage() {
             </Select>
         </div>
          <div className="space-y-2">
-          <Label htmlFor="templateHtml">Template HTML</Label>
-          <Textarea id="templateHtml" value={templateHtml} onChange={(e) => setTemplateHtml(e.target.value)} rows={10} />
+          <Label htmlFor="elementsJson">Elements (JSON)</Label>
+          <Textarea id="elementsJson" value={elementsJson} rows={15} readOnly className="font-mono text-xs bg-muted/50" />
+          <p className="text-xs text-muted-foreground">The element structure is read-only. To edit the content, use the "Save as Template" feature in the main editor.</p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">

@@ -222,7 +222,7 @@ const AiGenerator: FC<{addGeneratedElement: (element: CanvasElementData) => void
     );
 }
 
-const TemplateLibrary = () => {
+const TemplateLibrary = ({addGeneratedElement}: {addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void}) => {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -249,11 +249,14 @@ const TemplateLibrary = () => {
   }, []);
 
   const handleDragStart = (e: React.DragEvent, template: Template) => {
-    const data = {
-      type: 'template-element',
-      html: template.templateHtml,
-    };
-    e.dataTransfer.setData('application/json', JSON.stringify(data));
+    // We only drag the first element, assuming templates are single sections/elements for now.
+    if(template.elements && template.elements.length > 0) {
+      const data = {
+        type: 'template-element',
+        element: template.elements[0],
+      };
+      e.dataTransfer.setData('application/json', JSON.stringify(data));
+    }
   };
   
   if (loading) {
@@ -411,7 +414,7 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
             </div>
           </TabsContent>
           <TabsContent value="templates" className="p-4">
-            <TemplateLibrary />
+            <TemplateLibrary addGeneratedElement={addGeneratedElement} />
           </TabsContent>
           <TabsContent value="pages" className="p-4">
             <div className="space-y-2">

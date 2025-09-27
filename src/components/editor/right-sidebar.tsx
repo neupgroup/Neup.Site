@@ -4,9 +4,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code } from 'lucide-react';
+import { Palette, Sparkles, Blend, AlignCenter, ArrowLeftRight, StretchHorizontal, Trash2, Brush, Settings, Code, Save } from 'lucide-react';
 import AiAssistant from '@/components/editor/ai-assistant';
-import { CanvasElementData } from '@/app/site/editor/page';
+import { CanvasElementData, Template } from '@/app/site/editor/page';
 import {
   Accordion,
   AccordionContent,
@@ -21,7 +21,92 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from '../ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { saveTemplate } from '@/actions/editor/templates';
 
+
+interface SaveTemplateDialogProps {
+    isOpen: boolean;
+    onOpenChange: (isOpen: boolean) => void;
+    element: CanvasElementData;
+}
+
+const SaveTemplateDialog: FC<SaveTemplateDialogProps> = ({ isOpen, onOpenChange, element }) => {
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [type, setType] = useState<'section' | 'element'>('element');
+    const [isSaving, setIsSaving] = useState(false);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        if (element) {
+            setName(element.id);
+            setType(element.type === 'section' ? 'section' : 'element');
+        }
+    }, [element]);
+
+    const handleSave = async () => {
+        if (!name.trim()) {
+            toast({ variant: 'destructive', title: 'Name is required' });
+            return;
+        }
+        setIsSaving(true);
+        const templateData = {
+            name,
+            description,
+            type,
+            elements: [element]
+        };
+        const result = await saveTemplate(templateData);
+        if (result.success) {
+            toast({ title: 'Template Saved!', description: `Template "${name}" has been saved.` });
+            onOpenChange(false);
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.error });
+        }
+        setIsSaving(false);
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Save as Template</DialogTitle>
+                    <DialogDescription>Save the selected element and its children as a reusable template.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="template-name">Template Name</Label>
+                        <Input id="template-name" value={name} onChange={(e) => setName(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="template-description">Description (Optional)</Label>
+                        <Textarea id="template-description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Type</Label>
+                        <Select value={type} onValueChange={(value: any) => setType(value)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="section">Section</SelectItem>
+                            <SelectItem value="element">Element</SelectItem>
+                          </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+                    <Button onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? 'Saving...' : 'Save Template'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
 interface RightSidebarProps {
   selectedElementId: string | null;
@@ -56,6 +141,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [customCss, setCustomCss] = useState<string | undefined>(undefined);
   const [className, setClassName] = useState<string | undefined>(undefined);
   const [elementId, setElementId] = useState<string | undefined>(undefined);
+  const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const bgColorInputRef = useRef<HTMLInputElement>(null);
   const isTyping = useRef(false);
@@ -183,6 +269,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   return (
     <aside className="w-80 border-l bg-card">
+        {selectedElement && <SaveTemplateDialog isOpen={isSaveTemplateOpen} onOpenChange={setIsSaveTemplateOpen} element={selectedElement} />}
       <Tabs defaultValue="customize" className="flex h-full flex-col">
         <TabsList className="grid w-full grid-cols-2 rounded-none border-b">
           <TabsTrigger value="customize">
@@ -203,9 +290,15 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                   <AccordionContent className="px-4 space-y-2">
                     <div className="flex items-center justify-between">
                         <p className="text-xs text-muted-foreground break-words">{selectedElement.id}</p>
-                        <Button variant="destructive" size="icon" className="h-7 w-7" onClick={() => deleteElement(selectedElement.id)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => setIsSaveTemplateOpen(true)}>
+                                <Save className="h-4 w-4 mr-2"/>
+                                Save as Template
+                            </Button>
+                            <Button variant="destructive" size="icon" className="h-7 w-7" onClick={() => deleteElement(selectedElement.id)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

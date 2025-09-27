@@ -1,4 +1,3 @@
-
 import { type FC, useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -8,7 +7,6 @@ import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import { htmlToJsonAction } from '@/actions/ai/conversion';
 import { useToast } from '@/hooks/use-toast';
 import { logErrorToFirestore } from '@/actions/logging';
 
@@ -16,9 +14,9 @@ interface CanvasProps {
   elements: CanvasElementData[];
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newHtmlContent?: string) => void;
+  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string) => void;
   moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
-  addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string, htmlContent?: string) => void;
+  addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
   addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
@@ -43,7 +41,7 @@ const CanvasElementWrapper: FC<{
   className?: string;
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   style?: React.CSSProperties;
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDragEnter: (e: React.DragEvent, id: string) => void;
@@ -144,7 +142,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         } else if (data.type === 'sidebar-element') {
             addElement(data.elementType, targetId ?? undefined, parentId);
         } else if (data.type === 'template-element') {
-            addElement('html', targetId ?? undefined, parentId, data.html);
+            addGeneratedElement(data.element, targetId ?? undefined, parentId);
         }
         
         setDraggedId(null);
@@ -258,18 +256,17 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         };
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
-    const renderElement = (element: CanvasElementData, parentId: string | null = null) => {
+    const renderElement = (element: CanvasElementData, parentId: string | null = null): React.ReactNode => {
         const { id, type, content, htmlContent, styles, props, children, customCss, className } = element;
         const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
         const isSelected = selectedElement === id;
 
-        const {key, ...restWrapperProps} = {
+        const wrapperProps = {
             id,
             className,
             selectedElement,
             onSelectElement,
             style: styles,
-            key: id,
             onDragStart: handleDragStart,
             onDragEnter: (e: React.DragEvent) => handleDragEnter(e, id, parentId),
             onDragLeave: handleDragLeave,
@@ -280,137 +277,149 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         
         const showDropIndicator = dropZone.elementId === id && dropZone.parentId === parentId && id !== draggedId;
 
-        const elementComponent = (() => {
-            switch (type) {
-                case 'heading':
-                    const HeadingTag = `h${props?.level || 1}` as keyof JSX.IntrinsicElements;
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                             <HeadingTag>
-                                <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
-                            </HeadingTag>
-                        </CanvasElementWrapper>
-                    );
-                case 'text':
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} />
-                        </CanvasElementWrapper>
-                    );
-                case 'link':
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                            <a href={props?.href || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} /></a>
-                        </CanvasElementWrapper>
-                    );
-                case 'button':
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                            <Button className="w-full h-full"><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></Button>
-                        </CanvasElementWrapper>
-                    );
-                case 'image':
-                     return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                            {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
-                        </CanvasElementWrapper>
-                     );
-                case 'video':
-                     return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                            <video controls src={props?.src} className="w-full h-full" />
-                        </CanvasElementWrapper>
-                     );
-                case 'section':
-                case 'div':
-                case 'container':
-                case 'form':
-                case 'list':
-                  let Tag: 'section' | 'div' | 'form' | 'ul' = 'div';
-                  if (type === 'section') Tag = 'section';
-                  if (type === 'form') Tag = 'form';
-                  if (type === 'list') Tag = 'ul';
+        let elementComponent: React.ReactNode;
 
-                  return (
-                    <CanvasElementWrapper {...restWrapperProps} className={cn({'p-4': children?.length === 0, 'container': type === 'container'}, className)}>
-                      <Tag 
-                        onDrop={(e) => handleDrop(e, id)} 
-                        onDragOver={(e) => handleDragOver(e, id)} 
-                        className="min-h-full h-full"
-                      >
-                        {children && children.length > 0 
-                            ? children.map(child => renderElement(child, id)) 
-                            : <span className="text-muted-foreground text-sm pointer-events-none">Drag elements here</span>
-                        }
-                        {dropZone.parentId === id && !dropZone.elementId && (
-                            <DropIndicator className="!my-0" />
-                        )}
-                      </Tag>
+        switch (type) {
+            case 'heading':
+                const HeadingTag = `h${props?.level || 1}` as keyof JSX.IntrinsicElements;
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                         <HeadingTag>
+                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
+                        </HeadingTag>
                     </CanvasElementWrapper>
-                  )
-                case 'list-item':
-                  return (
-                    <CanvasElementWrapper {...restWrapperProps}>
-                      <li>
-                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} />
-                      </li>
+                );
+                break;
+            case 'text':
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} />
                     </CanvasElementWrapper>
-                  )
-                case 'input':
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                           <Input {...props} className="w-full h-full bg-background" />
-                        </CanvasElementWrapper>
-                    );
-                case 'textarea':
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                           <Textarea {...props} className="w-full h-full bg-background" />
-                        </CanvasElementWrapper>
-                    );
-                case 'label':
-                    return (
-                        <CanvasElementWrapper {...restWrapperProps}>
-                            <label><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></label>
-                        </CanvasElementWrapper>
-                    );
-                case 'html':
-                  return (
-                      <>
-                          <CanvasElementWrapper {...restWrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
-                          {isSelected && (
-                          <>
-                              <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
-                              <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
-                              <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
-                              <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
-                              <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
-                              <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
-                              <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
-                              <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
-                          </>
-                          )}
-                      </>
-                  );
-                default:
-                     // Fallback for obsolete types
-                    if ((type as string).startsWith('hero') || (type as string).startsWith('feature')) {
-                         return (
-                            <CanvasElementWrapper {...restWrapperProps}>
-                                <div className="text-muted-foreground p-4 border border-dashed">Obsolete Component: {type}</div>
-                            </CanvasElementWrapper>
-                        )
+                );
+                break;
+            case 'link':
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                        <a href={props?.href || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} /></a>
+                    </CanvasElementWrapper>
+                );
+                break;
+            case 'button':
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                        <Button className="w-full h-full"><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></Button>
+                    </CanvasElementWrapper>
+                );
+                break;
+            case 'image':
+                 elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                        {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
+                    </CanvasElementWrapper>
+                 );
+                 break;
+            case 'video':
+                 elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                        <video controls src={props?.src} className="w-full h-full" />
+                    </CanvasElementWrapper>
+                 );
+                 break;
+            case 'section':
+            case 'div':
+            case 'container':
+            case 'form':
+            case 'list':
+              let Tag: 'section' | 'div' | 'form' | 'ul' = 'div';
+              if (type === 'section') Tag = 'section';
+              if (type === 'form') Tag = 'form';
+              if (type === 'list') Tag = 'ul';
+
+              elementComponent = (
+                <CanvasElementWrapper {...wrapperProps} className={cn({'p-4': children?.length === 0, 'container': type === 'container'}, className)}>
+                  <Tag 
+                    onDrop={(e) => handleDrop(e, id)} 
+                    onDragOver={(e) => handleDragOver(e, id)} 
+                    className="min-h-full h-full"
+                  >
+                    {children && children.length > 0 
+                        ? children.map(child => renderElement(child, id)) 
+                        : <span className="text-muted-foreground text-sm pointer-events-none">Drag elements here</span>
                     }
-                    return null;
-            }
-        })();
+                    {dropZone.parentId === id && !dropZone.elementId && (
+                        <DropIndicator className="!my-0" />
+                    )}
+                  </Tag>
+                </CanvasElementWrapper>
+              );
+              break;
+            case 'list-item':
+              elementComponent = (
+                <CanvasElementWrapper {...wrapperProps}>
+                  <li>
+                    <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} />
+                  </li>
+                </CanvasElementWrapper>
+              );
+              break;
+            case 'input':
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                       <Input {...props} className="w-full h-full bg-background" />
+                    </CanvasElementWrapper>
+                );
+                break;
+            case 'textarea':
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                       <Textarea {...props} className="w-full h-full bg-background" />
+                    </CanvasElementWrapper>
+                );
+                break;
+            case 'label':
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps}>
+                        <label><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></label>
+                    </CanvasElementWrapper>
+                );
+                break;
+            case 'html':
+                elementComponent = (
+                    <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
+                );
+                break;
+            default:
+                 // Fallback for obsolete types
+                if ((type as string).startsWith('hero') || (type as string).startsWith('feature')) {
+                     elementComponent = (
+                        <CanvasElementWrapper {...wrapperProps}>
+                            <div className="text-muted-foreground p-4 border border-dashed">Obsolete Component: {type}</div>
+                        </CanvasElementWrapper>
+                    );
+                } else {
+                  return null;
+                }
+                break;
+        }
 
         return (
             <div key={id}>
                 {showDropIndicator && <DropIndicator />}
                 {elementComponent}
+                {isSelected && type === 'html' && (
+                  <>
+                    <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
+                    <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
+                    <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
+                    <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
+                    <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
+                    <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
+                    <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
+                    <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
+                  </>
+                )}
             </div>
-        )
+        );
     }
   
   return (

@@ -7,7 +7,7 @@ export const GenerateSiteSectionInputSchema = z.object({
 export type GenerateSiteSectionInput = z.infer<typeof GenerateSiteSectionInputSchema>;
 
 
-const CanvasElementDataSchema: z.ZodType<any> = z.lazy(() => z.object({
+export const CanvasElementDataSchema: z.ZodType<any> = z.lazy(() => z.object({
     id: z.string().describe("A unique identifier for the element. Should be a descriptive slug, e.g., 'hero-title-123'."),
     type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'link', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']).describe("The type of the element."),
     content: z.string().optional().describe("Text content for elements like text, button, or heading."),
@@ -35,10 +35,10 @@ export const TemplateSchema = z.object({
   id: z.string().optional(),
   name: z.string(),
   description: z.string().optional(),
-  templateHtml: z.string(),
+  elements: z.array(CanvasElementDataSchema),
   type: z.enum(['section', 'page', 'element']),
   createdBy: z.string().optional(), // Assuming user ID will be stored here
-  createdAt: z.string().optional(), // serverTimestamp will be used
+  createdAt: z.any().optional(), // serverTimestamp will be used, can be object or string
 });
 
 export type Template = z.infer<typeof TemplateSchema>;

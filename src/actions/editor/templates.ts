@@ -52,7 +52,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
 /**
  * Fetches all templates from Firestore.
  */
-export async function getTemplates() {
+export async function getTemplates(): Promise<{ success: boolean, templates?: Template[], error?: string }> {
   try {
     const querySnapshot = await getDocs(collection(db, TEMPLATES_COLLECTION));
     const templates = querySnapshot.docs.map(doc => {
@@ -68,8 +68,8 @@ export async function getTemplates() {
       return {
         id: doc.id,
         ...serializableData,
-      };
-    }) as Template[];
+      } as Template;
+    });
     return { success: true, templates };
   } catch (error: any) {
     console.error('Failed to fetch templates:', error);
@@ -84,7 +84,7 @@ export async function getTemplates() {
 /**
  * Fetches a single template from Firestore by its ID.
  */
-export async function getTemplate(id: string) {
+export async function getTemplate(id: string): Promise<{ success: boolean, template?: Template, error?: string }> {
     try {
         const templateRef = doc(db, TEMPLATES_COLLECTION, id);
         const docSnap = await getDoc(templateRef);

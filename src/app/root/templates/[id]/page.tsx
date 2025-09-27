@@ -9,6 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, ArrowLeft, Pencil } from 'lucide-react';
+import Canvas from '@/components/editor/canvas';
+import { CanvasElementData } from '@/app/site/editor/page';
+
+const emptyFn = () => {};
 
 export default function TemplateDetailPage() {
   const params = useParams();
@@ -79,10 +83,17 @@ export default function TemplateDetailPage() {
         </CardHeader>
         <CardContent>
             <h3 className="mb-4 text-lg font-semibold">Preview</h3>
-            <div 
-              className="rounded-lg border bg-background p-4 relative overflow-auto"
-              dangerouslySetInnerHTML={{ __html: template.templateHtml }}
-            />
+            <div className="rounded-lg border bg-background p-4 relative overflow-auto pointer-events-none">
+                <Canvas
+                    elements={template.elements as CanvasElementData[]}
+                    selectedElement={null}
+                    onSelectElement={emptyFn}
+                    updateElement={emptyFn}
+                    moveElement={emptyFn}
+                    addElement={empty.fn}
+                    addGeneratedElement={emptyFn}
+                />
+            </div>
         </CardContent>
         <CardFooter className="flex justify-between">
             <Button variant="ghost" asChild>

@@ -1,45 +1,71 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { saveTemplate } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Save } from 'lucide-react';
-import { TemplateSchema } from '@/lib/schemas';
-
-const createTemplateSchema = TemplateSchema.omit({ id: true, createdBy: true, createdAt: true });
-
-type CreateTemplateFormValues = Zod.infer<typeof createTemplateSchema>;
+import { Save, Sparkles } from 'lucide-react';
+import type { CanvasElementData } from '@/app/site/editor/page';
+import { generateSiteSectionAction } from '@/actions/ai/generation';
+import { logErrorToFirestore } from '@/actions/logging';
+import { Label } from '@/components/ui/label';
 
 export default function CreateTemplatePage() {
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
-  const form = useForm<CreateTemplateFormValues>({
-    resolver: zodResolver(createTemplateSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-      templateHtml: '',
-      type: 'section',
-    },
-  });
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [type, setType] = useState<'section' | 'page' | 'element'>('section');
+  const [elements, setElements] = useState<CanvasElementData[]>([]);
+  const [prompt, setPrompt] = useState('');
 
-  const handleSave: SubmitHandler<CreateTemplateFormValues> = async (data) => {
+  const handleGenerate = async () => {
+    if (!prompt.trim()) {
+        toast({ variant: 'destructive', title: 'Prompt is required' });
+        return;
+    }
+    setIsGenerating(true);
+    try {
+        const result = await generateSiteSectionAction({ prompt });
+        if (result && result.section) {
+            setElements([result.section]);
+            if (!name) {
+                setName(result.section.id);
+            }
+            toast({ title: 'Generation Complete', description: 'Template structure has been generated.' });
+        } else {
+            throw new Error('AI did not return a valid section.');
+        }
+    } catch(e: any) {
+        logErrorToFirestore({message: 'Failed to generate template structure: ' + e.message, stack: e.stack});
+        toast({variant: 'destructive', title: 'Error', description: 'Failed to generate template from prompt.'});
+    } finally {
+        setIsGenerating(false);
+    }
+  };
+  
+  const handleSave = async () => {
+    if (!name.trim()) {
+      toast({ variant: 'destructive', title: 'Name is required' });
+      return;
+    }
+    if (elements.length === 0) {
+      toast({ variant: 'destructive', title: 'Template is empty', description: 'Please generate a template structure first.' });
+      return;
+    }
     setIsSaving(true);
-    const result = await saveTemplate(data);
+    const result = await saveTemplate({ name, description, type, elements });
 
     if (result.success) {
-        toast({ title: 'Template Saved!', description: `Template "${data.name}" has been saved.` });
+        toast({ title: 'Template Saved!', description: `Template "${name}" has been saved.` });
         router.push('/root/templates');
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
@@ -48,92 +74,80 @@ export default function CreateTemplatePage() {
   };
 
   return (
-    <div className="w-full max-w-2xl">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
-          <Card>
+    <div className="w-full max-w-2xl space-y-6">
+        <Card>
             <CardHeader>
-              <CardTitle>Create New Template</CardTitle>
+                <CardTitle>1. Generate with AI</CardTitle>
+                <CardDescription>
+                    Describe the template you want to create. The AI will generate the underlying JSON structure for you.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="ai-prompt">Prompt</Label>
+                    <Textarea 
+                        id="ai-prompt"
+                        placeholder="e.g., A hero section with a large centered title, a subtitle, a CTA button, and a background image."
+                        value={prompt}
+                        onChange={e => setPrompt(e.target.value)}
+                        rows={4}
+                    />
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button onClick={handleGenerate} disabled={isGenerating} className="w-full">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {isGenerating ? 'Generating...' : 'Generate Template Structure'}
+                </Button>
+            </CardFooter>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+              <CardTitle>2. Review and Save</CardTitle>
               <CardDescription>
-                Manually create a reusable template by providing its details and HTML content.
+                Provide the final details for your template and save it.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Template Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 'Primary Button'" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="A short description of this template" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a template type" />
-                        </SelectTrigger>
-                      </FormControl>
+                <div className="space-y-2">
+                    <Label htmlFor="name">Template Name</Label>
+                    <Input id="name" placeholder="e.g., 'Primary Button'" value={name} onChange={e => setName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="description">Description (Optional)</Label>
+                    <Textarea id="description" placeholder="A short description of this template" value={description} onChange={e => setDescription(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                    <Label>Type</Label>
+                    <Select value={type} onValueChange={(v: any) => setType(v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a template type" />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="section">Section</SelectItem>
                         <SelectItem value="page">Page</SelectItem>
                         <SelectItem value="element">Element</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="templateHtml"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Template HTML</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="<div style='...'>Your HTML with inline styles</div>"
-                        {...field}
+                </div>
+                 <div className="space-y-2">
+                    <Label>Generated Structure (JSON)</Label>
+                    <Textarea
+                        value={elements.length > 0 ? JSON.stringify(elements, null, 2) : 'Generate a template above to see the JSON structure.'}
                         rows={10}
+                        readOnly
+                        className="font-mono text-xs bg-muted/50"
                       />
-                    </FormControl>
-                     <FormMessage />
-                  </FormItem>
-                )}
-              />
+                </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isSaving} className="w-full">
+              <Button onClick={handleSave} disabled={isSaving || elements.length === 0} className="w-full">
                 <Save className="mr-2 h-4 w-4" />
                 {isSaving ? 'Saving...' : 'Save Template'}
               </Button>
             </CardFooter>
           </Card>
-        </form>
-      </Form>
     </div>
   );
 }
