@@ -1,3 +1,4 @@
+
 import { type FC, useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -389,7 +390,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
   
   return (
     <div 
-        className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8" 
+        className="mx-auto h-full w-full max-w-screen-xl p-4 md:p-8 mb-16" 
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e)}
@@ -420,3 +421,5 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 };
 
 export default Canvas;
+
+    
