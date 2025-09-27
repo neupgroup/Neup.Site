@@ -10,6 +10,7 @@ import { generateSiteSectionAction } from '@/actions/ai/generation';
 import { Textarea } from '../ui/textarea';
 import { logErrorToFirestore } from '@/actions/logging';
 import { type GenerateSiteSectionInput } from '@/lib/schemas';
+import TemplateManager from './template-manager';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
   <div
@@ -231,6 +232,19 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
       moveElement(draggedId, dropZoneId, parentId || undefined);
   }
 
+  const findElement = (id: string, els: CanvasElementData[]): CanvasElementData | null => {
+    for (const el of els) {
+        if (el.id === id) return el;
+        if (el.children) {
+            const found = findElement(id, el.children);
+            if (found) return found;
+        }
+    }
+    return null;
+  }
+
+  const selectedElementData = selectedElement ? findElement(selectedElement, elements) : null;
+
   return (
     <aside className="w-72 border-r bg-card">
       <Tabs defaultValue="add" className="flex h-full flex-col">
@@ -315,9 +329,10 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
             </div>
           </TabsContent>
           <TabsContent value="templates" className="p-4">
-            <div className="flex h-full flex-col items-center justify-center text-center text-sm text-muted-foreground">
-              <p>Section templates coming soon!</p>
-            </div>
+            <TemplateManager 
+              selectedElement={selectedElementData}
+              addGeneratedElement={addGeneratedElement}
+            />
           </TabsContent>
           <TabsContent value="pages" className="p-4">
             <div className="space-y-2">
