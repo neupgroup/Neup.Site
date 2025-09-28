@@ -38,7 +38,7 @@ interface ResizingState {
 const extractStyles = (properties: Record<string, any>): React.CSSProperties => {
     const style: React.CSSProperties = {};
     for (const key in properties) {
-        if (key.startsWith('layout.') || key.startsWith('spacing.') || key.startsWith('typography.') || key.startsWith('background.') || key.startsWith('borders.')) {
+        if (key.startsWith('layout.') || key.startsWith('spacing.') || key.startsWith('typography.') || key.startsWith('background.') || key.startsWith('borders.') || key.startsWith('flexbox.')) {
             const cssProperty = key.split('.')[1];
             // A simple camelCase conversion
             const camelCaseProperty = cssProperty.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
@@ -260,8 +260,14 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }, [resizingState, elements, updateElement]);
 
     const handleMouseUp = useCallback(() => {
+        if (resizingState) {
+            const elToUpdate = findElementRecursive(elements, resizingState.elementId)?.element;
+            if (elToUpdate) {
+                updateElement(resizingState.elementId, elToUpdate.properties, true); // Record history on mouse up
+            }
+        }
         setResizingState(null);
-    }, []);
+    }, [resizingState, elements, updateElement]);
 
     useEffect(() => {
         if (resizingState) {
@@ -295,18 +301,35 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         
         const showDropIndicator = dropZone.elementId === id && dropZone.parentId === parentId && id !== draggedId;
 
-        const renderResizeHandles = () => isSelected && (
+        const renderResizeHandles = () => {
+            if (!isSelected || !canvasRef.current) return null;
+
+            const elementNode = document.getElementById(id);
+            if (!elementNode) return null;
+
+            const elementRect = elementNode.getBoundingClientRect();
+            const canvasRect = canvasRef.current.getBoundingClientRect();
+            
+            const positionTolerance = 5; // To account for small gaps/borders
+
+            const atTop = elementRect.top <= canvasRect.top + positionTolerance;
+            const atBottom = elementRect.bottom >= canvasRect.bottom - positionTolerance;
+            const atLeft = elementRect.left <= canvasRect.left + positionTolerance;
+            const atRight = elementRect.right >= canvasRect.right - positionTolerance;
+            
+            return (
             <>
-              <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />
-              <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />
-              <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />
-              <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />
-              <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />
-              <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />
-              <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />
-              <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />
+              {!atTop && !atLeft && <ResizeHandle position="top-left" onMouseDown={(e) => handleResizeStart(e, 'top-left')} />}
+              {!atTop && <ResizeHandle position="top" onMouseDown={(e) => handleResizeStart(e, 'top')} />}
+              {!atTop && !atRight && <ResizeHandle position="top-right" onMouseDown={(e) => handleResizeStart(e, 'top-right')} />}
+              {!atLeft && <ResizeHandle position="left" onMouseDown={(e) => handleResizeStart(e, 'left')} />}
+              {!atRight && <ResizeHandle position="right" onMouseDown={(e) => handleResizeStart(e, 'right')} />}
+              {!atBottom && !atLeft && <ResizeHandle position="bottom-left" onMouseDown={(e) => handleResizeStart(e, 'bottom-left')} />}
+              {!atBottom && <ResizeHandle position="bottom" onMouseDown={(e) => handleResizeStart(e, 'bottom')} />}
+              {!atBottom && !atRight && <ResizeHandle position="bottom-right" onMouseDown={(e) => handleResizeStart(e, 'bottom-right')} />}
             </>
-        );
+            )
+        };
 
         let elementComponent: React.ReactNode;
 
@@ -373,11 +396,19 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
               if (type === 'list') Tag = 'ul';
 
               elementComponent = (
-                <CanvasElementWrapper {...wrapperProps} className={cn({'min-h-[100px]': children?.length === 0, 'container': type === 'container'}, wrapperProps.className)}>
+                <CanvasElementWrapper {...wrapperProps} className={cn({'min-h-[100px]': children?.length === 0, 'container mx-auto': type === 'container'}, wrapperProps.className)}>
                   <Tag 
                     onDrop={(e) => handleDrop(e, id)} 
                     onDragOver={(e) => handleDragOver(e, id)} 
                     className="min-h-full h-full"
+                    style={{
+                      display: styles.display,
+                      flexDirection: styles.flexDirection,
+                      justifyContent: styles.justifyContent,
+                      alignItems: styles.alignItems,
+                      flexWrap: styles.flexWrap,
+                      gap: styles.gap,
+                    } as React.CSSProperties}
                   >
                     {children && children.length > 0 
                         ? children.map(child => renderElement(child, id)) 
