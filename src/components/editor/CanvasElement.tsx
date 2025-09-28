@@ -33,7 +33,7 @@ interface CanvasElementProps {
 const extractStyles = (properties: Record<string, any>): React.CSSProperties => {
     const style: React.CSSProperties = {};
     for (const key in properties) {
-        if (key.startsWith('layout.') || key.startsWith('spacing.') || key.startsWith('typography.') || key.startsWith('background.') || key.startsWith('borders.') || key.startsWith('flexbox.')) {
+        if (key.startsWith('layout.') || key.startsWith('spacing.') || key.startsWith('typography.') || key.startsWith('background.') || key.startsWith('borders.')) {
             const cssProperty = key.split('.')[1];
             // A simple camelCase conversion
             const camelCaseProperty = cssProperty.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
@@ -156,21 +156,22 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       if (type === 'form') Tag = 'form';
       if (type === 'list') Tag = 'ul';
 
+      const flexStyles: React.CSSProperties = {
+          display: properties['layout.display'] === 'flex' ? 'flex' : undefined,
+          flexDirection: properties['flexbox.flexDirection'],
+          justifyContent: properties['flexbox.justifyContent'],
+          alignItems: properties['flexbox.alignItems'],
+          flexWrap: properties['flexbox.flexWrap'],
+          gap: properties['flexbox.gap'],
+      };
+
       elementComponent = (
         <CanvasWrapper {...wrapperProps} className={cn({'min-h-[100px]': children?.length === 0, 'container mx-auto': type === 'container'}, wrapperProps.className)}>
           <Tag 
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id)} 
             className="min-h-full h-full"
-            style={{
-              display: styles.display,
-              flex: 1,
-              flexDirection: styles.flexDirection,
-              justifyContent: styles.justifyContent,
-              alignItems: styles.alignItems,
-              flexWrap: styles.flexWrap,
-              gap: styles.gap,
-            } as React.CSSProperties}
+            style={flexStyles}
           >
             {children && children.length > 0 
                 ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
@@ -252,3 +253,5 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
 };
 
 export default CanvasElement;
+
+    
