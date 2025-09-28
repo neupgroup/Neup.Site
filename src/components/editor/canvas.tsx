@@ -281,7 +281,8 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
     const renderElement = (element: CanvasElementData, parentId: string | null = null): React.ReactNode => {
-        const { id, type, properties, children } = element;
+        const { id, type, children } = element;
+        const properties = element.properties || {};
         const styles = extractStyles(properties);
         const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
         const isSelected = selectedElement === id;
@@ -509,6 +510,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             dragCounter.current--;
             if (dragCounter.current === 0) {
                 setDraggedId(null);
+                setDropZone({parentId: null, elementId: null});
             }
         }}
     >
