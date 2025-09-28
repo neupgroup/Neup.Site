@@ -16,6 +16,7 @@ import BorderProperties from './properties/border';
 import ContentProperties from './properties/content';
 import ImageProperties from './properties/image';
 import FlexboxProperties from './properties/flexbox';
+import GlobalSettings from './properties/global-settings';
 
 interface RightSidebarProps {
   selectedElementId: string | null;
@@ -81,11 +82,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   if (!selectedElement || !elementDef) {
     return (
       <aside className="w-80 border-l bg-card">
-        <div className="flex h-full flex-col items-center justify-center text-center text-sm text-muted-foreground p-4">
-          <Settings className="h-10 w-10 mb-4" />
-          <p className="font-semibold">Customize Element</p>
-          <p>Select an element on the canvas to edit its styles and properties.</p>
-        </div>
+        <GlobalSettings />
       </aside>
     );
   }
