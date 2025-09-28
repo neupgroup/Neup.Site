@@ -42,22 +42,23 @@ const extractStyles = (properties: Record<string, any>): React.CSSProperties => 
     return style;
 }
 
-const CanvasElement: FC<CanvasElementProps> = ({
-  element,
-  selectedElement,
-  onSelectElement,
-  updateElement,
-  onDragStart,
-  onDragEnter,
-  onDragLeave,
-  onDrop,
-  onDragOver,
-  dropZone,
-  draggedId,
-  resizingState,
-  onResizeStart,
-  parentId = null
-}) => {
+const CanvasElement: FC<CanvasElementProps> = (props) => {
+  const {
+    element,
+    selectedElement,
+    onSelectElement,
+    updateElement,
+    onDragStart,
+    onDragEnter,
+    onDragLeave,
+    onDrop,
+    onDragOver,
+    dropZone,
+    draggedId,
+    resizingState,
+    onResizeStart,
+    parentId = null
+  } = props;
   const { id, type, children } = element;
   const properties = element.properties || {};
   const styles = extractStyles(properties);
@@ -170,7 +171,7 @@ const CanvasElement: FC<CanvasElementProps> = ({
             } as React.CSSProperties}
           >
             {children && children.length > 0 
-                ? children.map(child => <CanvasElement key={child.id} {...{...arguments[0], element: child, parentId: id}} />) 
+                ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
                 : (
                     <div className="flex items-center justify-center pointer-events-none text-muted-foreground p-4 h-24">
                        {dropZone.parentId === id && !dropZone.elementId ? '' : ''}
