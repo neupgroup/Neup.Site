@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import type { CanvasElementData } from '@/lib/schemas';
+import { Textarea } from '@/components/ui/textarea';
 
 interface ContentPropertiesProps {
     element: CanvasElementData;
@@ -14,9 +14,10 @@ const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate }) =>
         <>
             <div className="space-y-2">
                 <Label>Text</Label>
-                <Input 
+                <Textarea 
                     value={element.properties['content.text'] || ''}
                     onChange={(e) => onUpdate('content.text', e.target.value)}
+                    rows={4}
                 />
             </div>
         </>
