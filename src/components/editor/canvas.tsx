@@ -91,13 +91,14 @@ const Canvas: FC<CanvasProps> = ({
             />
         ))}
 
-        {elements.length === 0 && !isDraggingSection && (
+        {elements.length === 0 && (
              <div 
-                className="flex items-center justify-center h-48 border-2 border-dashed border-muted rounded-lg"
+                className="flex items-center justify-center h-48"
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); handleDragOver(e) }}
             >
-                <p className="text-muted-foreground">Drag elements here to start building</p>
-                {dropZone.elementId === null && <div className="h-1 w-full bg-primary" />}
+                <div className="w-full h-full border-2 border-dashed border-muted rounded-lg flex items-center justify-center p-4">
+                    <p className="text-muted-foreground text-center">Drag elements here to start building your page.</p>
+                </div>
             </div>
         )}
 
