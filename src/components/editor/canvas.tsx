@@ -9,6 +9,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { logErrorToFirestore } from '@/actions/logging';
+import { LayoutTemplate } from 'lucide-react';
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -105,6 +106,7 @@ const CanvasElementWrapper: FC<{
 
 const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, updateElement, moveElement, addElement, addGeneratedElement }) => {
     const [draggedId, setDraggedId] = useState<string | null>(null);
+    const [isDraggingSection, setIsDraggingSection] = useState(false);
     const [dropZone, setDropZone] = useState<{parentId: string | null, elementId: string | null}>({parentId: null, elementId: null});
     const [resizingState, setResizingState] = useState<ResizingState | null>(null);
     const canvasRef = useRef<HTMLDivElement>(null);
@@ -117,20 +119,20 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             updateElement(id, {...el.properties, 'content.text': newContent});
         }
     }
-
-    const handleDragStart = (e: React.DragEvent, id: string) => {
+    
+    const handleDragStartInternal = (e: React.DragEvent, id: string) => {
         const el = findElementRecursive(elements, id)?.element;
         const dragType = el?.type === 'section' ? 'section' : 'canvas-element';
+        
+        if (dragType === 'section') {
+            setIsDraggingSection(true);
+        }
+
         e.dataTransfer.setData('application/json', JSON.stringify({id, type: dragType}));
         e.stopPropagation();
         setDraggedId(id);
     }
     
-    const handleDragStartSidebar = (e: React.DragEvent, type: string) => {
-        const dragType = type === 'section' ? 'section' : 'sidebar-element';
-        e.dataTransfer.setData('application/json', JSON.stringify({ type: dragType, elementType: type }));
-    }
-
     const handleDragOver = (e: React.DragEvent, parentId: string | null = null) => {
         e.preventDefault();
         e.stopPropagation();
@@ -146,34 +148,54 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         setDropZone({ parentId, elementId });
     }
     
-    const handleDrop = async (e: React.DragEvent, parentId?: string) => {
+    const handleDrop = async (e: React.DragEvent, parentId?: string, dropZoneId?: string) => {
         e.preventDefault();
         e.stopPropagation();
         const dataStr = e.dataTransfer.getData('application/json');
-        if (!dataStr) return;
         
         // Reset drag state
         setDraggedId(null);
+        setIsDraggingSection(false);
         setDropZone({parentId: null, elementId: null});
         dragCounter.current = 0;
+        
+        if (!dataStr) return;
 
         const data = JSON.parse(dataStr);
-        const targetId = dropZone.elementId;
+        const targetId = dropZone.elementId || dropZoneId;
 
         if (data.type === 'canvas-element' && draggedId) {
             moveElement(draggedId, targetId!, parentId);
         } else if (data.type === 'sidebar-element' || data.type === 'section') {
-            addElement(data.elementType, targetId ?? undefined, parentId);
+            addElement(data.elementType, targetId, parentId);
         } else if (data.type === 'template-element') {
-            addGeneratedElement(data.element, targetId ?? undefined, parentId);
+            addGeneratedElement(data.element, targetId, parentId);
         }
     }
     
-    const handleDragEnter = (e: React.DragEvent<Element>, id: string, parentId: string | null = null) => {
+    const handleDragEnter = (e: React.DragEvent<Element>, id?: string, parentId: string | null = null) => {
         e.preventDefault();
         e.stopPropagation();
         dragCounter.current++;
-        setDropZone({parentId: parentId, elementId: id});
+
+        if (dragCounter.current === 1) { // First enter
+             try {
+                const dataStr = e.dataTransfer.getData('application/json');
+                if (dataStr) {
+                    const data = JSON.parse(dataStr);
+                    if (data.elementType === 'section' || data.type === 'section') {
+                        setIsDraggingSection(true);
+                    }
+                     setDraggedId(data.id || data.type);
+                }
+            } catch (error) {
+                // Ignore if data is not available yet
+            }
+        }
+
+        if (id) {
+            setDropZone({parentId: parentId, elementId: id});
+        }
     }
 
     const handleDragLeave = (e: React.DragEvent<Element>) => {
@@ -181,6 +203,8 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         e.stopPropagation();
         dragCounter.current--;
         if (dragCounter.current === 0) {
+            setDraggedId(null);
+            setIsDraggingSection(false);
             setDropZone({parentId: null, elementId: null});
         }
     }
@@ -285,6 +309,26 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             window.removeEventListener('mouseup', handleMouseUp);
         };
     }, [resizingState, handleMouseMove, handleMouseUp]);
+
+    const SectionDropZone: FC<{ position: 'top' | 'bottom' }> = ({ position }) => {
+        const [isOver, setIsOver] = useState(false);
+        return (
+            <div
+                onDragEnter={() => setIsOver(true)}
+                onDragLeave={() => setIsOver(false)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDrop(e, undefined, position === 'top' ? elements[0]?.id : undefined)}
+                className={cn(
+                    "w-full h-24 border-2 border-dashed rounded-lg flex items-center justify-center text-muted-foreground my-4 transition-all",
+                    isDraggingSection ? 'opacity-100' : 'opacity-0 h-0 my-0 !border-0',
+                    isOver && 'border-primary bg-primary/10'
+                )}
+            >
+                <LayoutTemplate className="mr-2 h-5 w-5" />
+                Drop section here
+            </div>
+        );
+    };
     
     const renderElement = (element: CanvasElementData, parentId: string | null = null): React.ReactNode => {
         const { id, type, children } = element;
@@ -299,7 +343,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             selectedElement,
             onSelectElement,
             style: styles,
-            onDragStart: handleDragStart,
+            onDragStart: handleDragStartInternal,
             onDragEnter: (e: React.DragEvent) => handleDragEnter(e, id, parentId),
             onDragLeave: handleDragLeave,
             isContainer,
@@ -504,48 +548,34 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         onClick={() => onSelectElement(null)}
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e)}
-        onDragEnter={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dragCounter.current++;
-          const dataStr = e.dataTransfer.getData('application/json');
-          if (dataStr) {
-            const data = JSON.parse(dataStr);
-            setDraggedId(data.id || data.type);
-          }
-        }}
-        onDragLeave={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dragCounter.current--;
-            if (dragCounter.current === 0) {
-                setDraggedId(null);
-                setDropZone({parentId: null, elementId: null});
-            }
-        }}
+        onDragEnter={(e) => handleDragEnter(e)}
+        onDragLeave={(e) => handleDragLeave(e)}
     >
       <div 
         ref={canvasRef}
         className={cn(
             "rounded-lg bg-card shadow-lg relative mb-32",
-            { 'is-dragging': !!draggedId && draggedId !== 'section' },
-            { 'is-dragging-section': draggedId === 'section' }
+            { 'is-dragging': !!draggedId && draggedId !== 'section' && !isDraggingSection },
+            { 'is-dragging-section': isDraggingSection }
         )}
       >
+        <SectionDropZone position="top" />
         {elements.map(el => renderElement(el))}
-        {elements.length === 0 && (
+        {elements.length === 0 && !isDraggingSection && (
              <div 
                 className="flex items-center justify-center h-48 border-2 border-dashed border-muted rounded-lg"
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDropZone({parentId: null, elementId: 'canvas-end'}) }}
-                onDrop={(e) => handleDrop(e)}
             >
                 <p className="text-muted-foreground">Drag elements here to start building</p>
                 {dropZone.elementId === 'canvas-end' && <DropIndicator/>}
             </div>
         )}
+         <SectionDropZone position="bottom" />
       </div>
     </div>
   );
 };
 
 export default Canvas;
+
+    
