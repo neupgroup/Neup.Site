@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, DragEvent, useCallback } from 'react';
+import { useState, useRef, DragEvent, useCallback, useEffect } from 'react';
 import type { CanvasElementData } from '@/lib/schemas';
 
 interface DragAndDropProps {
@@ -34,6 +34,30 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         }
         return null;
     }
+
+    const resetDragState = () => {
+        setDraggedId(null);
+        setIsDraggingSection(false);
+        setDropZone({parentId: null, elementId: null});
+        dragCounter.current = 0;
+        if(throttleTimeoutRef.current) {
+            clearTimeout(throttleTimeoutRef.current);
+            throttleTimeoutRef.current = null;
+        }
+    };
+    
+    useEffect(() => {
+        const handleDragEnd = () => {
+            // This event fires when drag is cancelled (e.g., by pressing Esc)
+            resetDragState();
+        };
+
+        document.addEventListener('dragend', handleDragEnd);
+        return () => {
+            document.removeEventListener('dragend', handleDragEnd);
+        };
+    }, []);
+
 
     const handleDragStart = (e: DragEvent, id: string) => {
         const el = findElementRecursive(elements, id)?.element;
@@ -83,14 +107,7 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         const dataStr = e.dataTransfer.getData('application/json');
         
         // Reset drag state
-        setDraggedId(null);
-        setIsDraggingSection(false);
-        setDropZone({parentId: null, elementId: null});
-        dragCounter.current = 0;
-        if(throttleTimeoutRef.current) {
-            clearTimeout(throttleTimeoutRef.current);
-            throttleTimeoutRef.current = null;
-        }
+        resetDragState();
         
         if (!dataStr) return;
 
@@ -141,13 +158,8 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         e.stopPropagation();
         dragCounter.current--;
         if (dragCounter.current === 0) {
-            setDraggedId(null);
-            setIsDraggingSection(false);
-            setDropZone({parentId: null, elementId: null});
-             if(throttleTimeoutRef.current) {
-                clearTimeout(throttleTimeoutRef.current);
-                throttleTimeoutRef.current = null;
-            }
+            // Don't reset state here because it causes flickering
+            // The dragend event will handle the final cleanup
         }
     };
 
