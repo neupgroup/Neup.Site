@@ -264,40 +264,27 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
     }
   };
 
-  const updateElement = (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string, recordHistory = true) => {
+  const updateElement = (id: string, newProperties: Record<string, any>, recordHistory = true) => {
     try {
         setElements(prev => {
-        // Deep clone to avoid mutation
-        const clonedPrev = JSON.parse(JSON.stringify(prev));
-        const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-            return els.map(el => {
-            if (el.id === id) {
-                const updatedElement: CanvasElementData = {
-                  ...el,
-                  styles: newStyles !== undefined ? newStyles : el.styles,
-                  props: newProps !== undefined ? newProps : el.props,
-                };
-                if (newContent !== undefined) {
-                  updatedElement.content = newContent;
+            // Deep clone to avoid mutation
+            const clonedPrev = JSON.parse(JSON.stringify(prev));
+            const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+                return els.map(el => {
+                if (el.id === id) {
+                    const updatedElement: CanvasElementData = {
+                      ...el,
+                      properties: newProperties,
+                    };
+                    return updatedElement;
                 }
-                if (newCustomCss !== undefined) {
-                    updatedElement.customCss = newCustomCss;
+                if (el.children) {
+                    return { ...el, children: updateRecursively(el.children) };
                 }
-                if (newClassName !== undefined) {
-                    updatedElement.className = newClassName;
-                }
-                if (newHtmlContent !== undefined) {
-                    updatedElement.htmlContent = newHtmlContent;
-                }
-                return updatedElement;
-            }
-            if (el.children) {
-                return { ...el, children: updateRecursively(el.children) };
-            }
-            return el;
-            });
-        };
-        return updateRecursively(clonedPrev);
+                return el;
+                });
+            };
+            return updateRecursively(clonedPrev);
         }, recordHistory);
     } catch (e: any) {
         console.error("Error updating element:", e);
@@ -594,5 +581,3 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 };
 
 export default Editor;
-
-    

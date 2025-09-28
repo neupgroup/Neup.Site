@@ -1,9 +1,15 @@
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
-    { groupName: "Spacing" },
-    { groupName: "Background" },
-    { groupName: "Borders" },
+    { groupName: "Spacing", properties: [
+        { key: 'spacing.padding', label: 'Padding', inputType: 'text', target: 'styles', placeholder: '10px' },
+    ]},
+    { groupName: "Background", properties: [
+        { key: 'background.backgroundColor', label: 'Background Color', inputType: 'color', target: 'styles' },
+    ]},
+    { groupName: "Borders", properties: [
+        { key: 'borders.border', label: 'Border', inputType: 'text', target: 'styles', placeholder: '1px dashed #ccc' },
+    ]},
 ];
 
 
@@ -11,12 +17,11 @@ export const list: CanvasElementData = {
     id: '',
     type: 'list',
     children: [],
-    styles: {
-        padding: '10px',
-        display: 'block',
-        minHeight: '100px',
-        border: '1px dashed hsl(var(--border))',
+    properties: {
+        'spacing.padding': '10px',
+        'layout.display': 'block',
+        'layout.minHeight': '100px',
+        'borders.border': '1px dashed hsl(var(--border))',
     },
-    props: {},
     editorProperties
 };

@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useCallback } from 'react';
 import { Settings } from 'lucide-react';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData, EditorProperty } from '@/lib/schemas';
 import { elementDefinitions } from '@/elements';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -8,36 +8,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-
-import SpacingProperties from './properties/spacing';
-import TypographyProperties from './properties/typography';
-import BackgroundProperties from './properties/background';
-import BorderProperties from './properties/border';
-import LayoutProperties from './properties/layout';
-import FlexboxProperties from './properties/flexbox';
-import ContentProperties from './properties/content';
-import ImageProperties from './properties/image';
-import LinkProperties from './properties/link';
+import { Textarea } from '../ui/textarea';
+import { Button } from '../ui/button';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 
 interface RightSidebarProps {
   selectedElementId: string | null;
   elements: CanvasElementData[];
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string, recordHistory?: boolean) => void;
+  updateElement: (id: string, newProperties: Record<string, any>, recordHistory?: boolean) => void;
   deleteElement: (id: string) => void;
   updateElementId: (oldId: string, newId: string) => void;
 }
-
-const propertyComponents: { [key: string]: React.FC<any> } = {
-    'Spacing': SpacingProperties,
-    'Typography': TypographyProperties,
-    'Background': BackgroundProperties,
-    'Borders': BorderProperties,
-    'Layout': LayoutProperties,
-    'Flexbox': FlexboxProperties,
-    'Content': ContentProperties,
-    'Image': ImageProperties,
-    'Link': LinkProperties,
-};
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId }) => {
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
@@ -59,7 +40,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   useEffect(() => {
     setElementId(selectedElement?.id);
   }, [selectedElement]);
-
+  
   const handleIdChange = (value: string) => {
       setElementId(value);
   }
@@ -70,21 +51,61 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     }
   }
 
-  const handleUpdate = (
-    updateType: 'styles' | 'props' | 'content',
-    key: string,
-    value: any
-  ) => {
-    if (!selectedElementId) return;
+  const handleUpdate = useCallback((key: string, value: any, recordHistory = true) => {
+    if (!selectedElementId || !selectedElement) return;
 
-    if (updateType === 'styles') {
-      updateElement(selectedElementId, { ...selectedElement?.styles, [key]: value });
-    } else if (updateType === 'props') {
-      updateElement(selectedElementId, undefined, { ...selectedElement?.props, [key]: value });
-    } else if (updateType === 'content') {
-        updateElement(selectedElementId, undefined, undefined, value);
-    }
+    const newProperties = {
+      ...selectedElement.properties,
+      [key]: value
+    };
+    
+    updateElement(selectedElementId, newProperties, recordHistory);
+  }, [selectedElementId, selectedElement, updateElement]);
+
+  const handleUpdateWithDebounce = (key: string, value: any) => {
+      handleUpdate(key, value, false);
   };
+  
+  const renderInput = (property: EditorProperty, value: any, onChange: (value: any) => void) => {
+    switch (property.inputType) {
+        case 'text':
+            return <Input value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={property.placeholder} />;
+        case 'textarea':
+            return <Textarea value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={property.placeholder} rows={property.options?.rows || 3} />;
+        case 'color':
+            const colorInputRef = React.createRef<HTMLInputElement>();
+            return (
+                <div className="flex items-center gap-2">
+                    <Input value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={property.placeholder} />
+                    <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
+                        🎨
+                        <input
+                            ref={colorInputRef}
+                            type="color"
+                            value={value || '#000000'}
+                            onChange={(e) => onChange(e.target.value)}
+                            className="absolute h-0 w-0 opacity-0"
+                        />
+                    </Button>
+                </div>
+            );
+        case 'select':
+            return (
+                <Select value={value} onValueChange={onChange}>
+                    <SelectTrigger>
+                        <SelectValue placeholder={property.placeholder} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {property.options?.selectOptions?.map(option => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            );
+        default:
+            return <p>Unknown input type</p>;
+    }
+  }
 
   if (!selectedElement || !elementDef) {
     return (
@@ -101,7 +122,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   return (
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
-        <Accordion type="single" collapsible className="w-full" defaultValue="attributes">
+        <Accordion type="multiple" className="w-full" defaultValue={['attributes', 'layout', 'spacing']}>
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">
@@ -111,29 +132,38 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </div>
                 </AccordionContent>
             </AccordionItem>
-
+            
             {elementDef.editorProperties?.map(group => {
-                const PropertyComponent = propertyComponents[group.groupName];
-                if (!PropertyComponent) return null;
-
-                // Conditional rendering logic for flexbox
-                if (group.groupName === 'Flexbox' && selectedElement.styles?.display !== 'flex') {
-                    return null;
+                let shouldShowGroup = true;
+                if (group.showIf) {
+                    const conditionValue = selectedElement.properties[group.showIf.key];
+                    shouldShowGroup = conditionValue === group.showIf.value;
                 }
+                if (!shouldShowGroup) return null;
 
                 return (
-                    <AccordionItem key={group.groupName} value={group.groupName}>
+                    <AccordionItem key={group.groupName} value={group.groupName.toLowerCase()}>
                         <AccordionTrigger className="px-4 text-sm font-medium">{group.groupName}</AccordionTrigger>
                         <AccordionContent className="px-4 space-y-4">
-                            <PropertyComponent
-                                element={selectedElement}
-                                onUpdate={handleUpdate}
-                            />
+                            {group.properties.map(prop => {
+                                let shouldShowProp = true;
+                                if (prop.showIf) {
+                                     const conditionValue = selectedElement.properties[prop.showIf.key];
+                                     shouldShowProp = conditionValue === prop.showIf.value;
+                                }
+                                if (!shouldShowProp) return null;
+
+                                return (
+                                    <div key={prop.key} className="space-y-2">
+                                        <Label>{prop.label}</Label>
+                                        {renderInput(prop, selectedElement.properties[prop.key], (value) => handleUpdate(prop.key, value))}
+                                    </div>
+                                )
+                            })}
                         </AccordionContent>
                     </AccordionItem>
-                );
+                )
             })}
-
         </Accordion>
       </ScrollArea>
     </aside>

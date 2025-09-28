@@ -1,24 +1,23 @@
-
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
     {
         groupName: "HTML",
         properties: [
-            { key: "htmlContent", label: "HTML Content", inputType: 'textarea', target: 'htmlContent', options: { rows: 10 } }
+            { key: "html.htmlContent", label: "HTML Content", inputType: 'textarea', target: 'htmlContent', options: { rows: 10 } }
         ]
     },
     {
         groupName: "Spacing",
         properties: [
-            { key: "padding", label: "Padding", inputType: 'text', target: 'styles' },
-            { key: "margin", label: "Margin", inputType: 'text', target: 'styles' }
+            { key: "spacing.padding", label: "Padding", inputType: 'text', target: 'styles' },
+            { key: "spacing.margin", label: "Margin", inputType: 'text', target: 'styles' }
         ]
     },
     {
         groupName: "Custom CSS",
         properties: [
-            { key: "customCss", label: "Custom CSS", inputType: 'textarea', target: 'customCss' }
+            { key: "customCss.css", label: "Custom CSS", inputType: 'textarea', target: 'customCss' }
         ]
     }
 ];
@@ -26,12 +25,11 @@ const editorProperties: EditorProperties = [
 export const html: CanvasElementData = {
     id: '',
     type: 'html',
-    htmlContent: '<div>Generated HTML</div>',
-    styles: {
-        padding: '10px',
-        display: 'block',
-        minHeight: '50px',
+    properties: {
+        'html.htmlContent': '<div>Generated HTML</div>',
+        'spacing.padding': '10px',
+        'layout.display': 'block',
+        'layout.minHeight': '50px',
     },
-    props: {},
     editorProperties
 };

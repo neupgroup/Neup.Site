@@ -5,27 +5,27 @@ import type { CanvasElementData } from '@/lib/schemas';
 
 interface ImagePropertiesProps {
     element: CanvasElementData;
-    onUpdate: (updateType: 'props', key: string, value: any) => void;
+    onUpdate: (key: string, value: any) => void;
 }
 
 const ImageProperties: FC<ImagePropertiesProps> = ({ element, onUpdate }) => {
-    const { props } = element;
+    const { properties } = element;
     
     return (
         <>
             <div className="space-y-2">
                 <Label>Source URL</Label>
                 <Input 
-                    value={props?.src || ''}
-                    onChange={(e) => onUpdate('props', 'src', e.target.value)}
+                    value={properties['image.src'] || ''}
+                    onChange={(e) => onUpdate('image.src', e.target.value)}
                     placeholder="https://example.com/image.png"
                 />
             </div>
             <div className="space-y-2">
                 <Label>Alt Text</Label>
                 <Input
-                    value={props?.alt || ''}
-                    onChange={(e) => onUpdate('props', 'alt', e.target.value)}
+                    value={properties['image.alt'] || ''}
+                    onChange={(e) => onUpdate('image.alt', e.target.value)}
                     placeholder="Descriptive text for the image"
                 />
             </div>

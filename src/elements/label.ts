@@ -1,25 +1,24 @@
-
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
     {
         groupName: "Content",
         properties: [
-            { key: "content", label: "Text", inputType: 'text', target: 'content' }
+            { key: "content.text", label: "Text", inputType: 'text', target: 'content' }
         ]
     },
     {
         groupName: "Typography",
         properties: [
-            { key: "color", label: "Color", inputType: 'color', target: 'styles' },
-            { key: "fontSize", label: "Font Size", inputType: 'text', target: 'styles' }
+            { key: "typography.color", label: "Color", inputType: 'color', target: 'styles' },
+            { key: "typography.fontSize", label: "Font Size", inputType: 'text', target: 'styles' }
         ]
     },
     {
         groupName: "Spacing",
         properties: [
-            { key: "padding", label: "Padding", inputType: 'text', target: 'styles' },
-            { key: "margin", label: "Margin", inputType: 'text', target: 'styles' }
+            { key: "spacing.padding", label: "Padding", inputType: 'text', target: 'styles' },
+            { key: "spacing.margin", label: "Margin", inputType: 'text', target: 'styles' }
         ]
     },
 ];
@@ -27,11 +26,10 @@ const editorProperties: EditorProperties = [
 export const label: CanvasElementData = {
     id: '',
     type: 'label',
-    content: 'Label',
-    styles: {
-        padding: '10px',
-        display: 'block',
+    properties: {
+        'content.text': 'Label',
+        'spacing.padding': '10px',
+        'layout.display': 'block',
     },
-    props: {},
     editorProperties
 };

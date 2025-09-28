@@ -1,50 +1,45 @@
-
 import type { CanvasElementData } from "@/lib/schemas";
 
 export const headerTemplate: CanvasElementData = {
   id: "header-section",
   type: "section",
-  styles: {
-    padding: "1rem 2rem",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderBottom: "1px solid hsl(var(--border))",
-    backgroundColor: "hsl(var(--background))",
+  properties: {
+    'spacing.padding': "1rem 2rem",
+    'layout.display': "flex",
+    'layout.alignItems': "center",
+    'layout.justifyContent': "space-between",
+    'borders.borderBottom': "1px solid hsl(var(--border))",
+    'background.backgroundColor': "hsl(var(--background))",
   },
   children: [
     {
       id: "logo-container",
       type: "div",
-      styles: {
-        display: "flex",
-        alignItems: "center",
-        gap: "0.5rem",
+      properties: {
+        'layout.display': "flex",
+        'layout.alignItems': "center",
+        'layout.gap': "0.5rem",
       },
       children: [
         {
           id: "logo-image",
           type: "image",
-          props: {
-            src: "https://picsum.photos/seed/logo/40/40",
-            alt: "Logo",
-          },
-          styles: {
-            width: "40px",
-            height: "40px",
-            borderRadius: "9999px",
+          properties: {
+            'image.src': "https://picsum.photos/seed/logo/40/40",
+            'image.alt': "Logo",
+            'layout.width': "40px",
+            'layout.height': "40px",
+            'borders.borderRadius': "9999px",
           },
         },
         {
           id: "logo-text",
           type: "heading",
-          content: "MyApp",
-          props: {
-            level: 3,
-          },
-          styles: {
-            fontSize: "1.5rem",
-            fontWeight: "bold",
+          properties: {
+            'content.text': "MyApp",
+            'heading.level': 3,
+            'typography.fontSize': "1.5rem",
+            'typography.fontWeight': "bold",
           },
         },
       ],
@@ -52,40 +47,40 @@ export const headerTemplate: CanvasElementData = {
     {
       id: "nav-menu",
       type: "div",
-      styles: {
-        display: "flex",
-        gap: "1.5rem",
-        alignItems: "center",
+      properties: {
+        'layout.display': "flex",
+        'layout.gap': "1.5rem",
+        'layout.alignItems': "center",
       },
       children: [
         {
           id: "nav-link-1",
           type: "link",
-          content: "Home",
-          props: { href: "#" },
-          styles: {
-            color: "hsl(var(--foreground))",
-            textDecoration: "none",
+          properties: {
+            'content.text': "Home",
+            'link.href': "#",
+            'typography.color': "hsl(var(--foreground))",
+            'typography.textDecoration': "none",
           },
         },
         {
           id: "nav-link-2",
           type: "link",
-          content: "About",
-          props: { href: "#" },
-          styles: {
-            color: "hsl(var(--foreground))",
-            textDecoration: "none",
+          properties: {
+            'content.text': "About",
+            'link.href': "#",
+            'typography.color': "hsl(var(--foreground))",
+            'typography.textDecoration': "none",
           },
         },
         {
           id: "nav-link-3",
           type: "link",
-          content: "Pricing",
-          props: { href: "#" },
-          styles: {
-            color: "hsl(var(--foreground))",
-            textDecoration: "none",
+          properties: {
+            'content.text': "Pricing",
+            'link.href': "#",
+            'typography.color': "hsl(var(--foreground))",
+            'typography.textDecoration': "none",
           },
         },
       ],
@@ -93,17 +88,17 @@ export const headerTemplate: CanvasElementData = {
     {
       id: "cta-button",
       type: "button",
-      content: "Get Started",
-      styles: {
-        display: "inline-block",
-        padding: "0.5rem 1rem",
-        fontSize: "1rem",
-        color: "hsl(var(--primary-foreground))",
-        backgroundColor: "hsl(var(--primary))",
-        textAlign: "center",
-        borderRadius: "var(--radius)",
-        border: "none",
-        cursor: "pointer",
+      properties: {
+        'content.text': "Get Started",
+        'layout.display': "inline-block",
+        'spacing.padding': "0.5rem 1rem",
+        'typography.fontSize': "1rem",
+        'typography.color': "hsl(var(--primary-foreground))",
+        'background.backgroundColor': "hsl(var(--primary))",
+        'typography.textAlign': "center",
+        'borders.borderRadius': "var(--radius)",
+        'borders.border': "none",
+        'attributes.cursor': "pointer",
       },
     },
   ],

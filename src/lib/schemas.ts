@@ -1,8 +1,25 @@
 'use client';
 import { z } from 'zod';
 
+export type EditorProperty = {
+    key: string;
+    label: string;
+    inputType: 'text' | 'select' | 'color' | 'textarea';
+    target: 'styles' | 'props' | 'content' | 'htmlContent' | 'customCss' | 'className';
+    options?: {
+        selectOptions?: { label: string, value: string }[];
+        rows?: number;
+    };
+    placeholder?: string;
+    showIf?: {
+        key: string;
+        value: any;
+    }
+}
+
 export type EditorPropertyGroup = {
     groupName: string;
+    properties?: EditorProperty[];
 }
 
 export type EditorProperties = EditorPropertyGroup[];
@@ -11,13 +28,8 @@ export type EditorProperties = EditorPropertyGroup[];
 export interface CanvasElementData {
   id: string;
   type: 'text' | 'image' | 'button' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'link' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea' | 'html';
-  content?: string;
-  htmlContent?: string;
-  styles: React.CSSProperties;
-  props?: Record<string, any>;
+  properties: Record<string, any>;
   children?: CanvasElementData[];
-  customCss?: string;
-  className?: string;
   editorProperties?: EditorProperties;
 }
 
@@ -25,13 +37,8 @@ export interface CanvasElementData {
 export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
     id: z.string(),
     type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'link', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']),
-    content: z.string().optional(),
-    htmlContent: z.string().optional(),
-    styles: z.any(),
-    props: z.any().optional(),
+    properties: z.record(z.any()),
     children: z.array(CanvasElementDataSchema).optional(),
-    customCss: z.string().optional(),
-    className: z.string().optional(),
     editorProperties: z.any().optional(), // Can't easily type this recursively with Zod
 }));
 

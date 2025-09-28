@@ -1,51 +1,50 @@
-
 import type { CanvasElementData } from "@/lib/schemas";
 
 export const footerTemplate: CanvasElementData = {
   id: "footer-section",
   type: "section",
-  styles: {
-    padding: "4rem 2rem 2rem 2rem",
-    backgroundColor: "hsl(var(--card))",
-    borderTop: "1px solid hsl(var(--border))",
-    display: "block",
+  properties: {
+    'spacing.padding': "4rem 2rem 2rem 2rem",
+    'background.backgroundColor': "hsl(var(--card))",
+    'borders.borderTop': "1px solid hsl(var(--border))",
+    'layout.display': "block",
   },
   children: [
     {
       id: "footer-content",
       type: "div",
-      styles: {
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "2rem",
-        marginBottom: "3rem",
-        maxWidth: "1200px",
-        marginLeft: "auto",
-        marginRight: "auto",
+      properties: {
+        'layout.display': "grid",
+        'layout.gridTemplateColumns': "repeat(auto-fit, minmax(200px, 1fr))",
+        'layout.gap': "2rem",
+        'spacing.marginBottom': "3rem",
+        'layout.maxWidth': "1200px",
+        'spacing.marginLeft': "auto",
+        'spacing.marginRight': "auto",
       },
       children: [
         {
           id: "footer-branding",
           type: "div",
-          styles: {},
+          properties: {},
           children: [
             {
               id: "footer-logo-text",
               type: "heading",
-              content: "MyApp",
-              props: { level: 3 },
-              styles: {
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                marginBottom: "0.5rem",
+              properties: {
+                'content.text': "MyApp",
+                'heading.level': 3,
+                'typography.fontSize': "1.5rem",
+                'typography.fontWeight': "bold",
+                'spacing.marginBottom': "0.5rem",
               },
             },
             {
               id: "footer-tagline",
               type: "text",
-              content: "Build better, faster.",
-              styles: {
-                color: "hsl(var(--muted-foreground))",
+              properties: {
+                'content.text': "Build better, faster.",
+                'typography.color': "hsl(var(--muted-foreground))",
               },
             },
           ],
@@ -53,26 +52,26 @@ export const footerTemplate: CanvasElementData = {
         {
           id: "footer-links-product",
           type: "div",
-          styles: {},
+          properties: {},
           children: [
             {
               id: "product-heading",
               type: "heading",
-              content: "Product",
-              props: { level: 4 },
-              styles: {
-                fontWeight: "bold",
-                marginBottom: "1rem",
+              properties: {
+                'content.text': "Product",
+                'heading.level': 4,
+                'typography.fontWeight': "bold",
+                'spacing.marginBottom': "1rem",
               },
             },
             {
               id: "product-links-list",
               type: "div",
-              styles: { display: "flex", flexDirection: "column", gap: "0.5rem" },
+              properties: { 'layout.display': "flex", 'layout.flexDirection': "column", 'layout.gap': "0.5rem" },
               children: [
-                { id: "link-features", type: "link", content: "Features", props: { href: "#" }, styles: { textDecoration: "none", color: "hsl(var(--muted-foreground))" } },
-                { id: "link-pricing", type: "link", content: "Pricing", props: { href: "#" }, styles: { textDecoration: "none", color: "hsl(var(--muted-foreground))" } },
-                { id: "link-docs", type: "link", content: "Documentation", props: { href: "#" }, styles: { textDecoration: "none", color: "hsl(var(--muted-foreground))" } },
+                { id: "link-features", type: "link", properties: { 'content.text': "Features", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
+                { id: "link-pricing", type: "link", properties: { 'content.text': "Pricing", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
+                { id: "link-docs", type: "link", properties: { 'content.text': "Documentation", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
               ]
             }
           ],
@@ -80,26 +79,26 @@ export const footerTemplate: CanvasElementData = {
         {
             id: "footer-links-company",
             type: "div",
-            styles: {},
+            properties: {},
             children: [
               {
                 id: "company-heading",
                 type: "heading",
-                content: "Company",
-                props: { level: 4 },
-                styles: {
-                  fontWeight: "bold",
-                  marginBottom: "1rem",
+                properties: {
+                  'content.text': "Company",
+                  'heading.level': 4,
+                  'typography.fontWeight': "bold",
+                  'spacing.marginBottom': "1rem",
                 },
               },
               {
                 id: "company-links-list",
                 type: "div",
-                styles: { display: "flex", flexDirection: "column", gap: "0.5rem" },
+                properties: { 'layout.display': "flex", 'layout.flexDirection': "column", 'layout.gap': "0.5rem" },
                 children: [
-                  { id: "link-about", type: "link", content: "About Us", props: { href: "#" }, styles: { textDecoration: "none", color: "hsl(var(--muted-foreground))" } },
-                  { id: "link-careers", type: "link", content: "Careers", props: { href: "#" }, styles: { textDecoration: "none", color: "hsl(var(--muted-foreground))" } },
-                  { id: "link-contact", type: "link", content: "Contact", props: { href: "#" }, styles: { textDecoration: "none", color: "hsl(var(--muted-foreground))" } },
+                  { id: "link-about", type: "link", properties: { 'content.text': "About Us", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
+                  { id: "link-careers", type: "link", properties: { 'content.text': "Careers", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
+                  { id: "link-contact", type: "link", properties: { 'content.text': "Contact", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
                 ]
               }
             ],
@@ -109,26 +108,26 @@ export const footerTemplate: CanvasElementData = {
     {
       id: "footer-bottom",
       type: "div",
-      styles: {
-        borderTop: "1px solid hsl(var(--border))",
-        paddingTop: "2rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        maxWidth: "1200px",
-        marginLeft: "auto",
-        marginRight: "auto",
-        flexWrap: 'wrap',
-        gap: '1rem',
+      properties: {
+        'borders.borderTop': "1px solid hsl(var(--border))",
+        'spacing.paddingTop': "2rem",
+        'layout.display': "flex",
+        'layout.justifyContent': "space-between",
+        'layout.alignItems': "center",
+        'layout.maxWidth': "1200px",
+        'spacing.marginLeft': "auto",
+        'spacing.marginRight': "auto",
+        'layout.flexWrap': 'wrap',
+        'layout.gap': '1rem',
       },
       children: [
         {
           id: "copyright-text",
           type: "text",
-          content: "© 2024 MyApp. All rights reserved.",
-          styles: {
-            fontSize: "0.875rem",
-            color: "hsl(var(--muted-foreground))",
+          properties: {
+            'content.text': "© 2024 MyApp. All rights reserved.",
+            'typography.fontSize': "0.875rem",
+            'typography.color': "hsl(var(--muted-foreground))",
           },
         },
       ],

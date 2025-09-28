@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,11 +7,11 @@ import type { CanvasElementData } from '@/lib/schemas';
 
 interface TypographyPropertiesProps {
     element: CanvasElementData;
-    onUpdate: (updateType: 'styles', key: string, value: any) => void;
+    onUpdate: (key: string, value: any) => void;
 }
 
 const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate }) => {
-    const { styles } = element;
+    const { properties } = element;
     const colorInputRef = React.createRef<HTMLInputElement>();
     
     return (
@@ -20,8 +20,8 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
                 <Label>Color</Label>
                 <div className="flex items-center gap-2">
                     <Input 
-                        value={styles?.color as string || ''} 
-                        onChange={(e) => onUpdate('styles', 'color', e.target.value)} 
+                        value={properties['typography.color'] as string || ''} 
+                        onChange={(e) => onUpdate('typography.color', e.target.value)} 
                         placeholder="#000000" 
                     />
                     <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
@@ -29,8 +29,8 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
                         <input
                             ref={colorInputRef}
                             type="color"
-                            value={typeof styles?.color === 'string' ? styles.color : '#000000'}
-                            onChange={(e) => onUpdate('styles', 'color', e.target.value)}
+                            value={typeof properties['typography.color'] === 'string' ? properties['typography.color'] : '#000000'}
+                            onChange={(e) => onUpdate('typography.color', e.target.value)}
                             className="absolute h-0 w-0 opacity-0"
                         />
                     </Button>
@@ -39,14 +39,14 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
             <div className="space-y-2">
                 <Label>Font Size</Label>
                 <Input
-                    value={styles?.fontSize as string || ''}
-                    onChange={(e) => onUpdate('styles', 'fontSize', e.target.value)}
+                    value={properties['typography.fontSize'] as string || ''}
+                    onChange={(e) => onUpdate('typography.fontSize', e.target.value)}
                     placeholder="e.g., 16px"
                 />
             </div>
             <div className="space-y-2">
                 <Label>Font Weight</Label>
-                <Select value={styles?.fontWeight as string || 'normal'} onValueChange={(v) => onUpdate('styles', 'fontWeight', v)}>
+                <Select value={properties['typography.fontWeight'] as string || 'normal'} onValueChange={(v) => onUpdate('typography.fontWeight', v)}>
                     <SelectTrigger><SelectValue placeholder="Font Weight" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="normal">Normal</SelectItem>
@@ -65,7 +65,7 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
             </div>
             <div className="space-y-2">
                 <Label>Text Align</Label>
-                <Select value={styles?.textAlign as string || 'left'} onValueChange={(v) => onUpdate('styles', 'textAlign', v)}>
+                <Select value={properties['typography.textAlign'] as string || 'left'} onValueChange={(v) => onUpdate('typography.textAlign', v)}>
                     <SelectTrigger><SelectValue placeholder="Text Align" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="left">Left</SelectItem>

@@ -1,4 +1,4 @@
-import { type FC, useState, useCallback, useRef, useEffect } from 'react';
+import React, { type FC, useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ interface CanvasProps {
   elements: CanvasElementData[];
   selectedElement: string | null;
   onSelectElement: (id: string | null) => void;
-  updateElement: (id: string, newStyles?: React.CSSProperties, newProps?: Record<string, any>, newContent?: string, newCustomCss?: string, newClassName?: string, newHtmlContent?: string) => void;
+  updateElement: (id:string, newProperties: Record<string, any>, recordHistory?: boolean) => void;
   moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
   addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
   addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
@@ -35,6 +35,19 @@ interface ResizingState {
     initialLeft: number;
 }
 
+const extractStyles = (properties: Record<string, any>): React.CSSProperties => {
+    const style: React.CSSProperties = {};
+    for (const key in properties) {
+        if (key.startsWith('layout.') || key.startsWith('spacing.') || key.startsWith('typography.') || key.startsWith('background.') || key.startsWith('borders.')) {
+            const cssProperty = key.split('.')[1];
+            // A simple camelCase conversion
+            const camelCaseProperty = cssProperty.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+            (style as any)[camelCaseProperty] = properties[key];
+        }
+    }
+    return style;
+}
+
 
 const CanvasElementWrapper: FC<{
   id: string;
@@ -47,10 +60,10 @@ const CanvasElementWrapper: FC<{
   onDragEnter: (e: React.DragEvent, id: string) => void;
   onDragLeave: (e: React.DragEvent) => void;
   isContainer?: boolean;
-  customCss?: string;
   dangerouslySetInnerHTML?: { __html: string };
-}> = ({ id, className, selectedElement, onSelectElement, children, style, onDragStart, onDragEnter, onDragLeave, isContainer, customCss, dangerouslySetInnerHTML }) => {
+}> = ({ id, className, selectedElement, onSelectElement, children, style, onDragStart, onDragEnter, onDragLeave, isContainer, dangerouslySetInnerHTML }) => {
   const isSelected = selectedElement === id;
+  const customCss = (style as any)?.customCss;
   const customCssId = `custom-css-${id}`;
 
   const finalProps: any = {
@@ -99,7 +112,10 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     const { toast } = useToast();
 
     const handleSaveText = (id: string, newContent: string) => {
-        updateElement(id, undefined, undefined, newContent);
+        const el = findElementRecursive(elements, id)?.element;
+        if(el) {
+            updateElement(id, {...el.properties, 'content.text': newContent});
+        }
     }
 
     const handleDragStart = (e: React.DragEvent, id: string) => {
@@ -163,6 +179,21 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         }
     }
 
+    const findElementRecursive = (elements: CanvasElementData[], id: string): {element: CanvasElementData, parent?: CanvasElementData} | null => {
+        for (const el of elements) {
+            if (el.id === id) {
+                return {element: el};
+            }
+            if (el.children) {
+                const found = findElementRecursive(el.children, id);
+                if (found) {
+                    return {element: found.element, parent: found.parent || el};
+                }
+            }
+        }
+        return null;
+    }
+
 
     const handleResizeStart = useCallback((e: React.MouseEvent, handle: ResizingState['handle']) => {
         if (!selectedElement) return;
@@ -195,20 +226,10 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         const dx = e.clientX - resizingState.initialX;
         const dy = e.clientY - resizingState.initialY;
         
-        const findElement = (els: CanvasElementData[], id: string): CanvasElementData | undefined => {
-          for (const el of els) {
-            if (el.id === id) return el;
-            if (el.children) {
-              const found = findElement(el.children, id);
-              if (found) return found;
-            }
-          }
-        }
-        
-        const elToUpdate = findElement(elements, resizingState.elementId);
+        const elToUpdate = findElementRecursive(elements, resizingState.elementId)?.element;
         if (!elToUpdate) return;
         
-        const newStyles = { ...elToUpdate.styles };
+        const newProperties = { ...elToUpdate.properties };
         
         let newWidth = resizingState.initialWidth;
         let newHeight = resizingState.initialHeight;
@@ -218,25 +239,23 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         }
         if (resizingState.handle.includes('left')) {
             newWidth = resizingState.initialWidth - dx;
-            // newStyles.left = `${resizingState.initialLeft + dx - canvasRect.left}px`;
         }
         if (resizingState.handle.includes('bottom')) {
             newHeight = resizingState.initialHeight + dy;
         }
         if (resizingState.handle.includes('top')) {
             newHeight = resizingState.initialHeight - dy;
-            // newStyles.top = `${resizingState.initialTop + dy - canvasRect.top}px`;
         }
 
         if (newWidth) {
-          newStyles.width = `${Math.max(20, newWidth)}px`;
+          newProperties['layout.width'] = `${Math.max(20, newWidth)}px`;
         }
         if (newHeight) {
-          newStyles.height = `${Math.max(20, newHeight)}px`;
+          newProperties['layout.height'] = `${Math.max(20, newHeight)}px`;
         }
 
 
-        updateElement(resizingState.elementId, newStyles);
+        updateElement(resizingState.elementId, newProperties, false);
 
     }, [resizingState, elements, updateElement]);
 
@@ -256,13 +275,14 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }, [resizingState, handleMouseMove, handleMouseUp]);
     
     const renderElement = (element: CanvasElementData, parentId: string | null = null): React.ReactNode => {
-        const { id, type, content, htmlContent, styles, props, children, customCss, className } = element;
+        const { id, type, properties, children } = element;
+        const styles = extractStyles(properties);
         const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
         const isSelected = selectedElement === id;
 
         const wrapperProps = {
             id,
-            className,
+            className: properties['attributes.className'],
             selectedElement,
             onSelectElement,
             style: styles,
@@ -270,7 +290,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             onDragEnter: (e: React.DragEvent) => handleDragEnter(e, id, parentId),
             onDragLeave: handleDragLeave,
             isContainer,
-            customCss
+            customCss: properties['customCss.css']
         };
         
         const showDropIndicator = dropZone.elementId === id && dropZone.parentId === parentId && id !== draggedId;
@@ -292,11 +312,11 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 
         switch (type) {
             case 'heading':
-                const HeadingTag = `h${props?.level || 1}` as keyof JSX.IntrinsicElements;
+                const HeadingTag = `h${properties['heading.level'] || 1}` as keyof JSX.IntrinsicElements;
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                          <HeadingTag>
-                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={styles} className="font-headline tracking-tight" />
+                            <EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} style={styles} className="font-headline tracking-tight" />
                         </HeadingTag>
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
@@ -305,7 +325,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'text':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={styles} />
+                        <EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} style={styles} />
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -313,7 +333,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'link':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <a href={props?.href || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={styles} /></a>
+                        <a href={properties['link.href'] || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} style={styles} /></a>
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -321,7 +341,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'button':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{...styles, display: 'block'}} />
+                        <EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} style={{...styles, display: 'block'}} />
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -329,7 +349,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'image':
                  elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        {props?.src && <Image src={props.src} alt={props.alt || ''} width={props.width || 200} height={props.height || 100} className="w-full h-full object-cover" {...props} />}
+                        {properties['image.src'] && <Image src={properties['image.src']} alt={properties['image.alt'] || ''} width={parseInt(String(styles.width)) || 200} height={parseInt(String(styles.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['image.data-ai-hint']} />}
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                  );
@@ -337,7 +357,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'video':
                  elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <video controls src={props?.src} className="w-full h-full" />
+                        <video controls src={properties['video.src']} className="w-full h-full" />
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                  );
@@ -353,7 +373,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
               if (type === 'list') Tag = 'ul';
 
               elementComponent = (
-                <CanvasElementWrapper {...wrapperProps} className={cn({'min-h-[100px]': children?.length === 0, 'container': type === 'container'}, className)}>
+                <CanvasElementWrapper {...wrapperProps} className={cn({'min-h-[100px]': children?.length === 0, 'container': type === 'container'}, wrapperProps.className)}>
                   <Tag 
                     onDrop={(e) => handleDrop(e, id)} 
                     onDragOver={(e) => handleDragOver(e, id)} 
@@ -362,7 +382,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                     {children && children.length > 0 
                         ? children.map(child => renderElement(child, id)) 
                         : (
-                            <div className="flex items-center justify-center pointer-events-none text-muted-foreground p-4">
+                            <div className="flex items-center justify-center pointer-events-none text-muted-foreground p-4 h-24">
                                {dropZone.parentId === id && !dropZone.elementId ? '' : ''}
                             </div>
                         )
@@ -379,7 +399,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
               elementComponent = (
                 <CanvasElementWrapper {...wrapperProps}>
                   <li>
-                    <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} />
+                    <EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} />
                   </li>
                   {renderResizeHandles()}
                 </CanvasElementWrapper>
@@ -388,7 +408,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'input':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                       <Input {...props} style={styles} className="w-full h-full bg-background" />
+                       <Input type={properties['input.type']} value={properties['input.value']} placeholder={properties['input.placeholder']} style={styles} className="w-full h-full bg-background" />
                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -396,7 +416,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'textarea':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                       <Textarea {...props} style={styles} className="w-full h-full bg-background" />
+                       <Textarea value={properties['textarea.value']} placeholder={properties['textarea.placeholder']} style={styles} className="w-full h-full bg-background" />
                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -404,14 +424,14 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'label':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <label><EditableText id={id} initialValue={content || ''} onSave={handleSaveText}/></label>
+                        <label><EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText}/></label>
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
                 break;
             case 'html':
                  elementComponent = (
-                    <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: htmlContent || '' }} />
+                    <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: properties['html.htmlContent'] || '' }} />
                  );
                  if (isSelected) {
                      return (

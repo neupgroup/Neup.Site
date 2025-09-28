@@ -5,7 +5,7 @@ import type { CanvasElementData } from '@/lib/schemas';
 
 interface ContentPropertiesProps {
     element: CanvasElementData;
-    onUpdate: (updateType: 'content', key: string, value: any) => void;
+    onUpdate: (key: string, value: any) => void;
 }
 
 const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate }) => {
@@ -15,8 +15,8 @@ const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate }) =>
             <div className="space-y-2">
                 <Label>Text</Label>
                 <Input 
-                    value={element.content || ''}
-                    onChange={(e) => onUpdate('content', 'content', e.target.value)}
+                    value={element.properties['content.text'] || ''}
+                    onChange={(e) => onUpdate('content.text', e.target.value)}
                 />
             </div>
         </>
