@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, DragEvent } from 'react';
+import { useState, useRef, DragEvent, useCallback } from 'react';
 import type { CanvasElementData } from '@/lib/schemas';
 
 interface DragAndDropProps {
@@ -11,11 +11,14 @@ interface DragAndDropProps {
   addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
 
+const THROTTLE_INTERVAL = 100; // ms
+
 export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, elements }: DragAndDropProps) => {
     const [draggedId, setDraggedId] = useState<string | null>(null);
     const [isDraggingSection, setIsDraggingSection] = useState(false);
     const [dropZone, setDropZone] = useState<{parentId: string | null, elementId: string | null}>({parentId: null, elementId: null});
     const dragCounter = useRef(0);
+    const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const findElementRecursive = (elements: CanvasElementData[], id: string): {element: CanvasElementData, parent?: CanvasElementData} | null => {
         for (const el of elements) {
@@ -45,20 +48,34 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         setDraggedId(id);
     };
 
-    const handleDragOver = (e: DragEvent, parentId: string | null = null) => {
+    const throttledDragOver = useCallback((e: DragEvent, parentId: string | null = null) => {
         e.preventDefault();
         e.stopPropagation();
 
-        const target = e.target as HTMLElement;
-        const closestElement = target.closest('[draggable="true"]');
-        let elementId = closestElement ? closestElement.id : null;
-
-        if (elementId === draggedId) {
-          elementId = null;
+        if (throttleTimeoutRef.current) {
+            return;
         }
-        
-        setDropZone({ parentId, elementId });
-    };
+
+        throttleTimeoutRef.current = setTimeout(() => {
+            throttleTimeoutRef.current = null;
+            
+            const target = e.target as HTMLElement;
+            const closestElement = target.closest('[draggable="true"]');
+            let elementId = closestElement ? closestElement.id : null;
+
+            if (elementId === draggedId) {
+                elementId = null;
+            }
+            
+            setDropZone({ parentId, elementId });
+
+        }, THROTTLE_INTERVAL);
+
+    }, [draggedId]);
+
+    const handleDragOver = (e: DragEvent, parentId: string | null = null) => {
+        throttledDragOver(e, parentId);
+    }
 
     const handleDrop = async (e: DragEvent, parentId?: string, dropZoneId?: string) => {
         e.preventDefault();
@@ -70,6 +87,10 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         setIsDraggingSection(false);
         setDropZone({parentId: null, elementId: null});
         dragCounter.current = 0;
+        if(throttleTimeoutRef.current) {
+            clearTimeout(throttleTimeoutRef.current);
+            throttleTimeoutRef.current = null;
+        }
         
         if (!dataStr) return;
 
@@ -79,8 +100,8 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
     
             if (data.type === 'canvas-element' && draggedId) {
                 moveElement(draggedId, targetId!, parentId);
-            } else if (data.type === 'sidebar-element' || data.type === 'section') {
-                addElement(data.elementType, targetId, parentId);
+            } else if (data.type === 'sidebar-element' || data.type === 'section' || data.type === 'canvas-element') {
+                addElement(data.elementType || findElementRecursive(elements, data.id)?.element.type, targetId, parentId);
             } else if (data.type === 'template-element') {
                 addGeneratedElement(data.element, targetId, parentId);
             }
@@ -123,6 +144,10 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
             setDraggedId(null);
             setIsDraggingSection(false);
             setDropZone({parentId: null, elementId: null});
+             if(throttleTimeoutRef.current) {
+                clearTimeout(throttleTimeoutRef.current);
+                throttleTimeoutRef.current = null;
+            }
         }
     };
 
