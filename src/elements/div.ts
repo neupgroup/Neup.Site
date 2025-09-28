@@ -1,4 +1,3 @@
-
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
@@ -6,6 +5,17 @@ const editorProperties: EditorProperties = [
         groupName: "Layout",
         properties: [
             { key: "display", label: "Display", inputType: 'select', target: 'styles', options: { selectOptions: [{label: 'Block', value: 'block'}, {label: 'Flex', value: 'flex'}, {label: 'Grid', value: 'grid'}]} },
+            { 
+                key: "flexDirection", 
+                label: "Flex Direction", 
+                inputType: 'select', 
+                target: 'styles', 
+                options: { selectOptions: [
+                    {label: 'Row', value: 'row'}, 
+                    {label: 'Column', value: 'column'}
+                ]},
+                showIf: { key: 'display', value: 'flex' }
+            },
             { key: "width", label: "Width", inputType: 'text', target: 'styles' },
             { key: "height", label: "Height", inputType: 'text', target: 'styles' },
         ]

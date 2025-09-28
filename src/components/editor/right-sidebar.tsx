@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from 'react';
-import { Settings, Trash2 } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import type { CanvasElementData, EditorProperty } from '@/lib/schemas';
 import { elementDefinitions } from '@/elements';
 
@@ -104,7 +104,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   const [elementId, setElementId] = useState<string | undefined>(undefined);
   
-  // This state will hold the current values of all properties for the selected element
   const [propertyValues, setPropertyValues] = useState<Record<string, any>>({});
 
 
@@ -179,19 +178,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
         <Accordion type="single" collapsible className="w-full" defaultValue="element-id">
-            <AccordionItem value="element-id">
-              <AccordionTrigger className="px-4 text-sm font-medium">Element</AccordionTrigger>
-              <AccordionContent className="px-4 space-y-2">
-                <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground break-words">{selectedElement.id}</p>
-                    <div className="flex gap-2">
-                        <Button variant="destructive" size="icon" className="h-7 w-7" onClick={() => deleteElement(selectedElement.id)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">
@@ -206,21 +192,29 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 <AccordionItem key={group.groupName} value={group.groupName}>
                     <AccordionTrigger className="px-4 text-sm font-medium">{group.groupName}</AccordionTrigger>
                     <AccordionContent className="px-4 space-y-4">
-                        {group.properties.map(prop => (
-                            <div key={prop.key} className="space-y-2">
-                                <Label>{prop.label}</Label>
-                                {renderInput(
-                                    prop,
-                                    propertyValues[prop.key],
-                                    (p, v) => updatePropertyValue(p as string, v, 'styles'),
-                                    (p, v) => updatePropertyValue(p, v, 'props'),
-                                    (v) => updatePropertyValue(prop.key, v, 'content'),
-                                    (v) => updatePropertyValue(prop.key, v, 'htmlContent'),
-                                    (v) => updatePropertyValue(prop.key, v, 'customCss'),
-                                    (v) => updatePropertyValue(prop.key, v, 'className'),
-                                )}
-                            </div>
-                        ))}
+                        {group.properties.map(prop => {
+                            if (prop.showIf) {
+                                const conditionValue = propertyValues[prop.showIf.key];
+                                if (conditionValue !== prop.showIf.value) {
+                                    return null;
+                                }
+                            }
+                            return (
+                                <div key={prop.key} className="space-y-2">
+                                    <Label>{prop.label}</Label>
+                                    {renderInput(
+                                        prop,
+                                        propertyValues[prop.key],
+                                        (p, v) => updatePropertyValue(p as string, v, 'styles'),
+                                        (p, v) => updatePropertyValue(p, v, 'props'),
+                                        (v) => updatePropertyValue(prop.key, v, 'content'),
+                                        (v) => updatePropertyValue(prop.key, v, 'htmlContent'),
+                                        (v) => updatePropertyValue(prop.key, v, 'customCss'),
+                                        (v) => updatePropertyValue(prop.key, v, 'className'),
+                                    )}
+                                </div>
+                            );
+                        })}
                     </AccordionContent>
                 </AccordionItem>
             ))}

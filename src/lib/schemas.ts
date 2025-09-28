@@ -11,6 +11,10 @@ export type EditorProperty = {
         rows?: number;
     };
     placeholder?: string;
+    showIf?: {
+        key: string;
+        value: any;
+    }
 }
 
 export type EditorPropertyGroup = {
