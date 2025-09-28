@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CanvasElementData } from '@/lib/schemas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import PropertyInput from './property-input';
 
 interface LayoutPropertiesProps {
     element: CanvasElementData;
@@ -32,22 +32,20 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="space-y-2">
-                    <Label>Width</Label>
-                    <Input
-                        value={properties['layout.width'] as string || ''}
-                        onChange={(e) => onUpdate('layout.width', e.target.value)}
-                        placeholder="e.g., 100px or 100%"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label>Height</Label>
-                    <Input
-                        value={properties['layout.height'] as string || ''}
-                        onChange={(e) => onUpdate('layout.height', e.target.value)}
-                        placeholder="e.g., 100px"
-                    />
-                </div>
+                <PropertyInput
+                  label="Width"
+                  value={properties['layout.width'] as string || ''}
+                  onChange={(v) => onUpdate('layout.width', v)}
+                  placeholder="e.g., 100px or 100%"
+                  suggestions={['auto', '100%', '50%']}
+                />
+                <PropertyInput
+                  label="Height"
+                  value={properties['layout.height'] as string || ''}
+                  onChange={(v) => onUpdate('layout.height', v)}
+                  placeholder="e.g., 100px"
+                  suggestions={['auto']}
+                />
             </AccordionContent>
         </AccordionItem>
     );

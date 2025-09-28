@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import PropertyInput from './property-input';
 
 interface BorderPropertiesProps {
     element: CanvasElementData;
@@ -16,22 +15,20 @@ const BorderProperties: FC<BorderPropertiesProps> = ({ element, onUpdate }) => {
         <AccordionItem value="borders">
             <AccordionTrigger className="px-4 text-sm font-medium">Borders</AccordionTrigger>
             <AccordionContent className="px-4 space-y-4">
-                <div className="space-y-2">
-                    <Label>Border</Label>
-                    <Input 
-                        value={properties['borders.border'] as string || ''}
-                        onChange={(e) => onUpdate('borders.border', e.target.value)}
-                        placeholder="e.g., 1px solid #000"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label>Border Radius</Label>
-                    <Input
-                        value={properties['borders.borderRadius'] as string || ''}
-                        onChange={(e) => onUpdate('borders.borderRadius', e.target.value)}
-                        placeholder="e.g., 8px"
-                    />
-                </div>
+                <PropertyInput 
+                    label="Border"
+                    value={properties['borders.border'] as string || ''}
+                    onChange={(v) => onUpdate('borders.border', v)}
+                    placeholder="e.g., 1px solid #000"
+                    suggestions={['none', '1px solid hsl(var(--border))']}
+                />
+                <PropertyInput
+                    label="Border Radius"
+                    value={properties['borders.borderRadius'] as string || ''}
+                    onChange={(v) => onUpdate('borders.borderRadius', v)}
+                    placeholder="e.g., 8px"
+                    suggestions={['0px', 'var(--radius)', '9999px']}
+                />
             </AccordionContent>
         </AccordionItem>
     );

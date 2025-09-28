@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import PropertyInput from './property-input';
 
 interface SpacingPropertiesProps {
     element: CanvasElementData;
@@ -16,22 +15,20 @@ const SpacingProperties: FC<SpacingPropertiesProps> = ({ element, onUpdate }) =>
         <AccordionItem value="spacing">
             <AccordionTrigger className="px-4 text-sm font-medium">Spacing</AccordionTrigger>
             <AccordionContent className="px-4 space-y-4">
-                <div className="space-y-2">
-                    <Label>Padding</Label>
-                    <Input 
-                        value={properties['spacing.padding'] as string || ''}
-                        onChange={(e) => onUpdate('spacing.padding', e.target.value)}
-                        placeholder="e.g., 16px or 1rem"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label>Margin</Label>
-                    <Input
-                        value={properties['spacing.margin'] as string || ''}
-                        onChange={(e) => onUpdate('spacing.margin', e.target.value)}
-                        placeholder="e.g., 16px or 1rem"
-                    />
-                </div>
+                <PropertyInput 
+                    label="Padding"
+                    value={properties['spacing.padding'] as string || ''}
+                    onChange={(v) => onUpdate('spacing.padding', v)}
+                    placeholder="e.g., 16px or 1rem"
+                    suggestions={['0px', '10px', '20px']}
+                />
+                <PropertyInput
+                    label="Margin"
+                    value={properties['spacing.margin'] as string || ''}
+                    onChange={(v) => onUpdate('spacing.margin', v)}
+                    placeholder="e.g., 16px or 1rem"
+                    suggestions={['0px', '10px', '20px', '0 auto']}
+                />
             </AccordionContent>
         </AccordionItem>
     );
