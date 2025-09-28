@@ -92,7 +92,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     );
   }
 
-  const defaultOpenAccordions = ['attributes', ...elementDef.editorProperties?.map(p => p.toLowerCase()) || []];
+  const defaultOpenAccordions = ['attributes', ...elementDef.editorProperties || []];
 
   return (
     <aside className="w-80 border-l bg-card">
@@ -110,7 +110,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             
             {elementDef.editorProperties?.map(groupKey => {
                 const PropertyComponent = propertyComponents[groupKey.toLowerCase()];
-                const groupName = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
                 
                 if (!PropertyComponent) {
                     console.warn(`No property component found for group: ${groupKey}`);
@@ -118,9 +117,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 }
 
                 return (
-                    <Fragment key={groupKey}>
-                        <PropertyComponent element={selectedElement} onUpdate={handleUpdate} />
-                    </Fragment>
+                    <PropertyComponent key={groupKey} element={selectedElement} onUpdate={handleUpdate} />
                 );
             })}
         </Accordion>
