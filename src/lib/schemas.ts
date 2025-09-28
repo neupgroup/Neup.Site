@@ -1,6 +1,25 @@
 'use client';
 import { z } from 'zod';
 
+export type EditorProperty = {
+    key: string;
+    label: string;
+    inputType: 'text' | 'select' | 'color' | 'textarea';
+    target: 'styles' | 'props' | 'content' | 'htmlContent' | 'customCss' | 'className';
+    options?: {
+        selectOptions?: { label: string; value: string }[];
+        rows?: number;
+    };
+    placeholder?: string;
+}
+
+export type EditorPropertyGroup = {
+    groupName: string;
+    properties: EditorProperty[];
+}
+
+export type EditorProperties = EditorPropertyGroup[];
+
 // Define the TypeScript type for a canvas element first.
 export interface CanvasElementData {
   id: string;
@@ -12,6 +31,7 @@ export interface CanvasElementData {
   children?: CanvasElementData[];
   customCss?: string;
   className?: string;
+  editorProperties?: EditorProperties;
 }
 
 // Now, define the Zod schema using the TypeScript type.
@@ -25,6 +45,7 @@ export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() =
     children: z.array(CanvasElementDataSchema).optional(),
     customCss: z.string().optional(),
     className: z.string().optional(),
+    editorProperties: z.any().optional(), // Can't easily type this recursively with Zod
 }));
 
 export const TemplateSchema = z.object({
