@@ -164,6 +164,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
             className="min-h-full h-full"
             style={{
               display: styles.display,
+              flex: 1,
               flexDirection: styles.flexDirection,
               justifyContent: styles.justifyContent,
               alignItems: styles.alignItems,
