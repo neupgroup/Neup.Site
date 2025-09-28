@@ -1,16 +1,23 @@
-import React, { FC, useEffect, useState, useRef } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Settings } from 'lucide-react';
-import type { CanvasElementData, EditorProperty } from '@/lib/schemas';
+import type { CanvasElementData } from '@/lib/schemas';
 import { elementDefinitions } from '@/elements';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Textarea } from '../ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+
+import SpacingProperties from './properties/spacing';
+import TypographyProperties from './properties/typography';
+import BackgroundProperties from './properties/background';
+import BorderProperties from './properties/border';
+import LayoutProperties from './properties/layout';
+import FlexboxProperties from './properties/flexbox';
+import ContentProperties from './properties/content';
+import ImageProperties from './properties/image';
+import LinkProperties from './properties/link';
 
 interface RightSidebarProps {
   selectedElementId: string | null;
@@ -20,72 +27,17 @@ interface RightSidebarProps {
   updateElementId: (oldId: string, newId: string) => void;
 }
 
-const renderInput = (
-    property: EditorProperty,
-    value: any,
-    handleStyleChange: (prop: keyof React.CSSProperties, val: string) => void,
-    handlePropChange: (prop: string, val: any) => void,
-    handleContentChange: (val: string) => void,
-    handleHtmlContentChange: (val: string) => void,
-    handleCustomCssChange: (val: string) => void,
-    handleClassNameChange: (val: string) => void
-) => {
-    
-    const onChange = (val: any) => {
-        if(property.target === 'styles') {
-            handleStyleChange(property.key as keyof React.CSSProperties, val);
-        } else if (property.target === 'props') {
-            handlePropChange(property.key, val);
-        } else if (property.target === 'content') {
-            handleContentChange(val);
-        } else if (property.target === 'htmlContent') {
-            handleHtmlContentChange(val);
-        } else if (property.target === 'customCss') {
-            handleCustomCssChange(val);
-        } else if (property.target === 'className') {
-            handleClassNameChange(val);
-        }
-    };
-    
-    switch (property.inputType) {
-        case 'text':
-            return <Input value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={property.placeholder} />;
-        case 'textarea':
-            return <Textarea value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={property.placeholder} rows={property.options?.rows || 5} />;
-        case 'select':
-            return (
-                <Select value={value || ''} onValueChange={onChange}>
-                    <SelectTrigger>
-                        <SelectValue placeholder={property.placeholder} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {property.options?.selectOptions?.map(option => (
-                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            );
-        case 'color':
-            const colorInputRef = React.createRef<HTMLInputElement>();
-            return (
-                <div className="flex items-center gap-2">
-                    <Input value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={property.placeholder} />
-                    <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
-                        🎨
-                        <input
-                            ref={colorInputRef}
-                            type="color"
-                            value={typeof value === 'string' ? value : '#000000'}
-                            onChange={(e) => onChange(e.target.value)}
-                            className="absolute h-0 w-0 opacity-0"
-                        />
-                    </Button>
-                </div>
-            )
-        default:
-            return null;
-    }
-}
+const propertyComponents: { [key: string]: React.FC<any> } = {
+    'Spacing': SpacingProperties,
+    'Typography': TypographyProperties,
+    'Background': BackgroundProperties,
+    'Borders': BorderProperties,
+    'Layout': LayoutProperties,
+    'Flexbox': FlexboxProperties,
+    'Content': ContentProperties,
+    'Image': ImageProperties,
+    'Link': LinkProperties,
+};
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId }) => {
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
@@ -103,53 +55,10 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const { toast } = useToast();
 
   const [elementId, setElementId] = useState<string | undefined>(undefined);
-  
-  const [propertyValues, setPropertyValues] = useState<Record<string, any>>({});
-
 
   useEffect(() => {
-    if (selectedElement && elementDef) {
-        const newValues: Record<string, any> = {};
-        elementDef.editorProperties?.forEach(group => {
-            group.properties.forEach(prop => {
-                if (prop.target === 'styles' && selectedElement.styles) {
-                    newValues[prop.key] = selectedElement.styles[prop.key as keyof React.CSSProperties];
-                } else if (prop.target === 'props' && selectedElement.props) {
-                    newValues[prop.key] = selectedElement.props[prop.key];
-                } else {
-                    newValues[prop.key] = (selectedElement as any)[prop.target];
-                }
-            })
-        });
-        setPropertyValues(newValues);
-        setElementId(selectedElement.id);
-    } else {
-        setPropertyValues({});
-        setElementId(undefined);
-    }
-  }, [selectedElement, elementDef]);
-
-  const updatePropertyValue = (key: string, value: any, target: EditorProperty['target']) => {
-      const newValues = { ...propertyValues, [key]: value };
-      setPropertyValues(newValues);
-
-      if (selectedElementId) {
-          if (target === 'styles') {
-              updateElement(selectedElementId, { ...selectedElement?.styles, [key]: value });
-          } else if (target === 'props') {
-              updateElement(selectedElementId, undefined, { ...selectedElement?.props, [key]: value });
-          } else if (target === 'content') {
-              updateElement(selectedElementId, undefined, undefined, value);
-          } else if (target === 'htmlContent') {
-              updateElement(selectedElementId, undefined, undefined, undefined, undefined, undefined, value);
-          } else if (target === 'customCss') {
-              updateElement(selectedElementId, undefined, undefined, undefined, value);
-          } else if (target === 'className') {
-              updateElement(selectedElementId, undefined, undefined, undefined, undefined, value);
-          }
-      }
-  }
-
+    setElementId(selectedElement?.id);
+  }, [selectedElement]);
 
   const handleIdChange = (value: string) => {
       setElementId(value);
@@ -161,6 +70,21 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     }
   }
 
+  const handleUpdate = (
+    updateType: 'styles' | 'props' | 'content',
+    key: string,
+    value: any
+  ) => {
+    if (!selectedElementId) return;
+
+    if (updateType === 'styles') {
+      updateElement(selectedElementId, { ...selectedElement?.styles, [key]: value });
+    } else if (updateType === 'props') {
+      updateElement(selectedElementId, undefined, { ...selectedElement?.props, [key]: value });
+    } else if (updateType === 'content') {
+        updateElement(selectedElementId, undefined, undefined, value);
+    }
+  };
 
   if (!selectedElement || !elementDef) {
     return (
@@ -177,7 +101,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   return (
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
-        <Accordion type="single" collapsible className="w-full" defaultValue="element-id">
+        <Accordion type="single" collapsible className="w-full" defaultValue="attributes">
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">
@@ -188,36 +112,27 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 </AccordionContent>
             </AccordionItem>
 
-            {elementDef.editorProperties?.map(group => (
-                <AccordionItem key={group.groupName} value={group.groupName}>
-                    <AccordionTrigger className="px-4 text-sm font-medium">{group.groupName}</AccordionTrigger>
-                    <AccordionContent className="px-4 space-y-4">
-                        {group.properties.map(prop => {
-                            if (prop.showIf) {
-                                const conditionValue = propertyValues[prop.showIf.key];
-                                if (conditionValue !== prop.showIf.value) {
-                                    return null;
-                                }
-                            }
-                            return (
-                                <div key={prop.key} className="space-y-2">
-                                    <Label>{prop.label}</Label>
-                                    {renderInput(
-                                        prop,
-                                        propertyValues[prop.key],
-                                        (p, v) => updatePropertyValue(p as string, v, 'styles'),
-                                        (p, v) => updatePropertyValue(p, v, 'props'),
-                                        (v) => updatePropertyValue(prop.key, v, 'content'),
-                                        (v) => updatePropertyValue(prop.key, v, 'htmlContent'),
-                                        (v) => updatePropertyValue(prop.key, v, 'customCss'),
-                                        (v) => updatePropertyValue(prop.key, v, 'className'),
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </AccordionContent>
-                </AccordionItem>
-            ))}
+            {elementDef.editorProperties?.map(group => {
+                const PropertyComponent = propertyComponents[group.groupName];
+                if (!PropertyComponent) return null;
+
+                // Conditional rendering logic for flexbox
+                if (group.groupName === 'Flexbox' && selectedElement.styles?.display !== 'flex') {
+                    return null;
+                }
+
+                return (
+                    <AccordionItem key={group.groupName} value={group.groupName}>
+                        <AccordionTrigger className="px-4 text-sm font-medium">{group.groupName}</AccordionTrigger>
+                        <AccordionContent className="px-4 space-y-4">
+                            <PropertyComponent
+                                element={selectedElement}
+                                onUpdate={handleUpdate}
+                            />
+                        </AccordionContent>
+                    </AccordionItem>
+                );
+            })}
 
         </Accordion>
       </ScrollArea>

@@ -1,33 +1,10 @@
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
-    {
-        groupName: "Image",
-        properties: [
-            { key: "src", label: "Source URL", inputType: 'text', target: 'props' },
-            { key: "alt", label: "Alt Text", inputType: 'text', target: 'props' }
-        ]
-    },
-    {
-        groupName: "Layout",
-        properties: [
-            { key: "width", label: "Width", inputType: 'text', target: 'styles' },
-            { key: "height", label: "Height", inputType: 'text', target: 'styles' }
-        ]
-    },
-    {
-        groupName: "Spacing",
-        properties: [
-            { key: "padding", label: "Padding", inputType: 'text', target: 'styles' },
-            { key: "margin", label: "Margin", inputType: 'text', target: 'styles' }
-        ]
-    },
-    {
-        groupName: "Borders",
-        properties: [
-            { key: "borderRadius", label: "Border Radius", inputType: 'text', target: 'styles' }
-        ]
-    }
+    { groupName: "Image" },
+    { groupName: "Layout" },
+    { groupName: "Spacing" },
+    { groupName: "Borders" },
 ];
 
 
