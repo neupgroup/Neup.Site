@@ -23,8 +23,7 @@ const editorProperties: EditorProperties = [
     {
         groupName: "Spacing",
         properties: [
-            { key: "padding", label: "Padding", inputType: 'text', target: 'styles' },
-            { key: "margin", label: "Margin", inputType: 'text', target: 'styles' }
+            { key: "padding", label: "Padding", inputType: 'text', target: 'styles' }
         ]
     },
     {
@@ -51,6 +50,7 @@ export const div: CanvasElementData = {
         display: 'block',
         minHeight: '100px',
         border: '1px dashed hsl(var(--border))',
+        flexDirection: 'row',
     },
     props: {},
     editorProperties
