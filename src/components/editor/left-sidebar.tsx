@@ -253,10 +253,9 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
   return (
     <aside className="w-72 border-r bg-card">
       <Tabs defaultValue="add" className="flex h-full flex-col">
-        <TabsList className="grid w-full grid-cols-4 rounded-none border-b">
+        <TabsList className="grid w-full grid-cols-3 rounded-none border-b">
           <TabsTrigger value="add">Add</TabsTrigger>
           <TabsTrigger value="layers"><Layers className="h-4 w-4"/></TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
         </TabsList>
         <ScrollArea className="flex-1">
@@ -307,6 +306,9 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                     <ContentBlock icon={<CaseSensitive className="h-6 w-6" />} label="Label" type="label" />
                   </div>
               </div>
+              <div className="pt-4">
+                  <TemplateLibrary addGeneratedElement={addGeneratedElement} />
+              </div>
             </div>
           </TabsContent>
           <TabsContent value="layers" className="p-2">
@@ -323,9 +325,6 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                     />
                 ))}
             </div>
-          </TabsContent>
-          <TabsContent value="templates" className="p-4">
-            <TemplateLibrary addGeneratedElement={addGeneratedElement} />
           </TabsContent>
           <TabsContent value="pages" className="p-4">
             <div className="space-y-2">
