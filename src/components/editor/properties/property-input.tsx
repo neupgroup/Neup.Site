@@ -25,7 +25,7 @@ const PropertyInput: FC<PropertyInputProps> = ({ label, value, onChange, placeho
           {suggestions.map((suggestion) => (
             <Badge
               key={suggestion}
-              variant="outline"
+              variant={value === suggestion ? "default" : "outline"}
               className="cursor-pointer"
               onClick={() => onChange(suggestion)}
             >
