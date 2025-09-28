@@ -1,8 +1,9 @@
+
 import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search } from 'lucide-react';
 import type { CanvasElementData, Template } from '@/lib/schemas';
 import { cn } from '@/lib/utils';
 import { logErrorToFirestore } from '@/actions/logging';
@@ -11,6 +12,7 @@ import { getTemplates } from '@/actions/editor/templates';
 import { Skeleton } from '../ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { Input } from '../ui/input';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
   <div
@@ -257,6 +259,10 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
         <ScrollArea className="flex-1">
           <TabsContent value="add" className="p-4">
             <div className="space-y-4">
+              <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder="Search elements..." className="pl-8" />
+              </div>
               <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Layout</p>
                   <div className="grid grid-cols-2 gap-4">
@@ -344,3 +350,5 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
 };
 
 export default LeftSidebar;
+
+    
