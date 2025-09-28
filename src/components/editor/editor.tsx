@@ -163,7 +163,8 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 
         const newElement: CanvasElementData = {
             ...JSON.parse(JSON.stringify(definition)), // Deep copy definition
-            id: `${elementType}-${Date.now()}`
+            id: `${elementType}-${Date.now()}`,
+            properties: definition.properties || {},
         };
         
         setElements(prev => {
@@ -581,3 +582,5 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 };
 
 export default Editor;
+
+    
