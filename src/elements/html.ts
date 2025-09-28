@@ -1,26 +1,4 @@
-import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
-
-const editorProperties: EditorProperties = [
-    {
-        groupName: "HTML",
-        properties: [
-            { key: "html.htmlContent", label: "HTML Content", inputType: 'textarea', target: 'htmlContent', options: { rows: 10 } }
-        ]
-    },
-    {
-        groupName: "Spacing",
-        properties: [
-            { key: "spacing.padding", label: "Padding", inputType: 'text', target: 'styles' },
-            { key: "spacing.margin", label: "Margin", inputType: 'text', target: 'styles' }
-        ]
-    },
-    {
-        groupName: "Custom CSS",
-        properties: [
-            { key: "customCss.css", label: "Custom CSS", inputType: 'textarea', target: 'customCss' }
-        ]
-    }
-];
+import type { CanvasElementData } from "@/lib/schemas";
 
 export const html: CanvasElementData = {
     id: '',
@@ -31,5 +9,5 @@ export const html: CanvasElementData = {
         'layout.display': 'block',
         'layout.minHeight': '50px',
     },
-    editorProperties
+    editorProperties: [] // No standard properties, controlled by custom HTML
 };

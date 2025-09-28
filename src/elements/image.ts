@@ -1,22 +1,4 @@
-import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
-
-const editorProperties: EditorProperties = [
-    { groupName: "Image", properties: [
-        { key: 'image.src', label: 'Source URL', inputType: 'text', target: 'props', placeholder: 'https://...' },
-        { key: 'image.alt', label: 'Alt Text', inputType: 'text', target: 'props', placeholder: 'Descriptive text' },
-    ]},
-    { groupName: "Layout", properties: [
-        { key: 'layout.width', label: 'Width', inputType: 'text', target: 'styles' },
-        { key: 'layout.height', label: 'Height', inputType: 'text', target: 'styles' },
-    ]},
-    { groupName: "Spacing", properties: [
-        { key: 'spacing.padding', label: 'Padding', inputType: 'text', target: 'styles', placeholder: '10px' },
-    ]},
-    { groupName: "Borders", properties: [
-        { key: 'borders.borderRadius', label: 'Border Radius', inputType: 'text', target: 'styles' },
-    ]},
-];
-
+import type { CanvasElementData } from "@/lib/schemas";
 
 export const image: CanvasElementData = {
     id: '',
@@ -29,5 +11,5 @@ export const image: CanvasElementData = {
         'image.alt': 'Placeholder image',
         'image.data-ai-hint': 'placeholder',
     },
-    editorProperties
+    editorProperties: ['image', 'layout', 'spacing', 'borders']
 };

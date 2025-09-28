@@ -1,26 +1,4 @@
-import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
-
-const editorProperties: EditorProperties = [
-    {
-        groupName: "Video",
-        properties: [
-            { key: "video.src", label: "Source URL", inputType: 'text', target: 'props' }
-        ]
-    },
-    {
-        groupName: "Layout",
-        properties: [
-            { key: "layout.width", label: "Width", inputType: 'text', target: 'styles' },
-            { key: "layout.height", label: "Height", inputType: 'text', target: 'styles' }
-        ]
-    },
-    {
-        groupName: "Spacing",
-        properties: [
-            { key: "spacing.padding", label: "Padding", inputType: 'text', target: 'styles' }
-        ]
-    }
-];
+import type { CanvasElementData } from "@/lib/schemas";
 
 export const video: CanvasElementData = {
     id: '',
@@ -32,5 +10,5 @@ export const video: CanvasElementData = {
         'layout.height': '240px',
         'video.src': 'https://www.w3schools.com/html/mov_bbb.mp4',
     },
-    editorProperties
+    editorProperties: ['layout', 'spacing']
 };

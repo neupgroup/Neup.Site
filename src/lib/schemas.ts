@@ -22,7 +22,7 @@ export type EditorPropertyGroup = {
     properties?: EditorProperty[];
 }
 
-export type EditorProperties = EditorPropertyGroup[];
+export type EditorProperties = string[];
 
 // Define the TypeScript type for a canvas element first.
 export interface CanvasElementData {

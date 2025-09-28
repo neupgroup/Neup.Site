@@ -1,35 +1,39 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import type { CanvasElementData } from '@/lib/schemas';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface SpacingPropertiesProps {
     element: CanvasElementData;
-    onUpdate: (updateType: 'styles', key: string, value: any) => void;
+    onUpdate: (key: string, value: any) => void;
 }
 
 const SpacingProperties: FC<SpacingPropertiesProps> = ({ element, onUpdate }) => {
-    const { styles } = element;
+    const { properties } = element;
     
     return (
-        <>
-            <div className="space-y-2">
-                <Label>Padding</Label>
-                <Input 
-                    value={styles?.padding as string || ''}
-                    onChange={(e) => onUpdate('styles', 'padding', e.target.value)}
-                    placeholder="e.g., 16px or 1rem"
-                />
-            </div>
-            <div className="space-y-2">
-                <Label>Margin</Label>
-                <Input
-                    value={styles?.margin as string || ''}
-                    onChange={(e) => onUpdate('styles', 'margin', e.target.value)}
-                    placeholder="e.g., 16px or 1rem"
-                />
-            </div>
-        </>
+        <AccordionItem value="spacing">
+            <AccordionTrigger className="px-4 text-sm font-medium">Spacing</AccordionTrigger>
+            <AccordionContent className="px-4 space-y-4">
+                <div className="space-y-2">
+                    <Label>Padding</Label>
+                    <Input 
+                        value={properties['spacing.padding'] as string || ''}
+                        onChange={(e) => onUpdate('spacing.padding', e.target.value)}
+                        placeholder="e.g., 16px or 1rem"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label>Margin</Label>
+                    <Input
+                        value={properties['spacing.margin'] as string || ''}
+                        onChange={(e) => onUpdate('spacing.margin', e.target.value)}
+                        placeholder="e.g., 16px or 1rem"
+                    />
+                </div>
+            </AccordionContent>
+        </AccordionItem>
     );
 };
 
