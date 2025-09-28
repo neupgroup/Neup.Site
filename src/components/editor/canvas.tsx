@@ -313,9 +313,14 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             const positionTolerance = 5; // To account for small gaps/borders
 
             const atTop = elementRect.top <= canvasRect.top + positionTolerance;
-            const atBottom = elementRect.bottom >= canvasRect.bottom - positionTolerance;
+            let atBottom = elementRect.bottom >= canvasRect.bottom - positionTolerance;
             const atLeft = elementRect.left <= canvasRect.left + positionTolerance;
             const atRight = elementRect.right >= canvasRect.right - positionTolerance;
+
+            // Exception: if element touches both top and bottom, allow resizing from bottom.
+            if (atTop && atBottom) {
+                atBottom = false;
+            }
             
             return (
             <>
