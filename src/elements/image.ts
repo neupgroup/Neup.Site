@@ -4,10 +4,7 @@ export const image: CanvasElementData = {
     id: '',
     type: 'image',
     styles: {
-        paddingTop: '10px',
-        paddingBottom: '10px',
-        paddingLeft: '10px',
-        paddingRight: '10px',
+        padding: '10px',
         display: 'block',
         height: '100px',
     },
