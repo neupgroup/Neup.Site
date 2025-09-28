@@ -101,6 +101,14 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                         <Label>ID</Label>
                         <Input value={elementId || ''} onChange={e => handleIdChange(e.target.value)} onBlur={handleIdBlur} />
                     </div>
+                    <div className="space-y-2">
+                        <Label>Class Name</Label>
+                        <Input 
+                            value={selectedElement.properties?.['attributes.className'] || ''}
+                            onChange={(e) => handleUpdate('attributes.className', e.target.value)} 
+                            placeholder="e.g. text-center my-4"
+                        />
+                    </div>
                 </AccordionContent>
             </AccordionItem>
             
