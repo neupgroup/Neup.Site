@@ -500,12 +500,24 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
+          setDraggedId(draggedId || 'sidebar-element');
           dragCounter.current++;
+        }}
+        onDragLeave={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dragCounter.current--;
+            if (dragCounter.current === 0) {
+                setDraggedId(null);
+            }
         }}
     >
       <div 
         ref={canvasRef}
-        className="rounded-lg bg-card shadow-lg relative mb-32"
+        className={cn(
+            "rounded-lg bg-card shadow-lg relative mb-32",
+            { 'is-dragging': !!draggedId }
+        )}
       >
         {elements.map(el => renderElement(el))}
         {elements.length === 0 && (

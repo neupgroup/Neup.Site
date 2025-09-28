@@ -86,3 +86,9 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+    .is-dragging > div[draggable="true"] {
+        @apply mb-4;
+    }
+}
