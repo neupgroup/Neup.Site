@@ -211,10 +211,7 @@ const TemplateLibrary = ({addGeneratedElement}: {addGeneratedElement: (element: 
   return (
     <div className="space-y-2">
         <div className="flex justify-between items-center mb-2">
-             <p className="text-sm font-medium text-muted-foreground">My Templates</p>
-             <Button variant="outline" size="sm" asChild>
-                <Link href="/root/templates">Manage</Link>
-             </Button>
+             <p className="text-sm font-medium text-muted-foreground">Templates</p>
         </div>
       {templates.length > 0 ? (
         templates.map(template => (
