@@ -36,7 +36,6 @@ const getIconForType = (type: CanvasElementData['type']) => {
         case 'container': return <Container className="h-4 w-4" />;
         case 'input': return <FormInput className="h-4 w-4" />;
         case 'heading': return <Heading1 className="h-4 w-4" />;
-        case 'link': return <LinkIcon className="h-4 w-4" />;
         case 'video': return <Video className="h-4 w-4" />;
         case 'list': return <List className="h-4 w-4" />;
         case 'list-item': return <Pilcrow className="h-4 w-4" />;
@@ -276,7 +275,6 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                         <ContentBlock icon={<Heading5 className="h-6 w-6" />} label="Heading 5" type="heading" props={ { level: 5 } } />
                         <ContentBlock icon={<Heading6 className="h-6 w-6" />} label="Heading 6" type="heading" props={ { level: 6 } } />
                         <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
-                        <ContentBlock icon={<LinkIcon className="h-6 w-6" />} label="Link" type="link" />
                    </div>
               </div>
                <div>

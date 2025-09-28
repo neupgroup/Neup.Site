@@ -11,6 +11,7 @@ export type EditorProperty = {
         rows?: number;
     };
     placeholder?: string;
+    suggestions?: string[];
     showIf?: {
         key: string;
         value: any;
@@ -27,7 +28,7 @@ export type EditorProperties = string[];
 // Define the TypeScript type for a canvas element first.
 export interface CanvasElementData {
   id: string;
-  type: 'text' | 'image' | 'button' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'link' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea' | 'html';
+  type: 'text' | 'image' | 'button' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea' | 'html';
   properties: Record<string, any>;
   children?: CanvasElementData[];
   editorProperties?: EditorProperties;
@@ -36,7 +37,7 @@ export interface CanvasElementData {
 // Now, define the Zod schema using the TypeScript type.
 export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
     id: z.string(),
-    type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'link', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']),
+    type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']),
     properties: z.record(z.any()),
     children: z.array(CanvasElementDataSchema).optional(),
     editorProperties: z.any().optional(), // Can't easily type this recursively with Zod

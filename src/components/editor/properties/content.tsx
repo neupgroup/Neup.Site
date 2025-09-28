@@ -10,6 +10,14 @@ interface ContentPropertiesProps {
 }
 
 const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate }) => {
+    const properties = element.properties || {};
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            (e.target as HTMLTextAreaElement).blur();
+        }
+    }
     
     return (
         <AccordionItem value="content">
@@ -18,8 +26,9 @@ const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate }) =>
                 <div className="space-y-2">
                     <Label>Text</Label>
                     <Textarea 
-                        value={element.properties['content.text'] || ''}
+                        value={properties['content.text'] || ''}
                         onChange={(e) => onUpdate('content.text', e.target.value)}
+                        onKeyDown={handleKeyDown}
                         rows={4}
                     />
                 </div>

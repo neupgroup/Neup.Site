@@ -47,7 +47,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Escape') {
             e.preventDefault();
             handleBlur();
         }
@@ -73,8 +73,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
             onDoubleClick={handleDoubleClick} 
             className={cn("w-full whitespace-pre-wrap", className)} 
             style={style}
-        >
-            {value}
-        </div>
+            dangerouslySetInnerHTML={{ __html: value }}
+        />
     );
 };

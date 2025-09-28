@@ -14,7 +14,6 @@ import TypographyProperties from './properties/typography';
 import BackgroundProperties from './properties/background';
 import BorderProperties from './properties/border';
 import ContentProperties from './properties/content';
-import LinkProperties from './properties/link';
 import ImageProperties from './properties/image';
 import FlexboxProperties from './properties/flexbox';
 
@@ -28,7 +27,6 @@ interface RightSidebarProps {
 
 const propertyComponents: Record<string, React.FC<any>> = {
   content: ContentProperties,
-  link: LinkProperties,
   image: ImageProperties,
   layout: LayoutProperties,
   spacing: SpacingProperties,

@@ -8,7 +8,6 @@ import { html } from './html';
 import { image } from './image';
 import { input } from './input';
 import { label } from './label';
-import { link } from './link';
 import { list } from './list';
 import { listItem } from './list-item';
 import { section } from './section';
@@ -26,7 +25,6 @@ export const elementDefinitions: { [key in CanvasElementData['type']]: Omit<Canv
     image,
     input,
     label,
-    link,
     list,
     'list-item': listItem,
     section,

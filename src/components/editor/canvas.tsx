@@ -390,33 +390,41 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         let elementComponent: React.ReactNode;
 
         switch (type) {
-            case 'heading':
+            case 'heading': {
                 const HeadingTag = `h${properties['heading.level'] || 1}` as keyof JSX.IntrinsicElements;
-                elementComponent = (
-                    <CanvasElementWrapper {...wrapperProps}>
-                         <HeadingTag>
-                            <EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} style={styles} className="font-headline tracking-tight" />
-                        </HeadingTag>
-                        {renderResizeHandles()}
-                    </CanvasElementWrapper>
-                );
+                 const content = properties['content.text'] || '';
+                 if (isSelected) {
+                     elementComponent = (
+                         <CanvasElementWrapper {...wrapperProps}>
+                             <HeadingTag>
+                                 <EditableText id={id} initialValue={content} onSave={handleSaveText} style={styles} className="font-headline tracking-tight" />
+                             </HeadingTag>
+                             {renderResizeHandles()}
+                         </CanvasElementWrapper>
+                     );
+                 } else {
+                     elementComponent = (
+                         <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: content }} />
+                     );
+                 }
                 break;
-            case 'text':
-                elementComponent = (
-                    <CanvasElementWrapper {...wrapperProps}>
-                        <EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} style={styles} />
-                        {renderResizeHandles()}
-                    </CanvasElementWrapper>
-                );
+            }
+            case 'text': {
+                 const content = properties['content.text'] || '';
+                 if (isSelected) {
+                    elementComponent = (
+                        <CanvasElementWrapper {...wrapperProps}>
+                            <EditableText id={id} initialValue={content} onSave={handleSaveText} style={styles} />
+                            {renderResizeHandles()}
+                        </CanvasElementWrapper>
+                    );
+                 } else {
+                    elementComponent = (
+                         <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: content }} />
+                     );
+                 }
                 break;
-            case 'link':
-                elementComponent = (
-                    <CanvasElementWrapper {...wrapperProps}>
-                        <a href={properties['link.href'] || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={properties['content.text'] || ''} onSave={handleSaveText} style={styles} /></a>
-                        {renderResizeHandles()}
-                    </CanvasElementWrapper>
-                );
-                break;
+            }
             case 'button':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
@@ -577,5 +585,3 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
 };
 
 export default Canvas;
-
-    
