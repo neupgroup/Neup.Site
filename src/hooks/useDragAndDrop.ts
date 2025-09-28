@@ -63,13 +63,9 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         const el = findElementRecursive(elements, id)?.element;
         const dragType = el?.type === 'section' ? 'section' : 'canvas-element';
         
-        if (dragType === 'section') {
-            setIsDraggingSection(true);
-        }
-
         e.dataTransfer.setData('application/json', JSON.stringify({id, type: dragType}));
         e.stopPropagation();
-        setDraggedId(id);
+        // Don't set state here immediately to prevent premature UI updates
     };
 
     const throttledDragOver = useCallback((e: DragEvent, parentId: string | null = null) => {
@@ -106,6 +102,8 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         e.stopPropagation();
         const dataStr = e.dataTransfer.getData('application/json');
         
+        const draggedElementId = draggedId; // Capture before resetting
+        
         // Reset drag state
         resetDragState();
         
@@ -115,9 +113,9 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
             const data = JSON.parse(dataStr);
             const targetId = dropZone.elementId || dropZoneId;
     
-            if (data.type === 'canvas-element' && draggedId) {
-                moveElement(draggedId, targetId!, parentId);
-            } else if (data.type === 'sidebar-element' || data.type === 'section' || data.type === 'canvas-element') {
+            if (data.type === 'canvas-element' && data.id) {
+                moveElement(data.id, targetId!, parentId);
+            } else if (data.type === 'sidebar-element' || data.type === 'section') {
                 addElement(data.elementType || findElementRecursive(elements, data.id)?.element.type, targetId, parentId);
             } else if (data.type === 'template-element') {
                 addGeneratedElement(data.element, targetId, parentId);
@@ -137,7 +135,7 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
                 const dataStr = e.dataTransfer.getData('application/json');
                 if (dataStr) {
                     const data = JSON.parse(dataStr);
-                    const elType = data.elementType || findElementRecursive(elements, data.id)?.element.type;
+                    const elType = data.elementType || (data.id ? findElementRecursive(elements, data.id)?.element.type : null);
                     if (elType === 'section') {
                         setIsDraggingSection(true);
                     }
