@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useRef } from 'react';
+import React, { FC, useEffect, useState, useRef } from 'react';
 import { Settings, Trash2 } from 'lucide-react';
 import type { CanvasElementData, EditorProperty } from '@/lib/schemas';
 import { elementDefinitions } from '@/elements';
