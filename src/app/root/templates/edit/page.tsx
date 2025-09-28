@@ -15,7 +15,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import AiPrompt from '@/components/editor/ai-prompt';
 
 export default function EditTemplatePage() {
   const params = useParams();
@@ -86,13 +85,6 @@ export default function EditTemplatePage() {
       }
       setIsSaving(false);
   }
-  
-  const handleAiGeneration = (generatedJson: string) => {
-      // In the edit screen, we don't automatically apply the change
-      // to prevent accidental overwrites. The user can copy-paste.
-      toast({ title: 'Generated JSON', description: 'Copy the generated JSON below and paste it into the structure field if you wish to use it.' });
-  }
-
 
   if (loading) {
     return (
@@ -130,7 +122,6 @@ export default function EditTemplatePage() {
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-        <AiPrompt onGenerate={handleAiGeneration} />
         <Card>
           <CardHeader>
             <CardTitle>Edit Template</CardTitle>

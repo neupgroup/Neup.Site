@@ -12,9 +12,6 @@ export default function TemplatesLayout({ children }: { children: ReactNode }) {
                     <Layers className="h-6 w-6 text-primary" />
                     <h1 className="font-headline text-2xl font-semibold tracking-tight">Templates</h1>
                 </Link>
-                <Button variant="outline" size="sm" asChild>
-                    <Link href="/ai/dev">AI Dev Tools</Link>
-                </Button>
             </div>
             <Button asChild>
                 <Link href="/site/editor">Back to Editor</Link>
