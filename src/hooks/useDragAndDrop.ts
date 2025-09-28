@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, DragEvent, useCallback, useEffect } from 'react';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData, Template } from '@/lib/schemas';
 
 interface DragAndDropProps {
   elements: CanvasElementData[];
@@ -113,10 +113,10 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
             const data = JSON.parse(dataStr);
             const targetId = dropZone.elementId || dropZoneId;
     
-            if (data.type === 'canvas-element' && data.id) {
+            if (data.type === 'canvas-element' || data.type === 'section') {
                 moveElement(data.id, targetId!, parentId);
-            } else if (data.type === 'sidebar-element' || data.type === 'section') {
-                addElement(data.elementType || findElementRecursive(elements, data.id)?.element.type, targetId, parentId);
+            } else if (data.type === 'sidebar-element') {
+                addElement(data.elementType, targetId, parentId);
             } else if (data.type === 'template-element') {
                 addGeneratedElement(data.element, targetId, parentId);
             }
@@ -135,11 +135,13 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
                 const dataStr = e.dataTransfer.getData('application/json');
                 if (dataStr) {
                     const data = JSON.parse(dataStr);
-                    const elType = data.elementType || (data.id ? findElementRecursive(elements, data.id)?.element.type : null);
-                    if (elType === 'section') {
+                    const isNewSection = (data.type === 'sidebar-element' && data.elementType === 'section') || 
+                                         (data.type === 'template-element' && data.element.type === 'section');
+
+                    if (isNewSection) {
                         setIsDraggingSection(true);
                     }
-                     setDraggedId(data.id || data.type);
+                    setDraggedId(data.id || data.type);
                 }
             } catch (error) {
                 // Ignore if data is not available yet
