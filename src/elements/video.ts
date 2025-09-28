@@ -10,5 +10,5 @@ export const video: CanvasElementData = {
         'layout.height': 'auto',
         'video.src': 'https://www.w3schools.com/html/mov_bbb.mp4',
     },
-    editorProperties: ['layout', 'spacing']
+    editorProperties: ['video', 'layout', 'spacing']
 };

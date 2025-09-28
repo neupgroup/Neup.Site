@@ -109,7 +109,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             </AccordionItem>
             
             {elementDef.editorProperties?.map(groupKey => {
-                const PropertyComponent = propertyComponents[groupKey.toLowerCase()];
+                const PropertyComponent = propertyComponents[groupKey];
                 
                 if (!PropertyComponent) {
                     console.warn(`No property component found for group: ${groupKey}`);
