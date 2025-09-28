@@ -296,7 +296,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                          <HeadingTag>
-                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
+                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{...styles, fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
                         </HeadingTag>
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
@@ -361,7 +361,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                   >
                     {children && children.length > 0 
                         ? children.map(child => renderElement(child, id)) 
-                        : <span className="text-muted-foreground text-sm pointer-events-none">Drag elements here</span>
+                        : null
                     }
                     {dropZone.parentId === id && !dropZone.elementId && (
                         <DropIndicator className="!my-0" />

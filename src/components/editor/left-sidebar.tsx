@@ -350,5 +350,3 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
 };
 
 export default LeftSidebar;
-
-    

@@ -332,30 +332,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </AccordionItem>
                 )}
 
-                {showFor(['heading']) && (
-                    <AccordionItem value="heading">
-                        <AccordionTrigger className="px-4 text-sm font-medium">Heading</AccordionTrigger>
-                        <AccordionContent className="px-4 space-y-2">
-                             <div className="space-y-2">
-                                <Label>Level</Label>
-                                <Select value={props.level ? String(props.level) : '1'} onValueChange={value => handlePropChange('level', parseInt(value, 10))}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select level" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">H1</SelectItem>
-                                    <SelectItem value="2">H2</SelectItem>
-                                    <SelectItem value="3">H3</SelectItem>
-                                    <SelectItem value="4">H4</SelectItem>
-                                    <SelectItem value="5">H5</SelectItem>
-                                    <SelectItem value="6">H6</SelectItem>
-                                  </SelectContent>
-                              </Select>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                )}
-
                 {showFor(['input', 'textarea']) && (
                     <AccordionItem value="input-attributes">
                         <AccordionTrigger className="px-4 text-sm font-medium">Input Attributes</AccordionTrigger>
