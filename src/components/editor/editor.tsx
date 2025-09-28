@@ -162,14 +162,33 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         }
 
         const newElement: CanvasElementData = {
-            ...JSON.parse(JSON.stringify(definition)), // Deep copy definition
+            ...JSON.parse(JSON.stringify(definition)),
             id: `${elementType}-${Date.now()}`,
             properties: definition.properties || {},
         };
         
         setElements(prev => {
-            // Deep clone to avoid mutation
             const clonedPrev = JSON.parse(JSON.stringify(prev));
+
+            // Auto-wrap in section if dropped at root and is not a section
+            if (!parentId && elementType !== 'section') {
+                const sectionDef = elementDefinitions['section'];
+                const newSection: CanvasElementData = {
+                    ...JSON.parse(JSON.stringify(sectionDef)),
+                    id: `section-${Date.now()}`,
+                    properties: sectionDef.properties || {},
+                    children: [newElement],
+                };
+
+                if (dropZoneId) {
+                    const dropIndex = clonedPrev.findIndex((el: CanvasElementData) => el.id === dropZoneId);
+                    if (dropIndex !== -1) {
+                        clonedPrev.splice(dropIndex, 0, newSection);
+                        return clonedPrev;
+                    }
+                }
+                return [...clonedPrev, newSection];
+            }
 
             const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
                 return els.map(el => {
@@ -194,11 +213,10 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             }
 
             if (dropZoneId) {
-                const dropIndex = clonedPrev.findIndex(el => el.id === dropZoneId);
+                const dropIndex = clonedPrev.findIndex((el: CanvasElementData) => el.id === dropZoneId);
                 if (dropIndex !== -1) {
-                    const newElements = [...clonedPrev];
-                    newElements.splice(dropIndex, 0, newElement);
-                    return newElements;
+                    clonedPrev.splice(dropIndex, 0, newElement);
+                    return clonedPrev;
                 }
             }
             return [...clonedPrev, newElement];
@@ -227,6 +245,27 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         setElements(prev => {
             const clonedPrev = JSON.parse(JSON.stringify(prev));
 
+            // Auto-wrap in section if dropped at root and is not a section
+            if (!parentId && newElement.type !== 'section') {
+                const sectionDef = elementDefinitions['section'];
+                const newSection: CanvasElementData = {
+                    ...JSON.parse(JSON.stringify(sectionDef)),
+                    id: `section-${Date.now()}`,
+                    properties: sectionDef.properties || {},
+                    children: [newElement],
+                };
+
+                if (dropZoneId) {
+                    const dropIndex = clonedPrev.findIndex((el: CanvasElementData) => el.id === dropZoneId);
+                    if (dropIndex !== -1) {
+                        clonedPrev.splice(dropIndex, 0, newSection);
+                        return clonedPrev;
+                    }
+                }
+                return [...clonedPrev, newSection];
+            }
+
+
             const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
                 return els.map(el => {
                     if (el.id === parentId && el.children) {
@@ -250,7 +289,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             }
 
             if (dropZoneId) {
-                const dropIndex = clonedPrev.findIndex(el => el.id === dropZoneId);
+                const dropIndex = clonedPrev.findIndex((el: CanvasElementData) => el.id === dropZoneId);
                 if (dropIndex !== -1) {
                     const newElements = [...clonedPrev];
                     newElements.splice(dropIndex, 0, newElement);
@@ -582,3 +621,5 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 };
 
 export default Editor;
+
+    
