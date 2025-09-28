@@ -1,3 +1,4 @@
+
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
@@ -29,10 +30,7 @@ export const list: CanvasElementData = {
     type: 'list',
     children: [],
     styles: {
-        paddingTop: '10px',
-        paddingBottom: '10px',
-        paddingLeft: '10px',
-        paddingRight: '10px',
+        padding: '10px',
         display: 'block',
         minHeight: '100px',
         border: '1px dashed hsl(var(--border))',

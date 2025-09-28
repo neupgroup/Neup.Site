@@ -1,3 +1,4 @@
+
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
@@ -30,10 +31,7 @@ export const heading: CanvasElementData = {
     type: 'heading',
     content: 'New Heading',
     styles: {
-        paddingTop: '10px',
-        paddingBottom: '10px',
-        paddingLeft: '10px',
-        paddingRight: '10px',
+        padding: '10px',
         display: 'block',
         fontSize: '24px',
         fontWeight: 'bold',

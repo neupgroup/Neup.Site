@@ -1,3 +1,4 @@
+
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
@@ -29,10 +30,7 @@ export const listItem: CanvasElementData = {
     type: 'list-item',
     content: 'List Item',
     styles: {
-        paddingTop: '10px',
-        paddingBottom: '10px',
-        paddingLeft: '10px',
-        paddingRight: '10px',
+        padding: '10px',
         display: 'block',
     },
     props: {},

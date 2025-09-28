@@ -1,3 +1,4 @@
+
 import type { CanvasElementData, EditorProperties } from "@/lib/schemas";
 
 const editorProperties: EditorProperties = [
@@ -29,10 +30,7 @@ export const input: CanvasElementData = {
     id: '',
     type: 'input',
     styles: {
-        paddingTop: '10px',
-        paddingBottom: '10px',
-        paddingLeft: '10px',
-        paddingRight: '10px',
+        padding: '10px',
         display: 'block',
         height: '40px',
         width: '200px',
