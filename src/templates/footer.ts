@@ -69,9 +69,9 @@ export const footerTemplate: CanvasElementData = {
               type: "div",
               properties: { 'layout.display': "flex", 'layout.flexDirection': "column", 'layout.gap': "0.5rem" },
               children: [
-                { id: "link-features", type: "link", properties: { 'content.text': "Features", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
-                { id: "link-pricing", type: "link", properties: { 'content.text': "Pricing", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
-                { id: "link-docs", type: "link", properties: { 'content.text': "Documentation", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
+                { id: "link-features", type: "text", properties: { 'content.text': '<a href="#" style="text-decoration: none; color: hsl(var(--muted-foreground));">Features</a>' } },
+                { id: "link-pricing", type: "text", properties: { 'content.text': '<a href="#" style="text-decoration: none; color: hsl(var(--muted-foreground));">Pricing</a>' } },
+                { id: "link-docs", type: "text", properties: { 'content.text': '<a href="#" style="text-decoration: none; color: hsl(var(--muted-foreground));">Documentation</a>' } },
               ]
             }
           ],
@@ -96,9 +96,9 @@ export const footerTemplate: CanvasElementData = {
                 type: "div",
                 properties: { 'layout.display': "flex", 'layout.flexDirection': "column", 'layout.gap': "0.5rem" },
                 children: [
-                  { id: "link-about", type: "link", properties: { 'content.text': "About Us", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
-                  { id: "link-careers", type: "link", properties: { 'content.text': "Careers", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
-                  { id: "link-contact", type: "link", properties: { 'content.text': "Contact", 'link.href': "#", 'typography.textDecoration': "none", 'typography.color': "hsl(var(--muted-foreground))" } },
+                  { id: "link-about", type: "text", properties: { 'content.text': '<a href="#" style="text-decoration: none; color: hsl(var(--muted-foreground));">About Us</a>' } },
+                  { id: "link-careers", type: "text", properties: { 'content.text': '<a href="#" style="text-decoration: none; color: hsl(var(--muted-foreground));">Careers</a>' } },
+                  { id: "link-contact", type: "text", properties: { 'content.text': '<a href="#" style="text-decoration: none; color: hsl(var(--muted-foreground));">Contact</a>' } },
                 ]
               }
             ],

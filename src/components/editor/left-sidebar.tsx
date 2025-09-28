@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Link as LinkIcon, Video, List, ListOrdered, TextQuote, Pilcrow, MessageSquare, Square, CheckSquare, CircleDot, CaseSensitive, ListIcon, ListVideo, Code } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code } from 'lucide-react';
 import type { CanvasElementData, Template } from '@/lib/schemas';
 import { cn } from '@/lib/utils';
 import { logErrorToFirestore } from '@/actions/logging';

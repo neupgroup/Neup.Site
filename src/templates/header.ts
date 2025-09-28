@@ -55,32 +55,23 @@ export const headerTemplate: CanvasElementData = {
       children: [
         {
           id: "nav-link-1",
-          type: "link",
+          type: "text",
           properties: {
-            'content.text': "Home",
-            'link.href': "#",
-            'typography.color': "hsl(var(--foreground))",
-            'typography.textDecoration': "none",
+            'content.text': '<a href="#" style="color: hsl(var(--foreground)); text-decoration: none;">Home</a>',
           },
         },
         {
           id: "nav-link-2",
-          type: "link",
+          type: "text",
           properties: {
-            'content.text': "About",
-            'link.href': "#",
-            'typography.color': "hsl(var(--foreground))",
-            'typography.textDecoration': "none",
+            'content.text': '<a href="#" style="color: hsl(var(--foreground)); text-decoration: none;">About</a>',
           },
         },
         {
           id: "nav-link-3",
-          type: "link",
+          type: "text",
           properties: {
-            'content.text': "Pricing",
-            'link.href': "#",
-            'typography.color': "hsl(var(--foreground))",
-            'typography.textDecoration': "none",
+            'content.text': '<a href="#" style="color: hsl(var(--foreground)); text-decoration: none;">Pricing</a>',
           },
         },
       ],

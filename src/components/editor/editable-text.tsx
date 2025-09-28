@@ -25,6 +25,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
     useEffect(() => {
         if (isEditing) {
             autoResizeTextarea();
+            textareaRef.current?.focus();
         }
     }, [isEditing, value]);
     
@@ -49,7 +50,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Escape') {
             e.preventDefault();
-            handleBlur();
+            (e.target as HTMLTextAreaElement).blur();
         }
     };
 
@@ -73,7 +74,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
             onDoubleClick={handleDoubleClick} 
             className={cn("w-full whitespace-pre-wrap", className)} 
             style={style}
-            dangerouslySetInnerHTML={{ __html: value }}
+            dangerouslySetInnerHTML={{ __html: value || ' ' }}
         />
     );
 };

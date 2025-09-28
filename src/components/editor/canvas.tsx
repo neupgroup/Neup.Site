@@ -404,7 +404,9 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                      );
                  } else {
                      elementComponent = (
-                         <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: content }} />
+                         <CanvasElementWrapper {...wrapperProps}>
+                            <HeadingTag style={styles} dangerouslySetInnerHTML={{ __html: content }} />
+                         </CanvasElementWrapper>
                      );
                  }
                 break;
@@ -420,7 +422,9 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                     );
                  } else {
                     elementComponent = (
-                         <CanvasElementWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: content }} />
+                         <CanvasElementWrapper {...wrapperProps}>
+                            <div style={styles} dangerouslySetInnerHTML={{ __html: content }} />
+                         </CanvasElementWrapper>
                      );
                  }
                 break;
