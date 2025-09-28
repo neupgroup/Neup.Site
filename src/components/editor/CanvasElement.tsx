@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { type FC } from 'react';
@@ -174,7 +175,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
                 ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
                 : (
                     <div className="flex items-center justify-center pointer-events-none text-muted-foreground p-4 h-24">
-                       {dropZone.parentId === id && !dropZone.elementId ? '' : ''}
+                       {/* This space is intentionally left blank for empty containers */}
                     </div>
                 )
             }
