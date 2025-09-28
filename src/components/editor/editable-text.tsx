@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect, FC } from 'react';
 import { cn } from '@/lib/utils';
+
 interface EditableTextProps {
     id: string;
     initialValue: string;
@@ -12,13 +13,20 @@ interface EditableTextProps {
 export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, className, style }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(initialValue);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const autoResizeTextarea = () => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    };
 
     useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
+        if (isEditing) {
+            autoResizeTextarea();
         }
-    }, [isEditing]);
+    }, [isEditing, value]);
     
     useEffect(() => {
         setValue(initialValue);
@@ -29,7 +37,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
         setIsEditing(true);
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setValue(e.target.value);
     };
 
@@ -38,29 +46,34 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
         onSave(id, value);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             handleBlur();
         }
     };
 
     if (isEditing) {
         return (
-            <input
-                ref={inputRef}
-                type="text"
+            <textarea
+                ref={textareaRef}
                 value={value}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
-                className={cn("bg-transparent border-0 outline-none w-full", className)}
+                className={cn("bg-transparent border-0 outline-none w-full resize-none overflow-hidden", className)}
                 style={style}
+                rows={1}
             />
         );
     }
 
     return (
-        <div onDoubleClick={handleDoubleClick} className={cn("w-full", className)} style={style}>
+        <div 
+            onDoubleClick={handleDoubleClick} 
+            className={cn("w-full whitespace-pre-wrap", className)} 
+            style={style}
+        >
             {value}
         </div>
     );
