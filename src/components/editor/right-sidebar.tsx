@@ -273,10 +273,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     <div className="flex items-center justify-between">
                         <p className="text-xs text-muted-foreground break-words">{selectedElement.id}</p>
                         <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => setIsSaveTemplateOpen(true)}>
-                                <Save className="h-4 w-4 mr-2"/>
-                                Save as Template
-                            </Button>
                             <Button variant="destructive" size="icon" className="h-7 w-7" onClick={() => deleteElement(selectedElement.id)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
