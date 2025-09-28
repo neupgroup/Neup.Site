@@ -141,7 +141,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   const [customCss, setCustomCss] = useState<string | undefined>(undefined);
   const [className, setClassName] = useState<string | undefined>(undefined);
   const [elementId, setElementId] = useState<string | undefined>(undefined);
-  const [isSaveTemplateOpen, setIsSaveTemplateOpen] = useState(false);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const bgColorInputRef = useRef<HTMLInputElement>(null);
   const isTyping = useRef(false);
@@ -263,7 +262,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   return (
     <aside className="w-80 border-l bg-card">
-        {selectedElement && <SaveTemplateDialog isOpen={isSaveTemplateOpen} onOpenChange={setIsSaveTemplateOpen} element={selectedElement} />}
       <ScrollArea className="h-full">
             {selectedElement ? (
               <Accordion type="single" collapsible className="w-full" defaultValue="element-id">
@@ -336,6 +334,24 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     <AccordionItem value="input-attributes">
                         <AccordionTrigger className="px-4 text-sm font-medium">Input Attributes</AccordionTrigger>
                         <AccordionContent className="px-4 space-y-4">
+                             {showFor(['input']) && <div className="space-y-2">
+                                <Label>Type</Label>
+                                <Select value={props.type || 'text'} onValueChange={value => handlePropChange('type', value)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="text">Text</SelectItem>
+                                        <SelectItem value="email">Email</SelectItem>
+                                        <SelectItem value="password">Password</SelectItem>
+                                        <SelectItem value="number">Number</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>}
+                            <div className="space-y-2">
+                                <Label>Value</Label>
+                                <Input value={props.value || ''} onChange={e => handlePropChange('value', e.target.value)} />
+                            </div>
                             <div className="space-y-2">
                                 <Label>Placeholder</Label>
                                 <Input value={props.placeholder || ''} onChange={e => handlePropChange('placeholder', e.target.value)} />

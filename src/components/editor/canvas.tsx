@@ -296,7 +296,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
                          <HeadingTag>
-                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{...styles, fontSize: styles.fontSize, fontWeight: styles.fontWeight, textAlign: styles.textAlign as any}} className="font-headline tracking-tight" />
+                            <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={styles} className="font-headline tracking-tight" />
                         </HeadingTag>
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
@@ -305,7 +305,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'text':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} />
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={styles} />
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -313,7 +313,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'link':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <a href={props?.href || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, textAlign: styles.textAlign as any}} /></a>
+                        <a href={props?.href || '#'} style={{color: styles.color}}><EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={styles} /></a>
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -321,7 +321,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'button':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{fontSize: styles.fontSize, color: styles.color, textAlign: styles.textAlign as any}} />
+                        <EditableText id={id} initialValue={content || ''} onSave={handleSaveText} style={{...styles, display: 'block'}} />
                         {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -353,7 +353,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
               if (type === 'list') Tag = 'ul';
 
               elementComponent = (
-                <CanvasElementWrapper {...wrapperProps} className={cn({'p-4': children?.length === 0, 'container': type === 'container'}, className)}>
+                <CanvasElementWrapper {...wrapperProps} className={cn({'min-h-[100px]': children?.length === 0, 'container': type === 'container'}, className)}>
                   <Tag 
                     onDrop={(e) => handleDrop(e, id)} 
                     onDragOver={(e) => handleDragOver(e, id)} 
@@ -361,7 +361,11 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
                   >
                     {children && children.length > 0 
                         ? children.map(child => renderElement(child, id)) 
-                        : null
+                        : (
+                            <div className="flex items-center justify-center pointer-events-none text-muted-foreground p-4">
+                               {dropZone.parentId === id && !dropZone.elementId ? '' : ''}
+                            </div>
+                        )
                     }
                     {dropZone.parentId === id && !dropZone.elementId && (
                         <DropIndicator className="!my-0" />
@@ -384,7 +388,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'input':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                       <Input {...props} className="w-full h-full bg-background" />
+                       <Input {...props} style={styles} className="w-full h-full bg-background" />
                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
@@ -392,7 +396,7 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
             case 'textarea':
                 elementComponent = (
                     <CanvasElementWrapper {...wrapperProps}>
-                       <Textarea {...props} className="w-full h-full bg-background" />
+                       <Textarea {...props} style={styles} className="w-full h-full bg-background" />
                        {renderResizeHandles()}
                     </CanvasElementWrapper>
                 );
