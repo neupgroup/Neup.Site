@@ -21,7 +21,7 @@ interface CanvasProps {
 }
 
 const DropIndicator: FC<{className?: string}> = ({className}) => (
-    <div className={cn("relative h-1 w-full my-2 bg-primary rounded-full", className)} />
+    <div className={cn("relative h-1 w-full my-2 bg-primary rounded-full transition-all duration-200", className)} />
 )
 
 interface ResizingState {
@@ -119,13 +119,16 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
     }
 
     const handleDragStart = (e: React.DragEvent, id: string) => {
-        e.dataTransfer.setData('application/json', JSON.stringify({id, type: 'canvas-element'}));
+        const el = findElementRecursive(elements, id)?.element;
+        const dragType = el?.type === 'section' ? 'section' : 'canvas-element';
+        e.dataTransfer.setData('application/json', JSON.stringify({id, type: dragType}));
         e.stopPropagation();
         setDraggedId(id);
     }
     
     const handleDragStartSidebar = (e: React.DragEvent, type: string) => {
-        e.dataTransfer.setData('application/json', JSON.stringify({ type: 'sidebar-element', elementType: type }));
+        const dragType = type === 'section' ? 'section' : 'sidebar-element';
+        e.dataTransfer.setData('application/json', JSON.stringify({ type: dragType, elementType: type }));
     }
 
     const handleDragOver = (e: React.DragEvent, parentId: string | null = null) => {
@@ -148,30 +151,33 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         e.stopPropagation();
         const dataStr = e.dataTransfer.getData('application/json');
         if (!dataStr) return;
-        const data = JSON.parse(dataStr);
+        
+        // Reset drag state
+        setDraggedId(null);
+        setDropZone({parentId: null, elementId: null});
+        dragCounter.current = 0;
 
+        const data = JSON.parse(dataStr);
         const targetId = dropZone.elementId;
 
         if (data.type === 'canvas-element' && draggedId) {
             moveElement(draggedId, targetId!, parentId);
-        } else if (data.type === 'sidebar-element') {
+        } else if (data.type === 'sidebar-element' || data.type === 'section') {
             addElement(data.elementType, targetId ?? undefined, parentId);
         } else if (data.type === 'template-element') {
             addGeneratedElement(data.element, targetId ?? undefined, parentId);
         }
-        
-        setDraggedId(null);
-        setDropZone({parentId: null, elementId: null});
-        dragCounter.current = 0;
     }
     
     const handleDragEnter = (e: React.DragEvent<Element>, id: string, parentId: string | null = null) => {
+        e.preventDefault();
         e.stopPropagation();
         dragCounter.current++;
         setDropZone({parentId: parentId, elementId: id});
     }
 
     const handleDragLeave = (e: React.DragEvent<Element>) => {
+        e.preventDefault();
         e.stopPropagation();
         dragCounter.current--;
         if (dragCounter.current === 0) {
@@ -501,8 +507,12 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         onDragEnter={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          setDraggedId(draggedId || 'sidebar-element');
           dragCounter.current++;
+          const dataStr = e.dataTransfer.getData('application/json');
+          if (dataStr) {
+            const data = JSON.parse(dataStr);
+            setDraggedId(data.id || data.type);
+          }
         }}
         onDragLeave={(e) => {
             e.preventDefault();
@@ -518,7 +528,8 @@ const Canvas: FC<CanvasProps> = ({ elements, selectedElement, onSelectElement, u
         ref={canvasRef}
         className={cn(
             "rounded-lg bg-card shadow-lg relative mb-32",
-            { 'is-dragging': !!draggedId }
+            { 'is-dragging': !!draggedId && draggedId !== 'section' },
+            { 'is-dragging-section': draggedId === 'section' }
         )}
       >
         {elements.map(el => renderElement(el))}

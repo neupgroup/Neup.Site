@@ -91,4 +91,7 @@ body {
     .is-dragging > div[draggable="true"] {
         @apply mb-4;
     }
+    .is-dragging-section > section[draggable="true"] {
+        @apply my-8;
+    }
 }
