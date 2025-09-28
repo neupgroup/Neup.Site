@@ -4,10 +4,10 @@ export const video: CanvasElementData = {
     id: '',
     type: 'video',
     properties: {
-        'spacing.padding': '10px',
+        'spacing.padding': '0px',
         'layout.display': 'block',
-        'layout.width': '320px',
-        'layout.height': '240px',
+        'layout.width': '100%',
+        'layout.height': 'auto',
         'video.src': 'https://www.w3schools.com/html/mov_bbb.mp4',
     },
     editorProperties: ['layout', 'spacing']
