@@ -9,7 +9,7 @@ interface BorderPropertiesProps {
 }
 
 const BorderProperties: FC<BorderPropertiesProps> = ({ element, onUpdate }) => {
-    const { properties } = element;
+    const properties = element.properties || {};
     
     return (
         <AccordionItem value="borders">

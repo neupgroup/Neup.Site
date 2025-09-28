@@ -12,7 +12,7 @@ interface TypographyPropertiesProps {
 }
 
 const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate }) => {
-    const { properties } = element;
+    const properties = element.properties || {};
     const colorInputRef = React.createRef<HTMLInputElement>();
     
     return (

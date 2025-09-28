@@ -12,7 +12,7 @@ interface BackgroundPropertiesProps {
 }
 
 const BackgroundProperties: FC<BackgroundPropertiesProps> = ({ element, onUpdate }) => {
-    const { properties } = element;
+    const properties = element.properties || {};
     const colorInputRef = React.createRef<HTMLInputElement>();
     
     return (

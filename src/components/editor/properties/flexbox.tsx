@@ -10,7 +10,7 @@ interface FlexboxPropertiesProps {
 }
 
 const FlexboxProperties: FC<FlexboxPropertiesProps> = ({ element, onUpdate }) => {
-    const { properties } = element;
+    const properties = element.properties || {};
 
     if (properties['layout.display'] !== 'flex') {
         return null;

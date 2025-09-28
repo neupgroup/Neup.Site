@@ -11,7 +11,7 @@ interface LayoutPropertiesProps {
 }
 
 const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
-    const { properties } = element;
+    const properties = element.properties || {};
     
     return (
         <AccordionItem value="layout">

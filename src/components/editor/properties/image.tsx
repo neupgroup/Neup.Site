@@ -10,7 +10,7 @@ interface ImagePropertiesProps {
 }
 
 const ImageProperties: FC<ImagePropertiesProps> = ({ element, onUpdate }) => {
-    const { properties } = element;
+    const properties = element.properties || {};
     
     return (
         <AccordionItem value="image">

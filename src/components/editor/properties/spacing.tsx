@@ -9,7 +9,7 @@ interface SpacingPropertiesProps {
 }
 
 const SpacingProperties: FC<SpacingPropertiesProps> = ({ element, onUpdate }) => {
-    const { properties } = element;
+    const properties = element.properties || {};
     
     return (
         <AccordionItem value="spacing">
