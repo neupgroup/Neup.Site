@@ -39,7 +39,7 @@ const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo,
           Preview
         </Button>
         <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground" onClick={onPublish}>
-          Publish
+          Save
         </Button>
       </div>
     </header>
