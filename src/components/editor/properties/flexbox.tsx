@@ -1,3 +1,4 @@
+
 import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,10 +12,6 @@ interface FlexboxPropertiesProps {
 
 const FlexboxProperties: FC<FlexboxPropertiesProps> = ({ element, onUpdate }) => {
     const properties = element.properties || {};
-
-    if (properties['display'] !== 'flex') {
-        return null;
-    }
     
     return (
         <AccordionItem value="flexbox">

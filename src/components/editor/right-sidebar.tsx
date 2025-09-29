@@ -1,3 +1,4 @@
+
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
 import { Settings } from 'lucide-react';
 import type { CanvasElementData } from '@/lib/schemas';
@@ -32,7 +33,6 @@ const propertyComponents: Record<string, React.FC<any>> = {
   image: ImageProperties,
   layout: LayoutProperties,
   spacing: SpacingProperties,
-  flexbox: FlexboxProperties,
   typography: TypographyProperties,
   background: BackgroundProperties,
   borders: BorderProperties,
@@ -112,6 +112,9 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             </AccordionItem>
             
             {elementDef.editorProperties?.map(groupKey => {
+                if (groupKey === 'flexbox' && selectedElement.properties?.display !== 'flex') {
+                    return null;
+                }
                 const PropertyComponent = propertyComponents[groupKey];
                 
                 if (!PropertyComponent) {
@@ -123,6 +126,9 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     <PropertyComponent key={groupKey} element={selectedElement} onUpdate={handleUpdate} />
                 );
             })}
+             {selectedElement.properties?.display === 'flex' && (
+                <FlexboxProperties element={selectedElement} onUpdate={handleUpdate} />
+            )}
         </Accordion>
       </ScrollArea>
     </aside>
