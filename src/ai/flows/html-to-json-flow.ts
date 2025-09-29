@@ -15,7 +15,11 @@ const HtmlToJsonOutputSchema = z.object({
 });
 
 export async function convertHtmlToJson(html: string): Promise<CanvasElementData[]> {
-  return htmlToJsonFlow(html);
+  const { output } = await htmlToJsonPrompt(html);
+  if (!output?.elements) {
+    throw new Error('AI failed to generate a valid element array.');
+  }
+  return output.elements;
 }
 
 const htmlToJsonPrompt = ai.definePrompt({
