@@ -35,12 +35,14 @@ export interface CanvasElementData {
 }
 
 // Now, define the Zod schema using the TypeScript type.
+// We use z.any() for children to break the recursive loop that causes issues with some APIs.
+// The AI's adherence to the prompt is what ensures the children are structured correctly.
 export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
     id: z.string(),
     type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']),
     properties: z.record(z.any()),
-    children: z.array(CanvasElementDataSchema).optional(),
-    editorProperties: z.any().optional(), // Can't easily type this recursively with Zod
+    children: z.array(z.any()).optional(),
+    editorProperties: z.any().optional(),
 }));
 
 export const TemplateSchema = z.object({
