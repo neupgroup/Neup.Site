@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Save } from 'lucide-react';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { convertHtmlToJson } from '@/ai/flows/html-to-json-flow';
 
 export default function CreateTemplatePage() {
   const [isSaving, setIsSaving] = useState(false);
@@ -21,7 +23,8 @@ export default function CreateTemplatePage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<'section' | 'page' | 'element'>('section');
-  const [elementsJson, setElementsJson] = useState('[]');
+  const [inputFormat, setInputFormat] = useState<'json' | 'html'>('json');
+  const [structureContent, setStructureContent] = useState('[]');
   
   const handleSave = async () => {
     if (!name.trim()) {
@@ -29,19 +32,33 @@ export default function CreateTemplatePage() {
       return;
     }
     
+    setIsSaving(true);
     let elements: CanvasElementData[];
+
     try {
-        elements = JSON.parse(elementsJson);
+        if (inputFormat === 'html') {
+            toast({ title: 'Converting HTML...', description: 'AI is converting your HTML to JSON. This may take a moment.' });
+            const conversionResult = await convertHtmlToJson(structureContent);
+            if (!conversionResult || conversionResult.length === 0) {
+              throw new Error("AI conversion failed or returned empty result.");
+            }
+            elements = conversionResult;
+        } else {
+            elements = JSON.parse(structureContent);
+        }
+
         if (!Array.isArray(elements) || elements.length === 0) {
-            toast({ variant: 'destructive', title: 'Invalid Structure', description: 'The JSON structure must be a non-empty array of elements.' });
+            toast({ variant: 'destructive', title: 'Invalid Structure', description: 'The structure must result in a non-empty array of elements.' });
+            setIsSaving(false);
             return;
         }
-    } catch(e) {
-        toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The element structure is not valid JSON.' });
+    } catch(e: any) {
+        console.error(e);
+        toast({ variant: 'destructive', title: 'Invalid Input', description: e.message || 'The provided input could not be processed.' });
+        setIsSaving(false);
         return;
     }
 
-    setIsSaving(true);
     const result = await saveTemplate({ name, description, type, elements });
 
     if (result.success) {
@@ -59,7 +76,7 @@ export default function CreateTemplatePage() {
             <CardHeader>
               <CardTitle>Create New Template</CardTitle>
               <CardDescription>
-                Define the details for your new template.
+                Define the details for your new template. You can provide the structure as JSON or have AI convert it from HTML.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -84,14 +101,28 @@ export default function CreateTemplatePage() {
                       </SelectContent>
                     </Select>
                 </div>
+                <div className="space-y-2">
+                    <Label>Structure Format</Label>
+                     <RadioGroup defaultValue="json" value={inputFormat} onValueChange={(v: any) => setInputFormat(v)} className="flex space-x-4">
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="json" id="r-json" />
+                            <Label htmlFor="r-json">JSON</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="html" id="r-html" />
+                            <Label htmlFor="r-html">HTML (AI Conversion)</Label>
+                        </div>
+                    </RadioGroup>
+                </div>
                  <div className="space-y-2">
-                    <Label>Structure (JSON)</Label>
+                    <Label htmlFor="structure-content">Structure</Label>
                     <Textarea
-                        value={elementsJson}
-                        onChange={(e) => setElementsJson(e.target.value)}
+                        id="structure-content"
+                        value={structureContent}
+                        onChange={(e) => setStructureContent(e.target.value)}
                         rows={15}
                         className="font-mono text-xs bg-muted/50"
-                        placeholder='[{"id": "element-1", "type": "text", "content": "Hello World"}]'
+                        placeholder={inputFormat === 'json' ? '[{"id": "element-1", "type": "text", "content": "Hello World"}]' : '<div>\n  <h1>Hello World</h1>\n</div>'}
                       />
                 </div>
             </CardContent>
