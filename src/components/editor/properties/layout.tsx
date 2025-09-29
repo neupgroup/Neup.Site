@@ -44,7 +44,7 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
                   value={properties['height'] as string || ''}
                   onChange={(v) => onUpdate('height', v)}
                   placeholder="e.g., 100px"
-                  suggestions={['auto']}
+                  suggestions={['auto', '48px', '64px', '100px', '70vh', '100vh']}
                 />
             </AccordionContent>
         </AccordionItem>
