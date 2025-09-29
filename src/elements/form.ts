@@ -7,7 +7,6 @@ export const form: CanvasElementData = {
     properties: {
         'padding': '10px',
         'display': 'block',
-        'minHeight': '100px',
         'border': '1px dashed hsl(var(--border))',
     },
     editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']

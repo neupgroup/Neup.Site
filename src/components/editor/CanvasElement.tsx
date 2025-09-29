@@ -164,31 +164,15 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       if (type === 'form') Tag = 'form';
       if (type === 'list') Tag = 'ul';
 
-      const flexStyles: React.CSSProperties = {
-          display: properties['display'] === 'flex' ? 'flex' : undefined,
-          flexDirection: properties['flexDirection'],
-          justifyContent: properties['justifyContent'],
-          alignItems: properties['alignItems'],
-          flexWrap: properties['flexWrap'],
-          gap: properties['gap'],
-          flex: isContainer ? '1' : undefined
-      };
-
       elementComponent = (
-        <CanvasWrapper {...wrapperProps} className={cn({'min-h-[100px]': children?.length === 0, 'container mx-auto': type === 'container'}, wrapperProps.className)}>
+        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)}>
           <Tag 
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id)} 
-            className="min-h-full h-full"
-            style={flexStyles}
           >
             {children && children.length > 0 
                 ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
-                : (
-                   <div className="flex items-center justify-center pointer-events-none text-muted-foreground p-4 h-full">
-                       {/* This space is intentionally left blank for empty containers */}
-                    </div>
-                )
+                : null
             }
             {dropZone.parentId === id && !dropZone.elementId && (
                 <DropIndicator className="!my-0" />
