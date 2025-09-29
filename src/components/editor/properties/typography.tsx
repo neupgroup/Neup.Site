@@ -23,8 +23,8 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
                     <Label>Color</Label>
                     <div className="flex items-center gap-2">
                         <Input 
-                            value={properties['typography.color'] as string || ''} 
-                            onChange={(e) => onUpdate('typography.color', e.target.value)} 
+                            value={properties['color'] as string || ''} 
+                            onChange={(e) => onUpdate('color', e.target.value)} 
                             placeholder="#000000" 
                         />
                         <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
@@ -32,8 +32,8 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
                             <input
                                 ref={colorInputRef}
                                 type="color"
-                                value={typeof properties['typography.color'] === 'string' ? properties['typography.color'] : '#000000'}
-                                onChange={(e) => onUpdate('typography.color', e.target.value)}
+                                value={typeof properties['color'] === 'string' ? properties['color'] : '#000000'}
+                                onChange={(e) => onUpdate('color', e.target.value)}
                                 className="absolute h-0 w-0 opacity-0"
                             />
                         </Button>
@@ -42,14 +42,14 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
                 <div className="space-y-2">
                     <Label>Font Size</Label>
                     <Input
-                        value={properties['typography.fontSize'] as string || ''}
-                        onChange={(e) => onUpdate('typography.fontSize', e.target.value)}
+                        value={properties['fontSize'] as string || ''}
+                        onChange={(e) => onUpdate('fontSize', e.target.value)}
                         placeholder="e.g., 16px"
                     />
                 </div>
                 <div className="space-y-2">
                     <Label>Font Weight</Label>
-                    <Select value={properties['typography.fontWeight'] as string || 'normal'} onValueChange={(v) => onUpdate('typography.fontWeight', v)}>
+                    <Select value={properties['fontWeight'] as string || 'normal'} onValueChange={(v) => onUpdate('fontWeight', v)}>
                         <SelectTrigger><SelectValue placeholder="Font Weight" /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="normal">Normal</SelectItem>
@@ -68,7 +68,7 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
                 </div>
                 <div className="space-y-2">
                     <Label>Text Align</Label>
-                    <Select value={properties['typography.textAlign'] as string || 'left'} onValueChange={(v) => onUpdate('typography.textAlign', v)}>
+                    <Select value={properties['textAlign'] as string || 'left'} onValueChange={(v) => onUpdate('textAlign', v)}>
                         <SelectTrigger><SelectValue placeholder="Text Align" /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="left">Left</SelectItem>

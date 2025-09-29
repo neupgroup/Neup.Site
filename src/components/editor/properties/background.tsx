@@ -23,8 +23,8 @@ const BackgroundProperties: FC<BackgroundPropertiesProps> = ({ element, onUpdate
                     <Label>Background Color</Label>
                     <div className="flex items-center gap-2">
                         <Input 
-                            value={properties['background.backgroundColor'] as string || ''} 
-                            onChange={(e) => onUpdate('background.backgroundColor', e.target.value)} 
+                            value={properties['backgroundColor'] as string || ''} 
+                            onChange={(e) => onUpdate('backgroundColor', e.target.value)} 
                             placeholder="#ffffff" 
                         />
                         <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
@@ -32,8 +32,8 @@ const BackgroundProperties: FC<BackgroundPropertiesProps> = ({ element, onUpdate
                             <input
                                 ref={colorInputRef}
                                 type="color"
-                                value={typeof properties['background.backgroundColor'] === 'string' ? properties['background.backgroundColor'] : '#ffffff'}
-                                onChange={(e) => onUpdate('background.backgroundColor', e.target.value)}
+                                value={typeof properties['backgroundColor'] === 'string' ? properties['backgroundColor'] : '#ffffff'}
+                                onChange={(e) => onUpdate('backgroundColor', e.target.value)}
                                 className="absolute h-0 w-0 opacity-0"
                             />
                         </Button>
@@ -42,14 +42,14 @@ const BackgroundProperties: FC<BackgroundPropertiesProps> = ({ element, onUpdate
                  <div className="space-y-2">
                     <Label>Background Image</Label>
                     <Input
-                        value={properties['background.backgroundImage'] || ''}
-                        onChange={(e) => onUpdate('background.backgroundImage', e.target.value)}
+                        value={properties['backgroundImage'] || ''}
+                        onChange={(e) => onUpdate('backgroundImage', e.target.value)}
                         placeholder="url(...)"
                     />
                 </div>
                 <div className="space-y-2">
                     <Label>Background Repeat</Label>
-                    <Select value={properties['background.backgroundRepeat'] || 'no-repeat'} onValueChange={(v) => onUpdate('background.backgroundRepeat', v)}>
+                    <Select value={properties['backgroundRepeat'] || 'no-repeat'} onValueChange={(v) => onUpdate('backgroundRepeat', v)}>
                         <SelectTrigger>
                             <SelectValue placeholder="Repeat" />
                         </SelectTrigger>

@@ -17,15 +17,15 @@ const SpacingProperties: FC<SpacingPropertiesProps> = ({ element, onUpdate }) =>
             <AccordionContent className="px-4 space-y-4">
                 <PropertyInput 
                     label="Padding"
-                    value={properties['spacing.padding'] as string || ''}
-                    onChange={(v) => onUpdate('spacing.padding', v)}
+                    value={properties['padding'] as string || ''}
+                    onChange={(v) => onUpdate('padding', v)}
                     placeholder="e.g., 16px or 1rem"
                     suggestions={['0px', '10px', '20px']}
                 />
                 <PropertyInput
                     label="Margin"
-                    value={properties['spacing.margin'] as string || ''}
-                    onChange={(v) => onUpdate('spacing.margin', v)}
+                    value={properties['margin'] as string || ''}
+                    onChange={(v) => onUpdate('margin', v)}
                     placeholder="e.g., 16px or 1rem"
                     suggestions={['0px', '10px', '20px', '0 auto']}
                 />

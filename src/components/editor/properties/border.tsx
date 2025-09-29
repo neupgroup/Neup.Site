@@ -17,15 +17,15 @@ const BorderProperties: FC<BorderPropertiesProps> = ({ element, onUpdate }) => {
             <AccordionContent className="px-4 space-y-4">
                 <PropertyInput 
                     label="Border"
-                    value={properties['borders.border'] as string || ''}
-                    onChange={(v) => onUpdate('borders.border', v)}
+                    value={properties['border'] as string || ''}
+                    onChange={(v) => onUpdate('border', v)}
                     placeholder="e.g., 1px solid #000"
                     suggestions={['none', '1px solid hsl(var(--border))']}
                 />
                 <PropertyInput
                     label="Border Radius"
-                    value={properties['borders.borderRadius'] as string || ''}
-                    onChange={(v) => onUpdate('borders.borderRadius', v)}
+                    value={properties['borderRadius'] as string || ''}
+                    onChange={(v) => onUpdate('borderRadius', v)}
                     placeholder="e.g., 8px"
                     suggestions={['0px', 'var(--radius)', '9999px']}
                 />

@@ -5,14 +5,14 @@ export const section: CanvasElementData = {
     type: 'section',
     children: [],
     properties: {
-        'spacing.padding': '10px',
-        'layout.display': 'block',
-        'layout.minHeight': '100px',
-        'borders.border': '1px dashed hsl(var(--border))',
-        'flexbox.flexDirection': 'row',
-        'flexbox.justifyContent': 'flex-start',
-        'flexbox.alignItems': 'stretch',
-        'flexbox.flexWrap': 'nowrap',
+        'padding': '10px',
+        'display': 'block',
+        'minHeight': '100px',
+        'border': '1px dashed hsl(var(--border))',
+        'flexDirection': 'row',
+        'justifyContent': 'flex-start',
+        'alignItems': 'stretch',
+        'flexWrap': 'nowrap',
     },
     editorProperties: ['layout', 'spacing', 'flexbox', 'background', 'borders', 'effects']
 };

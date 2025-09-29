@@ -103,8 +103,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     <div className="space-y-2">
                         <Label>Class Name</Label>
                         <Input 
-                            value={selectedElement.properties?.['attributes.className'] || ''}
-                            onChange={(e) => handleUpdate('attributes.className', e.target.value)} 
+                            value={selectedElement.properties?.['className'] || ''}
+                            onChange={(e) => handleUpdate('className', e.target.value)} 
                             placeholder="e.g. text-center my-4"
                         />
                     </div>

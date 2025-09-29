@@ -91,10 +91,10 @@ export const useElementResizing = ({ selectedElement, elements, updateElement, c
         }
 
         if (newWidth) {
-          newProperties['layout.width'] = `${Math.max(20, newWidth)}px`;
+          newProperties['width'] = `${Math.max(20, newWidth)}px`;
         }
         if (newHeight) {
-          newProperties['layout.height'] = `${Math.max(20, newHeight)}px`;
+          newProperties['height'] = `${Math.max(20, newHeight)}px`;
         }
 
 

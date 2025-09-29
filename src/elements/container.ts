@@ -5,13 +5,13 @@ export const container: CanvasElementData = {
     type: 'container',
     children: [],
     properties: {
-        'spacing.padding': '10px',
-        'layout.display': 'block',
-        'layout.minHeight': '100px',
-        'borders.border': '1px dashed hsl(var(--border))',
-        'layout.maxWidth': '1100px',
-        'spacing.marginLeft': 'auto',
-        'spacing.marginRight': 'auto',
+        'padding': '10px',
+        'display': 'block',
+        'minHeight': '100px',
+        'border': '1px dashed hsl(var(--border))',
+        'maxWidth': '1100px',
+        'marginLeft': 'auto',
+        'marginRight': 'auto',
     },
     editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };

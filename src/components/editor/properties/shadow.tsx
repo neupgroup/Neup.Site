@@ -21,7 +21,7 @@ const ShadowProperties: FC<ShadowPropertiesProps> = ({ element, onUpdate }) => {
     const properties = element.properties || {};
 
     const handleSuggestionClick = (value: string) => {
-        onUpdate('effects.boxShadow', value);
+        onUpdate('boxShadow', value);
     };
     
     return (
@@ -30,8 +30,8 @@ const ShadowProperties: FC<ShadowPropertiesProps> = ({ element, onUpdate }) => {
             <AccordionContent className="px-4 space-y-4">
                 <PropertyInput 
                     label="Box Shadow"
-                    value={properties['effects.boxShadow'] as string || ''}
-                    onChange={(v) => onUpdate('effects.boxShadow', v)}
+                    value={properties['boxShadow'] as string || ''}
+                    onChange={(v) => onUpdate('boxShadow', v)}
                     placeholder="e.g., 0 10px 15px -3px rgb(0 0 0 / 0.1)"
                     suggestions={Object.values(shadowSuggestions)}
                 />

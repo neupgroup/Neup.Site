@@ -12,7 +12,7 @@ interface FlexboxPropertiesProps {
 const FlexboxProperties: FC<FlexboxPropertiesProps> = ({ element, onUpdate }) => {
     const properties = element.properties || {};
 
-    if (properties['layout.display'] !== 'flex') {
+    if (properties['display'] !== 'flex') {
         return null;
     }
     
@@ -22,7 +22,7 @@ const FlexboxProperties: FC<FlexboxPropertiesProps> = ({ element, onUpdate }) =>
             <AccordionContent className="px-4 space-y-4">
                 <div className="space-y-2">
                     <Label>Direction</Label>
-                    <Select value={properties['flexbox.flexDirection'] as string || 'row'} onValueChange={(v) => onUpdate('flexbox.flexDirection', v)}>
+                    <Select value={properties['flexDirection'] as string || 'row'} onValueChange={(v) => onUpdate('flexDirection', v)}>
                         <SelectTrigger>
                             <SelectValue placeholder="Direction" />
                         </SelectTrigger>
@@ -36,7 +36,7 @@ const FlexboxProperties: FC<FlexboxPropertiesProps> = ({ element, onUpdate }) =>
                 </div>
                 <div className="space-y-2">
                     <Label>Justify Content</Label>
-                    <Select value={properties['flexbox.justifyContent'] as string || 'flex-start'} onValueChange={(v) => onUpdate('flexbox.justifyContent', v)}>
+                    <Select value={properties['justifyContent'] as string || 'flex-start'} onValueChange={(v) => onUpdate('justifyContent', v)}>
                         <SelectTrigger>
                             <SelectValue placeholder="Justify Content" />
                         </SelectTrigger>
@@ -52,7 +52,7 @@ const FlexboxProperties: FC<FlexboxPropertiesProps> = ({ element, onUpdate }) =>
                 </div>
                 <div className="space-y-2">
                     <Label>Align Items</Label>
-                    <Select value={properties['flexbox.alignItems'] as string || 'stretch'} onValueChange={(v) => onUpdate('flexbox.alignItems', v)}>
+                    <Select value={properties['alignItems'] as string || 'stretch'} onValueChange={(v) => onUpdate('alignItems', v)}>
                         <SelectTrigger>
                             <SelectValue placeholder="Align Items" />
                         </SelectTrigger>
@@ -67,7 +67,7 @@ const FlexboxProperties: FC<FlexboxPropertiesProps> = ({ element, onUpdate }) =>
                 </div>
                 <div className="space-y-2">
                     <Label>Wrap</Label>
-                    <Select value={properties['flexbox.flexWrap'] as string || 'nowrap'} onValueChange={(v) => onUpdate('flexbox.flexWrap', v)}>
+                    <Select value={properties['flexWrap'] as string || 'nowrap'} onValueChange={(v) => onUpdate('flexWrap', v)}>
                         <SelectTrigger>
                             <SelectValue placeholder="Wrap" />
                         </SelectTrigger>

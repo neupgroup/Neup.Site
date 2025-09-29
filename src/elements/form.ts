@@ -5,10 +5,10 @@ export const form: CanvasElementData = {
     type: 'form',
     children: [],
     properties: {
-        'spacing.padding': '10px',
-        'layout.display': 'block',
-        'layout.minHeight': '100px',
-        'borders.border': '1px dashed hsl(var(--border))',
+        'padding': '10px',
+        'display': 'block',
+        'minHeight': '100px',
+        'border': '1px dashed hsl(var(--border))',
     },
     editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };

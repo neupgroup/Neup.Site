@@ -4,9 +4,9 @@ export const label: CanvasElementData = {
     id: '',
     type: 'label',
     properties: {
-        'content.text': 'Label',
-        'spacing.padding': '10px',
-        'layout.display': 'block',
+        'text': 'Label',
+        'padding': '10px',
+        'display': 'block',
     },
     editorProperties: ['content', 'typography', 'spacing', 'effects']
 };

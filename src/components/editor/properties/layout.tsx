@@ -19,7 +19,7 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
             <AccordionContent className="px-4 space-y-4">
                 <div className="space-y-2">
                     <Label>Display</Label>
-                    <Select value={properties['layout.display'] as string || 'block'} onValueChange={(v) => onUpdate('layout.display', v)}>
+                    <Select value={properties['display'] as string || 'block'} onValueChange={(v) => onUpdate('display', v)}>
                         <SelectTrigger>
                             <SelectValue placeholder="Display" />
                         </SelectTrigger>
@@ -34,15 +34,15 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
                 </div>
                 <PropertyInput
                   label="Width"
-                  value={properties['layout.width'] as string || ''}
-                  onChange={(v) => onUpdate('layout.width', v)}
+                  value={properties['width'] as string || ''}
+                  onChange={(v) => onUpdate('width', v)}
                   placeholder="e.g., 100px or 100%"
                   suggestions={['auto', '100%', '50%']}
                 />
                 <PropertyInput
                   label="Height"
-                  value={properties['layout.height'] as string || ''}
-                  onChange={(v) => onUpdate('layout.height', v)}
+                  value={properties['height'] as string || ''}
+                  onChange={(v) => onUpdate('height', v)}
                   placeholder="e.g., 100px"
                   suggestions={['auto']}
                 />

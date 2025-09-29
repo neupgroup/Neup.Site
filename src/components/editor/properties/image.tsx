@@ -19,16 +19,16 @@ const ImageProperties: FC<ImagePropertiesProps> = ({ element, onUpdate }) => {
                 <div className="space-y-2">
                     <Label>Source URL</Label>
                     <Input 
-                        value={properties['image.src'] || ''}
-                        onChange={(e) => onUpdate('image.src', e.target.value)}
+                        value={properties['src'] || ''}
+                        onChange={(e) => onUpdate('src', e.target.value)}
                         placeholder="https://example.com/image.png"
                     />
                 </div>
                 <div className="space-y-2">
                     <Label>Alt Text</Label>
                     <Input
-                        value={properties['image.alt'] || ''}
-                        onChange={(e) => onUpdate('image.alt', e.target.value)}
+                        value={properties['alt'] || ''}
+                        onChange={(e) => onUpdate('alt', e.target.value)}
                         placeholder="Descriptive text for the image"
                     />
                 </div>

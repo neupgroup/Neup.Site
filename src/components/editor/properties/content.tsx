@@ -26,8 +26,8 @@ const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate }) =>
                 <div className="space-y-2">
                     <Label>Text</Label>
                     <Textarea 
-                        value={properties['content.text'] || ''}
-                        onChange={(e) => onUpdate('content.text', e.target.value)}
+                        value={properties['text'] || ''}
+                        onChange={(e) => onUpdate('text', e.target.value)}
                         onKeyDown={handleKeyDown}
                         rows={4}
                     />

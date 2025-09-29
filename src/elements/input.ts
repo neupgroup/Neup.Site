@@ -4,12 +4,12 @@ export const input: CanvasElementData = {
     id: '',
     type: 'input',
     properties: {
-        'spacing.padding': '10px',
-        'layout.display': 'block',
-        'layout.height': '40px',
-        'layout.width': '200px',
-        'input.placeholder': 'Enter text...',
-        'input.type': 'text'
+        'padding': '10px',
+        'display': 'block',
+        'height': '40px',
+        'width': '200px',
+        'placeholder': 'Enter text...',
+        'type': 'text'
     },
     editorProperties: ['layout', 'spacing', 'effects']
 };

@@ -4,9 +4,9 @@ export const listItem: CanvasElementData = {
     id: '',
     type: 'list-item',
     properties: {
-        'content.text': 'List Item',
-        'spacing.padding': '10px',
-        'layout.display': 'block',
+        'text': 'List Item',
+        'padding': '10px',
+        'display': 'block',
     },
     editorProperties: ['content', 'typography', 'spacing', 'effects']
 };
