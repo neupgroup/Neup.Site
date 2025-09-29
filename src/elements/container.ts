@@ -11,6 +11,7 @@ export const container: CanvasElementData = {
         'maxWidth': '1100px',
         'marginLeft': 'auto',
         'marginRight': 'auto',
+        'height': '60px',
     },
     editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };
