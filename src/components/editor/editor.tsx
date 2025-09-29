@@ -1,3 +1,4 @@
+
 'use client';
 import type { FC } from 'react';
 import { useState, useEffect, useCallback } from 'react';
@@ -543,30 +544,34 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
     };
   }, [selectedElement, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
 
+  const handleSaveFlow = async () => {
+    let currentSiteId = siteId;
+    if (!currentSiteId) {
+        const createResult = await createSite();
+        if (createResult.success && createResult.id) {
+            currentSiteId = createResult.id;
+            setSiteId(currentSiteId);
+             // Update the URL to reflect the new ID for editing mode
+            router.push(`/site/editor?mode=edit&id=${currentSiteId}`, { scroll: false });
+        } else {
+            throw new Error(createResult.error || 'Failed to create a new site entry.');
+        }
+    }
+
+    const result = await saveSite(currentSiteId, elements);
+    if (!result.success) {
+        throw new Error(result.error);
+    }
+    return currentSiteId;
+  }
+
   const handlePublish = async () => {
     try {
-        let currentSiteId = siteId;
-        if (!currentSiteId) {
-            const createResult = await createSite();
-            if (createResult.success && createResult.id) {
-                currentSiteId = createResult.id;
-                setSiteId(currentSiteId);
-                 // Update the URL to reflect the new ID for editing mode
-                router.push(`/site/editor?mode=edit&id=${currentSiteId}`, { scroll: false });
-            } else {
-                throw new Error(createResult.error || 'Failed to create a new site entry.');
-            }
-        }
-
-        const result = await saveSite(currentSiteId, elements);
-        if (result.success) {
-            toast({
-                title: 'Site Published!',
-                description: 'Your website has been saved successfully.',
-            });
-        } else {
-            throw new Error(result.error);
-        }
+        await handleSaveFlow();
+        toast({
+            title: 'Site Published!',
+            description: 'Your website has been saved successfully.',
+        });
     } catch (error: any) {
         console.error("Error publishing site:", error);
         toast({
@@ -575,6 +580,23 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             description: error.message || 'An unknown error occurred while publishing.',
         });
         logErrorToFirestore({ message: error.message, stack: error.stack });
+    }
+  };
+
+  const handlePreview = async () => {
+    try {
+      const savedSiteId = await handleSaveFlow();
+      if (savedSiteId) {
+        window.open(`/preview/${savedSiteId}`, '_blank');
+      }
+    } catch (error: any) {
+      console.error("Error saving for preview:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Preview Failed',
+        description: `Could not save the site for previewing. ${error.message}`,
+      });
+      logErrorToFirestore({ message: error.message, stack: error.stack });
     }
   };
 
@@ -588,6 +610,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         canRedo={historyIndex < history.length - 1}
         onViewCode={() => {}}
         onPublish={handlePublish}
+        onPreview={handlePreview}
       />
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 
@@ -621,5 +644,3 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 };
 
 export default Editor;
-
-    

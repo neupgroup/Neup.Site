@@ -1,3 +1,4 @@
+
 import { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -10,9 +11,10 @@ interface EditorHeaderProps {
   canRedo: boolean;
   onViewCode: () => void;
   onPublish: () => void;
+  onPreview: () => void;
 }
 
-const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo, onViewCode, onPublish }) => {
+const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo, onViewCode, onPublish, onPreview }) => {
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card px-4 md:px-6">
       <div className="flex items-center gap-4">
@@ -32,7 +34,7 @@ const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo,
         </Button>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={onPreview}>
           <Eye className="mr-2 h-4 w-4" />
           Preview
         </Button>
@@ -45,5 +47,3 @@ const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo,
 };
 
 export default EditorHeader;
-
-    
