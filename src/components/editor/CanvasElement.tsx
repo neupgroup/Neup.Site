@@ -83,7 +83,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     className: properties['className'],
     selectedElement,
     onSelectElement,
-    style: isContainer ? {} : styles, // Pass styles only if not a container
+    style: {},
     onDragStart: (e: React.DragEvent) => onDragStart(e, id),
     onDragEnter: (e: React.DragEvent) => onDragEnter(e, id, parentId),
     onDragLeave: onDragLeave,
@@ -115,8 +115,8 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         if (isSelected) {
             elementComponent = (
                 <CanvasWrapper {...wrapperProps}>
-                    <HeadingTag>
-                        <EditableText id={id} initialValue={content} onSave={handleSaveText} style={styles} className={isHeading ? "font-headline tracking-tight" : ""} />
+                    <HeadingTag style={styles}>
+                        <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
                     </HeadingTag>
                     {renderResizeHandles()}
                 </CanvasWrapper>
@@ -133,7 +133,9 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'button':
         elementComponent = (
             <CanvasWrapper {...wrapperProps}>
-                <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} style={{...styles, display: 'block'}} />
+                <div style={{...styles, display: 'inline-block'}} >
+                    <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
+                </div>
                 {renderResizeHandles()}
             </CanvasWrapper>
         );
@@ -141,7 +143,9 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'image':
          elementComponent = (
             <CanvasWrapper {...wrapperProps}>
-                {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(styles.width)) || 200} height={parseInt(String(styles.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
+                <div style={styles} className="w-full h-full overflow-hidden">
+                    {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(styles.width)) || 200} height={parseInt(String(styles.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
+                </div>
                 {renderResizeHandles()}
             </CanvasWrapper>
          );
@@ -149,7 +153,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'video':
          elementComponent = (
             <CanvasWrapper {...wrapperProps}>
-                <video controls src={properties['src']} className="w-full h-full" />
+                <video controls src={properties['src']} className="w-full h-full" style={styles}/>
                 {renderResizeHandles()}
             </CanvasWrapper>
          );
@@ -170,10 +174,11 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id)} 
             style={styles} // Apply styles directly to the Tag
+            className="h-full w-full"
           >
             {children && children.length > 0 
                 ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
-                : null
+                : <div className="min-h-[20px]"></div>
             }
             {dropZone.parentId === id && !dropZone.elementId && (
                 <DropIndicator className="!my-0" />
@@ -186,7 +191,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'list-item':
       elementComponent = (
         <CanvasWrapper {...wrapperProps}>
-          <li>
+          <li style={styles}>
             <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
           </li>
           {renderResizeHandles()}
@@ -212,14 +217,14 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'label':
         elementComponent = (
             <CanvasWrapper {...wrapperProps}>
-                <label><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
+                <label style={styles}><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
                 {renderResizeHandles()}
             </CanvasWrapper>
         );
         break;
     case 'html':
          elementComponent = (
-            <CanvasWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: properties['htmlContent'] || '' }}>
+            <CanvasWrapper {...wrapperProps} style={styles} dangerouslySetInnerHTML={{ __html: properties['htmlContent'] || '' }}>
                 {/* No children allowed with dangerouslySetInnerHTML */}
             </CanvasWrapper>
          );
