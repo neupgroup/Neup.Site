@@ -46,6 +46,11 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
     }
   };
 
+  const handleUpdateAllElements = (newElements: CanvasElementData[], recordHistory = true) => {
+    setElements(() => newElements, recordHistory);
+  };
+
+
   const undo = useCallback(() => {
     if (historyIndex > 0) {
       setHistoryIndex(prev => prev - 1);
@@ -637,6 +642,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             updateElement={updateElement}
             deleteElement={deleteElement}
             updateElementId={updateElementId}
+            onUpdateAllElements={handleUpdateAllElements}
         />
       </div>
     </div>
@@ -644,3 +650,5 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 };
 
 export default Editor;
+
+    

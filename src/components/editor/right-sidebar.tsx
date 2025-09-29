@@ -26,6 +26,7 @@ interface RightSidebarProps {
   updateElement: (id: string, newProperties: Record<string, any>, recordHistory?: boolean) => void;
   deleteElement: (id: string) => void;
   updateElementId: (oldId: string, newId: string) => void;
+  onUpdateAllElements: (elements: CanvasElementData[]) => void;
 }
 
 const propertyComponents: Record<string, React.FC<any>> = {
@@ -39,7 +40,7 @@ const propertyComponents: Record<string, React.FC<any>> = {
   effects: ShadowProperties,
 };
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements }) => {
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
       if (el.id === id) return el;
@@ -84,7 +85,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   if (!selectedElement || !elementDef) {
     return (
       <aside className="w-80 border-l bg-card">
-        <GlobalSettings />
+        <GlobalSettings elements={elements} onUpdateAllElements={onUpdateAllElements} />
       </aside>
     );
   }
@@ -136,3 +137,5 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 };
 
 export default RightSidebar;
+
+    
