@@ -13,6 +13,7 @@ export const section: CanvasElementData = {
         'alignItems': 'stretch',
         'flexWrap': 'nowrap',
         'height': '100px',
+        'width': '100%',
     },
     editorProperties: ['layout', 'spacing', 'flexbox', 'background', 'borders', 'effects']
 };
