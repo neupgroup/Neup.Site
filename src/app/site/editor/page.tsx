@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import type { FC } from 'react';
 import Editor from '@/components/editor/editor';
 import { getSite } from '@/actions/editor/site';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -16,7 +15,7 @@ interface WebsiteBuilderPageProps {
 }
 
 const EditorLoadingSkeleton = () => (
-    <div className="flex h-screen w-full flex-col bg-background text-foreground">
+    <div className="flex h-full w-full flex-col bg-background text-foreground">
         <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card px-4 md:px-6">
             <Skeleton className="h-8 w-48" />
             <div className="flex items-center gap-2">
