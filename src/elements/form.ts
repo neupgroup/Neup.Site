@@ -10,5 +10,5 @@ export const form: CanvasElementData = {
         'layout.minHeight': '100px',
         'borders.border': '1px dashed hsl(var(--border))',
     },
-    editorProperties: ['layout', 'spacing', 'background', 'borders']
+    editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };

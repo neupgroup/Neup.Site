@@ -17,6 +17,7 @@ import ContentProperties from './properties/content';
 import ImageProperties from './properties/image';
 import FlexboxProperties from './properties/flexbox';
 import GlobalSettings from './properties/global-settings';
+import ShadowProperties from './properties/shadow';
 
 interface RightSidebarProps {
   selectedElementId: string | null;
@@ -35,6 +36,7 @@ const propertyComponents: Record<string, React.FC<any>> = {
   typography: TypographyProperties,
   background: BackgroundProperties,
   borders: BorderProperties,
+  effects: ShadowProperties,
 };
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId }) => {

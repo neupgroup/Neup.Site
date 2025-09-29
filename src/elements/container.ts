@@ -13,5 +13,5 @@ export const container: CanvasElementData = {
         'spacing.marginLeft': 'auto',
         'spacing.marginRight': 'auto',
     },
-    editorProperties: ['layout', 'spacing', 'background', 'borders']
+    editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };

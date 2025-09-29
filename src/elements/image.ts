@@ -12,5 +12,5 @@ export const image: CanvasElementData = {
         'image.alt': 'Placeholder image',
         'image.data-ai-hint': 'placeholder',
     },
-    editorProperties: ['image', 'layout', 'spacing', 'borders']
+    editorProperties: ['image', 'layout', 'spacing', 'borders', 'effects']
 };

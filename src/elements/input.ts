@@ -11,5 +11,5 @@ export const input: CanvasElementData = {
         'input.placeholder': 'Enter text...',
         'input.type': 'text'
     },
-    editorProperties: ['layout', 'spacing']
+    editorProperties: ['layout', 'spacing', 'effects']
 };

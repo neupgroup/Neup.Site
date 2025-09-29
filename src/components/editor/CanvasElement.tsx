@@ -32,16 +32,38 @@ interface CanvasElementProps {
 
 const extractStyles = (properties: Record<string, any>): React.CSSProperties => {
     const style: React.CSSProperties = {};
+    const propertyMap: { [key: string]: string } = {
+        'layout.width': 'width',
+        'layout.height': 'height',
+        'layout.minHeight': 'minHeight',
+        'layout.display': 'display',
+        'spacing.padding': 'padding',
+        'spacing.margin': 'margin',
+        'typography.color': 'color',
+        'typography.fontSize': 'fontSize',
+        'typography.fontWeight': 'fontWeight',
+        'typography.textAlign': 'textAlign',
+        'background.backgroundColor': 'backgroundColor',
+        'background.backgroundImage': 'backgroundImage',
+        'background.backgroundRepeat': 'backgroundRepeat',
+        'borders.border': 'border',
+        'borders.borderRadius': 'borderRadius',
+        'effects.boxShadow': 'boxShadow',
+        'flexbox.flexDirection': 'flexDirection',
+        'flexbox.justifyContent': 'justifyContent',
+        'flexbox.alignItems': 'alignItems',
+        'flexbox.flexWrap': 'flexWrap',
+        'flexbox.gap': 'gap',
+    };
+
     for (const key in properties) {
-        if (key.startsWith('layout.') || key.startsWith('spacing.') || key.startsWith('typography.') || key.startsWith('background.') || key.startsWith('borders.')) {
-            const cssProperty = key.split('.')[1];
-            // A simple camelCase conversion
-            const camelCaseProperty = cssProperty.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-            (style as any)[camelCaseProperty] = properties[key];
+        if (propertyMap[key]) {
+            (style as any)[propertyMap[key]] = properties[key];
         }
     }
+
     return style;
-}
+};
 
 const CanvasElement: FC<CanvasElementProps> = (props) => {
   const {
@@ -253,5 +275,3 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
 };
 
 export default CanvasElement;
-
-    

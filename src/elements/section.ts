@@ -14,5 +14,5 @@ export const section: CanvasElementData = {
         'flexbox.alignItems': 'stretch',
         'flexbox.flexWrap': 'nowrap',
     },
-    editorProperties: ['layout', 'spacing', 'flexbox', 'background', 'borders']
+    editorProperties: ['layout', 'spacing', 'flexbox', 'background', 'borders', 'effects']
 };

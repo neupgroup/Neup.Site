@@ -10,5 +10,5 @@ export const textarea: CanvasElementData = {
         'layout.width': '200px',
         'textarea.placeholder': 'Enter more text...',
     },
-    editorProperties: ['layout', 'spacing']
+    editorProperties: ['layout', 'spacing', 'effects']
 };

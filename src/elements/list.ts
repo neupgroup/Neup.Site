@@ -10,5 +10,5 @@ export const list: CanvasElementData = {
         'layout.minHeight': '100px',
         'borders.border': '1px dashed hsl(var(--border))',
     },
-    editorProperties: ['spacing', 'background', 'borders']
+    editorProperties: ['spacing', 'background', 'borders', 'effects']
 };

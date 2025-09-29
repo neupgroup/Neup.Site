@@ -15,5 +15,5 @@ export const button: CanvasElementData = {
         'borders.border': 'none',
         'attributes.cursor': 'pointer',
     },
-    editorProperties: ['content', 'layout', 'spacing', 'typography', 'background', 'borders']
+    editorProperties: ['content', 'layout', 'spacing', 'typography', 'background', 'borders', 'effects']
 };
