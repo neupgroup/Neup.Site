@@ -43,7 +43,7 @@ const GlobalSettings: FC = () => {
                             </div>
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="bootstrap" id="bootstrap" />
-                                <Label htmlFor-="bootstrap">Bootstrap</Label>
+                                <Label htmlFor="bootstrap">Bootstrap</Label>
                             </div>
                         </RadioGroup>
                     </AccordionContent>
