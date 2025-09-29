@@ -5,11 +5,11 @@ export const headerTemplate: CanvasElementData = {
   type: "section",
   properties: {
     padding: "1rem 2rem",
+    backgroundColor: "hsl(var(--background))",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
     borderBottom: "1px solid hsl(var(--border))",
-    backgroundColor: "hsl(var(--background))",
+    justifyContent: "space-between",
   },
   children: [
     {
@@ -17,29 +17,29 @@ export const headerTemplate: CanvasElementData = {
       type: "div",
       properties: {
         display: "flex",
-        alignItems: "center",
         gap: "0.5rem",
+        alignItems: "center",
       },
       children: [
         {
           id: "logo-image",
           type: "image",
           properties: {
-            src: "https://picsum.photos/seed/logo/40/40",
-            alt: "Logo",
+            borderRadius: "9999px",
             width: "40px",
             height: "40px",
-            borderRadius: "9999px",
+            src: "https://picsum.photos/seed/logo/40/40",
+            alt: "Logo",
           },
         },
         {
           id: "logo-text",
           type: "heading",
           properties: {
+            fontWeight: "bold",
+            fontSize: "1.5rem",
             text: "MyApp",
             level: 3,
-            fontSize: "1.5rem",
-            fontWeight: "bold",
           },
         },
       ],
@@ -48,9 +48,9 @@ export const headerTemplate: CanvasElementData = {
       id: "nav-menu",
       type: "div",
       properties: {
-        display: "flex",
-        gap: "1.5rem",
         alignItems: "center",
+        gap: "1.5rem",
+        display: "flex",
       },
       children: [
         {
@@ -82,14 +82,14 @@ export const headerTemplate: CanvasElementData = {
       properties: {
         text: "Get Started",
         display: "inline-block",
-        padding: "0.5rem 1rem",
         fontSize: "1rem",
+        border: "none",
         color: "hsl(var(--primary-foreground))",
-        backgroundColor: "hsl(var(--primary))",
         textAlign: "center",
         borderRadius: "var(--radius)",
-        border: "none",
         cursor: "pointer",
+        padding: "0.5rem 1rem",
+        backgroundColor: "hsl(var(--primary))",
       },
     },
   ],
