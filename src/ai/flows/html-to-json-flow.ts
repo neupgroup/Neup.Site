@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Converts HTML into the CanvasElementData JSON structure.
@@ -9,7 +10,9 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/lib/schemas';
 
-const HtmlToJsonOutputSchema = z.array(CanvasElementDataSchema);
+const HtmlToJsonOutputSchema = z.object({
+  elements: z.array(CanvasElementDataSchema),
+});
 
 export async function convertHtmlToJson(html: string): Promise<CanvasElementData[]> {
   return htmlToJsonFlow(html);
@@ -48,39 +51,41 @@ const htmlToJsonPrompt = ai.definePrompt({
 
     Example JSON Output:
     \'\'\'json
-    [
-      {
-        "id": "section-1",
-        "type": "section",
-        "properties": {
-          "backgroundColor": "#f0f0f0",
-          "padding": "20px"
-        },
-        "children": [
-          {
-            "id": "heading-1",
-            "type": "heading",
-            "properties": {
-              "text": "Welcome",
-              "level": 1
-            }
+    {
+      "elements": [
+        {
+          "id": "section-1",
+          "type": "section",
+          "properties": {
+            "backgroundColor": "#f0f0f0",
+            "padding": "20px"
           },
-          {
-            "id": "text-1",
-            "type": "text",
-            "properties": {
-              "text": "This is a paragraph."
+          "children": [
+            {
+              "id": "heading-1",
+              "type": "heading",
+              "properties": {
+                "text": "Welcome",
+                "level": 1
+              }
+            },
+            {
+              "id": "text-1",
+              "type": "text",
+              "properties": {
+                "text": "This is a paragraph."
+              }
             }
-          }
-        ]
-      }
-    ]
+          ]
+        }
+      ]
+    }
     \'\'\'
 
     IMPORTANT:
     - Generate unique, descriptive IDs for each element (e.g., 'section-123').
     - Do not use the 'style' property. Extract all CSS styles into individual properties in the 'properties' object (e.g., "backgroundColor": "red").
-    - Ensure the output is a valid JSON array.
+    - Ensure the output is a valid JSON object with an 'elements' array.
 
     Convert the following HTML:
     {{{input}}}
@@ -91,13 +96,13 @@ const htmlToJsonFlow = ai.defineFlow(
   {
     name: 'htmlToJsonFlow',
     inputSchema: z.string(),
-    outputSchema: HtmlToJsonOutputSchema,
+    outputSchema: z.array(CanvasElementDataSchema),
   },
   async (html) => {
     const { output } = await htmlToJsonPrompt(html);
-    if (!output) {
-      throw new Error('AI failed to generate a response.');
+    if (!output?.elements) {
+      throw new Error('AI failed to generate a valid element array.');
     }
-    return output;
+    return output.elements;
   }
 );
