@@ -36,6 +36,8 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
   const isSelected = selectedElement === id;
   const customCssId = `custom-css-${id}`;
 
+  const Tag = isContainer ? 'div' : 'div';
+
   const finalProps: any = {
     id,
     'data-custom-css-id': customCssId,
@@ -61,14 +63,14 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
   }
 
   return (
-    <div {...finalProps}>
+    <Tag {...finalProps}>
       {customCss && (
         <style>
           {`[data-custom-css-id="${customCssId}"] { ${customCss} }`}
         </style>
       )}
       {!dangerouslySetInnerHTML && children}
-    </div>
+    </Tag>
   );
 };
 

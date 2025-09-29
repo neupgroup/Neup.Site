@@ -83,7 +83,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     className: properties['className'],
     selectedElement,
     onSelectElement,
-    style: styles,
+    style: isContainer ? {} : styles, // Pass styles only if not a container
     onDragStart: (e: React.DragEvent) => onDragStart(e, id),
     onDragEnter: (e: React.DragEvent) => onDragEnter(e, id, parentId),
     onDragLeave: onDragLeave,
@@ -169,6 +169,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
           <Tag 
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id)} 
+            style={styles} // Apply styles directly to the Tag
           >
             {children && children.length > 0 
                 ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
