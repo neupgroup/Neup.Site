@@ -114,7 +114,7 @@ export default function SitesPage() {
               <CardFooter className="pt-6 sm:pt-0 justify-start sm:justify-end flex-shrink-0">
                 <div className="flex gap-2">
                     <Button variant="outline" size="icon" asChild>
-                      <Link href={`/preview/${site.id}`} title="Preview" target="_blank">
+                      <Link href={`/site/pages/${site.id}`} title="View">
                         <Eye className="h-4 w-4" />
                       </Link>
                     </Button>
