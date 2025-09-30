@@ -29,8 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
-export default function SourceDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function SourceDetailPage({ params: { id } }: { params: { id: string } }) {
   const [source, setSource] = useState<Source | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
