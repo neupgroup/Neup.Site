@@ -8,6 +8,7 @@ import type { CanvasElementData } from '@/lib/schemas';
 import { useElementResizing } from '@/hooks/useElementResizing';
 
 import CanvasElement from './CanvasElement';
+import SectionDropZone from './SectionDropZone';
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -31,6 +32,7 @@ const Canvas: FC<CanvasProps> = ({
     draggedId
 }) => {
     const canvasRef = useRef<HTMLDivElement>(null);
+    const isDraggingSection = !!(draggedId && elements.find(el => el.id === draggedId && el.type === 'section'));
     
     const { resizingState, handleResizeStart } = useElementResizing({
         selectedElement,
@@ -49,9 +51,12 @@ const Canvas: FC<CanvasProps> = ({
       <div 
         ref={canvasRef}
         className={cn(
-            "rounded-lg bg-card shadow-lg relative mb-32",
+            "rounded-lg bg-card shadow-lg relative mb-48",
+             {'is-dragging': !!draggedId, 'is-dragging-section': isDraggingSection}
         )}
       >
+        <SectionDropZone position="top" onDrop={(e) => onDrop(e)} isDraggingSection={isDraggingSection} />
+
         {elements.map(el => (
             <CanvasElement 
                 key={el.id}
@@ -68,7 +73,7 @@ const Canvas: FC<CanvasProps> = ({
             />
         ))}
 
-        {elements.length === 0 && (
+        {elements.length === 0 && !draggedId && (
              <div 
                 className="flex items-center justify-center h-48"
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onDragOver(e) }}
@@ -84,5 +89,3 @@ const Canvas: FC<CanvasProps> = ({
 };
 
 export default Canvas;
-
-    
