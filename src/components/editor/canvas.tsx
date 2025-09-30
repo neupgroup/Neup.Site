@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { type FC, useRef, DragEvent } from 'react';
+import React, { type FC, useRef, DragEvent, Fragment } from 'react';
 import { cn } from '@/lib/utils';
 import type { CanvasElementData } from '@/lib/schemas';
 
@@ -55,23 +55,35 @@ const Canvas: FC<CanvasProps> = ({
              {'is-dragging': !!draggedId, 'is-dragging-section': isDraggingSection}
         )}
       >
-        <SectionDropZone position="top" onDrop={(e) => onDrop(e)} isDraggingSection={isDraggingSection} />
-
         {elements.map(el => (
-            <CanvasElement 
-                key={el.id}
-                element={el}
-                selectedElement={selectedElement}
-                onSelectElement={onSelectElement}
-                updateElement={updateElement}
-                onDragStart={onDragStart}
-                onDragOver={onDragOver}
-                onDrop={onDrop}
-                resizingState={resizingState}
-                onResizeStart={handleResizeStart}
-                draggedId={draggedId}
-            />
+            <Fragment key={`fragment-${el.id}`}>
+                <SectionDropZone 
+                    position="top" 
+                    onDrop={(e) => onDrop(e, undefined, el.id)} 
+                    isDraggingSection={isDraggingSection} 
+                />
+                <CanvasElement 
+                    key={el.id}
+                    element={el}
+                    selectedElement={selectedElement}
+                    onSelectElement={onSelectElement}
+                    updateElement={updateElement}
+                    onDragStart={onDragStart}
+                    onDragOver={onDragOver}
+                    onDrop={onDrop}
+                    resizingState={resizingState}
+                    onResizeStart={handleResizeStart}
+                    draggedId={draggedId}
+                />
+            </Fragment>
         ))}
+
+        <SectionDropZone 
+            position="bottom" 
+            onDrop={(e) => onDrop(e)} 
+            isDraggingSection={isDraggingSection} 
+        />
+
 
         {elements.length === 0 && !draggedId && (
              <div 
