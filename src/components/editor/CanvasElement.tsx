@@ -60,7 +60,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
   };
 
   const renderResizeHandles = () => {
-    if (!isSelected) return null;
+    if (!isSelected || properties.display === 'inline') return null;
     const handles: ('top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right')[] = [
         'top-left', 'top', 'top-right', 'left', 'right', 'bottom-left', 'bottom', 'bottom-right'
     ];
@@ -99,12 +99,14 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
 
         if (isSelected) {
             elementComponent = (
-                <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                    <HeadingTag>
-                        <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
-                    </HeadingTag>
-                    {renderResizeHandles()}
-                </CanvasWrapper>
+                <div style={{ display: 'inline-block' }} {...dragHandlers}>
+                    <CanvasWrapper {...wrapperProps} >
+                        <HeadingTag>
+                            <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
+                        </HeadingTag>
+                        {renderResizeHandles()}
+                    </CanvasWrapper>
+                </div>
             );
         } else {
             elementComponent = (
