@@ -6,7 +6,7 @@ import type { CanvasElementData, Template } from '@/lib/schemas';
 
 interface DragAndDropProps {
   elements: CanvasElementData[];
-  moveElement: (draggedId: string, dropZoneId: string, parentId?: string) => void;
+  moveElement: (draggedId: string, dropZoneId: string | null, parentId?: string) => void;
   addElement: (elementType: CanvasElementData['type'], dropZoneId?: string, parentId?: string) => void;
   addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
 }
@@ -50,14 +50,16 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
     useEffect(() => {
         const handleDragEnd = () => {
             // This event fires when drag is cancelled (e.g., by pressing Esc)
-            resetDragState();
+            if (dragCounter.current > 0 || draggedId) {
+                resetDragState();
+            }
         };
 
         document.addEventListener('dragend', handleDragEnd);
         return () => {
             document.removeEventListener('dragend', handleDragEnd);
         };
-    }, []);
+    }, [draggedId]);
 
 
     const handleDragStart = (e: DragEvent, id: string) => {
@@ -66,7 +68,12 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         
         e.dataTransfer.setData('application/json', JSON.stringify({id, type: dragType}));
         e.stopPropagation();
-        // Don't set state here immediately to prevent premature UI updates
+        
+        // Set state here to ensure it's available for the first dragEnter
+        setDraggedId(id);
+        if (el?.type === 'section') {
+            setIsDraggingSection(true);
+        }
     };
 
     const throttledDragOver = useCallback((e: DragEvent, parentId: string | null = null) => {
@@ -103,12 +110,10 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         e.stopPropagation();
         const dataStr = e.dataTransfer.getData('application/json');
         
-        const draggedElementId = draggedId; // Capture before resetting
-        
-        // Reset drag state
-        resetDragState();
-        
-        if (!dataStr) return;
+        if (!dataStr) {
+            resetDragState();
+            return;
+        }
 
         try {
             const data = JSON.parse(dataStr);
@@ -123,6 +128,8 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
             }
         } catch (error) {
             console.error("Failed to parse drag data", error);
+        } finally {
+            resetDragState();
         }
     };
 
@@ -137,13 +144,15 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
                 const dataStr = e.dataTransfer.getData('application/json');
                 if (dataStr) {
                     const data = JSON.parse(dataStr);
-                    const isNewSection = (data.type === 'sidebar-element' && data.elementType === 'section') || 
-                                         (data.type === 'template-element' && data.element.type === 'section');
-
-                    if (isNewSection) {
+                    const isNewElementSection = (data.type === 'sidebar-element' && data.elementType === 'section');
+                    const isTemplateSection = (data.type === 'template-element' && data.element.type === 'section');
+                    
+                    if (isNewElementSection || isTemplateSection) {
                         setIsDraggingSection(true);
                     }
-                    setDraggedId(data.id || data.type);
+                    if (data.id) {
+                        setDraggedId(data.id);
+                    }
                 }
             } catch (error) {
                 // Ignore if data is not available yet
@@ -160,8 +169,7 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         e.stopPropagation();
         dragCounter.current--;
         if (dragCounter.current === 0) {
-            // Don't reset state here because it causes flickering
-            // The dragend event will handle the final cleanup
+             // Let dragend handle the final cleanup
         }
     };
 

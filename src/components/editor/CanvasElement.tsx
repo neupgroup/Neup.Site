@@ -83,7 +83,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     className: properties['className'],
     selectedElement,
     onSelectElement,
-    style: {},
+    style: styles,
     onDragStart: (e: React.DragEvent) => onDragStart(e, id),
     onDragEnter: (e: React.DragEvent) => onDragEnter(e, id, parentId),
     onDragLeave: onDragLeave,
@@ -114,7 +114,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
 
         if (isSelected) {
             elementComponent = (
-                <CanvasWrapper {...wrapperProps}>
+                <CanvasWrapper {...wrapperProps} style={{}}>
                     <HeadingTag style={styles}>
                         <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
                     </HeadingTag>
@@ -123,7 +123,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
             );
         } else {
             elementComponent = (
-                <CanvasWrapper {...wrapperProps}>
+                <CanvasWrapper {...wrapperProps} style={{}}>
                     <HeadingTag style={styles} dangerouslySetInnerHTML={{ __html: content }} />
                 </CanvasWrapper>
             );
@@ -132,7 +132,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     }
     case 'button':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps}>
+            <CanvasWrapper {...wrapperProps} style={{}}>
                 <div style={{...styles, display: 'inline-block'}} >
                     <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
                 </div>
@@ -169,7 +169,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       if (type === 'list') Tag = 'ul';
 
       elementComponent = (
-        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)}>
+        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)} style={{}}>
           <Tag 
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id)} 
@@ -190,7 +190,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       break;
     case 'list-item':
       elementComponent = (
-        <CanvasWrapper {...wrapperProps}>
+        <CanvasWrapper {...wrapperProps} style={{}}>
           <li style={styles}>
             <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
           </li>
@@ -200,7 +200,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       break;
     case 'input':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps}>
+            <CanvasWrapper {...wrapperProps} style={{}}>
                <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} style={styles} className="w-full h-full bg-background" />
                {renderResizeHandles()}
             </CanvasWrapper>
@@ -208,7 +208,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         break;
     case 'textarea':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps}>
+            <CanvasWrapper {...wrapperProps} style={{}}>
                <Textarea value={properties['value']} placeholder={properties['placeholder']} style={styles} className="w-full h-full bg-background" />
                {renderResizeHandles()}
             </CanvasWrapper>
@@ -216,7 +216,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         break;
     case 'label':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps}>
+            <CanvasWrapper {...wrapperProps} style={{}}>
                 <label style={styles}><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
                 {renderResizeHandles()}
             </CanvasWrapper>
@@ -224,7 +224,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         break;
     case 'html':
          elementComponent = (
-            <CanvasWrapper {...wrapperProps} style={styles} dangerouslySetInnerHTML={{ __html: properties['htmlContent'] || '' }}>
+            <CanvasWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: properties['htmlContent'] || '' }}>
                 {/* No children allowed with dangerouslySetInnerHTML */}
             </CanvasWrapper>
          );
