@@ -27,8 +27,9 @@ import {
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Eye, Pencil, Globe, Trash2 } from 'lucide-react';
+import { AlertCircle, Plus, Eye, Pencil, Globe, Trash2, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function SitesPage() {
   const [sites, setSites] = useState<Site[]>([]);
@@ -121,54 +122,26 @@ export default function SitesPage() {
       ) : (
         <div className="space-y-4">
           {sites.map((site) => (
-            <Card key={site.id} className="flex flex-col sm:flex-row sm:items-center">
-              <CardHeader className="flex-1">
-                <CardTitle className="truncate">Page: {site.id.substring(0, 8)}...</CardTitle>
-                <CardDescription>
-                  Last updated: {site.updatedAt ? new Date(site.updatedAt).toLocaleString() : 'N/A'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 pt-6 sm:pt-0">
-                 <p className="text-sm text-muted-foreground">
-                  This page has {site.elements.length} root element(s).
-                </p>
-              </CardContent>
-              <CardFooter className="pt-6 sm:pt-0 justify-start sm:justify-end flex-shrink-0">
-                <div className="flex gap-2">
-                    <Button variant="outline" size="icon" asChild>
-                      <Link href={`/site/pages/${site.id}`} title="View">
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button variant="default" size="icon" asChild>
-                      <Link href={`/site/editor?mode=edit&id=${site.id}`} title="Edit">
-                        <Pencil className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="icon" title="Delete">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the page and any URL paths associated with it.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(site.id)}>
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                </div>
-              </CardFooter>
-            </Card>
+            <Link key={site.id} href={`/site/pages/${site.id}`} className="block group">
+                <Card className="transition-all group-hover:border-primary group-hover:shadow-md">
+                    <div className="flex flex-col sm:flex-row sm:items-center p-6">
+                        <div className="flex-1">
+                            <CardTitle className="truncate">Page: {site.id.substring(0, 8)}...</CardTitle>
+                            <CardDescription>
+                            Last updated: {site.updatedAt ? new Date(site.updatedAt).toLocaleString() : 'N/A'}
+                            </CardDescription>
+                        </div>
+                        <div className="flex-1 pt-4 sm:pt-0">
+                            <p className="text-sm text-muted-foreground">
+                            This page has {site.elements.length} root element(s).
+                            </p>
+                        </div>
+                        <div className="flex-shrink-0 pt-4 sm:pt-0">
+                            <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                        </div>
+                    </div>
+                </Card>
+            </Link>
           ))}
         </div>
       )}
