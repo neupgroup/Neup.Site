@@ -26,6 +26,7 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
                         <SelectContent>
                             <SelectItem value="block">Block</SelectItem>
                             <SelectItem value="inline-block">Inline Block</SelectItem>
+                            <SelectItem value="inline">Inline</SelectItem>
                             <SelectItem value="flex">Flex</SelectItem>
                             <SelectItem value="grid">Grid</SelectItem>
                             <SelectItem value="none">None</SelectItem>
