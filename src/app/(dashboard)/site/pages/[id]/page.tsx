@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 const getEditUrlForType = (type: Site['type'], id: string) => {
     switch (type) {
         case 'editor':
-            return `/site/editor?id=${id}`;
+            return `/site/editor/dragger?id=${id}`;
         case 'ai':
             return `/site/editor/textual?id=${id}`;
         case 'html':
@@ -38,7 +38,7 @@ const getEditUrlForType = (type: Site['type'], id: string) => {
         case 'template':
             return `/site/editor/prebuilt?id=${id}`;
         default:
-            return `/site/editor?id=${id}`;
+            return `/site/editor/dragger?id=${id}`;
     }
 }
 

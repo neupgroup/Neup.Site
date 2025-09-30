@@ -62,7 +62,7 @@ export default function DashboardLayout({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Site Editor" asChild>
-                    <Link href="/site/editor">
+                    <Link href="/site/editor/dragger">
                         <LayoutTemplate />
                         <span>Site Editor</span>
                     </Link>

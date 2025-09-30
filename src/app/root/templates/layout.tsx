@@ -1,3 +1,4 @@
+
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ export default function TemplatesLayout({ children }: { children: ReactNode }) {
                 </Link>
             </div>
             <Button asChild>
-                <Link href="/site/editor">Back to Editor</Link>
+                <Link href="/site/editor/dragger">Back to Editor</Link>
             </Button>
         </header>
         <main className="flex justify-center">

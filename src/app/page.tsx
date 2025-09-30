@@ -31,7 +31,7 @@ export default function DashboardPage() {
               Visually build and manage your website pages.
             </p>
             <Button asChild>
-              <Link href="/site/editor">Go to Editor <ArrowRight className="ml-2" /></Link>
+              <Link href="/site/editor/dragger">Go to Editor <ArrowRight className="ml-2" /></Link>
             </Button>
           </CardContent>
         </Card>
