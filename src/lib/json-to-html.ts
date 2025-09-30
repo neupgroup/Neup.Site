@@ -8,7 +8,7 @@ function propertiesToStyleString(properties: Record<string, any>): string {
         'color', 'fontSize', 'fontWeight', 'textAlign', 'backgroundColor', 
         'backgroundImage', 'backgroundRepeat', 'border', 'borderRadius', 
         'boxShadow', 'flexDirection', 'justifyContent', 'alignItems', 
-        'flexWrap', 'gap', 'borderTop', 'paddingTop'
+        'flexWrap', 'gap', 'borderTop', 'paddingTop', 'visibility'
     ];
 
     for (const key of directProperties) {
@@ -25,6 +25,12 @@ function propertiesToStyleString(properties: Record<string, any>): string {
 
 function renderElementToHtml(element: CanvasElementData): string {
     const { type, properties, children, id } = element;
+    
+    // Check for visibility property
+    if (properties && properties['visibility'] === 'hidden') {
+        return ''; // Don't render the element if it's hidden
+    }
+    
     const styleString = propertiesToStyleString(properties);
     const classString = properties['className'] || '';
 
