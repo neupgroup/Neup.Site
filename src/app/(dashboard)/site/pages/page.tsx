@@ -45,11 +45,11 @@ export default function SitesPage() {
 
   if (loading) {
     return (
-      <div className="w-full">
+      <div className="w-full space-y-4">
         <div className="flex justify-end mb-4">
             <Skeleton className="h-10 w-36" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <Card key={i}>
               <CardHeader>
@@ -97,31 +97,33 @@ export default function SitesPage() {
             <p>Click "Create New Page" to get started.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-4">
           {sites.map((site) => (
-            <Card key={site.id} className="flex flex-col">
-              <CardHeader>
+            <Card key={site.id} className="flex flex-col sm:flex-row sm:items-center">
+              <CardHeader className="flex-1">
                 <CardTitle className="truncate">Page: {site.id.substring(0, 8)}...</CardTitle>
                 <CardDescription>
                   Last updated: {site.updatedAt ? new Date(site.updatedAt).toLocaleString() : 'N/A'}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow">
-                 <p className="text-sm text-muted-foreground line-clamp-3">
+              <CardContent className="flex-1 pt-6 sm:pt-0">
+                 <p className="text-sm text-muted-foreground">
                   This page has {site.elements.length} root element(s).
                 </p>
               </CardContent>
-              <CardFooter className="flex justify-end gap-2">
-                <Button variant="outline" size="icon" asChild>
-                  <Link href={`/preview/${site.id}`} title="Preview" target="_blank">
-                    <Eye className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="default" size="icon" asChild>
-                  <Link href={`/site/editor?mode=edit&id=${site.id}`} title="Edit">
-                    <Pencil className="h-4 w-4" />
-                  </Link>
-                </Button>
+              <CardFooter className="pt-6 sm:pt-0 justify-start sm:justify-end flex-shrink-0">
+                <div className="flex gap-2">
+                    <Button variant="outline" size="icon" asChild>
+                      <Link href={`/preview/${site.id}`} title="Preview" target="_blank">
+                        <Eye className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button variant="default" size="icon" asChild>
+                      <Link href={`/site/editor?mode=edit&id=${site.id}`} title="Edit">
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                </div>
               </CardFooter>
             </Card>
           ))}
