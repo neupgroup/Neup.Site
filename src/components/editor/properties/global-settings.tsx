@@ -57,7 +57,7 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
              <h2 className="text-lg font-semibold font-headline">Global Settings</h2>
         </header>
         <div className="flex-1 p-4 space-y-6">
-            <Accordion type="multiple" defaultValue={['css-framework']} className="w-full">
+            <Accordion type="single" collapsible defaultValue="css-framework" className="w-full">
                 <AccordionItem value="css-framework">
                     <AccordionTrigger className="text-sm font-medium">CSS Framework</AccordionTrigger>
                     <AccordionContent className="space-y-4">
@@ -145,5 +145,3 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
 };
 
 export default GlobalSettings;
-
-    
