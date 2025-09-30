@@ -98,15 +98,20 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         const content = properties['text'] || (isHeading ? 'New Heading' : 'New Text');
 
         if (isSelected) {
+            const selectedWrapperProps = {
+                ...wrapperProps,
+                style: {
+                    ...wrapperProps.style,
+                    display: 'inline-block',
+                }
+            };
             elementComponent = (
-                <div style={{ display: 'inline-block' }} {...dragHandlers}>
-                    <CanvasWrapper {...wrapperProps} >
-                        <HeadingTag>
-                            <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
-                        </HeadingTag>
-                        {renderResizeHandles()}
-                    </CanvasWrapper>
-                </div>
+                <CanvasWrapper {...selectedWrapperProps} {...dragHandlers}>
+                    <HeadingTag>
+                        <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
+                    </HeadingTag>
+                    {renderResizeHandles()}
+                </CanvasWrapper>
             );
         } else {
             elementComponent = (
