@@ -49,7 +49,7 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
     className: cn(
       'relative cursor-pointer transition-all group',
       isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:ring-1 hover:ring-primary/50',
-      {'min-h-[20px]': isContainer},
+      {'min-h-[20px] w-full': isContainer},
       className
     ),
     onClick: (e: React.MouseEvent) => {
