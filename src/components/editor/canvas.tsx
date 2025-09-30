@@ -85,14 +85,20 @@ const Canvas: FC<CanvasProps> = ({
         />
 
 
-        {elements.length === 0 && !draggedId && (
+        {elements.length === 0 && (
              <div 
                 className="flex items-center justify-center h-48"
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onDragOver(e) }}
             >
+              {draggedId ? (
+                 <div className="w-full h-16 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all p-4 mx-4">
+                    Drop here
+                </div>
+              ) : (
                 <div className="w-full h-full border-2 border-dashed border-muted rounded-lg flex items-center justify-center p-4">
                     <p className="text-muted-foreground text-center">Drag elements here to start building your page.</p>
                 </div>
+              )}
             </div>
         )}
       </div>
