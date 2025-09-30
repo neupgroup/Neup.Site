@@ -51,7 +51,7 @@ const Canvas: FC<CanvasProps> = ({
       <div 
         ref={canvasRef}
         className={cn(
-            "rounded-lg bg-card relative mb-48",
+            "rounded-lg bg-card relative mb-48 border-2 border-border",
              {'is-dragging': !!draggedId, 'is-dragging-section': isDraggingSection}
         )}
       >
