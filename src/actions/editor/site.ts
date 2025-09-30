@@ -25,15 +25,17 @@ export interface Site {
   id: string;
   elements: CanvasElementData[];
   reactComponent?: string;
+  type: 'editor' | 'ai' | 'html' | 'template';
   createdAt?: string | null;
   updatedAt?: string | null;
 }
 
 
-export async function createSite() {
+export async function createSite(type: Site['type'] = 'editor') {
   try {
     const docRef = await addDoc(collection(db, 'sites'), {
       elements: [],
+      type: type,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -85,6 +87,7 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
           id: docSnap.id,
           elements: data.elements || [],
           reactComponent: data.reactComponent,
+          type: data.type || 'editor',
           createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
           updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
         }
@@ -116,6 +119,7 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
         id: doc.id,
         elements: data.elements,
         reactComponent: data.reactComponent,
+        type: data.type || 'editor',
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
       } as Site;

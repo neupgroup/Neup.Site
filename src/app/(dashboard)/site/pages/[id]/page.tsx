@@ -27,6 +27,22 @@ import Link from 'next/link';
 import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+const getEditUrlForType = (type: Site['type'], id: string) => {
+    switch (type) {
+        case 'editor':
+            return `/site/editor?id=${id}`;
+        case 'ai':
+            return `/site/editor/textual?id=${id}`;
+        case 'html':
+            return `/site/editor/coder?id=${id}`;
+        case 'template':
+            return `/site/editor/prebuilt?id=${id}`;
+        default:
+            return `/site/editor?id=${id}`;
+    }
+}
+
+
 export default function ViewPage({ params: { id } }: { params: { id: string } }) {
   const { toast } = useToast();
   const router = useRouter();
@@ -36,6 +52,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [editUrl, setEditUrl] = useState<string>('');
 
 
   const fetchPage = useCallback(async () => {
@@ -43,6 +60,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
     const siteResult = await getSite(id);
     if (siteResult.success && siteResult.site) {
       setSite(siteResult.site);
+      setEditUrl(getEditUrlForType(siteResult.site.type, id));
     } else {
       setError(siteResult.error || 'Failed to load page content.');
     }
@@ -111,7 +129,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
               </Link>
             </Button>
             <Button asChild>
-                <Link href={`/site/editor?mode=edit&id=${id}`}>
+                <Link href={editUrl}>
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit Page
                 </Link>
