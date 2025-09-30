@@ -83,32 +83,32 @@ export default function SitesPage() {
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">My Sites</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Pages</h1>
         <Button asChild>
           <Link href="/site/editor">
-            <Plus className="mr-2 h-4 w-4" /> Create New Site
+            <Plus className="mr-2 h-4 w-4" /> Create New Page
           </Link>
         </Button>
       </header>
       {sites.length === 0 ? (
         <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
             <Globe className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold">No Sites Yet</h3>
-            <p>Click "Create New Site" to get started.</p>
+            <h3 className="text-lg font-semibold">No Pages Yet</h3>
+            <p>Click "Create New Page" to get started.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {sites.map((site) => (
             <Card key={site.id} className="flex flex-col">
               <CardHeader>
-                <CardTitle className="truncate">Site: {site.id.substring(0, 8)}...</CardTitle>
+                <CardTitle className="truncate">Page: {site.id.substring(0, 8)}...</CardTitle>
                 <CardDescription>
                   Last updated: {site.updatedAt ? new Date(site.updatedAt).toLocaleString() : 'N/A'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
                  <p className="text-sm text-muted-foreground line-clamp-3">
-                  This site has {site.elements.length} root element(s).
+                  This page has {site.elements.length} root element(s).
                 </p>
               </CardContent>
               <CardFooter className="flex justify-end gap-2">

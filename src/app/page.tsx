@@ -11,14 +11,14 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>My Sites</CardTitle>
+            <CardTitle>Pages</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              View and manage all of your saved sites.
+              View and manage all of your saved pages.
             </p>
             <Button asChild>
-              <Link href="/site/pages">View My Sites <ArrowRight className="ml-2" /></Link>
+              <Link href="/site/pages">View Pages <ArrowRight className="ml-2" /></Link>
             </Button>
           </CardContent>
         </Card>

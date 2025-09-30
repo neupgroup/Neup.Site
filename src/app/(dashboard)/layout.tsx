@@ -38,9 +38,9 @@ export default function DashboardLayout({
               </SidebarMenuItem>
               <SidebarMenuItem>
                  <Link href="/site/pages" legacyBehavior passHref>
-                    <SidebarMenuButton tooltip="My Sites">
+                    <SidebarMenuButton tooltip="Pages">
                         <Globe />
-                        <span>My Sites</span>
+                        <span>Pages</span>
                     </SidebarMenuButton>
                  </Link>
               </SidebarMenuItem>
