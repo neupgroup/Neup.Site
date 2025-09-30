@@ -10,7 +10,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Rocket, LayoutTemplate, Bug, Home, Globe, Settings, Link as LinkIcon } from 'lucide-react';
+import { Rocket, LayoutTemplate, Bug, Home, Globe, Settings, Link as LinkIcon, Database } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -51,6 +51,14 @@ export default function DashboardLayout({
                         <span>Paths</span>
                     </Link>
                  </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton tooltip="Sources" asChild>
+                    <Link href="/site/sources">
+                        <Database />
+                        <span>Sources</span>
+                    </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Site Editor" asChild>
