@@ -27,8 +27,7 @@ import Link from 'next/link';
 import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export default function ViewPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ViewPage({ params: { id } }: { params: { id: string } }) {
   const { toast } = useToast();
   const router = useRouter();
 
