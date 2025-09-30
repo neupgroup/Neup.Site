@@ -19,7 +19,7 @@ interface EditorHeaderProps {
 
 const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo, onViewCode, onPublish, onPreview, isSaving, isPreviewing }) => {
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between bg-card px-4 shadow-lg md:px-6 z-10 relative">
+    <header className="flex h-16 shrink-0 items-center justify-between bg-card px-4 shadow-md md:px-6 z-10 relative">
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
