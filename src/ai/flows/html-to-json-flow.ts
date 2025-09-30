@@ -24,7 +24,7 @@ export async function convertHtmlToJson(html: string): Promise<CanvasElementData
 
 const htmlToJsonPrompt = ai.definePrompt({
   name: 'htmlToJsonPrompt',
-  model: 'googleai/gemini-pro',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {
     schema: z.string(),
   },
