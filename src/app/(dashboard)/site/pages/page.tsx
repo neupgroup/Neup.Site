@@ -107,7 +107,7 @@ export default function SitesPage() {
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Pages</h1>
         <Button asChild>
-          <Link href="/site/editor">
+          <Link href="/site/pages/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Page
           </Link>
         </Button>
