@@ -9,5 +9,5 @@ export const list: CanvasElementData = {
         'display': 'block',
         'border': '1px dashed hsl(var(--border))',
     },
-    editorProperties: ['spacing', 'background', 'borders', 'effects']
+    editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };

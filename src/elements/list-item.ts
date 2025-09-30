@@ -8,5 +8,5 @@ export const listItem: CanvasElementData = {
         'padding': '10px',
         'display': 'block',
     },
-    editorProperties: ['content', 'typography', 'spacing', 'effects']
+    editorProperties: ['content', 'layout', 'typography', 'spacing', 'effects']
 };

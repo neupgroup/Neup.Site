@@ -10,5 +10,5 @@ export const text: CanvasElementData = {
         'fontSize': '16px',
         'textAlign': 'left',
     },
-    editorProperties: ['content', 'typography', 'spacing', 'effects']
+    editorProperties: ['content', 'layout', 'typography', 'spacing', 'effects']
 };

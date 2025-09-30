@@ -12,5 +12,5 @@ export const heading: CanvasElementData = {
         'textAlign': 'left',
         'level': 1,
     },
-    editorProperties: ['content', 'typography', 'spacing', 'effects']
+    editorProperties: ['content', 'layout', 'typography', 'spacing', 'effects']
 };
