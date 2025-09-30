@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getSites, type Site } from '@/actions/editor/site';
+import { getSites, type Site, deleteSite } from '@/actions/editor/site';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,9 +13,21 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Eye, Pencil, Globe } from 'lucide-react';
+import { AlertCircle, Plus, Eye, Pencil, Globe, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SitesPage() {
@@ -42,6 +54,16 @@ export default function SitesPage() {
   useEffect(() => {
     fetchSites();
   }, []);
+
+  const handleDelete = async (id: string) => {
+    const result = await deleteSite(id);
+    if (result.success) {
+      toast({ title: "Page Deleted", description: "The page and its associated paths have been deleted."});
+      fetchSites();
+    } else {
+      toast({ variant: "destructive", title: "Error", description: result.error });
+    }
+  }
 
   if (loading) {
     return (
@@ -123,6 +145,27 @@ export default function SitesPage() {
                         <Pencil className="h-4 w-4" />
                       </Link>
                     </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="icon" title="Delete">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the page and any URL paths associated with it.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(site.id)}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                 </div>
               </CardFooter>
             </Card>

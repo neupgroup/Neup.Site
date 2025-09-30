@@ -11,6 +11,10 @@ import {
   getDoc,
   getDocs,
   Timestamp,
+  deleteDoc,
+  query,
+  where,
+  writeBatch,
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
 import type { CanvasElementData } from '@/lib/schemas';
@@ -124,5 +128,39 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
       stack: error.stack,
     });
     return { success: false, error: error.message || 'Failed to fetch sites.' };
+  }
+}
+
+
+/**
+ * Deletes a site and its associated paths from Firestore.
+ * @param id The ID of the site to delete.
+ */
+export async function deleteSite(id: string) {
+  try {
+    const batch = writeBatch(db);
+
+    // 1. Delete the site document
+    const siteRef = doc(db, 'sites', id);
+    batch.delete(siteRef);
+
+    // 2. Find and delete all paths associated with this page
+    const pathsQuery = query(collection(db, 'paths'), where('pageId', '==', id));
+    const pathsSnapshot = await getDocs(pathsQuery);
+    pathsSnapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    // 3. Commit the batch
+    await batch.commit();
+
+    return { success: true };
+  } catch (error: any) {
+    console.error(`Failed to delete site with ID ${id}:`, error);
+    await logErrorToFirestore({
+      message: `Failed to delete site with ID ${id}: ` + error.message,
+      stack: error.stack,
+    });
+    return { success: false, error: error.message || 'Failed to delete site.' };
   }
 }
