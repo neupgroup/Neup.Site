@@ -101,3 +101,4 @@ const Canvas: FC<CanvasProps> = ({
 };
 
 export default Canvas;
+
