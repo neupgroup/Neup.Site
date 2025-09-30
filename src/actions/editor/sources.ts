@@ -8,10 +8,13 @@ import {
   doc,
   deleteDoc,
   getDocs,
+  getDoc,
   query,
   where,
   writeBatch,
   serverTimestamp,
+  setDoc,
+  Timestamp
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
 
@@ -33,6 +36,7 @@ export interface Source {
   methods: SourceMethod[];
   permitControl: boolean;
   ownedBy: string;
+  createdAt?: string | null;
 }
 
 export interface SourceCredential {
@@ -44,7 +48,7 @@ export interface SourceCredential {
 /**
  * Creates a new data source.
  */
-export async function createSource(sourceData: Omit<Source, 'id'>) {
+export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt'>) {
   try {
     const docRef = await addDoc(collection(db, 'sources'), {
       ...sourceData,
@@ -67,10 +71,15 @@ export async function createSource(sourceData: Omit<Source, 'id'>) {
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
   try {
     const querySnapshot = await getDocs(collection(db, 'sources'));
-    const sources = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    } as Source));
+    const sources = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        const createdAt = data.createdAt;
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+        } as Source
+    });
     return { success: true, sources };
   } catch (error: any) {
     console.error('Failed to fetch sources:', error);
@@ -81,6 +90,57 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
     return { success: false, error: error.message || 'Failed to fetch sources.' };
   }
 }
+
+
+/**
+ * Fetches a single data source by its ID.
+ */
+export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
+    try {
+        const sourceRef = doc(db, 'sources', id);
+        const docSnap = await getDoc(sourceRef);
+
+        if (!docSnap.exists()) {
+            return { success: false, error: 'Source not found.' };
+        }
+        
+        const data = docSnap.data();
+        const createdAt = data.createdAt;
+
+        const source = { 
+            id: docSnap.id, 
+            ...data,
+            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+        } as Source;
+        return { success: true, source };
+    } catch (error: any) {
+        console.error(`Failed to fetch source with ID ${id}:`, error);
+        await logErrorToFirestore({
+            message: `Failed to fetch source with ID ${id}: ` + error.message,
+            stack: error.stack,
+        });
+        return { success: false, error: error.message || 'Failed to fetch source.' };
+    }
+}
+
+/**
+ * Updates a data source.
+ */
+export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt'>>) {
+  try {
+    const sourceRef = doc(db, 'sources', id);
+    await setDoc(sourceRef, sourceData, { merge: true });
+    return { success: true, id };
+  } catch (error: any) {
+    console.error(`Failed to update source ${id}:`, error);
+    await logErrorToFirestore({
+      message: `Failed to update source ${id}: ` + error.message,
+      stack: error.stack,
+    });
+    return { success: false, error: error.message || `Failed to update source ${id}.` };
+  }
+}
+
 
 /**
  * Deletes a data source and its associated credentials.
