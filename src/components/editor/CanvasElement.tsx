@@ -97,22 +97,16 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         const HeadingTag = isHeading ? `h${properties['level'] || 1}` as keyof JSX.IntrinsicElements : 'div';
         const content = properties['text'] || (isHeading ? 'New Heading' : 'New Text');
 
-        if (isSelected) {
-            elementComponent = (
-                <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                    <HeadingTag>
-                        <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
-                    </HeadingTag>
-                    {renderResizeHandles()}
-                </CanvasWrapper>
-            );
-        } else {
-            elementComponent = (
-                <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+        elementComponent = (
+            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+                {isSelected ? (
+                     <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
+                ) : (
                     <HeadingTag dangerouslySetInnerHTML={{ __html: content }} />
-                </CanvasWrapper>
-            );
-        }
+                )}
+                {renderResizeHandles()}
+            </CanvasWrapper>
+        );
         break;
     }
     case 'button':
