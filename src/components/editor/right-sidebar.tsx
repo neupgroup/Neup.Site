@@ -93,7 +93,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   return (
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
-        <Accordion type="multiple" className="w-full">
+        <Accordion type="single" collapsible className="w-full" defaultValue="attributes">
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">

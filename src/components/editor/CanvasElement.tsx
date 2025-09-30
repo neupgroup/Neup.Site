@@ -151,11 +151,19 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       if (type === 'list') Tag = 'ul';
 
       elementComponent = (
-        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)} {...dragHandlers}>
+        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)} {...dragHandlers} isFlex={properties?.display === 'flex'}>
           <Tag 
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id, null)} 
             className="h-full w-full"
+             style={properties?.display === 'flex' ? {
+                display: 'flex',
+                flexDirection: properties.flexDirection,
+                justifyContent: properties.justifyContent,
+                alignItems: properties.alignItems,
+                flexWrap: properties.flexWrap,
+                gap: properties.gap,
+            } : {}}
           >
             {children && children.length > 0 
                 ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 

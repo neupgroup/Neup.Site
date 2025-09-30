@@ -17,6 +17,7 @@ interface CanvasWrapperProps {
   isContainer?: boolean;
   dangerouslySetInnerHTML?: { __html: string };
   customCss?: string;
+  isFlex?: boolean;
 }
 
 const CanvasWrapper: FC<CanvasWrapperProps> = ({ 
@@ -31,17 +32,32 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
     onDrop,
     isContainer, 
     dangerouslySetInnerHTML, 
-    customCss 
+    customCss,
+    isFlex,
 }) => {
   const isSelected = selectedElement === id;
   const customCssId = `custom-css-${id}`;
 
   const Tag = 'div';
+  
+  let finalStyle = style ? {...style} : {};
+
+  // If it's a flex container, remove flex properties from the wrapper
+  // as they will be applied to the inner tag.
+  if (isFlex) {
+      delete finalStyle.display;
+      delete finalStyle.flexDirection;
+      delete finalStyle.justifyContent;
+      delete finalStyle.alignItems;
+      delete finalStyle.flexWrap;
+      delete finalStyle.gap;
+  }
+
 
   const finalProps: any = {
     id,
     'data-custom-css-id': customCssId,
-    style,
+    style: finalStyle,
     draggable: true,
     onDragStart: onDragStart,
     onDragOver: onDragOver,
