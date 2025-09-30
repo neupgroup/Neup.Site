@@ -74,6 +74,7 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         if (el?.type === 'section') {
             setIsDraggingSection(true);
         }
+        console.log('Drag state started.');
     };
 
     const throttledDragOver = useCallback((e: DragEvent, parentId: string | null = null) => {
@@ -139,7 +140,6 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         dragCounter.current++;
 
         if (dragCounter.current === 1) { // First enter
-             console.log('Drag state started.');
              try {
                 const dataStr = e.dataTransfer.getData('application/json');
                 if (dataStr) {
@@ -184,3 +184,5 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         handleDragLeave,
     };
 };
+
+    

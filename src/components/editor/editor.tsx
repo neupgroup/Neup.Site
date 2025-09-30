@@ -1,7 +1,7 @@
 
 'use client';
 import type { FC } from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, DragEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
@@ -12,6 +12,7 @@ import { saveSite, createSite } from '@/actions/editor/site';
 import { useToast } from '@/hooks/use-toast';
 import type { CanvasElementData } from '@/lib/schemas';
 import { elementDefinitions } from '@/elements';
+import { temp_element } from '@/elements/html';
 
 interface EditorProps {
     initialElements: CanvasElementData[];
@@ -25,6 +26,8 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
   const [historyIndex, setHistoryIndex] = useState(0);
   const elements = history[historyIndex];
   const { toast } = useToast();
+
+  const [draggedId, setDraggedId] = useState<string | null>(null);
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -80,6 +83,130 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
       }
       return null;
   }
+
+  const handleDragStart = (e: DragEvent, id: string) => {
+    e.dataTransfer.setData('application/json', JSON.stringify({id, type: 'canvas-element'}));
+    setDraggedId(id);
+    console.log('Drag state started.');
+  };
+
+  const removeElementRecursive = (els: CanvasElementData[], id: string): [CanvasElementData[], CanvasElementData | null] => {
+    let foundElement: CanvasElementData | null = null;
+    const newEls = els.reduce((acc, el) => {
+        if (el.id === id) {
+            foundElement = el;
+            return acc;
+        }
+        if (el.children) {
+            const [updatedChildren, childFound] = removeElementRecursive(el.children, id);
+            if (childFound) {
+                foundElement = childFound;
+            }
+            el.children = updatedChildren;
+        }
+        acc.push(el);
+        return acc;
+    }, [] as CanvasElementData[]);
+    return [newEls, foundElement];
+  };
+
+  const handleDragOver = (e: DragEvent, targetParentId?: string | null, targetElementId?: string | null) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      setElements(prev => {
+          let [cleanedElements] = removeElementRecursive(prev, 'temp_element');
+          
+          if (targetElementId === 'temp_element') return cleanedElements;
+
+          const insertPlaceholder = (els: CanvasElementData[]): CanvasElementData[] => {
+              if (targetParentId) {
+                  return els.map(el => {
+                      if (el.id === targetParentId) {
+                          const newChildren = el.children ? [...el.children] : [];
+                          const dropIndex = targetElementId ? newChildren.findIndex(c => c.id === targetElementId) : newChildren.length;
+                          newChildren.splice(dropIndex, 0, temp_element);
+                          return {...el, children: newChildren};
+                      }
+                      if (el.children) {
+                          return {...el, children: insertPlaceholder(el.children)};
+                      }
+                      return el;
+                  });
+              } else {
+                  const dropIndex = targetElementId ? els.findIndex(c => c.id === targetElementId) : els.length;
+                  const newEls = [...els];
+                  newEls.splice(dropIndex, 0, temp_element);
+                  return newEls;
+              }
+          };
+          return insertPlaceholder(cleanedElements);
+      }, false);
+  };
+  
+  const handleDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+       // Only remove if leaving the canvas entirely
+      const canvas = (e.currentTarget as HTMLElement).closest('.h-screen.w-full');
+      if (canvas && !canvas.contains(e.relatedTarget as Node)) {
+          setElements(prev => removeElementRecursive(prev, 'temp_element')[0], false);
+          console.log('Drag state exited.');
+      }
+  }
+
+  const handleDrop = (e: DragEvent, parentId?: string, dropZoneId?: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Drag state exited.');
+
+      const dataStr = e.dataTransfer.getData('application/json');
+      if (!dataStr) return;
+      const data = JSON.parse(dataStr);
+
+      setElements(prev => {
+          const [elementsWithoutPlaceholder] = removeElementRecursive(prev, 'temp_element');
+          let [elementsWithoutDragged, draggedElement] = removeElementRecursive(elementsWithoutPlaceholder, data.id);
+
+          if (!draggedElement) {
+              // It's a new element from the sidebar
+              const definition = elementDefinitions[data.elementType as CanvasElementData['type']];
+              draggedElement = {
+                  ...JSON.parse(JSON.stringify(definition)),
+                  id: `${data.elementType}-${Date.now()}`,
+                  properties: definition.properties || {},
+              };
+          }
+
+          if (!draggedElement) return elementsWithoutPlaceholder;
+
+          const insertElement = (els: CanvasElementData[]): CanvasElementData[] => {
+              if (parentId) {
+                  return els.map(el => {
+                      if (el.id === parentId) {
+                          const newChildren = el.children ? [...el.children] : [];
+                          const dropIndex = dropZoneId ? newChildren.findIndex(c => c.id === dropZoneId) : newChildren.length;
+                          newChildren.splice(dropIndex, 0, draggedElement!);
+                          return {...el, children: newChildren};
+                      }
+                      if (el.children) {
+                          return {...el, children: insertElement(el.children)};
+                      }
+                      return el;
+                  });
+              } else {
+                  const newEls = [...els];
+                  const dropIndex = dropZoneId ? newEls.findIndex(c => c.id === dropZoneId) : newEls.length;
+                  newEls.splice(dropIndex, 0, draggedElement!);
+                  return newEls;
+              }
+          }
+          return insertElement(elementsWithoutDragged);
+      });
+
+      setDraggedId(null);
+  };
+
 
   const moveElement = (draggedId: string, dropZoneId: string | null, parentId?: string) => {
     try {
@@ -376,22 +503,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
   
   const deleteElement = useCallback((id: string) => {
     try {
-        setElements(prev => {
-        // Deep clone to avoid mutation
-        const clonedPrev = JSON.parse(JSON.stringify(prev));
-        const deleteRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-            return els.filter(el => {
-                if (el.id === id) {
-                    return false;
-                }
-                if (el.children) {
-                    el.children = deleteRecursively(el.children);
-                }
-                return true;
-            });
-        };
-        return deleteRecursively(clonedPrev);
-        });
+        setElements(prev => removeElementRecursive(prev, id)[0]);
         setSelectedElement(null);
     } catch (e: any) {
         console.error("Error deleting element:", e);
@@ -607,7 +719,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 
 
   return (
-    <div className="flex h-screen w-full flex-col bg-background text-foreground">
+    <div className="flex h-screen w-full flex-col bg-background text-foreground" onDragLeave={handleDragLeave}>
       <EditorHeader 
         onUndo={undo}
         onRedo={redo}
@@ -631,9 +743,10 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             selectedElement={selectedElement} 
             onSelectElement={setSelectedElement}
             updateElement={updateElement}
-            moveElement={moveElement}
-            addElement={addElement}
-            addGeneratedElement={addGeneratedElement}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            draggedId={draggedId}
             />
         </main>
         <RightSidebar 

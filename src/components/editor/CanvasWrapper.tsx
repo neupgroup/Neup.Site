@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { type FC } from 'react';
+import React, { type FC, DragEvent } from 'react';
 import { cn } from '@/lib/utils';
 
 interface CanvasWrapperProps {
@@ -11,9 +11,9 @@ interface CanvasWrapperProps {
   onSelectElement: (id: string | null) => void;
   children?: React.ReactNode;
   style?: React.CSSProperties;
-  onDragStart: (e: React.DragEvent, id: string) => void;
-  onDragEnter: (e: React.DragEvent, id: string) => void;
-  onDragLeave: (e: React.DragEvent) => void;
+  onDragStart: (e: React.DragEvent) => void;
+  onDragOver?: (e: DragEvent) => void;
+  onDrop?: (e: DragEvent) => void;
   isContainer?: boolean;
   dangerouslySetInnerHTML?: { __html: string };
   customCss?: string;
@@ -26,9 +26,9 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
     onSelectElement, 
     children, 
     style, 
-    onDragStart, 
-    onDragEnter, 
-    onDragLeave, 
+    onDragStart,
+    onDragOver,
+    onDrop,
     isContainer, 
     dangerouslySetInnerHTML, 
     customCss 
@@ -43,9 +43,9 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
     'data-custom-css-id': customCssId,
     style,
     draggable: true,
-    onDragStart: (e: React.DragEvent) => onDragStart(e, id),
-    onDragEnter: (e: React.DragEvent) => onDragEnter(e, id),
-    onDragLeave,
+    onDragStart: onDragStart,
+    onDragOver: onDragOver,
+    onDrop: onDrop,
     className: cn(
       'relative cursor-pointer transition-all group',
       isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:ring-1 hover:ring-primary/50',
@@ -75,3 +75,5 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
 };
 
 export default CanvasWrapper;
+
+    
