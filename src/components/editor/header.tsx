@@ -3,6 +3,7 @@ import { FC } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Eye, Rocket, Undo, Redo, Code } from 'lucide-react';
+import Link from 'next/link';
 
 interface EditorHeaderProps {
   onUndo: () => void;
@@ -18,18 +19,18 @@ const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo,
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card px-4 md:px-6">
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
-            <h1 className="font-headline text-xl font-semibold tracking-tight">Neup.Sites</h1>
-        </div>
+            <h1 className="font-headline text-xl font-semibold tracking-tight text-primary">Neup.Sites</h1>
+        </Link>
         <Separator orientation="vertical" className="h-6" />
-        <span className="text-sm text-muted-foreground">Page: Home</span>
+        <span className="text-sm text-muted-foreground">Editor</span>
       </div>
        <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
+        <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
           <Undo className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo}>
+        <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} aria-label="Redo">
           <Redo className="h-4 w-4" />
         </Button>
       </div>
