@@ -29,60 +29,60 @@ export default function DashboardLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="/" legacyBehavior passHref>
-                  <SidebarMenuButton tooltip="Dashboard">
+                <SidebarMenuButton tooltip="Dashboard" asChild>
+                  <Link href="/">
                     <Home />
                     <span>Dashboard</span>
-                  </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                 <Link href="/site/pages" legacyBehavior passHref>
-                    <SidebarMenuButton tooltip="Pages">
+                <SidebarMenuButton tooltip="Pages" asChild>
+                   <Link href="/site/pages">
                         <Globe />
                         <span>Pages</span>
-                    </SidebarMenuButton>
-                 </Link>
+                    </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
                <SidebarMenuItem>
-                 <Link href="/site/paths" legacyBehavior passHref>
-                    <SidebarMenuButton tooltip="Paths">
+                 <SidebarMenuButton tooltip="Paths" asChild>
+                    <Link href="/site/paths">
                         <LinkIcon />
                         <span>Paths</span>
-                    </SidebarMenuButton>
-                 </Link>
+                    </Link>
+                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                 <Link href="/site/editor" legacyBehavior passHref>
-                    <SidebarMenuButton tooltip="Site Editor">
+                <SidebarMenuButton tooltip="Site Editor" asChild>
+                    <Link href="/site/editor">
                         <LayoutTemplate />
                         <span>Site Editor</span>
-                    </SidebarMenuButton>
-                 </Link>
+                    </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                 <Link href="/root/templates" legacyBehavior passHref>
-                    <SidebarMenuButton tooltip="Templates">
+                <SidebarMenuButton tooltip="Templates" asChild>
+                    <Link href="/root/templates">
                         <LayoutTemplate />
                         <span>Templates</span>
-                    </SidebarMenuButton>
-                 </Link>
+                    </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
                <SidebarMenuItem>
-                 <Link href="/manage" legacyBehavior passHref>
-                    <SidebarMenuButton tooltip="Manage">
+                <SidebarMenuButton tooltip="Manage" asChild>
+                    <Link href="/manage">
                         <Settings />
                         <span>Manage</span>
-                    </SidebarMenuButton>
-                 </Link>
+                    </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                 <Link href="/errors" legacyBehavior passHref>
-                    <SidebarMenuButton tooltip="Error Logs">
+                <SidebarMenuButton tooltip="Error Logs" asChild>
+                    <Link href="/errors">
                         <Bug />
                         <span>Error Logs</span>
-                    </SidebarMenuButton>
-                </Link>
+                    </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
