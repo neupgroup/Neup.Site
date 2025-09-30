@@ -33,20 +33,24 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
                         </SelectContent>
                     </Select>
                 </div>
-                <PropertyInput
-                  label="Width"
-                  value={properties['width'] as string || ''}
-                  onChange={(v) => onUpdate('width', v)}
-                  placeholder="e.g., 100px or 100%"
-                  suggestions={['auto', '100%', '50%']}
-                />
-                <PropertyInput
-                  label="Height"
-                  value={properties['height'] as string || ''}
-                  onChange={(v) => onUpdate('height', v)}
-                  placeholder="e.g., 100px"
-                  suggestions={['auto', '48px', '64px', '100px', '70vh', '100vh']}
-                />
+                {properties['display'] !== 'inline' && (
+                    <>
+                        <PropertyInput
+                        label="Width"
+                        value={properties['width'] as string || ''}
+                        onChange={(v) => onUpdate('width', v)}
+                        placeholder="e.g., 100px or 100%"
+                        suggestions={['auto', '100%', '50%']}
+                        />
+                        <PropertyInput
+                        label="Height"
+                        value={properties['height'] as string || ''}
+                        onChange={(v) => onUpdate('height', v)}
+                        placeholder="e.g., 100px"
+                        suggestions={['auto', '48px', '64px', '100px', '70vh', '100vh']}
+                        />
+                    </>
+                )}
             </AccordionContent>
         </AccordionItem>
     );

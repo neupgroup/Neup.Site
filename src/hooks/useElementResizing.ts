@@ -42,6 +42,10 @@ export const useElementResizing = ({ selectedElement, elements, updateElement, c
 
     const handleResizeStart = useCallback((e: React.MouseEvent, handle: ResizingState['handle']) => {
         if (!selectedElement) return;
+
+        const elData = findElementRecursive(elements, selectedElement)?.element;
+        if (elData?.properties?.display === 'inline') return;
+
         e.stopPropagation();
         e.preventDefault();
 
@@ -61,7 +65,7 @@ export const useElementResizing = ({ selectedElement, elements, updateElement, c
             initialLeft: rect.left,
         });
 
-    }, [selectedElement]);
+    }, [selectedElement, elements]);
 
     const handleMouseMove = useCallback((e: globalThis.MouseEvent) => {
         if (!resizingState || !canvasRef.current) return;
