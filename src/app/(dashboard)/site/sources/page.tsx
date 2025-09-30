@@ -85,7 +85,6 @@ export default function SourcesPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Base Path</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -98,18 +97,14 @@ export default function SourcesPage() {
                   </TableRow>
                 )}
                 {sources.map(source => (
-                  <TableRow key={source.id}>
-                    <TableCell className="font-medium">
-                        <Link href={`/site/sources/${source.id}`} className="hover:underline">{source.name}</Link>
+                  <TableRow key={source.id} className="group">
+                     <TableCell className="font-medium">
+                        <Link href={`/site/sources/${source.id}`} className="flex items-center justify-between hover:underline">
+                            {source.name}
+                            <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </Link>
                     </TableCell>
                     <TableCell>{source.basePath}</TableCell>
-                    <TableCell className="text-right">
-                       <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/site/sources/${source.id}`}>
-                            <ArrowRight className="h-4 w-4" />
-                          </Link>
-                       </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
