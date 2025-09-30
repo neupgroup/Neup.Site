@@ -25,27 +25,6 @@ interface CanvasElementProps {
   draggedId: string | null;
 }
 
-const extractStyles = (properties: Record<string, any>): React.CSSProperties => {
-    const style: React.CSSProperties = {};
-    const directProperties = [
-        'width', 'height', 'minHeight', 'display', 'padding', 'margin', 
-        'color', 'fontSize', 'fontWeight', 'textAlign', 'backgroundColor', 
-        'backgroundImage', 'backgroundRepeat', 'border', 'borderRadius', 
-        'boxShadow', 'flexDirection', 'justifyContent', 'alignItems', 
-        'flexWrap', 'gap'
-    ];
-
-    for (const key of directProperties) {
-        if (properties[key]) {
-            // A simple mapping for keys that don't match CSS property names
-            const cssKey = key === 'bgcolor' ? 'backgroundColor' : key;
-            (style as any)[cssKey] = properties[key];
-        }
-    }
-
-    return style;
-};
-
 const CanvasElement: FC<CanvasElementProps> = (props) => {
   const {
     element,
@@ -62,7 +41,6 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
   } = props;
   const { id, type, children } = element;
   const properties = element.properties || {};
-  const styles = extractStyles(properties);
   const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(type);
   const isSelected = selectedElement === id;
 
@@ -75,7 +53,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     className: properties['className'],
     selectedElement,
     onSelectElement,
-    style: styles,
+    style: properties as React.CSSProperties,
     onDragStart: (e: React.DragEvent) => onDragStart(e, id),
     isContainer,
     customCss: properties['customCss']
@@ -122,7 +100,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         if (isSelected) {
             elementComponent = (
                 <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                    <HeadingTag style={styles}>
+                    <HeadingTag style={properties as React.CSSProperties}>
                         <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
                     </HeadingTag>
                     {renderResizeHandles()}
@@ -131,7 +109,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         } else {
             elementComponent = (
                 <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                    <HeadingTag style={styles} dangerouslySetInnerHTML={{ __html: content }} />
+                    <HeadingTag style={properties as React.CSSProperties} dangerouslySetInnerHTML={{ __html: content }} />
                 </CanvasWrapper>
             );
         }
@@ -140,7 +118,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'button':
         elementComponent = (
             <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                <div style={{...styles, display: 'inline-block'}} >
+                <div style={{...properties as React.CSSProperties, display: 'inline-block'}} >
                     <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
                 </div>
                 {renderResizeHandles()}
@@ -150,8 +128,8 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'image':
          elementComponent = (
             <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <div style={styles} className="w-full h-full overflow-hidden">
-                    {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(styles.width)) || 200} height={parseInt(String(styles.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
+                <div style={properties as React.CSSProperties} className="w-full h-full overflow-hidden">
+                    {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(properties.width)) || 200} height={parseInt(String(properties.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
                 </div>
                 {renderResizeHandles()}
             </CanvasWrapper>
@@ -160,7 +138,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'video':
          elementComponent = (
             <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <video controls src={properties['src']} className="w-full h-full" style={styles}/>
+                <video controls src={properties['src']} className="w-full h-full" style={properties as React.CSSProperties}/>
                 {renderResizeHandles()}
             </CanvasWrapper>
          );
@@ -180,7 +158,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
           <Tag 
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id, null)} 
-            style={styles} // Apply styles directly to the Tag
+            style={properties as React.CSSProperties} // Apply styles directly to the Tag
             className="h-full w-full"
           >
             {children && children.length > 0 
@@ -195,7 +173,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'list-item':
       elementComponent = (
         <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-          <li style={styles}>
+          <li style={properties as React.CSSProperties}>
             <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
           </li>
           {renderResizeHandles()}
@@ -205,7 +183,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'input':
         elementComponent = (
             <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} style={styles} className="w-full h-full bg-background" />
+               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} style={properties as React.CSSProperties} className="w-full h-full bg-background" />
                {renderResizeHandles()}
             </CanvasWrapper>
         );
@@ -213,7 +191,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'textarea':
         elementComponent = (
             <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-               <Textarea value={properties['value']} placeholder={properties['placeholder']} style={styles} className="w-full h-full bg-background" />
+               <Textarea value={properties['value']} placeholder={properties['placeholder']} style={properties as React.CSSProperties} className="w-full h-full bg-background" />
                {renderResizeHandles()}
             </CanvasWrapper>
         );
@@ -221,7 +199,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'label':
         elementComponent = (
             <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                <label style={styles}><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
+                <label style={properties as React.CSSProperties}><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
                 {renderResizeHandles()}
             </CanvasWrapper>
         );
@@ -254,5 +232,3 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
 };
 
 export default CanvasElement;
-
-    
