@@ -99,8 +99,8 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
 
         if (isSelected) {
             elementComponent = (
-                <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                    <HeadingTag style={properties as React.CSSProperties}>
+                <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+                    <HeadingTag>
                         <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
                     </HeadingTag>
                     {renderResizeHandles()}
@@ -108,8 +108,8 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
             );
         } else {
             elementComponent = (
-                <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                    <HeadingTag style={properties as React.CSSProperties} dangerouslySetInnerHTML={{ __html: content }} />
+                <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+                    <HeadingTag dangerouslySetInnerHTML={{ __html: content }} />
                 </CanvasWrapper>
             );
         }
@@ -117,8 +117,8 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     }
     case 'button':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                <div style={{...properties as React.CSSProperties, display: 'inline-block'}} >
+            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+                <div style={{display: 'inline-block'}} >
                     <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
                 </div>
                 {renderResizeHandles()}
@@ -128,7 +128,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'image':
          elementComponent = (
             <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <div style={properties as React.CSSProperties} className="w-full h-full overflow-hidden">
+                <div style={{width: '100%', height: '100%'}} className="overflow-hidden">
                     {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(properties.width)) || 200} height={parseInt(String(properties.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
                 </div>
                 {renderResizeHandles()}
@@ -138,7 +138,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'video':
          elementComponent = (
             <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <video controls src={properties['src']} className="w-full h-full" style={properties as React.CSSProperties}/>
+                <video controls src={properties['src']} className="w-full h-full" />
                 {renderResizeHandles()}
             </CanvasWrapper>
          );
@@ -154,11 +154,10 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       if (type === 'list') Tag = 'ul';
 
       elementComponent = (
-        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)} style={{}} {...dragHandlers}>
+        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)} {...dragHandlers}>
           <Tag 
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id, null)} 
-            style={properties as React.CSSProperties} // Apply styles directly to the Tag
             className="h-full w-full"
           >
             {children && children.length > 0 
@@ -172,8 +171,8 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       break;
     case 'list-item':
       elementComponent = (
-        <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-          <li style={properties as React.CSSProperties}>
+        <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+          <li>
             <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
           </li>
           {renderResizeHandles()}
@@ -182,24 +181,24 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       break;
     case 'input':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} style={properties as React.CSSProperties} className="w-full h-full bg-background" />
+            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} className="w-full h-full bg-background" />
                {renderResizeHandles()}
             </CanvasWrapper>
         );
         break;
     case 'textarea':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-               <Textarea value={properties['value']} placeholder={properties['placeholder']} style={properties as React.CSSProperties} className="w-full h-full bg-background" />
+            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+               <Textarea value={properties['value']} placeholder={properties['placeholder']} className="w-full h-full bg-background" />
                {renderResizeHandles()}
             </CanvasWrapper>
         );
         break;
     case 'label':
         elementComponent = (
-            <CanvasWrapper {...wrapperProps} style={{}} {...dragHandlers}>
-                <label style={properties as React.CSSProperties}><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
+            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+                <label><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
                 {renderResizeHandles()}
             </CanvasWrapper>
         );

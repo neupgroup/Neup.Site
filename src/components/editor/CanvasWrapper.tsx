@@ -36,7 +36,7 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
   const isSelected = selectedElement === id;
   const customCssId = `custom-css-${id}`;
 
-  const Tag = isContainer ? 'div' : 'div';
+  const Tag = 'div';
 
   const finalProps: any = {
     id,
@@ -48,8 +48,10 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
     onDrop: onDrop,
     className: cn(
       'relative cursor-pointer transition-all group',
+      // Default to inline-block so wrapper shrinks to content/style width
+      !isContainer && (style?.display === 'block' ? 'block' : 'inline-block'),
       isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:ring-1 hover:ring-primary/50',
-      {'min-h-[20px]': isContainer},
+      {'min-h-[20px] w-full': isContainer},
       className
     ),
     onClick: (e: React.MouseEvent) => {
@@ -75,5 +77,3 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
 };
 
 export default CanvasWrapper;
-
-    
