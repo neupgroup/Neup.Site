@@ -57,7 +57,7 @@ const WebsiteBuilderPage: FC<WebsiteBuilderPageProps> = async ({ searchParams })
 
   if (mode === 'edit' && id) {
     const { success, site } = await getSite(id);
-    if (success && site && site.elements.length > 0) {
+    if (success && site && site.elements?.length > 0) {
       siteElements = site.elements;
     } else {
         // Handle case where site is not found or empty

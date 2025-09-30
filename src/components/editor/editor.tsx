@@ -28,6 +28,8 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
   const { toast } = useToast();
 
   const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -683,24 +685,28 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
   }
 
   const handlePublish = async () => {
+    setIsSaving(true);
     try {
         await handleSaveFlow();
         toast({
-            title: 'Site Published!',
+            title: 'Site Saved!',
             description: 'Your website has been saved successfully.',
         });
     } catch (error: any) {
-        console.error("Error publishing site:", error);
+        console.error("Error saving site:", error);
         toast({
             variant: 'destructive',
-            title: 'Publishing Failed',
-            description: error.message || 'An unknown error occurred while publishing.',
+            title: 'Saving Failed',
+            description: error.message || 'An unknown error occurred while saving.',
         });
         logErrorToFirestore({ message: error.message, stack: error.stack });
+    } finally {
+        setIsSaving(false);
     }
   };
 
   const handlePreview = async () => {
+    setIsPreviewing(true);
     try {
       const savedSiteId = await handleSaveFlow();
       if (savedSiteId) {
@@ -714,6 +720,8 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         description: `Could not save the site for previewing. ${error.message}`,
       });
       logErrorToFirestore({ message: error.message, stack: error.stack });
+    } finally {
+      setIsPreviewing(false);
     }
   };
 
@@ -728,6 +736,8 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
         onViewCode={() => {}}
         onPublish={handlePublish}
         onPreview={handlePreview}
+        isSaving={isSaving}
+        isPreviewing={isPreviewing}
       />
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 
@@ -763,5 +773,3 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
 };
 
 export default Editor;
-
-    

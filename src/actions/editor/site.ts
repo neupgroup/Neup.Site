@@ -75,7 +75,7 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
 
         const site: Site = {
           id: docSnap.id,
-          elements: data.elements as CanvasElementData[],
+          elements: data.elements || [],
           createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
           updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
         }
