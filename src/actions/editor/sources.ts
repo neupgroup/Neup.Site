@@ -129,7 +129,12 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
 export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt'>>) {
   try {
     const sourceRef = doc(db, 'sources', id);
-    await setDoc(sourceRef, sourceData, { merge: true });
+    // Ensure methods is an array, even if it's empty
+    const dataToUpdate = {
+        ...sourceData,
+        methods: sourceData.methods || [],
+    };
+    await setDoc(sourceRef, dataToUpdate, { merge: true });
     return { success: true, id };
   } catch (error: any) {
     console.error(`Failed to update source ${id}:`, error);
