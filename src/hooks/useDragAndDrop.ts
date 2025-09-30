@@ -36,6 +36,7 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
     }
 
     const resetDragState = () => {
+        console.log('Drag state exited.');
         setDraggedId(null);
         setIsDraggingSection(false);
         setDropZone({parentId: null, elementId: null});
@@ -131,6 +132,7 @@ export const useDragAndDrop = ({ moveElement, addElement, addGeneratedElement, e
         dragCounter.current++;
 
         if (dragCounter.current === 1) { // First enter
+             console.log('Drag state started.');
              try {
                 const dataStr = e.dataTransfer.getData('application/json');
                 if (dataStr) {
