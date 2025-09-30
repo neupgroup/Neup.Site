@@ -14,11 +14,13 @@ import {
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
 import type { CanvasElementData } from '@/lib/schemas';
+import { convertJsonToJsx } from '@/lib/json-to-jsx';
 
 // Define a type for a Site, which can be extended as needed.
 export interface Site {
   id: string;
   elements: CanvasElementData[];
+  reactComponent?: string;
   createdAt?: string | null;
   updatedAt?: string | null;
 }
@@ -45,8 +47,10 @@ export async function createSite() {
 export async function saveSite(id: string, elements: any) {
   try {
     const siteRef = doc(db, 'sites', id);
+    const reactComponent = convertJsonToJsx(elements);
     await setDoc(siteRef, {
       elements,
+      reactComponent,
       updatedAt: serverTimestamp(),
     }, { merge: true });
     return { success: true, id };
@@ -76,6 +80,7 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
         const site: Site = {
           id: docSnap.id,
           elements: data.elements || [],
+          reactComponent: data.reactComponent,
           createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
           updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
         }
@@ -106,6 +111,7 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
       return {
         id: doc.id,
         elements: data.elements,
+        reactComponent: data.reactComponent,
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
       } as Site;
