@@ -1,3 +1,4 @@
+
 import { Suspense } from 'react';
 import type { FC } from 'react';
 import Editor from '@/components/editor/editor';
@@ -55,9 +56,9 @@ const WebsiteBuilderPage: FC<WebsiteBuilderPageProps> = async ({ searchParams })
   let siteId: string | undefined = id;
 
   if (mode === 'edit' && id) {
-    const { success, elements } = await getSite(id);
-    if (success && elements && elements.length > 0) {
-      siteElements = elements;
+    const { success, site } = await getSite(id);
+    if (success && site && site.elements.length > 0) {
+      siteElements = site.elements;
     } else {
         // Handle case where site is not found or empty
         console.warn(`Site with id ${id} not found or is empty. Starting new editor session.`);

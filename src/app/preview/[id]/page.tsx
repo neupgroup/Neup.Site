@@ -1,4 +1,5 @@
 
+
 import { getSite } from '@/actions/editor/site';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -22,9 +23,9 @@ export default async function PreviewPage({ params }: { params: { id: string } }
     });
   }
 
-  const { success, elements, error } = await getSite(id);
+  const { success, site, error } = await getSite(id);
 
-  if (!success || !elements) {
+  if (!success || !site) {
     const errorHtml = `
       <div style="display: flex; height: 100vh; width: 100%; align-items: center; justify-content: center; background-color: #f5f5f5; padding: 1rem;">
         <div style="border: 1px solid #fecaca; background-color: #fef2f2; color: #b91c1c; padding: 1rem; border-radius: 0.5rem; max-width: 24rem;">
@@ -39,7 +40,7 @@ export default async function PreviewPage({ params }: { params: { id: string } }
     });
   }
 
-  const htmlContent = convertJsonToHtml(elements);
+  const htmlContent = convertJsonToHtml(site.elements);
 
   return new Response(htmlContent, {
     headers: { 'Content-Type': 'text/html' },

@@ -10,7 +10,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Rocket, LayoutTemplate, Bug, Home } from 'lucide-react';
+import { Rocket, LayoutTemplate, Bug, Home, Globe } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -30,11 +30,19 @@ export default function DashboardLayout({
             <SidebarMenu>
               <SidebarMenuItem>
                 <Link href="/" legacyBehavior passHref>
-                  <SidebarMenuButton tooltip="Dashboard" isActive={true}>
+                  <SidebarMenuButton tooltip="Dashboard">
                     <Home />
                     <span>Dashboard</span>
                   </SidebarMenuButton>
                 </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                 <Link href="/site/pages" legacyBehavior passHref>
+                    <SidebarMenuButton tooltip="My Sites">
+                        <Globe />
+                        <span>My Sites</span>
+                    </SidebarMenuButton>
+                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
                  <Link href="/site/editor" legacyBehavior passHref>
@@ -68,7 +76,7 @@ export default function DashboardLayout({
                 <SidebarTrigger />
                  <h1 className="text-lg font-semibold">Dashboard</h1>
             </header>
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto p-4 md:p-8">
                 {children}
             </main>
         </SidebarInset>
