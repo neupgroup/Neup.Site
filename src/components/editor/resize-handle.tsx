@@ -1,3 +1,4 @@
+
 'use client';
 import { FC } from 'react';
 import { cn } from '@/lib/utils';
@@ -8,25 +9,56 @@ interface ResizeHandleProps {
 }
 
 const ResizeHandle: FC<ResizeHandleProps> = ({ position, onMouseDown }) => {
-  const baseClasses = 'absolute bg-white border-2 border-primary rounded-full';
-  const sizeClasses = 'w-3 h-3';
-  
-  const positionClasses = {
-    'top-left': 'top-0 left-0 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize',
-    'top': 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize',
-    'top-right': 'top-0 right-0 translate-x-1/2 -translate-y-1/2 cursor-nesw-resize',
-    'left': 'top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize',
-    'right': 'top-1/2 right-0 translate-x-1/2 -translate-y-1/2 cursor-ew-resize',
-    'bottom-left': 'bottom-0 left-0 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize',
-    'bottom': 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-ns-resize',
-    'bottom-right': 'bottom-0 right-0 translate-x-1/2 translate-y-1/2 cursor-nwse-resize',
+  const baseHandleClasses = 'absolute z-10';
+  const lineClasses = 'absolute bg-primary';
+
+  const renderHandle = () => {
+    switch (position) {
+      case 'top-left':
+        return (
+          <div className={cn(baseHandleClasses, 'top-0 left-0 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize w-4 h-4')}>
+            <div className={cn(lineClasses, 'w-full h-[2px] top-0 left-0')}></div>
+            <div className={cn(lineClasses, 'w-[2px] h-full top-0 left-0')}></div>
+          </div>
+        );
+      case 'top':
+        return <div className={cn(baseHandleClasses, 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize w-8 h-4')}><div className={cn(lineClasses, 'w-full h-[2px] top-0')}></div></div>;
+      case 'top-right':
+        return (
+          <div className={cn(baseHandleClasses, 'top-0 right-0 translate-x-1/2 -translate-y-1/2 cursor-nesw-resize w-4 h-4')}>
+            <div className={cn(lineClasses, 'w-full h-[2px] top-0 right-0')}></div>
+            <div className={cn(lineClasses, 'w-[2px] h-full top-0 right-0')}></div>
+          </div>
+        );
+      case 'left':
+        return <div className={cn(baseHandleClasses, 'top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize w-4 h-8')}><div className={cn(lineClasses, 'w-[2px] h-full left-0')}></div></div>;
+      case 'right':
+        return <div className={cn(baseHandleClasses, 'top-1/2 right-0 translate-x-1/2 -translate-y-1/2 cursor-ew-resize w-4 h-8')}><div className={cn(lineClasses, 'w-[2px] h-full right-0')}></div></div>;
+      case 'bottom-left':
+        return (
+          <div className={cn(baseHandleClasses, 'bottom-0 left-0 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize w-4 h-4')}>
+            <div className={cn(lineClasses, 'w-full h-[2px] bottom-0 left-0')}></div>
+            <div className={cn(lineClasses, 'w-[2px] h-full bottom-0 left-0')}></div>
+          </div>
+        );
+      case 'bottom':
+        return <div className={cn(baseHandleClasses, 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-ns-resize w-8 h-4')}><div className={cn(lineClasses, 'w-full h-[2px] bottom-0')}></div></div>;
+      case 'bottom-right':
+        return (
+          <div className={cn(baseHandleClasses, 'bottom-0 right-0 translate-x-1/2 translate-y-1/2 cursor-nwse-resize w-4 h-4')}>
+            <div className={cn(lineClasses, 'w-full h-[2px] bottom-0 right-0')}></div>
+            <div className={cn(lineClasses, 'w-[2px] h-full bottom-0 right-0')}></div>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
-    <div
-      className={cn(baseClasses, sizeClasses, positionClasses[position])}
-      onMouseDown={onMouseDown}
-    />
+    <div onMouseDown={onMouseDown}>
+      {renderHandle()}
+    </div>
   );
 };
 
