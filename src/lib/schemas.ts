@@ -1,4 +1,5 @@
 
+
 'use client';
 import { z } from 'zod';
 
@@ -33,6 +34,10 @@ export interface CanvasElementData {
   children?: CanvasElementData[];
   editorProperties?: EditorProperties;
   dataBindings?: Record<string, string>;
+  repeater?: {
+    enabled: boolean;
+    dataPath: string;
+  };
 }
 
 export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
@@ -42,6 +47,10 @@ export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() =
     children: z.array(CanvasElementDataSchema).optional(),
     editorProperties: z.any().optional(),
     dataBindings: z.record(z.string()).optional(),
+    repeater: z.object({
+        enabled: z.boolean(),
+        dataPath: z.string(),
+    }).optional(),
 }));
 
 export const TemplateSchema = z.object({

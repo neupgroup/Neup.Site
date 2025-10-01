@@ -20,6 +20,7 @@ import FlexboxProperties from './properties/flexbox';
 import GlobalSettings from './properties/global-settings';
 import ShadowProperties from './properties/shadow';
 import PageDataSource from './properties/page-data-source';
+import RepeaterProperties from './properties/repeater';
 
 interface RightSidebarProps {
   selectedElementId: string | null;
@@ -40,6 +41,7 @@ const propertyComponents: Record<string, React.FC<any>> = {
   background: BackgroundProperties,
   borders: BorderProperties,
   effects: ShadowProperties,
+  repeater: RepeaterProperties,
 };
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, siteId }) => {
@@ -122,10 +124,12 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     );
   }
 
+  const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(selectedElement.type);
+
   return (
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
-        <Accordion type="multiple" className="w-full" defaultValue={['attributes', 'content', 'image']}>
+        <Accordion type="multiple" className="w-full" defaultValue={['attributes', 'content', 'image', 'repeater']}>
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">
@@ -153,7 +157,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 }
 
                 // Pass the data binding updater to relevant components
-                if (groupKey === 'content' || groupKey === 'image') {
+                if (groupKey === 'content' || groupKey === 'image' || groupKey === 'repeater') {
                      return (
                         <PropertyComponent 
                             key={groupKey} 
@@ -170,6 +174,15 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             })}
              {selectedElement.properties?.display === 'flex' && (
                 <FlexboxProperties element={selectedElement} onUpdate={handleUpdate} />
+            )}
+             {isContainer && (
+                <RepeaterProperties
+                    element={selectedElement}
+                    onUpdate={(key: string, value: any) => {
+                        const newProperties = { ...selectedElement.properties, [key]: value };
+                        updateElement(selectedElementId, newProperties);
+                    }}
+                />
             )}
         </Accordion>
       </ScrollArea>

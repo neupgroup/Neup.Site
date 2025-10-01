@@ -1,4 +1,5 @@
 
+
 import type { CanvasElementData } from '@/lib/schemas';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {
@@ -22,7 +23,22 @@ function propertiesToStyleObject(properties: Record<string, any>): React.CSSProp
 
 
 function renderElementToJsx(element: CanvasElementData, level: number, isInsideLoop = false): string {
-    const { type, properties, children, id } = element;
+    const { type, properties, children, id, repeater } = element;
+    
+    if (repeater && repeater.enabled && repeater.dataPath) {
+        const loopVar = 'item'; // or make this configurable
+        const indexVar = 'index';
+        const childrenJsx = children ? children.map(child => renderElementToJsx(child, level + 1, true)).join('\n') : '';
+
+        return `
+    {items?.${repeater.dataPath}?.map((${loopVar}, ${indexVar}) => (
+        <div key={${loopVar}.id || ${indexVar}}>
+${childrenJsx}
+        </div>
+    ))}
+`;
+    }
+
     const style = propertiesToStyleObject(properties);
     const className = properties['className'] || '';
 
@@ -51,12 +67,10 @@ function renderElementToJsx(element: CanvasElementData, level: number, isInsideL
         attributes['defaultValue'] = properties['value'] || '';
     }
     
-    // Replace handlebars with dynamic props if inside a loop
     const processValue = (value: any): string => {
         if (isInsideLoop && typeof value === 'string') {
             const match = value.match(/\{\{((item\.)?[\w\.]+)\}\}/);
             if (match) {
-                 // It's a dynamic variable
                 return `{${match[1]}}`;
             }
         }
@@ -165,12 +179,33 @@ export function convertJsonToJsx(elements: CanvasElementData[]): string {
   }
   
   const componentBody = elements.map((element, index) => {
-    const singleElementJsx = renderElementToJsx(element, 3, true);
-    // Add key to the root element in the loop
-    return singleElementJsx.replace(/<(\w+)/, `<\$1 key={item.id || index}`);
+    // A top-level element might be a repeater itself.
+    const isRepeater = element.repeater && element.repeater.enabled && element.repeater.dataPath;
+    if (isRepeater) {
+        const loopVar = 'item';
+        const indexVar = 'index';
+        const childrenJsx = element.children ? element.children.map(child => renderElementToJsx(child, 3, true)).join('\n') : '';
+        const rootElementAttributes = `key={${loopVar}.id || ${indexVar}}`;
+
+        return `
+      {items?.${element.repeater.dataPath}?.map((${loopVar}, ${indexVar}) => (
+        <div ${rootElementAttributes}>
+${childrenJsx}
+        </div>
+      ))}
+`;
+    }
+
+    const singleElementJsx = renderElementToJsx(element, 2, false);
+    return singleElementJsx;
   }).join('\n');
 
-  return `
+
+  // If the top-level is not a repeater, we assume it's a single item component.
+  const containsRepeater = elements.some(el => el.repeater && el.repeater.enabled);
+  if (!containsRepeater) {
+    const singleItemJsx = elements.map(el => renderElementToJsx(el, 3, true)).join('\n');
+     return `
 ${imports}
 
 export default function GeneratedComponent({ items }) {
@@ -181,8 +216,28 @@ export default function GeneratedComponent({ items }) {
   return (
     <>
       {items.map((item, index) => (
-${componentBody}
+        <div key={item.id || index}>
+${singleItemJsx}
+        </div>
       ))}
+    </>
+  );
+}
+  `.trim();
+  }
+
+
+  return `
+${imports}
+
+export default function GeneratedComponent({ items }) {
+  if (!items) {
+    return <div>Loading...</div>;
+  }
+  
+  return (
+    <>
+${componentBody}
     </>
   );
 }
