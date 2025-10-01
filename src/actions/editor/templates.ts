@@ -31,6 +31,12 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
     if (!dataToSave.elements) {
         dataToSave.elements = [];
     }
+    
+    // If the method is textual, wrap the code in a Handlebars loop structure
+    // This prepares it for dynamic data rendering.
+    if (dataToSave.method === 'textual' && dataToSave.code) {
+        dataToSave.code = `{{#each items}}\n${dataToSave.code}\n{{/each}}`;
+    }
       
     if (id) {
       const templateRef = doc(db, TEMPLATES_COLLECTION, id);

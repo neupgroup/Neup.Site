@@ -111,7 +111,7 @@ export default function EditTemplateContentPage() {
           case 'codebase':
               return 'Enter HTML, JSON, or JSX...';
           case 'textual':
-              return 'Describe the component you want to create. e.g., "A hero section with a title, subtitle, and a call-to-action button."';
+              return 'Describe the component you want to create for each item in a list.\n\ne.g., A card with a title `{{name}}` and a description `{{description}}`. The image should be `{{imageUrl}}`.\n\nThe system will wrap this in a loop for you.';
           case 'dragger':
               return 'Template will be created from the dragger. (This method is not yet implemented).';
           default:
