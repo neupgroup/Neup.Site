@@ -12,7 +12,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2 } from 'lucide-react';
-import type { CanvasElementData } from '@/lib/schemas';
 import { Label } from '@/components/ui/label';
 
 const NO_SOURCE_VALUE = '--none--';
@@ -28,7 +27,6 @@ export default function CreateTemplatePage() {
   const [description, setDescription] = useState('');
   const [method, setMethod] = useState<'codebase' | 'textual' | 'dragger'>('codebase');
   const [sourceId, setSourceId] = useState(NO_SOURCE_VALUE);
-  const [code, setCode] = useState('');
 
   useEffect(() => {
     const fetchSources = async () => {
@@ -55,43 +53,25 @@ export default function CreateTemplatePage() {
     }
     
     setIsSaving(true);
-    let elements: CanvasElementData[] = [];
-
-    // For now, we are just saving the raw code.
-    // In the future, this is where you'd process the code based on the method.
-    // e.g., if (method === 'codebase' && looksLikeHtml(code)) { elements = await convertHtmlToJson(code); }
     
     const result = await saveTemplate({ 
         name, 
         description, 
         method, 
         source: sourceId === NO_SOURCE_VALUE ? '' : sourceId,
-        code,
-        elements, // Pass empty array for now
-        type: 'section', // Defaulting to section, could be made dynamic
+        code: '', // Code will be added in the next step
+        elements: [],
+        type: 'section', // Defaulting to section
     });
 
-    if (result.success) {
-        toast({ title: 'Template Saved!', description: `Template "${name}" has been saved.` });
-        router.push('/root/templates');
+    if (result.success && result.id) {
+        toast({ title: 'Template Created!', description: 'Now, let\'s define its content.' });
+        router.push(`/root/templates/${result.id}/edit/basics`);
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
+        setIsSaving(false);
     }
-    setIsSaving(false);
   };
-  
-  const getCodePlaceholder = () => {
-      switch(method) {
-          case 'codebase':
-              return 'Enter HTML, JSON, or JSX...';
-          case 'textual':
-              return 'Describe the component you want to create. e.g., "A hero section with a title, subtitle, and a call-to-action button."';
-          case 'dragger':
-              return 'Template will be created from the dragger. (This method is not yet implemented).';
-          default:
-              return '';
-      }
-  }
 
   return (
     <div className="w-full max-w-2xl space-y-6">
@@ -99,7 +79,7 @@ export default function CreateTemplatePage() {
             <CardHeader>
               <CardTitle>Create New Template</CardTitle>
               <CardDescription>
-                Define a new reusable component by specifying its creation method and data source.
+                Define the basic information for your new reusable component. You'll add content in the next step.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -138,23 +118,11 @@ export default function CreateTemplatePage() {
                       </SelectContent>
                     </Select>
                 </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="code">Content</Label>
-                    <Textarea
-                        id="code"
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        rows={15}
-                        className="font-mono text-xs bg-muted/50"
-                        placeholder={getCodePlaceholder()}
-                        disabled={method === 'dragger'}
-                      />
-                </div>
             </CardContent>
             <CardFooter>
               <Button onClick={handleSave} disabled={isSaving} className="w-full">
                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                {isSaving ? 'Saving...' : 'Save Template'}
+                {isSaving ? 'Saving...' : 'Save and Continue'}
               </Button>
             </CardFooter>
           </Card>

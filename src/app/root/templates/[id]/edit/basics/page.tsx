@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const NO_SOURCE_VALUE = '--none--';
 
-export default function EditTemplatePage() {
+export default function EditTemplateBasicsPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -35,7 +35,6 @@ export default function EditTemplatePage() {
   const [description, setDescription] = useState('');
   const [method, setMethod] = useState<'codebase' | 'textual' | 'dragger'>('codebase');
   const [sourceId, setSourceId] = useState(NO_SOURCE_VALUE);
-  const [code, setCode] = useState('');
   const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
 
 
@@ -57,7 +56,6 @@ export default function EditTemplatePage() {
           setDescription(template.description || '');
           setMethod(template.method || 'codebase');
           setSourceId(template.source || NO_SOURCE_VALUE);
-          setCode(template.code || '');
         } else {
           setError(templateResult.error || 'Failed to fetch template');
         }
@@ -65,7 +63,6 @@ export default function EditTemplatePage() {
         if (sourcesResult.success && sourcesResult.sources) {
             setSources(sourcesResult.sources);
         } else {
-            // Non-fatal, user just can't select a source
             toast({ variant: 'destructive', title: 'Could not load sources', description: sourcesResult.error });
         }
       } catch (e: any) {
@@ -82,21 +79,18 @@ export default function EditTemplatePage() {
       setIsSaving(true);
       
       const updatedTemplateData: Omit<Template, 'id' | 'createdAt'> = {
+          ...originalTemplate,
           name,
           description,
           method,
           source: sourceId === NO_SOURCE_VALUE ? '' : sourceId,
-          code,
-          type: originalTemplate.type, // Preserve original type
-          elements: originalTemplate.elements, // Preserve original elements for now
       };
 
       const result = await saveTemplate(updatedTemplateData, id);
 
       if (result.success) {
           toast({ title: 'Success', description: 'Template updated successfully.'});
-          router.push(`/root/templates/${id}`);
-          router.refresh();
+          router.push(`/root/templates/${id}/edit/content`);
       } else {
           toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
@@ -106,7 +100,7 @@ export default function EditTemplatePage() {
 
   if (loading) {
     return (
-        <Card className="w-full max-w-2xl">
+        <Card>
             <CardHeader>
                 <Skeleton className="h-8 w-1/2" />
                 <Skeleton className="h-4 w-3/4" />
@@ -121,9 +115,6 @@ export default function EditTemplatePage() {
                     <Skeleton className="h-20 w-full" />
                 </div>
             </CardContent>
-            <CardFooter className="flex justify-end">
-                <Skeleton className="h-10 w-24" />
-            </CardFooter>
         </Card>
     );
   }
@@ -139,10 +130,10 @@ export default function EditTemplatePage() {
   }
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Edit Template</CardTitle>
-        <CardDescription>Editing template: {name}</CardDescription>
+        <CardTitle>Step 1: Basic Information</CardTitle>
+        <CardDescription>Editing the core details for template: {originalTemplate?.name}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -180,18 +171,11 @@ export default function EditTemplatePage() {
               </SelectContent>
             </Select>
         </div>
-         <div className="space-y-2">
-          <Label htmlFor="code">Code (HTML, JSON, or prompt)</Label>
-          <Textarea id="code" value={code} onChange={e => setCode(e.target.value)} rows={15} className="font-mono text-xs bg-muted/50" />
-        </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-         <Button variant="ghost" asChild>
-            <Link href="/root/templates"><ArrowLeft className="mr-2 h-4 w-4" />Back to Templates</Link>
-         </Button>
+       <CardFooter className="flex justify-end">
          <Button onClick={handleSaveChanges} disabled={isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            {isSaving ? 'Saving...' : 'Save & Next'}
          </Button>
       </CardFooter>
     </Card>
