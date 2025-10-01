@@ -13,7 +13,6 @@ function propertiesToStyleObject(properties: Record<string, any>): React.CSSProp
 
     for (const key of directProperties) {
         if (properties[key]) {
-            // Convert kebab-case to camelCase for JSX style object
             const camelCaseKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
             (style as any)[camelCaseKey] = properties[key];
         }
@@ -22,18 +21,16 @@ function propertiesToStyleObject(properties: Record<string, any>): React.CSSProp
 }
 
 
-function renderElementToJsx(element: CanvasElementData, level: number): string {
+function renderElementToJsx(element: CanvasElementData, level: number, isInsideLoop = false): string {
     const { type, properties, children, id } = element;
     const style = propertiesToStyleObject(properties);
     const className = properties['className'] || '';
 
     const attributes: Record<string, any> = {
-        id,
         style,
         className,
     };
     
-    // Add specific attributes for certain element types
     if (type === 'image') {
         attributes['src'] = properties['src'] || '';
         attributes['alt'] = properties['alt'] || '';
@@ -53,7 +50,18 @@ function renderElementToJsx(element: CanvasElementData, level: number): string {
         attributes['placeholder'] = properties['placeholder'] || '';
         attributes['defaultValue'] = properties['value'] || '';
     }
-
+    
+    // Replace handlebars with dynamic props if inside a loop
+    const processValue = (value: any): string => {
+        if (isInsideLoop && typeof value === 'string') {
+            const match = value.match(/\{\{((item\.)?[\w\.]+)\}\}/);
+            if (match) {
+                 // It's a dynamic variable
+                return `{${match[1]}}`;
+            }
+        }
+        return JSON.stringify(value);
+    };
 
     const attributesString = Object.entries(attributes)
         .map(([key, value]) => {
@@ -63,7 +71,10 @@ function renderElementToJsx(element: CanvasElementData, level: number): string {
                 return `style={${JSON.stringify(value)}}`;
             }
             if (typeof value === 'string') {
-                 // Escape quotes in string values
+                const dynamicVal = processValue(value);
+                if (dynamicVal.startsWith('{') && dynamicVal.endsWith('}')) {
+                    return `${key}=${dynamicVal}`;
+                }
                 const escapedValue = value.replace(/"/g, '&quot;');
                 return `${key}="${escapedValue}"`;
             }
@@ -73,32 +84,36 @@ function renderElementToJsx(element: CanvasElementData, level: number): string {
         .join(' ');
         
     const indent = '  '.repeat(level);
+    
+    let textContent = properties['text'] || '';
+    if (isInsideLoop) {
+        textContent = textContent.replace(/\{\{((item\.)?[\w\.]+)\}\}/g, '{$1}');
+    }
 
     switch (type) {
         case 'heading': {
             const level = properties['level'] || 1;
-            const text = properties['text'] || '';
             const Tag = `h${level}`;
-            return `${indent}<${Tag} ${attributesString}>${text}</${Tag}>`;
+            return `${indent}<${Tag} ${attributesString}>${textContent}</${Tag}>`;
         }
         case 'text': {
-            const text = properties['text'] || '';
-             // Handle anchor tags within text
-            if (text.includes('<a')) {
-                return `${indent}<div ${attributesString} dangerouslySetInnerHTML={{ __html: \`${text.replace(/`/g, '\\`')}\` }} />`;
+            if (textContent.includes('<a')) {
+                return `${indent}<div ${attributesString} dangerouslySetInnerHTML={{ __html: \`${textContent.replace(/`/g, '\\`')}\` }} />`;
             }
-            return `${indent}<div ${attributesString}>${text}</div>`;
+            return `${indent}<div ${attributesString}>${textContent}</div>`;
         }
         case 'button': {
-            const text = properties['text'] || 'Button';
-            return `${indent}<button ${attributesString}>${text}</button>`;
+            return `${indent}<button ${attributesString}>${textContent}</button>`;
         }
         case 'image':
-             // Remove style from attributes string for Next/Image
             const { style: _, ...restAttrs } = attributes;
             const imgAttributesString = Object.entries(restAttrs)
                 .map(([key, value]) => {
                     if (value === '' || value === undefined || value === null) return '';
+                     const dynamicVal = processValue(value);
+                    if (dynamicVal.startsWith('{') && dynamicVal.endsWith('}')) {
+                         return `${key}=${dynamicVal}`;
+                    }
                      if (typeof value === 'string') {
                         const escapedValue = value.replace(/"/g, '&quot;');
                         return `${key}="${escapedValue}"`;
@@ -115,24 +130,26 @@ function renderElementToJsx(element: CanvasElementData, level: number): string {
         case 'textarea':
              return `${indent}<textarea ${attributesString} />`;
         case 'label':
-             const text = properties['text'] || '';
-             return `${indent}<label ${attributesString}>${text}</label>`;
+             return `${indent}<label ${attributesString}>${textContent}</label>`;
         case 'section':
         case 'div':
         case 'container':
         case 'form':
         case 'list': {
             const Tag = type === 'container' ? 'div' : (type === 'list' ? 'ul' : type);
-            const childrenJsx = children ? children.map(child => renderElementToJsx(child, level + 1)).join('\n') : '';
+            const childrenJsx = children ? children.map(child => renderElementToJsx(child, level + 1, isInsideLoop)).join('\n') : '';
             return `${indent}<${Tag} ${attributesString}>\n${childrenJsx}\n${indent}</${Tag}>`;
         }
         case 'list-item': {
-             const text = properties['text'] || '';
-            return `${indent}<li ${attributesString}>${text}</li>`;
+            return `${indent}<li ${attributesString}>${textContent}</li>`;
         }
         case 'html': {
             const htmlContent = properties['htmlContent'] || '';
-             return `${indent}<div ${attributesString} dangerouslySetInnerHTML={{ __html: \`${htmlContent.replace(/`/g, '\\`')}\` }} />`;
+            let finalHtml = htmlContent;
+             if (isInsideLoop) {
+                finalHtml = finalHtml.replace(/\{\{((item\.)?[\w\.]+)\}\}/g, '{$1}');
+            }
+            return `${indent}<div ${attributesString} dangerouslySetInnerHTML={{ __html: \`${finalHtml.replace(/`/g, '\\`')}\` }} />`;
         }
         default:
             return '';
@@ -141,22 +158,31 @@ function renderElementToJsx(element: CanvasElementData, level: number): string {
 
 
 export function convertJsonToJsx(elements: CanvasElementData[]): string {
-  const bodyContent = elements.map(child => renderElementToJsx(child, 2)).join('\n');
-  
   const hasImage = JSON.stringify(elements).includes('"type":"image"');
-
   let imports = `import React from 'react';\n`;
   if (hasImage) {
       imports += `import Image from 'next/image';\n`;
   }
   
+  const componentBody = elements.map((element, index) => {
+    const singleElementJsx = renderElementToJsx(element, 3, true);
+    // Add key to the root element in the loop
+    return singleElementJsx.replace(/<(\w+)/, `<\$1 key={item.id || index}`);
+  }).join('\n');
+
   return `
 ${imports}
 
-export default function GeneratedPage() {
+export default function GeneratedComponent({ items }) {
+  if (!items || !Array.isArray(items)) {
+    return <div>No items to display.</div>;
+  }
+  
   return (
     <>
-${bodyContent}
+      {items.map((item, index) => (
+${componentBody}
+      ))}
     </>
   );
 }

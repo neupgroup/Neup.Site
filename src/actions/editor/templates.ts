@@ -28,18 +28,14 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
   try {
     let dataToSave: any = { ...template };
     
-    // Ensure elements is not undefined if it's not provided
     if (!dataToSave.elements) {
         dataToSave.elements = [];
     }
     
-    // If the method is textual, wrap the code in a Handlebars loop structure
-    // This prepares it for dynamic data rendering.
     if (dataToSave.method === 'textual' && dataToSave.code) {
-        dataToSave.code = `{{#each items}}\n${dataToSave.code}\n{{/each}}`;
+        dataToSave.code = dataToSave.code.replace(/\{\{/g, '{{item.').replace(/item\.item\./g, 'item.');
     }
 
-    // If there are elements, generate the React component code
     if (dataToSave.elements && dataToSave.elements.length > 0) {
         dataToSave.reactComponent = convertJsonToJsx(dataToSave.elements);
     }
@@ -74,7 +70,6 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
       const data = doc.data();
       const createdAt = data.createdAt;
       
-      // Convert Timestamp to a serializable format (ISO string)
       const serializableData: Partial<Template> = {
         ...data,
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
@@ -111,7 +106,6 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
         const data = docSnap.data();
         const createdAt = data.createdAt;
 
-        // Convert Timestamp to a serializable format (ISO string)
         const serializableData: Partial<Template> = {
             ...data,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
