@@ -1,6 +1,7 @@
 
+
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
-import { Settings } from 'lucide-react';
+import { Settings, Database } from 'lucide-react';
 import type { CanvasElementData } from '@/lib/schemas';
 import { elementDefinitions } from '@/elements';
 
@@ -8,7 +9,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/hooks/use-toast';
 import LayoutProperties from './properties/layout';
 import SpacingProperties from './properties/spacing';
 import TypographyProperties from './properties/typography';
@@ -19,6 +19,8 @@ import ImageProperties from './properties/image';
 import FlexboxProperties from './properties/flexbox';
 import GlobalSettings from './properties/global-settings';
 import ShadowProperties from './properties/shadow';
+import DataBindingProperties from './properties/data-binding';
+import PageDataSource from './properties/page-data-source';
 
 interface RightSidebarProps {
   selectedElementId: string | null;
@@ -27,6 +29,7 @@ interface RightSidebarProps {
   deleteElement: (id: string) => void;
   updateElementId: (oldId: string, newId: string) => void;
   onUpdateAllElements: (elements: CanvasElementData[]) => void;
+  siteId?: string;
 }
 
 const propertyComponents: Record<string, React.FC<any>> = {
@@ -38,9 +41,10 @@ const propertyComponents: Record<string, React.FC<any>> = {
   background: BackgroundProperties,
   borders: BorderProperties,
   effects: ShadowProperties,
+  data: DataBindingProperties,
 };
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, siteId }) => {
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
       if (el.id === id) return el;
@@ -81,11 +85,32 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     updateElement(selectedElementId, newProperties, recordHistory);
   }, [selectedElementId, selectedElement, updateElement]);
 
+  const handleDataBindingUpdate = useCallback((bindings: Record<string, string>) => {
+    if (!selectedElementId || !selectedElement) return;
+
+    const newElement: CanvasElementData = {
+        ...selectedElement,
+        dataBindings: bindings,
+    };
+    
+    // We need a way to update the whole element, not just properties
+    // For now, let's just log it. A more robust solution is needed here.
+    console.log("Updated data bindings:", newElement);
+    // A potential implementation:
+    // updateFullElement(selectedElementId, newElement);
+
+  }, [selectedElement, selectedElementId]);
+
+
 
   if (!selectedElement || !elementDef) {
     return (
       <aside className="w-80 border-l bg-card">
-        <GlobalSettings elements={elements} onUpdateAllElements={onUpdateAllElements} />
+        {siteId ? (
+            <PageDataSource siteId={siteId} />
+        ) : (
+            <GlobalSettings elements={elements} onUpdateAllElements={onUpdateAllElements} />
+        )}
       </aside>
     );
   }
@@ -93,7 +118,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   return (
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
-        <Accordion type="single" collapsible className="w-full" defaultValue="attributes">
+        <Accordion type="multiple" className="w-full" defaultValue={['attributes']}>
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">
@@ -111,6 +136,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </div>
                 </AccordionContent>
             </AccordionItem>
+
+            <DataBindingProperties element={selectedElement} onUpdate={handleDataBindingUpdate} />
             
             {elementDef.editorProperties?.map(groupKey => {
                 const PropertyComponent = propertyComponents[groupKey];

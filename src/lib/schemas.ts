@@ -32,6 +32,7 @@ export interface CanvasElementData {
   properties: Record<string, any>;
   children?: CanvasElementData[];
   editorProperties?: EditorProperties;
+  dataBindings?: Record<string, string>;
 }
 
 export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
@@ -40,6 +41,7 @@ export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() =
     properties: z.record(z.any()),
     children: z.array(CanvasElementDataSchema).optional(),
     editorProperties: z.any().optional(),
+    dataBindings: z.record(z.string()).optional(),
 }));
 
 export const TemplateSchema = z.object({

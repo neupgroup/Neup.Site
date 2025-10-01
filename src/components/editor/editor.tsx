@@ -1,4 +1,5 @@
 
+
 'use client';
 import type { FC } from 'react';
 import { useState, useEffect, useCallback, DragEvent } from 'react';
@@ -671,7 +672,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             currentSiteId = createResult.id;
             setSiteId(currentSiteId);
              // Update the URL to reflect the new ID for editing mode
-            router.push(`/site/editor?mode=edit&id=${currentSiteId}`, { scroll: false });
+            router.push(`/site/editor/dragger?id=${currentSiteId}`, { scroll: false });
         } else {
             throw new Error(createResult.error || 'Failed to create a new site entry.');
         }
@@ -766,6 +767,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             deleteElement={deleteElement}
             updateElementId={updateElementId}
             onUpdateAllElements={handleUpdateAllElements}
+            siteId={siteId}
         />
       </div>
     </div>
