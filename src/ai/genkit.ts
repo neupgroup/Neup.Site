@@ -20,6 +20,7 @@ export const ai = genkit({
                 status: span.status,
                 attributes: span.attributes,
                 events: span.events,
+                __raw_span_obj: span,
               },
               null,
               2
