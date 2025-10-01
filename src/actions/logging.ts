@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from '@/lib/firebase';
@@ -7,6 +8,8 @@ export async function logErrorToFirestore(error: {
   message: string;
   stack?: string;
   componentStack?: string;
+  source?: string;
+  details?: string;
 }) {
   try {
     const errorsCollectionRef = collection(db, 'errors');
@@ -14,8 +17,9 @@ export async function logErrorToFirestore(error: {
       message: error.message,
       stack: error.stack,
       componentStack: error.componentStack,
+      source: error.source || 'unknown',
+      details: error.details,
       timestamp: serverTimestamp(),
-      source: 'client-action',
     });
   } catch (dbError: any) {
     console.error('Failed to log error to Firestore:', dbError);

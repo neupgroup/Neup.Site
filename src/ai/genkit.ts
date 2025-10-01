@@ -14,7 +14,8 @@ export const ai = genkit({
         if (span.status.code !== 'ok') {
           logErrorToFirestore({
             message: `[${span.name}] Flow failed: ${span.status.message}`,
-            stack: JSON.stringify(
+            source: 'genkit-flow',
+            details: JSON.stringify(
               {
                 name: span.name,
                 status: span.status,
