@@ -23,6 +23,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { AlertCircle, Loader2, Save, Wand2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function EditTemplateContentPage() {
   const params = useParams();
@@ -213,6 +214,20 @@ export default function EditTemplateContentPage() {
             disabled={originalTemplate.method === 'dragger'}
           />
         </div>
+         {originalTemplate.reactComponent && (
+            <>
+                <Separator />
+                <div className="space-y-2">
+                    <Label>Generated React Component Preview</Label>
+                    <Textarea 
+                        value={originalTemplate.reactComponent}
+                        readOnly
+                        rows={15}
+                        className="font-mono text-xs bg-muted/50"
+                    />
+                </div>
+            </>
+        )}
       </CardContent>
        <CardFooter className="flex justify-end">
          <Button onClick={handleSaveChanges} disabled={isSaving}>

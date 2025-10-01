@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import type { Template } from '@/lib/schemas';
 import { logErrorToFirestore } from '../logging';
+import { convertJsonToJsx } from '@/lib/json-to-jsx';
 
 const TEMPLATES_COLLECTION = 'templates';
 
@@ -36,6 +37,11 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
     // This prepares it for dynamic data rendering.
     if (dataToSave.method === 'textual' && dataToSave.code) {
         dataToSave.code = `{{#each items}}\n${dataToSave.code}\n{{/each}}`;
+    }
+
+    // If there are elements, generate the React component code
+    if (dataToSave.elements && dataToSave.elements.length > 0) {
+        dataToSave.reactComponent = convertJsonToJsx(dataToSave.elements);
     }
       
     if (id) {

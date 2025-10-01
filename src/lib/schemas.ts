@@ -51,6 +51,7 @@ export const TemplateSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   elements: z.array(CanvasElementDataSchema).optional(),
+  reactComponent: z.string().optional(),
   type: z.enum(['section', 'page', 'element']),
   method: z.enum(['codebase', 'textual', 'dragger']).optional(),
   source: z.string().optional(),
