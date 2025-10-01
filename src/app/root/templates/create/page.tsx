@@ -66,7 +66,7 @@ export default function CreateTemplatePage() {
 
     if (result.success && result.id) {
         toast({ title: 'Template Created!', description: 'Now, let\'s define its content.' });
-        router.push(`/root/templates/${result.id}/edit/basics`);
+        router.push(`/root/templates/${result.id}/edit/content`);
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
         setIsSaving(false);
