@@ -4,22 +4,21 @@
  * @fileOverview Refines a given code snippet based on a user's prompt.
  *
  * - refineCode - A function that handles the code refinement.
- * - RefineCodeInput - The input type for the refineCode function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-export const RefineCodeInputSchema = z.object({
+const RefineCodeInputSchema = z.object({
   code: z.string().describe('The code snippet to be refined.'),
   prompt: z.string().describe('The user prompt guiding the refinement.'),
 });
-export type RefineCodeInput = z.infer<typeof RefineCodeInputSchema>;
+type RefineCodeInput = z.infer<typeof RefineCodeInputSchema>;
 
-export const RefineCodeOutputSchema = z.object({
+const RefineCodeOutputSchema = z.object({
   code: z.string().describe('The refined code snippet.'),
 });
-export type RefineCodeOutput = z.infer<typeof RefineCodeOutputSchema>;
+type RefineCodeOutput = z.infer<typeof RefineCodeOutputSchema>;
 
 
 export async function refineCode(input: RefineCodeInput): Promise<RefineCodeOutput> {
