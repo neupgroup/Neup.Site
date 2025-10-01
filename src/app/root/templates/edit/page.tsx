@@ -58,21 +58,14 @@ export default function EditTemplatePage() {
       if (!id || !originalTemplate) return;
       setIsSaving(true);
       
-      let elements;
-      try {
-        elements = JSON.parse(elementsJson);
-      } catch(e) {
-        toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The element structure is not valid JSON.' });
-        setIsSaving(false);
-        return;
-      }
-
       const updatedTemplateData = {
           ...originalTemplate,
           name,
           description,
           type,
-          elements
+          // Note: We don't allow editing elements JSON here for safety.
+          // This would require robust validation.
+          // elements: JSON.parse(elementsJson) 
       };
 
       const result = await saveTemplate(updatedTemplateData, id);
@@ -85,6 +78,7 @@ export default function EditTemplatePage() {
       }
       setIsSaving(false);
   }
+
 
   if (loading) {
     return (
@@ -121,48 +115,47 @@ export default function EditTemplatePage() {
   }
 
   return (
-    <div className="w-full max-w-2xl space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Edit Template</CardTitle>
-            <CardDescription>Editing template: {name}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Template Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-                <Label>Type</Label>
-                <Select value={type} onValueChange={(value: any) => setType(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a template type" />
-                    </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="section">Section</SelectItem>
-                    <SelectItem value="page">Page</SelectItem>
-                    <SelectItem value="element">Element</SelectItem>
-                  </SelectContent>
-                </Select>
-            </div>
-             <div className="space-y-2">
-              <Label htmlFor="elementsJson">Elements (JSON)</Label>
-              <Textarea id="elementsJson" value={elementsJson} onChange={e => setElementsJson(e.target.value)} rows={15} className="font-mono text-xs bg-muted/50" />
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-             <Button variant="ghost" asChild>
-                <Link href="/root/templates"><ArrowLeft className="mr-2 h-4 w-4" />Back to Templates</Link>
-             </Button>
-             <Button onClick={handleSaveChanges} disabled={isSaving}>
-                {isSaving ? 'Saving...' : 'Save Changes'}
-             </Button>
-          </CardFooter>
-        </Card>
-    </div>
+    <Card className="w-full max-w-2xl">
+      <CardHeader>
+        <CardTitle>Edit Template</CardTitle>
+        <CardDescription>Editing template: {name}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">Template Name</Label>
+          <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+            <Label>Type</Label>
+            <Select value={type} onValueChange={(value: any) => setType(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a template type" />
+                </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="section">Section</SelectItem>
+                <SelectItem value="page">Page</SelectItem>
+                <SelectItem value="element">Element</SelectItem>
+              </SelectContent>
+            </Select>
+        </div>
+         <div className="space-y-2">
+          <Label htmlFor="elementsJson">Elements (JSON)</Label>
+          <Textarea id="elementsJson" value={elementsJson} rows={15} readOnly className="font-mono text-xs bg-muted/50" />
+          <p className="text-xs text-muted-foreground">The element structure is read-only. To edit the content, use the "Save as Template" feature in the main editor.</p>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+         <Button variant="ghost" asChild>
+            <Link href="/root/templates"><ArrowLeft className="mr-2 h-4 w-4" />Back to Templates</Link>
+         </Button>
+         <Button onClick={handleSaveChanges} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Changes'}
+         </Button>
+      </CardFooter>
+    </Card>
   );
 }
