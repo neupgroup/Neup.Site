@@ -1,4 +1,5 @@
 
+'use client';
 import { FC, useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import type { CanvasElementData } from '@/lib/schemas';
@@ -80,7 +81,7 @@ const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate, onDa
                                 onChange={(e) => handleBindingChange(prop, e.target.value)}
                                 placeholder="e.g., item.title"
                             />
-                             <Button variant="ghost" size="icon" onClick={() => removeBinding(prop)} disabled={!bindings[prop]}>
+                             <Button variant="outline" size="icon" onClick={() => removeBinding(prop)} disabled={!bindings[prop]}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </div>
