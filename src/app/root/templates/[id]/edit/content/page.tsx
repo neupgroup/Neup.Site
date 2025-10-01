@@ -36,7 +36,7 @@ export default function EditTemplateContentPage() {
   const [isSaving, setIsSaving] = useState(false);
   
   const [code, setCode] = useState('');
-  const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
+  const [originalTemplate, setOriginalTemplate] = useState<Partial<Template> | null>(null);
   
   const [showAiDialog, setShowAiDialog] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
@@ -72,8 +72,8 @@ export default function EditTemplateContentPage() {
       setIsSaving(true);
       toast({ title: 'Saving Template...', description: 'AI may be used for conversion. Please wait.'});
       
-      const updatedTemplateData: Omit<Template, 'id' | 'createdAt'> = {
-          ...originalTemplate,
+      const updatedTemplateData: Omit<Template, 'id' | 'createdAt' | 'siteId'> = {
+          ...(originalTemplate as Omit<Template, 'id' | 'createdAt' | 'siteId'>),
           code,
       };
 
@@ -83,7 +83,7 @@ export default function EditTemplateContentPage() {
         if (result.success) {
             toast({ title: 'Success', description: 'Template content saved successfully.'});
             router.push(`/root/templates/${id}`);
-            router.refresh(); // Refresh to ensure new generated code is shown
+            router.refresh();
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }

@@ -26,7 +26,6 @@ export type EditorPropertyGroup = {
 
 export type EditorProperties = string[];
 
-// Define the TypeScript type for a canvas element first.
 export interface CanvasElementData {
   id: string;
   type: 'text' | 'image' | 'button' | 'section' | 'div' | 'container' | 'input' | 'heading' | 'video' | 'list' | 'list-item' | 'form' | 'label' | 'textarea' | 'html';
@@ -35,9 +34,6 @@ export interface CanvasElementData {
   editorProperties?: EditorProperties;
 }
 
-// Now, define the Zod schema using the TypeScript type.
-// We use z.any() for children to break the recursive loop that causes issues with some APIs.
-// The AI's adherence to the prompt is what ensures the children are structured correctly.
 export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() => z.object({
     id: z.string(),
     type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'heading', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']),
@@ -48,6 +44,7 @@ export const CanvasElementDataSchema: z.ZodType<CanvasElementData> = z.lazy(() =
 
 export const TemplateSchema = z.object({
   id: z.string().optional(),
+  siteId: z.string().optional(),
   name: z.string(),
   description: z.string().optional(),
   elements: z.array(CanvasElementDataSchema).optional(),
@@ -56,8 +53,8 @@ export const TemplateSchema = z.object({
   method: z.enum(['codebase', 'textual', 'dragger']).optional(),
   source: z.string().optional(),
   code: z.string().optional(),
-  createdBy: z.string().optional(), // Assuming user ID will be stored here
-  createdAt: z.any().optional(), // serverTimestamp will be used, can be object or string
+  createdBy: z.string().optional(),
+  createdAt: z.any().optional(),
 });
 
 export type Template = z.infer<typeof TemplateSchema>;

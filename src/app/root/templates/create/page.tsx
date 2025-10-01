@@ -59,9 +59,10 @@ export default function CreateTemplatePage() {
         description, 
         method, 
         source: sourceId === NO_SOURCE_VALUE ? '' : sourceId,
-        code: '', // Code will be added in the next step
+        code: '',
         elements: [],
-        type: 'section', // Defaulting to section
+        type: 'section',
+        createdBy: 'user', // This would be dynamic in a real app
     });
 
     if (result.success && result.id) {

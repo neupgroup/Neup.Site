@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -30,7 +31,7 @@ export default function EditTemplatePage() {
   const [description, setDescription] = useState('');
   const [elementsJson, setElementsJson] = useState('');
   const [type, setType] = useState<'section' | 'page' | 'element'>('section');
-  const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
+  const [originalTemplate, setOriginalTemplate] = useState<Partial<Template> | null>(null);
 
 
   useEffect(() => {
@@ -59,13 +60,10 @@ export default function EditTemplatePage() {
       setIsSaving(true);
       
       const updatedTemplateData = {
-          ...originalTemplate,
+          ...(originalTemplate as Omit<Template, 'id' | 'createdAt' | 'siteId'>),
           name,
           description,
           type,
-          // Note: We don't allow editing elements JSON here for safety.
-          // This would require robust validation.
-          // elements: JSON.parse(elementsJson) 
       };
 
       const result = await saveTemplate(updatedTemplateData, id);

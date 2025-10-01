@@ -4,44 +4,44 @@
 import { db } from '@/lib/firebase';
 import { collection, addDoc, getDocs, doc, deleteDoc, query, where, writeBatch, getDoc, limit } from 'firebase/firestore';
 import { logErrorToFirestore } from './logging';
+import { cookies } from 'next/headers';
 
 export interface Path {
     id: string;
+    siteId: string;
     path: string;
     pageId: string;
 }
 
 /**
  * Creates or updates a path mapping in Firestore.
- * Ensures that each path is unique.
+ * Ensures that each path is unique within a siteId.
  */
 export async function createPath(path: string, pageId: string): Promise<{ success: boolean, id?: string, error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  
   try {
     const pathsRef = collection(db, 'paths');
     const batch = writeBatch(db);
 
-    // Check if the path is already assigned to any page
-    const pathQuery = query(pathsRef, where('path', '==', path));
+    const pathQuery = query(pathsRef, where('path', '==', path), where('siteId', '==', siteId));
     const pathSnapshot = await getDocs(pathQuery);
     if (!pathSnapshot.empty) {
-        // If it's assigned to a different page, throw an error
         if (pathSnapshot.docs[0].data().pageId !== pageId) {
             return { success: false, error: `Path "${path}" is already in use by another page.` };
         }
-        // If it's assigned to the same page, we can just return success
         return { success: true, id: pathSnapshot.docs[0].id };
     }
 
-    // Check if the page already has a path and delete the old one
-    const pageQuery = query(pathsRef, where('pageId', '==', pageId));
+    const pageQuery = query(pathsRef, where('pageId', '==', pageId), where('siteId', '==', siteId));
     const pageSnapshot = await getDocs(pageQuery);
     pageSnapshot.forEach(doc => {
       batch.delete(doc.ref);
     });
 
-    // Create the new path mapping
     const newPathRef = doc(collection(db, 'paths'));
-    batch.set(newPathRef, { path, pageId });
+    batch.set(newPathRef, { path, pageId, siteId });
     
     await batch.commit();
 
@@ -57,11 +57,15 @@ export async function createPath(path: string, pageId: string): Promise<{ succes
 }
 
 /**
- * Fetches all path mappings from Firestore.
+ * Fetches all path mappings from Firestore for the current siteId.
  */
 export async function getPaths(): Promise<{ success: boolean, paths?: Path[], error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
-    const querySnapshot = await getDocs(collection(db, 'paths'));
+    const q = query(collection(db, 'paths'), where('siteId', '==', siteId));
+    const querySnapshot = await getDocs(q);
     const paths = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
@@ -81,8 +85,16 @@ export async function getPaths(): Promise<{ success: boolean, paths?: Path[], er
  * Deletes a path mapping from Firestore by its ID.
  */
 export async function deletePath(id: string): Promise<{ success: boolean, error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
-    await deleteDoc(doc(db, 'paths', id));
+    const pathRef = doc(db, 'paths', id);
+    const pathSnap = await getDoc(pathRef);
+    if (!pathSnap.exists() || pathSnap.data().siteId !== siteId) {
+        return { success: false, error: 'Unauthorized' };
+    }
+    await deleteDoc(pathRef);
     return { success: true };
   } catch (error: any) {
     console.error(`Failed to delete path with ID ${id}:`, error);
@@ -97,16 +109,18 @@ export async function deletePath(id: string): Promise<{ success: boolean, error?
 
 /**
  * Fetches the path mapping for a specific page.
- * @param pageId The ID of the page.
  */
 export async function getPathForPage(pageId: string): Promise<{ success: boolean; path?: Path; error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
     const pathsRef = collection(db, 'paths');
-    const q = query(pathsRef, where('pageId', '==', pageId), limit(1));
+    const q = query(pathsRef, where('pageId', '==', pageId), where('siteId', '==', siteId), limit(1));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      return { success: true, path: undefined }; // No path assigned is not an error
+      return { success: true, path: undefined };
     }
 
     const doc = querySnapshot.docs[0];

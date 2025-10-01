@@ -17,8 +17,8 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
+import { cookies } from 'next/headers';
 
-// Basic interfaces based on your schema
 export interface SourceMethod {
   methodName: string;
   subPath: string;
@@ -31,6 +31,7 @@ export interface SourceMethod {
 
 export interface Source {
   id: string;
+  siteId: string;
   name: string;
   basePath: string;
   methods: SourceMethod[];
@@ -48,10 +49,14 @@ export interface SourceCredential {
 /**
  * Creates a new data source.
  */
-export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt'>) {
+export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'siteId'>) {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
     const docRef = await addDoc(collection(db, 'sources'), {
       ...sourceData,
+      siteId,
       createdAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
@@ -66,11 +71,15 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt'>)
 }
 
 /**
- * Fetches all data sources.
+ * Fetches all data sources for the current siteId.
  */
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
-    const querySnapshot = await getDocs(collection(db, 'sources'));
+    const q = query(collection(db, 'sources'), where('siteId', '==', siteId));
+    const querySnapshot = await getDocs(q);
     const sources = querySnapshot.docs.map(doc => {
         const data = doc.data();
         const createdAt = data.createdAt;
@@ -96,6 +105,9 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
  * Fetches a single data source by its ID.
  */
 export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
+    const siteId = cookies().get('siteId')?.value;
+    if (!siteId) return { success: false, error: 'Site ID not found.' };
+    
     try {
         const sourceRef = doc(db, 'sources', id);
         const docSnap = await getDoc(sourceRef);
@@ -105,8 +117,11 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
         }
         
         const data = docSnap.data();
-        const createdAt = data.createdAt;
+        if (data.siteId !== siteId) {
+            return { success: false, error: 'Unauthorized.' };
+        }
 
+        const createdAt = data.createdAt;
         const source = { 
             id: docSnap.id, 
             ...data,
@@ -126,10 +141,17 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
 /**
  * Updates a data source.
  */
-export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt'>>) {
+export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'siteId'>>) {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
     const sourceRef = doc(db, 'sources', id);
-    // Ensure methods is an array, even if it's empty
+    const sourceSnap = await getDoc(sourceRef);
+    if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
     const dataToUpdate = {
         ...sourceData,
         methods: sourceData.methods || [],
@@ -151,14 +173,19 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
  * Deletes a data source and its associated credentials.
  */
 export async function deleteSource(id: string) {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  
   try {
     const batch = writeBatch(db);
-
-    // Delete the source document
     const sourceRef = doc(db, 'sources', id);
+    const sourceSnap = await getDoc(sourceRef);
+
+    if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
+        return { success: false, error: 'Unauthorized' };
+    }
     batch.delete(sourceRef);
 
-    // Find and delete all credentials for this source
     const credsQuery = query(collection(db, 'sourceCredentials'), where('sourceId', '==', id));
     const credsSnapshot = await getDocs(credsQuery);
     credsSnapshot.forEach(doc => {
@@ -176,6 +203,3 @@ export async function deleteSource(id: string) {
     return { success: false, error: error.message || 'Failed to delete source.' };
   }
 }
-
-// Functions for source credentials can be added here as needed
-// e.g., addSourceCredential, getSourceCredentials, etc.

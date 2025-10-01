@@ -35,7 +35,7 @@ export default function EditTemplateBasicsPage() {
   const [description, setDescription] = useState('');
   const [method, setMethod] = useState<'codebase' | 'textual' | 'dragger'>('codebase');
   const [sourceId, setSourceId] = useState(NO_SOURCE_VALUE);
-  const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
+  const [originalTemplate, setOriginalTemplate] = useState<Partial<Template> | null>(null);
 
 
   useEffect(() => {
@@ -78,8 +78,8 @@ export default function EditTemplateBasicsPage() {
       if (!id || !originalTemplate) return;
       setIsSaving(true);
       
-      const updatedTemplateData: Omit<Template, 'id' | 'createdAt'> = {
-          ...originalTemplate,
+      const updatedTemplateData: Omit<Template, 'id' | 'createdAt' | 'siteId'> = {
+          ...(originalTemplate as Omit<Template, 'id' | 'createdAt' | 'siteId'>),
           name,
           description,
           method,

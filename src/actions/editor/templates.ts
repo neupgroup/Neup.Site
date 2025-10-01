@@ -12,11 +12,14 @@ import {
   deleteDoc,
   serverTimestamp,
   Timestamp,
+  query,
+  where
 } from 'firebase/firestore';
 import type { Template } from '@/lib/schemas';
 import { logErrorToFirestore } from '../logging';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { convertHtmlToJson } from '@/ai/flows/html-to-json-flow';
+import { cookies } from 'next/headers';
 
 const TEMPLATES_COLLECTION = 'templates';
 
@@ -38,23 +41,21 @@ function isJson(code: string): boolean {
 
 /**
  * Saves or updates a template in Firestore.
- * If the template has an ID, it updates the existing document.
- * Otherwise, it creates a new one.
  */
-export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string) {
+export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' | 'siteId'>, id?: string) {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
-    let dataToSave: any = { ...template };
+    let dataToSave: any = { ...template, siteId };
     
     if (dataToSave.method === 'codebase' && dataToSave.code) {
         if (isHtml(dataToSave.code)) {
-            // AI conversion from HTML to JSON elements
             dataToSave.elements = await convertHtmlToJson(dataToSave.code);
         } else if (isJson(dataToSave.code)) {
-            // Direct JSON for elements
             dataToSave.elements = JSON.parse(dataToSave.code);
         }
     } else if (dataToSave.method === 'textual' && dataToSave.code) {
-        // Prepare for Handlebars-style looping
         dataToSave.code = dataToSave.code.replace(/\{\{/g, '{{item.').replace(/item\.item\./g, 'item.');
     }
     
@@ -64,6 +65,10 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
       
     if (id) {
       const templateRef = doc(db, TEMPLATES_COLLECTION, id);
+      const templateSnap = await getDoc(templateRef);
+      if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
+          return { success: false, error: 'Unauthorized.' };
+      }
       await setDoc(templateRef, dataToSave, { merge: true });
       return { success: true, id };
     } else {
@@ -83,11 +88,15 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
 
 
 /**
- * Fetches all templates from Firestore.
+ * Fetches all templates from Firestore for the current siteId.
  */
 export async function getTemplates(): Promise<{ success: boolean, templates?: Template[], error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
-    const querySnapshot = await getDocs(collection(db, TEMPLATES_COLLECTION));
+    const q = query(collection(db, TEMPLATES_COLLECTION), where('siteId', '==', siteId));
+    const querySnapshot = await getDocs(q);
     const templates = querySnapshot.docs.map(doc => {
       const data = doc.data();
       const createdAt = data.createdAt;
@@ -117,6 +126,9 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
  * Fetches a single template from Firestore by its ID.
  */
 export async function getTemplate(id: string): Promise<{ success: boolean, template?: Template, error?: string }> {
+    const siteId = cookies().get('siteId')?.value;
+    if (!siteId) return { success: false, error: 'Site ID not found.' };
+
     try {
         const templateRef = doc(db, TEMPLATES_COLLECTION, id);
         const docSnap = await getDoc(templateRef);
@@ -126,8 +138,11 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
         }
         
         const data = docSnap.data();
-        const createdAt = data.createdAt;
+        if (data.siteId !== siteId) {
+            return { success: false, error: 'Unauthorized.' };
+        }
 
+        const createdAt = data.createdAt;
         const serializableData: Partial<Template> = {
             ...data,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
@@ -150,8 +165,16 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
  * Deletes a template from Firestore by its ID.
  */
 export async function deleteTemplate(id: string) {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  
   try {
-    await deleteDoc(doc(db, TEMPLATES_COLLECTION, id));
+    const templateRef = doc(db, TEMPLATES_COLLECTION, id);
+    const templateSnap = await getDoc(templateRef);
+    if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
+        return { success: false, error: 'Unauthorized.' };
+    }
+    await deleteDoc(templateRef);
     return { success: true };
   } catch (error: any) {
     console.error('Failed to delete template:', error);

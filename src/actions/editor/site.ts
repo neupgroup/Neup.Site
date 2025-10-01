@@ -19,10 +19,12 @@ import {
 import { logErrorToFirestore } from '../logging';
 import type { CanvasElementData } from '@/lib/schemas';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
+import { cookies } from 'next/headers';
 
 // Define a type for a Site, which can be extended as needed.
 export interface Site {
   id: string;
+  siteId: string;
   elements: CanvasElementData[];
   reactComponent?: string;
   type: 'editor' | 'ai' | 'html' | 'template';
@@ -32,8 +34,12 @@ export interface Site {
 
 
 export async function createSite(type: Site['type'] = 'editor') {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
     const docRef = await addDoc(collection(db, 'sites'), {
+      siteId: siteId,
       elements: [],
       type: type,
       createdAt: serverTimestamp(),
@@ -51,8 +57,16 @@ export async function createSite(type: Site['type'] = 'editor') {
 }
 
 export async function saveSite(id: string, elements: any) {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  
   try {
     const siteRef = doc(db, 'sites', id);
+    const siteSnap = await getDoc(siteRef);
+    if (!siteSnap.exists() || siteSnap.data().siteId !== siteId) {
+        return { success: false, error: 'Unauthorized.' };
+    }
+
     const reactComponent = convertJsonToJsx(elements);
     await setDoc(siteRef, {
       elements,
@@ -71,6 +85,9 @@ export async function saveSite(id: string, elements: any) {
 }
 
 export async function getSite(id: string): Promise<{ success: boolean, site?: Site, error?: string }> {
+    const siteId = cookies().get('siteId')?.value;
+    if (!siteId) return { success: false, error: 'Site ID not found.' };
+
     try {
         const docRef = doc(db, 'sites', id);
         const docSnap = await getDoc(docRef);
@@ -80,11 +97,17 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
         }
 
         const data = docSnap.data();
+
+        if (data.siteId !== siteId) {
+            return { success: false, error: 'Unauthorized.' };
+        }
+        
         const createdAt = data.createdAt;
         const updatedAt = data.updatedAt;
 
         const site: Site = {
           id: docSnap.id,
+          siteId: data.siteId,
           elements: data.elements || [],
           reactComponent: data.reactComponent,
           type: data.type || 'editor',
@@ -105,11 +128,15 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
 }
 
 /**
- * Fetches all sites from Firestore.
+ * Fetches all sites from Firestore for the current siteId.
  */
 export async function getSites(): Promise<{ success: boolean, sites?: Site[], error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
-    const querySnapshot = await getDocs(collection(db, 'sites'));
+    const q = query(collection(db, 'sites'), where('siteId', '==', siteId));
+    const querySnapshot = await getDocs(q);
     const sites = querySnapshot.docs.map(doc => {
       const data = doc.data();
       const createdAt = data.createdAt;
@@ -117,6 +144,7 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
       
       return {
         id: doc.id,
+        siteId: data.siteId,
         elements: data.elements,
         reactComponent: data.reactComponent,
         type: data.type || 'editor',
@@ -141,21 +169,25 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
  * @param id The ID of the site to delete.
  */
 export async function deleteSite(id: string) {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
   try {
     const batch = writeBatch(db);
 
-    // 1. Delete the site document
     const siteRef = doc(db, 'sites', id);
+    const siteSnap = await getDoc(siteRef);
+    if (!siteSnap.exists() || siteSnap.data().siteId !== siteId) {
+        return { success: false, error: 'Unauthorized.' };
+    }
     batch.delete(siteRef);
 
-    // 2. Find and delete all paths associated with this page
-    const pathsQuery = query(collection(db, 'paths'), where('pageId', '==', id));
+    const pathsQuery = query(collection(db, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
     const pathsSnapshot = await getDocs(pathsQuery);
     pathsSnapshot.forEach(doc => {
       batch.delete(doc.ref);
     });
 
-    // 3. Commit the batch
     await batch.commit();
 
     return { success: true };
