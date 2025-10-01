@@ -19,7 +19,6 @@ import ImageProperties from './properties/image';
 import FlexboxProperties from './properties/flexbox';
 import GlobalSettings from './properties/global-settings';
 import ShadowProperties from './properties/shadow';
-import DataBindingProperties from './properties/data-binding';
 import PageDataSource from './properties/page-data-source';
 
 interface RightSidebarProps {
@@ -41,7 +40,6 @@ const propertyComponents: Record<string, React.FC<any>> = {
   background: BackgroundProperties,
   borders: BorderProperties,
   effects: ShadowProperties,
-  data: DataBindingProperties,
 };
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, siteId }) => {
@@ -85,22 +83,31 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
     updateElement(selectedElementId, newProperties, recordHistory);
   }, [selectedElementId, selectedElement, updateElement]);
 
-  const handleDataBindingUpdate = useCallback((bindings: Record<string, string>) => {
+  const handleDataBindingUpdate = (bindings: Record<string, string>) => {
     if (!selectedElementId || !selectedElement) return;
-
-    const newElement: CanvasElementData = {
-        ...selectedElement,
-        dataBindings: bindings,
-    };
     
-    // We need a way to update the whole element, not just properties
-    // For now, let's just log it. A more robust solution is needed here.
-    console.log("Updated data bindings:", newElement);
-    // A potential implementation:
-    // updateFullElement(selectedElementId, newElement);
+    setElements(prev => {
+        const clonedPrev = JSON.parse(JSON.stringify(prev));
+        const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
+            return els.map(el => {
+            if (el.id === selectedElementId) {
+                return { ...el, dataBindings: bindings };
+            }
+            if (el.children) {
+                return { ...el, children: updateRecursively(el.children) };
+            }
+            return el;
+            });
+        };
+        const newElements = updateRecursively(clonedPrev);
+        onUpdateAllElements(newElements);
+        return newElements;
+    });
+  };
 
-  }, [selectedElement, selectedElementId]);
-
+  const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[]) => {
+      onUpdateAllElements(updater(elements));
+  }
 
 
   if (!selectedElement || !elementDef) {
@@ -118,7 +125,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   return (
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
-        <Accordion type="multiple" className="w-full" defaultValue={['attributes']}>
+        <Accordion type="multiple" className="w-full" defaultValue={['attributes', 'content', 'image']}>
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">
@@ -136,8 +143,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                     </div>
                 </AccordionContent>
             </AccordionItem>
-
-            <DataBindingProperties element={selectedElement} onUpdate={handleDataBindingUpdate} />
             
             {elementDef.editorProperties?.map(groupKey => {
                 const PropertyComponent = propertyComponents[groupKey];
@@ -145,6 +150,18 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 if (!PropertyComponent) {
                     console.warn(`No property component found for group: ${groupKey}`);
                     return null;
+                }
+
+                // Pass the data binding updater to relevant components
+                if (groupKey === 'content' || groupKey === 'image') {
+                     return (
+                        <PropertyComponent 
+                            key={groupKey} 
+                            element={selectedElement} 
+                            onUpdate={handleUpdate} 
+                            onDataBindingUpdate={handleDataBindingUpdate} 
+                        />
+                    );
                 }
 
                 return (
