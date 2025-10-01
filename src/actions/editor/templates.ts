@@ -25,19 +25,20 @@ const TEMPLATES_COLLECTION = 'templates';
  */
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string) {
   try {
+    let dataToSave: any = { ...template };
+    
+    // Ensure elements is not undefined if it's not provided
+    if (!dataToSave.elements) {
+        dataToSave.elements = [];
+    }
+      
     if (id) {
       const templateRef = doc(db, TEMPLATES_COLLECTION, id);
-      await setDoc(templateRef, {
-        ...template,
-        // Note: serverTimestamp() can't be used with setDoc on update in the same way.
-        // We'll assume `createdAt` is only set on creation.
-      }, { merge: true });
+      await setDoc(templateRef, dataToSave, { merge: true });
       return { success: true, id };
     } else {
-      const docRef = await addDoc(collection(db, TEMPLATES_COLLECTION), {
-        ...template,
-        createdAt: serverTimestamp(),
-      });
+      dataToSave.createdAt = serverTimestamp();
+      const docRef = await addDoc(collection(db, TEMPLATES_COLLECTION), dataToSave);
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
@@ -50,6 +51,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
   }
 }
 
+
 /**
  * Fetches all templates from Firestore.
  */
@@ -61,7 +63,7 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
       const createdAt = data.createdAt;
       
       // Convert Timestamp to a serializable format (ISO string)
-      const serializableData = {
+      const serializableData: Partial<Template> = {
         ...data,
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
       };
@@ -98,7 +100,7 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
         const createdAt = data.createdAt;
 
         // Convert Timestamp to a serializable format (ISO string)
-        const serializableData = {
+        const serializableData: Partial<Template> = {
             ...data,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         };

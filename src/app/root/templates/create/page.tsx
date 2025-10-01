@@ -1,30 +1,50 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveTemplate } from '@/actions/editor/templates';
+import { getSources, type Source } from '@/actions/editor/sources';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Save } from 'lucide-react';
+import { Save, Loader2 } from 'lucide-react';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { convertHtmlToJson } from '@/ai/flows/html-to-json-flow';
 
 export default function CreateTemplatePage() {
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const [sources, setSources] = useState<Source[]>([]);
+  const [loadingSources, setLoadingSources] = useState(true);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<'section' | 'page' | 'element'>('section');
-  const [inputFormat, setInputFormat] = useState<'json' | 'html'>('json');
-  const [structureContent, setStructureContent] = useState('[]');
+  const [method, setMethod] = useState<'codebase' | 'textual' | 'dragger'>('codebase');
+  const [sourceId, setSourceId] = useState('');
+  const [code, setCode] = useState('');
+
+  useEffect(() => {
+    const fetchSources = async () => {
+      setLoadingSources(true);
+      const result = await getSources();
+      if (result.success && result.sources) {
+        setSources(result.sources);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Failed to load data sources',
+          description: result.error,
+        });
+      }
+      setLoadingSources(false);
+    };
+    fetchSources();
+  }, [toast]);
   
   const handleSave = async () => {
     if (!name.trim()) {
@@ -33,33 +53,21 @@ export default function CreateTemplatePage() {
     }
     
     setIsSaving(true);
-    let elements: CanvasElementData[];
+    let elements: CanvasElementData[] = [];
 
-    try {
-        if (inputFormat === 'html') {
-            toast({ title: 'Converting HTML...', description: 'AI is converting your HTML to JSON. This may take a moment.' });
-            const conversionResult = await convertHtmlToJson(structureContent);
-            if (!conversionResult || conversionResult.length === 0) {
-              throw new Error("AI conversion failed or returned empty result.");
-            }
-            elements = conversionResult;
-        } else {
-            elements = JSON.parse(structureContent);
-        }
-
-        if (!Array.isArray(elements) || elements.length === 0) {
-            toast({ variant: 'destructive', title: 'Invalid Structure', description: 'The structure must result in a non-empty array of elements.' });
-            setIsSaving(false);
-            return;
-        }
-    } catch(e: any) {
-        console.error(e);
-        toast({ variant: 'destructive', title: 'Invalid Input', description: e.message || 'The provided input could not be processed.' });
-        setIsSaving(false);
-        return;
-    }
-
-    const result = await saveTemplate({ name, description, type, elements });
+    // For now, we are just saving the raw code.
+    // In the future, this is where you'd process the code based on the method.
+    // e.g., if (method === 'codebase' && looksLikeHtml(code)) { elements = await convertHtmlToJson(code); }
+    
+    const result = await saveTemplate({ 
+        name, 
+        description, 
+        method, 
+        source: sourceId,
+        code,
+        elements, // Pass empty array for now
+        type: 'section', // Defaulting to section, could be made dynamic
+    });
 
     if (result.success) {
         toast({ title: 'Template Saved!', description: `Template "${name}" has been saved.` });
@@ -70,13 +78,26 @@ export default function CreateTemplatePage() {
     setIsSaving(false);
   };
   
+  const getCodePlaceholder = () => {
+      switch(method) {
+          case 'codebase':
+              return 'Enter HTML, JSON, or JSX...';
+          case 'textual':
+              return 'Describe the component you want to create. e.g., "A hero section with a title, subtitle, and a call-to-action button."';
+          case 'dragger':
+              return 'Template will be created from the dragger. (This method is not yet implemented).';
+          default:
+              return '';
+      }
+  }
+
   return (
     <div className="w-full max-w-2xl space-y-6">
         <Card>
             <CardHeader>
               <CardTitle>Create New Template</CardTitle>
               <CardDescription>
-                Define the details for your new template. You can provide the structure as JSON or have AI convert it from HTML.
+                Define a new reusable component by specifying its creation method and data source.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -89,46 +110,48 @@ export default function CreateTemplatePage() {
                     <Textarea id="description" placeholder="A short description of this template" value={description} onChange={e => setDescription(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                    <Label>Type</Label>
-                    <Select value={type} onValueChange={(v: any) => setType(v)}>
+                    <Label>Method</Label>
+                    <Select value={method} onValueChange={(v: any) => setMethod(v)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a template type" />
+                        <SelectValue placeholder="Select a creation method" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="section">Section</SelectItem>
-                        <SelectItem value="page">Page</SelectItem>
-                        <SelectItem value="element">Element</SelectItem>
+                        <SelectItem value="codebase">Codebase (HTML, JSON)</SelectItem>
+                        <SelectItem value="textual">Textual (AI)</SelectItem>
+                        <SelectItem value="dragger" disabled>Dragger (Coming Soon)</SelectItem>
                       </SelectContent>
                     </Select>
                 </div>
                 <div className="space-y-2">
-                    <Label>Structure Format</Label>
-                     <RadioGroup defaultValue="json" value={inputFormat} onValueChange={(v: any) => setInputFormat(v)} className="flex space-x-4">
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="json" id="r-json" />
-                            <Label htmlFor="r-json">JSON</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="html" id="r-html" />
-                            <Label htmlFor="r-html">HTML (AI Conversion)</Label>
-                        </div>
-                    </RadioGroup>
+                    <Label>Data Source (Optional)</Label>
+                    <Select value={sourceId} onValueChange={setSourceId} disabled={loadingSources}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={loadingSources ? "Loading sources..." : "Select a data source"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">None</SelectItem>
+                        {sources.map(s => (
+                            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                 </div>
                  <div className="space-y-2">
-                    <Label htmlFor="structure-content">Structure</Label>
+                    <Label htmlFor="code">Content</Label>
                     <Textarea
-                        id="structure-content"
-                        value={structureContent}
-                        onChange={(e) => setStructureContent(e.target.value)}
+                        id="code"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
                         rows={15}
                         className="font-mono text-xs bg-muted/50"
-                        placeholder={inputFormat === 'json' ? '[{"id": "element-1", "type": "text", "content": "Hello World"}]' : '<div>\n  <h1>Hello World</h1>\n</div>'}
+                        placeholder={getCodePlaceholder()}
+                        disabled={method === 'dragger'}
                       />
                 </div>
             </CardContent>
             <CardFooter>
               <Button onClick={handleSave} disabled={isSaving} className="w-full">
-                <Save className="mr-2 h-4 w-4" />
+                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 {isSaving ? 'Saving...' : 'Save Template'}
               </Button>
             </CardFooter>

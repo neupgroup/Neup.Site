@@ -1,8 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getTemplate, saveTemplate } from '@/actions/editor/templates';
+import { getSources, type Source } from '@/actions/editor/sources';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { type Template } from '@/lib/schemas';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -25,47 +27,66 @@ export default function EditTemplatePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [sources, setSources] = useState<Source[]>([]);
   
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [elementsJson, setElementsJson] = useState('');
-  const [type, setType] = useState<'section' | 'page' | 'element'>('section');
+  const [method, setMethod] = useState<'codebase' | 'textual' | 'dragger'>('codebase');
+  const [sourceId, setSourceId] = useState('');
+  const [code, setCode] = useState('');
   const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
 
 
   useEffect(() => {
     if (!id) return;
-    const fetchTemplate = async () => {
+    
+    const fetchData = async () => {
       setLoading(true);
-      const result = await getTemplate(id);
-      if (result.success && result.template) {
-        const { template } = result;
-        setOriginalTemplate(template);
-        setName(template.name);
-        setDescription(template.description || '');
-        setElementsJson(JSON.stringify(template.elements, null, 2));
-        setType(template.type);
-      } else {
-        setError(result.error || 'Failed to fetch template');
+      try {
+        const [templateResult, sourcesResult] = await Promise.all([
+          getTemplate(id),
+          getSources()
+        ]);
+        
+        if (templateResult.success && templateResult.template) {
+          const { template } = templateResult;
+          setOriginalTemplate(template);
+          setName(template.name);
+          setDescription(template.description || '');
+          setMethod(template.method || 'codebase');
+          setSourceId(template.source || '');
+          setCode(template.code || '');
+        } else {
+          setError(templateResult.error || 'Failed to fetch template');
+        }
+
+        if (sourcesResult.success && sourcesResult.sources) {
+            setSources(sourcesResult.sources);
+        } else {
+            // Non-fatal, user just can't select a source
+            toast({ variant: 'destructive', title: 'Could not load sources', description: sourcesResult.error });
+        }
+      } catch (e: any) {
+        setError("An unexpected error occurred while fetching data.");
       }
       setLoading(false);
     };
 
-    fetchTemplate();
-  }, [id]);
+    fetchData();
+  }, [id, toast]);
   
   const handleSaveChanges = async () => {
       if (!id || !originalTemplate) return;
       setIsSaving(true);
       
-      const updatedTemplateData = {
-          ...originalTemplate,
+      const updatedTemplateData: Omit<Template, 'id' | 'createdAt'> = {
           name,
           description,
-          type,
-          // Note: We don't allow editing elements JSON here for safety.
-          // This would require robust validation.
-          // elements: JSON.parse(elementsJson) 
+          method,
+          source: sourceId,
+          code,
+          type: originalTemplate.type, // Preserve original type
+          elements: originalTemplate.elements, // Preserve original elements for now
       };
 
       const result = await saveTemplate(updatedTemplateData, id);
@@ -73,6 +94,7 @@ export default function EditTemplatePage() {
       if (result.success) {
           toast({ title: 'Success', description: 'Template updated successfully.'});
           router.push(`/root/templates/${id}`);
+          router.refresh();
       } else {
           toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
@@ -130,22 +152,35 @@ export default function EditTemplatePage() {
           <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <div className="space-y-2">
-            <Label>Type</Label>
-            <Select value={type} onValueChange={(value: any) => setType(value)}>
+            <Label>Method</Label>
+            <Select value={method} onValueChange={(value: any) => setMethod(value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a template type" />
+                  <SelectValue placeholder="Select a creation method" />
                 </SelectTrigger>
               <SelectContent>
-                <SelectItem value="section">Section</SelectItem>
-                <SelectItem value="page">Page</SelectItem>
-                <SelectItem value="element">Element</SelectItem>
+                <SelectItem value="codebase">Codebase (HTML, JSON)</SelectItem>
+                <SelectItem value="textual">Textual (AI)</SelectItem>
+                <SelectItem value="dragger">Dragger</SelectItem>
+              </SelectContent>
+            </Select>
+        </div>
+        <div className="space-y-2">
+            <Label>Data Source (Optional)</Label>
+            <Select value={sourceId} onValueChange={setSourceId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a data source" />
+                </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">None</SelectItem>
+                {sources.map(s => (
+                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
         </div>
          <div className="space-y-2">
-          <Label htmlFor="elementsJson">Elements (JSON)</Label>
-          <Textarea id="elementsJson" value={elementsJson} rows={15} readOnly className="font-mono text-xs bg-muted/50" />
-          <p className="text-xs text-muted-foreground">The element structure is read-only. To edit the content, use the "Save as Template" feature in the main editor.</p>
+          <Label htmlFor="code">Code (HTML, JSON, or prompt)</Label>
+          <Textarea id="code" value={code} onChange={e => setCode(e.target.value)} rows={15} className="font-mono text-xs bg-muted/50" />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
@@ -153,6 +188,7 @@ export default function EditTemplatePage() {
             <Link href="/root/templates"><ArrowLeft className="mr-2 h-4 w-4" />Back to Templates</Link>
          </Button>
          <Button onClick={handleSaveChanges} disabled={isSaving}>
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             {isSaving ? 'Saving...' : 'Save Changes'}
          </Button>
       </CardFooter>

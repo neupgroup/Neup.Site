@@ -1,3 +1,4 @@
+
 'use client';
 import { z } from 'zod';
 
@@ -49,8 +50,11 @@ export const TemplateSchema = z.object({
   id: z.string().optional(),
   name: z.string(),
   description: z.string().optional(),
-  elements: z.array(CanvasElementDataSchema),
+  elements: z.array(CanvasElementDataSchema).optional(),
   type: z.enum(['section', 'page', 'element']),
+  method: z.enum(['codebase', 'textual', 'dragger']).optional(),
+  source: z.string().optional(),
+  code: z.string().optional(),
   createdBy: z.string().optional(), // Assuming user ID will be stored here
   createdAt: z.any().optional(), // serverTimestamp will be used, can be object or string
 });
