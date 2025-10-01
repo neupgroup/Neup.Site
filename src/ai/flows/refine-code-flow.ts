@@ -1,0 +1,56 @@
+
+'use server';
+/**
+ * @fileOverview Refines a given code snippet based on a user's prompt.
+ *
+ * - refineCode - A function that handles the code refinement.
+ * - RefineCodeInput - The input type for the refineCode function.
+ */
+
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+
+export const RefineCodeInputSchema = z.object({
+  code: z.string().describe('The code snippet to be refined.'),
+  prompt: z.string().describe('The user prompt guiding the refinement.'),
+});
+export type RefineCodeInput = z.infer<typeof RefineCodeInputSchema>;
+
+export const RefineCodeOutputSchema = z.object({
+  code: z.string().describe('The refined code snippet.'),
+});
+export type RefineCodeOutput = z.infer<typeof RefineCodeOutputSchema>;
+
+
+export async function refineCode(input: RefineCodeInput): Promise<RefineCodeOutput> {
+  const { output } = await refineCodePrompt(input);
+  if (!output?.code) {
+    throw new Error('AI failed to generate a valid refined code.');
+  }
+  return output;
+}
+
+const refineCodePrompt = ai.definePrompt({
+  name: 'refineCodePrompt',
+  model: 'googleai/gemini-1.5-flash-latest',
+  input: {
+    schema: RefineCodeInputSchema,
+  },
+  output: {
+    schema: RefineCodeOutputSchema,
+  },
+  prompt: `
+    You are an expert code assistant. Your task is to refine the given code based on the user's prompt.
+    Only return the full, updated code. Do not add any explanations or markdown formatting.
+
+    Code to refine:
+    \'\'\'
+    {{{code}}}
+    \'\'\'
+
+    User's instruction:
+    "{{{prompt}}}"
+
+    Return the complete, refined code as a single block.
+  `,
+});

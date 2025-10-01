@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getTemplate, saveTemplate } from '@/actions/editor/templates';
+import { refineCode } from '@/ai/flows/refine-code-flow';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -12,7 +13,16 @@ import { useToast } from '@/hooks/use-toast';
 import { type Template } from '@/lib/schemas';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, Save } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { AlertCircle, Loader2, Save, Wand2 } from 'lucide-react';
 
 export default function EditTemplateContentPage() {
   const params = useParams();
@@ -26,6 +36,10 @@ export default function EditTemplateContentPage() {
   
   const [code, setCode] = useState('');
   const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
+  
+  const [showAiDialog, setShowAiDialog] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
 
 
   useEffect(() => {
@@ -71,6 +85,24 @@ export default function EditTemplateContentPage() {
           toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
       setIsSaving(false);
+  }
+
+  const handleAiEdit = async () => {
+    if (!aiPrompt) {
+        toast({ variant: 'destructive', title: 'Prompt is empty' });
+        return;
+    }
+    setIsGenerating(true);
+    try {
+        const result = await refineCode({ code, prompt: aiPrompt });
+        setCode(result.code);
+        toast({ title: 'AI Edit Successful', description: 'The code has been updated by the AI.' });
+        setShowAiDialog(false);
+        setAiPrompt('');
+    } catch(e: any) {
+        toast({ variant: 'destructive', title: 'AI Edit Failed', description: e.message });
+    }
+    setIsGenerating(false);
   }
 
   const getCodePlaceholder = () => {
@@ -125,6 +157,7 @@ export default function EditTemplateContentPage() {
   }
 
   return (
+    <>
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Step 2: Content Definition</CardTitle>
@@ -132,7 +165,44 @@ export default function EditTemplateContentPage() {
       </CardHeader>
       <CardContent className="space-y-4">
          <div className="space-y-2">
-          <Label htmlFor="code">Content</Label>
+            <div className="flex items-center justify-between">
+                <Label htmlFor="code">Content</Label>
+                <Dialog open={showAiDialog} onOpenChange={setShowAiDialog}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            AI Edit
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>AI Code Assistant</DialogTitle>
+                            <DialogDescription>
+                                Describe the changes you want to make to the code below. The AI will generate a new version.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="ai-prompt">Your Command</Label>
+                                <Textarea 
+                                    id="ai-prompt"
+                                    placeholder='e.g., "Add a data-ai-hint attribute to the image tag"'
+                                    value={aiPrompt}
+                                    onChange={(e) => setAiPrompt(e.target.value)}
+                                    rows={4}
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="ghost" onClick={() => setShowAiDialog(false)}>Cancel</Button>
+                            <Button onClick={handleAiEdit} disabled={isGenerating}>
+                                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                                {isGenerating ? 'Generating...' : 'Generate'}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
           <Textarea 
             id="code" 
             value={code} 
@@ -151,5 +221,6 @@ export default function EditTemplateContentPage() {
          </Button>
       </CardFooter>
     </Card>
+    </>
   );
 }
