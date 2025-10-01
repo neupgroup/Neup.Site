@@ -70,20 +70,25 @@ export default function EditTemplateContentPage() {
   const handleSaveChanges = async () => {
       if (!id || !originalTemplate) return;
       setIsSaving(true);
+      toast({ title: 'Saving Template...', description: 'AI may be used for conversion. Please wait.'});
       
       const updatedTemplateData: Omit<Template, 'id' | 'createdAt'> = {
           ...originalTemplate,
           code,
       };
 
-      const result = await saveTemplate(updatedTemplateData, id);
+      try {
+        const result = await saveTemplate(updatedTemplateData, id);
 
-      if (result.success) {
-          toast({ title: 'Success', description: 'Template content saved successfully.'});
-          router.push(`/root/templates/${id}`);
-          router.refresh();
-      } else {
-          toast({ variant: 'destructive', title: 'Error', description: result.error });
+        if (result.success) {
+            toast({ title: 'Success', description: 'Template content saved successfully.'});
+            router.push(`/root/templates/${id}`);
+            router.refresh(); // Refresh to ensure new generated code is shown
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.error });
+        }
+      } catch (e: any) {
+        toast({ variant: 'destructive', title: 'Error Saving', description: e.message || 'An unexpected error occurred.' });
       }
       setIsSaving(false);
   }
@@ -110,7 +115,7 @@ export default function EditTemplateContentPage() {
       if (!originalTemplate) return '';
       switch(originalTemplate.method) {
           case 'codebase':
-              return 'Enter HTML, JSON, or JSX...';
+              return 'Enter HTML or JSON for a single repeating item...';
           case 'textual':
               return 'Describe the component you want to create for each item in a list.\n\ne.g., A card with a title `{{name}}` and a description `{{description}}`. The image should be `{{imageUrl}}`.\n\nThe system will wrap this in a loop for you.';
           case 'dragger':

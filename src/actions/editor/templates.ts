@@ -16,8 +16,25 @@ import {
 import type { Template } from '@/lib/schemas';
 import { logErrorToFirestore } from '../logging';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
+import { convertHtmlToJson } from '@/ai/flows/html-to-json-flow';
 
 const TEMPLATES_COLLECTION = 'templates';
+
+
+function isHtml(code: string): boolean {
+    const trimmed = code.trim().toLowerCase();
+    return trimmed.startsWith('<') && trimmed.endsWith('>');
+}
+
+function isJson(code: string): boolean {
+    try {
+        const parsed = JSON.parse(code);
+        return typeof parsed === 'object' && parsed !== null;
+    } catch (e) {
+        return false;
+    }
+}
+
 
 /**
  * Saves or updates a template in Firestore.
@@ -28,14 +45,19 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
   try {
     let dataToSave: any = { ...template };
     
-    if (!dataToSave.elements) {
-        dataToSave.elements = [];
-    }
-    
-    if (dataToSave.method === 'textual' && dataToSave.code) {
+    if (dataToSave.method === 'codebase' && dataToSave.code) {
+        if (isHtml(dataToSave.code)) {
+            // AI conversion from HTML to JSON elements
+            dataToSave.elements = await convertHtmlToJson(dataToSave.code);
+        } else if (isJson(dataToSave.code)) {
+            // Direct JSON for elements
+            dataToSave.elements = JSON.parse(dataToSave.code);
+        }
+    } else if (dataToSave.method === 'textual' && dataToSave.code) {
+        // Prepare for Handlebars-style looping
         dataToSave.code = dataToSave.code.replace(/\{\{/g, '{{item.').replace(/item\.item\./g, 'item.');
     }
-
+    
     if (dataToSave.elements && dataToSave.elements.length > 0) {
         dataToSave.reactComponent = convertJsonToJsx(dataToSave.elements);
     }

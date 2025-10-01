@@ -34,6 +34,7 @@ const htmlToJsonPrompt = ai.definePrompt({
   prompt: `
     You are an expert at converting raw HTML into a specific JSON structure.
     Your task is to convert the provided HTML into a JSON array of objects that conform to the CanvasElementData schema.
+    The user is providing HTML for a SINGLE, REPEATING item in a list (e.g., a single product card). You must output an array containing the root element(s) for that single item.
 
     Schema Definition:
     - Each element must have an 'id' (string, unique), 'type' (string enum), and 'properties' (object).
@@ -89,24 +90,9 @@ const htmlToJsonPrompt = ai.definePrompt({
     IMPORTANT:
     - Generate unique, descriptive IDs for each element (e.g., 'section-123').
     - Do not use the 'style' property. Extract all CSS styles into individual properties in the 'properties' object (e.g., "backgroundColor": "red").
-    - Ensure the output is a valid JSON object with an 'elements' array.
+    - Ensure the output is a valid JSON object with an 'elements' array representing the structure of a SINGLE item.
 
     Convert the following HTML:
     {{{input}}}
   `,
 });
-
-const htmlToJsonFlow = ai.defineFlow(
-  {
-    name: 'htmlToJsonFlow',
-    inputSchema: z.string(),
-    outputSchema: z.array(CanvasElementDataSchema),
-  },
-  async (html) => {
-    const { output } = await htmlToJsonPrompt(html);
-    if (!output?.elements) {
-      throw new Error('AI failed to generate a valid element array.');
-    }
-    return output.elements;
-  }
-);
