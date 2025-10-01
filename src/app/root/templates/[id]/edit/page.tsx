@@ -18,6 +18,8 @@ import { AlertCircle, ArrowLeft, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+const NO_SOURCE_VALUE = '--none--';
+
 export default function EditTemplatePage() {
   const params = useParams();
   const router = useRouter();
@@ -32,7 +34,7 @@ export default function EditTemplatePage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [method, setMethod] = useState<'codebase' | 'textual' | 'dragger'>('codebase');
-  const [sourceId, setSourceId] = useState('');
+  const [sourceId, setSourceId] = useState(NO_SOURCE_VALUE);
   const [code, setCode] = useState('');
   const [originalTemplate, setOriginalTemplate] = useState<Template | null>(null);
 
@@ -54,7 +56,7 @@ export default function EditTemplatePage() {
           setName(template.name);
           setDescription(template.description || '');
           setMethod(template.method || 'codebase');
-          setSourceId(template.source || '');
+          setSourceId(template.source || NO_SOURCE_VALUE);
           setCode(template.code || '');
         } else {
           setError(templateResult.error || 'Failed to fetch template');
@@ -83,7 +85,7 @@ export default function EditTemplatePage() {
           name,
           description,
           method,
-          source: sourceId,
+          source: sourceId === NO_SOURCE_VALUE ? '' : sourceId,
           code,
           type: originalTemplate.type, // Preserve original type
           elements: originalTemplate.elements, // Preserve original elements for now
@@ -171,7 +173,7 @@ export default function EditTemplatePage() {
                   <SelectValue placeholder="Select a data source" />
                 </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">None</SelectItem>
+                <SelectItem value={NO_SOURCE_VALUE}>None</SelectItem>
                 {sources.map(s => (
                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                 ))}

@@ -15,6 +15,8 @@ import { Save, Loader2 } from 'lucide-react';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Label } from '@/components/ui/label';
 
+const NO_SOURCE_VALUE = '--none--';
+
 export default function CreateTemplatePage() {
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -25,7 +27,7 @@ export default function CreateTemplatePage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [method, setMethod] = useState<'codebase' | 'textual' | 'dragger'>('codebase');
-  const [sourceId, setSourceId] = useState('');
+  const [sourceId, setSourceId] = useState(NO_SOURCE_VALUE);
   const [code, setCode] = useState('');
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function CreateTemplatePage() {
         name, 
         description, 
         method, 
-        source: sourceId,
+        source: sourceId === NO_SOURCE_VALUE ? '' : sourceId,
         code,
         elements, // Pass empty array for now
         type: 'section', // Defaulting to section, could be made dynamic
@@ -129,7 +131,7 @@ export default function CreateTemplatePage() {
                         <SelectValue placeholder={loadingSources ? "Loading sources..." : "Select a data source"} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value={NO_SOURCE_VALUE}>None</SelectItem>
                         {sources.map(s => (
                             <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                         ))}
