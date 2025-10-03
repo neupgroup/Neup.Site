@@ -1,16 +1,16 @@
 
+'use client'
 import Link from 'next/link';
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarTrigger,
-  SidebarInset,
-} from '@/components/ui/sidebar';
-import { Rocket, LayoutTemplate, Bug, Home, Globe, Settings, Link as LinkIcon, Database } from 'lucide-react';
+  Rocket,
+  LayoutTemplate,
+  Bug,
+  Home,
+  Globe,
+  Settings,
+  Link as LinkIcon,
+  Database,
+} from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -18,94 +18,63 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-      <div className="w-full bg-background">
-        <div className="container mx-auto flex min-h-screen max-w-[1440px]">
-          <Sidebar>
-            <SidebarHeader>
-               <div className="flex items-center gap-2">
-                  <Rocket className="h-6 w-6 text-primary" />
-                  <h1 className="font-headline text-xl font-semibold tracking-tight">Neup.Sites</h1>
+      <div className="min-h-screen w-full bg-background text-foreground">
+          <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background shadow">
+              <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
+                   <div className="flex items-center gap-2">
+                      <Rocket className="h-6 w-6 text-primary" />
+                      <h1 className="font-headline text-xl font-semibold tracking-tight">
+                        Neup.Sites
+                      </h1>
+                    </div>
+                    <div className="text-lg font-semibold">Dashboard</div>
               </div>
-            </SidebarHeader>
-            <SidebarContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Dashboard" asChild>
-                    <Link href="/">
-                      <Home />
-                      <span>Dashboard</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Pages" asChild>
-                     <Link href="/site/pages">
-                          <Globe />
-                          <span>Pages</span>
-                      </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                   <SidebarMenuButton tooltip="Paths" asChild>
-                      <Link href="/site/paths">
-                          <LinkIcon />
-                          <span>Paths</span>
-                      </Link>
-                   </SidebarMenuButton>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Sources" asChild>
-                      <Link href="/site/sources">
-                          <Database />
-                          <span>Sources</span>
-                      </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Site Editor" asChild>
-                      <Link href="/site/editor/dragger">
-                          <LayoutTemplate />
-                          <span>Site Editor</span>
-                      </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Templates" asChild>
-                      <Link href="/root/templates">
-                          <LayoutTemplate />
-                          <span>Templates</span>
-                      </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Manage" asChild>
-                      <Link href="/manage">
-                          <Settings />
-                          <span>Manage</span>
-                      </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Error Logs" asChild>
-                      <Link href="/errors">
-                          <Bug />
-                          <span>Error Logs</span>
-                      </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarContent>
-          </Sidebar>
-          <SidebarInset>
-              <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card px-4 md:px-6">
-                  <SidebarTrigger />
-                   <h1 className="text-lg font-semibold">Dashboard</h1>
-              </header>
-              <main className="flex-1 overflow-auto p-4 md:p-8">
-                  {children}
+          </header>
+          <div className="mx-auto grid w-full max-w-[1440px] lg:grid-cols-[280px_1fr]">
+              <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-card lg:sticky lg:top-16 lg:flex">
+                  <div className="flex flex-1 flex-col overflow-y-auto p-4">
+                      <nav className="flex flex-col gap-2">
+                        <Link href="/" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                           <Home className="h-4 w-4" />
+                           <span>Dashboard</span>
+                        </Link>
+                        <Link href="/site/pages" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Globe className="h-4 w-4" />
+                            <span>Pages</span>
+                        </Link>
+                         <Link href="/site/paths" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <LinkIcon className="h-4 w-4" />
+                            <span>Paths</span>
+                        </Link>
+                        <Link href="/site/sources" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Database className="h-4 w-4" />
+                            <span>Sources</span>
+                        </Link>
+                         <Link href="/site/editor/dragger" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <LayoutTemplate className="h-4 w-4" />
+                            <span>Site Editor</span>
+                        </Link>
+                         <Link href="/root/templates" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <LayoutTemplate className="h-4 w-4" />
+                            <span>Templates</span>
+                        </Link>
+                        <Link href="/manage" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Settings className="h-4 w-4" />
+                            <span>Manage</span>
+                        </Link>
+                        <Link href="/errors" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Bug className="h-4 w-4" />
+                            <span>Error Logs</span>
+                        </Link>
+                      </nav>
+                  </div>
+              </aside>
+              <main className="min-h-[calc(100vh-4rem)] p-6 lg:p-8">
+                  <div className="w-full">
+                      {children}
+                  </div>
               </main>
-          </SidebarInset>
-        </div>
+          </div>
       </div>
   );
 }
