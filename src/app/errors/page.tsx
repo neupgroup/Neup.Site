@@ -21,7 +21,7 @@ interface ErrorLog {
   id: string;
   message: string;
   stack?: string;
-  timestamp: Date;
+  timestamp: string; // Changed to string
 }
 
 const ErrorsPage = () => {
@@ -36,14 +36,15 @@ const ErrorsPage = () => {
         const errorSnapshot = await getDocs(errorsCollection);
         const errorsList = errorSnapshot.docs.map(doc => {
           const data = doc.data();
+          const timestamp = data.timestamp as Timestamp;
           return {
             id: doc.id,
             message: data.message,
             stack: data.stack,
-            timestamp: (data.timestamp as Timestamp)?.toDate() || new Date(),
+            timestamp: timestamp?.toDate().toISOString() || new Date().toISOString(),
           };
         });
-        setErrors(errorsList.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()));
+        setErrors(errorsList.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
       } catch (e: any) {
         console.error("Error fetching errors: ", e);
         if (e.code === 'permission-denied' || e.code === 'unauthenticated') {
@@ -99,7 +100,7 @@ const ErrorsPage = () => {
                         ) : errors.length > 0 ? (
                         errors.map(error => (
                             <TableRow key={error.id}>
-                            <TableCell>{error.timestamp.toLocaleString()}</TableCell>
+                            <TableCell>{new Date(error.timestamp).toLocaleString()}</TableCell>
                             <TableCell>{error.message}</TableCell>
                             <TableCell className="text-xs text-muted-foreground font-mono">
                                 <pre className="whitespace-pre-wrap break-all">{error.stack || 'N/A'}</pre>
