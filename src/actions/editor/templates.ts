@@ -60,6 +60,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
     }
     
     if (dataToSave.elements && dataToSave.elements.length > 0) {
+        // If elements are provided directly (e.g., from AI generation), generate the component.
         dataToSave.reactComponent = convertJsonToJsx(dataToSave.elements);
     }
       
