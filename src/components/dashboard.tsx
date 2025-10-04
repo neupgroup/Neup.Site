@@ -20,12 +20,18 @@ import {
   CreditCard,
   Newspaper,
   BarChart,
+  Plus,
+  Tag,
+  Star,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { ProfileProvider, useProfile } from '@/context/ProfileContext';
+import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Site } from '@/actions/editor/site';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Button } from './ui/button';
+import { ChevronRight } from 'lucide-react';
 
 function Header() {
   const { profileName, logoUrl, hideSitename, loading } = useProfile();
@@ -53,6 +59,21 @@ function Header() {
       </div>
     </header>
   );
+}
+
+function NavLink({ href, children, currentPath }: { href: string; children: React.ReactNode; currentPath: string }) {
+    const isActive = href === '/' ? currentPath === href : currentPath.startsWith(href);
+    return (
+        <Link
+            href={href}
+            className={cn(
+                'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
+                isActive && 'bg-muted'
+            )}
+        >
+            {children}
+        </Link>
+    );
 }
 
 export function Dashboard({ children, theme }: { children: React.ReactNode; theme?: Site['theme'] }) {
@@ -120,144 +141,43 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
         <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-card lg:sticky lg:top-16 lg:flex">
           <div className="flex flex-1 flex-col overflow-y-auto p-4">
             <nav className="flex flex-col gap-2">
-              <Link
-                href="/"
-                className={cn(
-                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                  pathname === '/' && 'bg-muted'
-                )}
-              >
-                <Home className="h-4 w-4" />
-                <span>Dashboard</span>
-              </Link>
+              <NavLink href="/" currentPath={pathname}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
+              <NavLink href="/profile" currentPath={pathname}><Settings className="h-4 w-4" /><span>Profile</span></NavLink>
 
-              <Link
-                href="/profile"
-                className={cn(
-                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                  pathname.startsWith('/profile') && 'bg-muted'
-                )}
-              >
-                <Settings className="h-4 w-4" />
-                <span>Profile</span>
-              </Link>
-
-              <Link
-                href="/news"
-                className={cn(
-                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                  pathname.startsWith('/news') && 'bg-muted'
-                )}
-              >
-                <Newspaper className="h-4 w-4" />
-                <span>News</span>
-              </Link>
+              <Collapsible defaultOpen={pathname.startsWith('/news')}>
+                <CollapsibleTrigger className="w-full">
+                    <div className={cn('flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted', pathname.startsWith('/news') && 'bg-muted')}>
+                        <div className="flex items-center gap-2">
+                            <Newspaper className="h-4 w-4" />
+                            <span>News</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 transform transition-transform duration-200 [&[data-state=open]]:rotate-90" />
+                    </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-6 pt-2 space-y-1">
+                    <NavLink href="/news" currentPath={pathname}><Newspaper className="h-4 w-4" /><span>All Articles</span></NavLink>
+                    <NavLink href="/news/create" currentPath={pathname}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
+                    <NavLink href="/news/category" currentPath={pathname}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
+                    <NavLink href="/news/featured" currentPath={pathname}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
+                </CollapsibleContent>
+              </Collapsible>
+              
 
               {/* Site Section */}
               <div className="mt-4 space-y-2">
                 <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
                   Site
                 </div>
-                <Link
-                  href="/site/pages"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/pages') && 'bg-muted'
-                  )}
-                >
-                  <Globe className="h-4 w-4" />
-                  <span>Pages</span>
-                </Link>
-                <Link
-                  href="/site/paths"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/paths') && 'bg-muted'
-                  )}
-                >
-                  <LinkIcon className="h-4 w-4" />
-                  <span>Paths</span>
-                </Link>
-                <Link
-                  href="/site/sources"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/sources') && 'bg-muted'
-                  )}
-                >
-                  <Database className="h-4 w-4" />
-                  <span>Sources</span>
-                </Link>
-                <Link
-                  href="/site/modules"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/modules') && 'bg-muted'
-                  )}
-                >
-                  <Puzzle className="h-4 w-4" />
-                  <span>Modules</span>
-                </Link>
-                 <Link
-                  href="/analytics"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/analytics') && 'bg-muted'
-                  )}
-                >
-                  <BarChart className="h-4 w-4" />
-                  <span>Analytics</span>
-                </Link>
-                <Link
-                  href="/site/theme"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/theme') && 'bg-muted'
-                  )}
-                >
-                  <Palette className="h-4 w-4" />
-                  <span>Theme</span>
-                </Link>
-                 <Link
-                  href="/site/storage"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/storage') && 'bg-muted'
-                  )}
-                >
-                  <HardDrive className="h-4 w-4" />
-                  <span>Storage</span>
-                </Link>
-                 <Link
-                  href="/site/billing"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/billing') && 'bg-muted'
-                  )}
-                >
-                  <CreditCard className="h-4 w-4" />
-                  <span>Billing</span>
-                </Link>
-                <Link
-                  href="/site/editor/dragger"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/editor') && 'bg-muted'
-                  )}
-                >
-                  <LayoutTemplate className="h-4 w-4" />
-                  <span>Editor</span>
-                </Link>
-                <Link
-                  href="/site/sections"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/site/sections') && 'bg-muted'
-                  )}
-                >
-                  <Layers className="h-4 w-4" />
-                  <span>Sections</span>
-                </Link>
+                <NavLink href="/site/pages" currentPath={pathname}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
+                <NavLink href="/site/paths" currentPath={pathname}><LinkIcon className="h-4 w-4" /><span>Paths</span></NavLink>
+                <NavLink href="/site/sources" currentPath={pathname}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
+                <NavLink href="/site/modules" currentPath={pathname}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
+                 <NavLink href="/analytics" currentPath={pathname}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
+                <NavLink href="/site/theme" currentPath={pathname}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
+                 <NavLink href="/site/storage" currentPath={pathname}><HardDrive className="h-4 w-4" /><span>Storage</span></NavLink>
+                 <NavLink href="/site/billing" currentPath={pathname}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
+                <NavLink href="/site/editor/dragger" currentPath={pathname}><LayoutTemplate className="h-4 w-4" /><span>Editor</span></NavLink>
+                <NavLink href="/site/sections" currentPath={pathname}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
               </div>
 
               {/* Root Section */}
@@ -265,76 +185,13 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
                   Root
                 </div>
-                <Link
-                  href="/root/pages"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/pages') && 'bg-muted'
-                  )}
-                >
-                  <Globe className="h-4 w-4" />
-                  <span>Pages</span>
-                </Link>
-                <Link
-                  href="/root/templates"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/templates') && 'bg-muted'
-                  )}
-                >
-                  <LayoutTemplate className="h-4 w-4" />
-                  <span>Templates</span>
-                </Link>
-                <Link
-                  href="/root/servers"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/servers') && 'bg-muted'
-                  )}
-                >
-                  <Server className="h-4 w-4" />
-                  <span>Servers</span>
-                </Link>
-                 <Link
-                  href="/root/storage"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/storage') && 'bg-muted'
-                  )}
-                >
-                  <HardDrive className="h-4 w-4" />
-                  <span>Storage</span>
-                </Link>
-                 <Link
-                  href="/root/billing"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/billing') && 'bg-muted'
-                  )}
-                >
-                  <CreditCard className="h-4 w-4" />
-                  <span>Billing</span>
-                </Link>
-                <Link
-                  href="/root/modules"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/modules') && 'bg-muted'
-                  )}
-                >
-                  <Puzzle className="h-4 w-4" />
-                  <span>Modules</span>
-                </Link>
-                <Link
-                  href="/root/errors"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/errors') && 'bg-muted'
-                  )}
-                >
-                  <Bug className="h-4 w-4" />
-                  <span>Errors</span>
-                </Link>
+                <NavLink href="/root/pages" currentPath={pathname}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
+                <NavLink href="/root/templates" currentPath={pathname}><LayoutTemplate className="h-4 w-4" /><span>Templates</span></NavLink>
+                <NavLink href="/root/servers" currentPath={pathname}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
+                 <NavLink href="/root/storage" currentPath={pathname}><HardDrive className="h-4 w-4" /><span>Storage</span></NavLink>
+                 <NavLink href="/root/billing" currentPath={pathname}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
+                <NavLink href="/root/modules" currentPath={pathname}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
+                <NavLink href="/root/errors" currentPath={pathname}><Bug className="h-4 w-4" /><span>Errors</span></NavLink>
               </div>
             </nav>
           </div>
