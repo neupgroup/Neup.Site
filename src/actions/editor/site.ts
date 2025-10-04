@@ -37,7 +37,9 @@ export interface Site {
  */
 export async function getSite(): Promise<{ success: boolean, site?: Site, error?: string }> {
     const siteId = cookies().get('siteId')?.value;
-    if (!siteId) return { success: false, error: 'Site ID not found.' };
+    // If there's no siteId, we are likely in a root context. This is not an error.
+    // Simply return successfully with no site data.
+    if (!siteId) return { success: true, site: undefined };
 
     try {
         const siteRef = doc(adminDb, 'sites', siteId);
