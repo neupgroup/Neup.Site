@@ -13,6 +13,7 @@ import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
 import { Site } from '@/schemas/site';
 import { initializeFirebase } from '@/lib/firebase';
+import { generateThemeFromColor } from '@/lib/color-utils';
 
 /**
  * Fetches a single site configuration document.
@@ -96,6 +97,13 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
         ...p,
         url: normalizeUrl(p.url)
       }));
+    }
+
+    if (data.theme?.primary && data.theme?.accent) {
+        dataToSave.theme = {
+            ...data.theme, // Keep the user selected colors
+            generated: generateThemeFromColor(data.theme.primary, data.theme.accent)
+        }
     }
     
     await setDoc(siteRef, dataToSave, { merge: true });

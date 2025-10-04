@@ -1,6 +1,17 @@
 
 import type { CanvasElementData } from '@/schemas/canvas';
 
+export interface GeneratedTheme {
+    light: Record<string, string>;
+    dark: Record<string, string>;
+}
+
+export interface SiteTheme {
+    primary: string;
+    accent: string;
+    generated?: GeneratedTheme;
+}
+
 export interface Site {
   id: string;
   name: string;
@@ -13,10 +24,7 @@ export interface Site {
   contactEmail?: { value: string; }[];
   contactPhone?: { value: string; }[];
   modules?: { [key: string]: any };
-  theme?: {
-    primary?: string;
-    accent?: string;
-  };
+  theme?: SiteTheme;
   createdAt?: string | null;
   updatedAt?: string | null;
 }

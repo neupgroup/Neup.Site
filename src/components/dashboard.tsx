@@ -53,54 +53,15 @@ function Header() {
   );
 }
 
-function hexToHsl(hex: string): string | null {
-    if (!hex.startsWith('#')) return null;
-
-    let r = 0, g = 0, b = 0;
-    if (hex.length === 4) {
-        r = parseInt(hex[1] + hex[1], 16);
-        g = parseInt(hex[2] + hex[2], 16);
-        b = parseInt(hex[3] + hex[3], 16);
-    } else if (hex.length === 7) {
-        r = parseInt(hex.substring(1, 3), 16);
-        g = parseInt(hex.substring(3, 5), 16);
-        b = parseInt(hex.substring(5, 7), 16);
-    } else {
-        return null;
-    }
-
-    r /= 255; g /= 255; b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h = 0, s = 0, l = (max + min) / 2;
-
-    if (max !== min) {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
-        }
-        h /= 6;
-    }
-
-    h = Math.round(h * 360);
-    s = Math.round(s * 100);
-    l = Math.round(l * 100);
-
-    return `${h} ${s}% ${l}%`;
-}
-
-
 export function Dashboard({ children, theme }: { children: React.ReactNode; theme?: Site['theme'] }) {
   const pathname = usePathname();
-  const primaryHsl = theme?.primary ? hexToHsl(theme.primary) : null;
-  const accentHsl = theme?.accent ? hexToHsl(theme.accent) : null;
-
   const isRootPage = pathname.startsWith('/root');
+  
+  const generatedTheme = theme?.generated;
+
   // For root pages, we don't pass a theme, so we can avoid rendering the style tag.
   // For site pages, the theme prop will be provided.
-  const renderThemeStyles = !isRootPage && (primaryHsl || accentHsl);
+  const renderThemeStyles = !isRootPage && generatedTheme;
 
 
   return (
@@ -108,8 +69,46 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
       {renderThemeStyles && (
         <style jsx global>{`
           :root {
-              ${primaryHsl ? `--primary: ${primaryHsl};` : ''}
-              ${accentHsl ? `--accent: ${accentHsl};` : ''}
+              --background: ${generatedTheme.light.background};
+              --foreground: ${generatedTheme.light.foreground};
+              --card: ${generatedTheme.light.card};
+              --card-foreground: ${generatedTheme.light.cardForeground};
+              --popover: ${generatedTheme.light.popover};
+              --popover-foreground: ${generatedTheme.light.popoverForeground};
+              --primary: ${generatedTheme.light.primary};
+              --primary-foreground: ${generatedTheme.light.primaryForeground};
+              --secondary: ${generatedTheme.light.secondary};
+              --secondary-foreground: ${generatedTheme.light.secondaryForeground};
+              --muted: ${generatedTheme.light.muted};
+              --muted-foreground: ${generatedTheme.light.mutedForeground};
+              --accent: ${generatedTheme.light.accent};
+              --accent-foreground: ${generatedTheme.light.accentForeground};
+              --destructive: ${generatedTheme.light.destructive};
+              --destructive-foreground: ${generatedTheme.light.destructiveForeground};
+              --border: ${generatedTheme.light.border};
+              --input: ${generatedTheme.light.input};
+              --ring: ${generatedTheme.light.ring};
+          }
+          .dark {
+              --background: ${generatedTheme.dark.background};
+              --foreground: ${generatedTheme.dark.foreground};
+              --card: ${generatedTheme.dark.card};
+              --card-foreground: ${generatedTheme.dark.cardForeground};
+              --popover: ${generatedTheme.dark.popover};
+              --popover-foreground: ${generatedTheme.dark.popoverForeground};
+              --primary: ${generatedTheme.dark.primary};
+              --primary-foreground: ${generatedTheme.dark.primaryForeground};
+              --secondary: ${generatedTheme.dark.secondary};
+              --secondary-foreground: ${generatedTheme.dark.secondaryForeground};
+              --muted: ${generatedTheme.dark.muted};
+              --muted-foreground: ${generatedTheme.dark.mutedForeground};
+              --accent: ${generatedTheme.dark.accent};
+              --accent-foreground: ${generatedTheme.dark.accentForeground};
+              --destructive: ${generatedTheme.dark.destructive};
+              --destructive-foreground: ${generatedTheme.dark.destructiveForeground};
+              --border: ${generatedTheme.dark.border};
+              --input: ${generatedTheme.dark.input};
+              --ring: ${generatedTheme.dark.ring};
           }
       `}</style>
       )}
