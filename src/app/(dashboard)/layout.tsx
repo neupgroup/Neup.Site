@@ -74,6 +74,10 @@ export default function DashboardLayout({
                             <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
                                 Root
                             </div>
+                             <Link href="/root/pages" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/root/pages') ? 'bg-muted' : '')}>
+                                <Globe className="h-4 w-4" />
+                                <span>Pages</span>
+                            </Link>
                             <Link href="/root/templates" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/root/templates') ? 'bg-muted' : '')}>
                                 <LayoutTemplate className="h-4 w-4" />
                                 <span>Templates</span>
