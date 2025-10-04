@@ -16,6 +16,9 @@ const initialModules = [
     { id: 'meta-pixel', name: 'Meta Pixel Module', description: 'Integrates with Meta Pixel for tracking.', enabled: false },
     { id: 'news', name: 'News Module', description: 'Adds a news/articles section to your site.', enabled: false },
     { id: 'blog', name: 'Blog Module', description: 'Adds a blog section to your site.', enabled: true },
+    { id: 'database', name: 'Database Integration', description: 'Connects to a database for dynamic content.', enabled: false },
+    { id: 'google-analytics', name: 'Google Analytics Integration', description: 'Integrates with Google Analytics for detailed tracking.', enabled: false },
+    { id: 'payment', name: 'Payment Processing Module', description: 'Handles payments and subscriptions.', enabled: false },
 ];
 
 export default function ModulesPage() {
