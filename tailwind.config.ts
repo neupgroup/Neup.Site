@@ -11,7 +11,7 @@ const config = {
     extend: {
       fontFamily: {
         body: ['Raleway', 'sans-serif'],
-        headline: ['"Space Grotesk"', 'sans-serif'],
+        headline: ['Raleway', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
