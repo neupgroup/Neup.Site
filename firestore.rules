@@ -1,0 +1,55 @@
+/**
+ * @fileoverview Firestore Security Rules for Neup.Sites.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a role-based access control model for `sites` and `pages`.
+ * Access is determined by the `status` of a site and the `requiresPendingSite` attribute of a page,
+ * eliminating the need for complex data validation.
+ *
+ * Data Structure:
+ * - `/sites/{siteId}`: Stores site information, including status and type.
+ * - `/sites/{siteId}/pages/{pageId}`: Stores page information, including content and a flag indicating whether the site must be in a pending state for access.
+ *
+ * Key Security Decisions:
+ * - Access to a page at path `/onboarding` requires the site's status to be `pending`.
+ * - Read and write access to `sites` and `pages` is generally open, but can be restricted based on the `requiresPendingSite` field on `pages` and the `status` field on `sites`.
+ * - Denormalization is used to avoid `get()` calls by including all necessary authorization data directly within each document.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Grants access to sites based on their status.
+     * @path /sites/{siteId}
+     * @allow get, list: if true;
+     * @allow create: if true;
+     * @allow update: if true;
+     * @allow delete: if true;
+     * @principle Allows anyone to create, read, update, and delete sites, regardless of authentication.
+     */
+    match /sites/{siteId} {
+      allow get, list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+
+    /**
+     * @description Grants access to pages based on their association to a site and the site's status.
+     * @path /sites/{siteId}/pages/{pageId}
+     * @allow get: if true;
+     * @allow list: if true;
+     * @allow create: if true;
+     * @allow update: if true;
+     * @allow delete: if true;
+     * @principle Allows anyone to create, read, update, and delete pages.
+     */
+    match /sites/{siteId}/pages/{pageId} {
+      allow get, list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+  }
+}

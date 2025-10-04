@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "Site": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Site",
+      "type": "object",
+      "description": "Represents a website created within Neup.Sites.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Site entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the website."
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "URL of the website's logo image.",
+          "format": "uri"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the site (e.g., pending, active, inactive).",
+          "format": "string"
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of website (e.g., real estate, news portal, academic institution, personal portfolio, corporate portfolio)."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status",
+        "type"
+      ]
+    },
+    "Page": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Page",
+      "type": "object",
+      "description": "Represents a page within a website.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Page entity."
+        },
+        "siteId": {
+          "type": "string",
+          "description": "Reference to Site. (Relationship: Site 1:N Page)"
+        },
+        "path": {
+          "type": "string",
+          "description": "The URL path for the page (e.g., /onboarding)."
+        },
+        "content": {
+          "type": "string",
+          "description": "The HTML content of the page."
+        },
+        "requiresPendingSite": {
+          "type": "boolean",
+          "description": "Whether this page requires the site to be in a pending state to be accessible."
+        }
+      },
+      "required": [
+        "id",
+        "siteId",
+        "path",
+        "content",
+        "requiresPendingSite"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/sites/{siteId}",
+        "definition": {
+          "entityName": "Site",
+          "schema": {
+            "$ref": "#/backend/entities/Site"
+          },
+          "description": "Stores site information. The 'siteId' is the unique identifier for the site.",
+          "params": [
+            {
+              "name": "siteId",
+              "description": "The unique identifier for the site."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/sites/{siteId}/pages/{pageId}",
+        "definition": {
+          "entityName": "Page",
+          "schema": {
+            "$ref": "#/backend/entities/Page"
+          },
+          "description": "Stores page information associated with a specific site. The 'siteId' is the site's unique identifier, and 'pageId' is the page's unique identifier.",
+          "params": [
+            {
+              "name": "siteId",
+              "description": "The unique identifier for the site."
+            },
+            {
+              "name": "pageId",
+              "description": "The unique identifier for the page."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This design prioritizes security and scalability by adhering to the principles of Authorization Independence, Structural Segregation, Access Modeling, and Data Clarity. \n\nThe `sites` collection stores site data. The `pages` subcollection stores page data related to the site.\n\n**Authorization Independence**: No `get()` calls are needed in the security rules because access control is based on the `status` field in the `sites` collection and `requiresPendingSite` field in the `pages` collection. All required attributes for pages authorization are denormalized into the page document itself, removing the need for hierarchical dependencies.\n\n**Structural Segregation**: The `sites` collection is dedicated solely to site data, ensuring a homogeneous security posture. Similarly, the `pages` subcollection only contains page documents associated to a specific site.\n\n**Access Modeling**: The structure uses path-based ownership (`/sites/{siteId}/pages/{pageId}`).\n\n**QAPs**: The segregation of sites and pages based on the site ID supports efficient and secure list operations, as queries can be scoped to a specific site.\n\n**Invariants**: The structure supports invariants by associating pages to sites via the `siteId` field in the `pages` subcollection. This ensures the integrity of the 1:N relationship between sites and pages."
+  }
+}
