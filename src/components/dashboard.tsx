@@ -144,24 +144,15 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
               <NavLink href="/" currentPath={pathname}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
               <NavLink href="/profile" currentPath={pathname}><Settings className="h-4 w-4" /><span>Profile</span></NavLink>
 
-              <Collapsible defaultOpen={pathname.startsWith('/news')}>
-                <CollapsibleTrigger className="w-full">
-                    <div className={cn('flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted', pathname.startsWith('/news') && 'bg-muted')}>
-                        <div className="flex items-center gap-2">
-                            <Newspaper className="h-4 w-4" />
-                            <span>News</span>
-                        </div>
-                        <ChevronRight className="h-4 w-4 transform transition-transform duration-200 [&[data-state=open]]:rotate-90" />
-                    </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pl-6 pt-2 space-y-1">
-                    <NavLink href="/news" currentPath={pathname}><Newspaper className="h-4 w-4" /><span>All Articles</span></NavLink>
-                    <NavLink href="/news/create" currentPath={pathname}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
-                    <NavLink href="/news/category" currentPath={pathname}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
-                    <NavLink href="/news/featured" currentPath={pathname}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
-                </CollapsibleContent>
-              </Collapsible>
-              
+              <div className="mt-4 space-y-2">
+                <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+                  News
+                </div>
+                <NavLink href="/news" currentPath={pathname}><Newspaper className="h-4 w-4" /><span>All Articles</span></NavLink>
+                <NavLink href="/news/create" currentPath={pathname}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
+                <NavLink href="/news/category" currentPath={pathname}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
+                <NavLink href="/news/featured" currentPath={pathname}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
+              </div>
 
               {/* Site Section */}
               <div className="mt-4 space-y-2">
