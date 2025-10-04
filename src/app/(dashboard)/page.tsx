@@ -24,7 +24,7 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Site Editor</CardTitle>
+            <CardTitle>Editor</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
@@ -50,7 +50,7 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Error Logs</CardTitle>
+            <CardTitle>Errors</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">

@@ -68,7 +68,7 @@ const ErrorsPage = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-headline">
             <Terminal className="h-6 w-6" />
-            Application Error Logs
+            Application Errors
           </CardTitle>
         </CardHeader>
         <CardContent>
