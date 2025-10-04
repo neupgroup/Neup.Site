@@ -85,7 +85,12 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
         const createdAt = data.createdAt;
         return {
             id: doc.id,
-            ...data,
+            siteId: data.siteId,
+            name: data.name,
+            basePath: data.basePath,
+            methods: data.methods || [],
+            permitControl: data.permitControl,
+            ownedBy: data.ownedBy,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as Source
     });
@@ -124,7 +129,12 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
         const createdAt = data.createdAt;
         const source = { 
             id: docSnap.id, 
-            ...data,
+            siteId: data.siteId,
+            name: data.name,
+            basePath: data.basePath,
+            methods: data.methods || [],
+            permitControl: data.permitControl,
+            ownedBy: data.ownedBy,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as Source;
         return { success: true, source };

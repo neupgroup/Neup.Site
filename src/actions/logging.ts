@@ -1,29 +1,27 @@
-
 'use server';
 
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-export async function logErrorToFirestore(error: {
+interface LogErrorParams {
   message: string;
   stack?: string;
   componentStack?: string;
   source?: string;
   details?: string;
-}) {
+}
+
+export async function logErrorToFirestore(error: LogErrorParams): Promise<void> {
   try {
     const errorsCollectionRef = collection(db, 'errors');
     await addDoc(errorsCollectionRef, {
-      message: error.message,
-      stack: error.stack,
-      componentStack: error.componentStack,
+      ...error,
       source: error.source || 'unknown',
-      details: error.details,
       timestamp: serverTimestamp(),
     });
   } catch (dbError: any) {
-    console.error('Failed to log error to Firestore:', dbError);
-    // We can't throw here, or we might get into a loop.
-    // The error is already logged to the console on the server.
+    console.error('Failed to log error to Firestore:', dbError.message);
+    // As this is a logging function, throwing an error here could cause a loop.
+    // The primary error is logged to the server console, which should be sufficient.
   }
 }

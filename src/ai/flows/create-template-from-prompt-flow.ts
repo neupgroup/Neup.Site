@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview Creates a template's CanvasElementData JSON from a natural language prompt.

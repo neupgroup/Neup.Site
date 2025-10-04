@@ -47,12 +47,12 @@ export async function createSite(type: Site['type'] = 'editor') {
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
-    console.error('Failed to create site:', error);
     await logErrorToFirestore({
-      message: 'Failed to create site: ' + error.message,
-      stack: error.stack,
+        message: `Failed to create site: ${error.message}`,
+        stack: error.stack,
+        source: 'createSite',
     });
-    return { success: false, error: error.message || 'Failed to create site.' };
+    return { success: false, error: 'Failed to create site. An error has been logged.' };
   }
 }
 
@@ -75,12 +75,12 @@ export async function saveSite(id: string, elements: any) {
     }, { merge: true });
     return { success: true, id };
   } catch (error: any) {
-    console.error(`Failed to save site ${id}:`, error);
     await logErrorToFirestore({
-      message: `Failed to save site ${id}: ` + error.message,
-      stack: error.stack,
+        message: `Failed to save site ${id}: ${error.message}`,
+        stack: error.stack,
+        source: 'saveSite',
     });
-    return { success: false, error: error.message || `Failed to save site ${id}.` };
+    return { success: false, error: `Failed to save site ${id}. An error has been logged.` };
   }
 }
 
@@ -118,12 +118,12 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
         return { success: true, site };
 
     } catch (error: any) {
-        console.error(`Failed to fetch site with ID ${id}:`, error);
         await logErrorToFirestore({
-            message: `Failed to fetch site with ID ${id}: ` + error.message,
+            message: `Failed to fetch site with ID ${id}: ${error.message}`,
             stack: error.stack,
+            source: 'getSite',
         });
-        return { success: false, error: error.message || 'Failed to fetch site.' };
+        return { success: false, error: 'Failed to fetch site. An error has been logged.' };
     }
 }
 
@@ -154,12 +154,12 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
     });
     return { success: true, sites };
   } catch (error: any) {
-    console.error('Failed to fetch sites:', error);
     await logErrorToFirestore({
-      message: 'Failed to fetch sites: ' + error.message,
-      stack: error.stack,
+        message: `Failed to fetch sites: ${error.message}`,
+        stack: error.stack,
+        source: 'getSites',
     });
-    return { success: false, error: error.message || 'Failed to fetch sites.' };
+    return { success: false, error: 'Failed to fetch sites. An error has been logged.' };
   }
 }
 
@@ -192,11 +192,11 @@ export async function deleteSite(id: string) {
 
     return { success: true };
   } catch (error: any) {
-    console.error(`Failed to delete site with ID ${id}:`, error);
     await logErrorToFirestore({
-      message: `Failed to delete site with ID ${id}: ` + error.message,
-      stack: error.stack,
+        message: `Failed to delete site with ID ${id}: ${error.message}`,
+        stack: error.stack,
+        source: 'deleteSite',
     });
-    return { success: false, error: error.message || 'Failed to delete site.' };
+    return { success: false, error: `Failed to delete site with ID ${id}. An error has been logged.` };
   }
 }

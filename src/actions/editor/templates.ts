@@ -1,4 +1,3 @@
-
 'use server';
 
 import { db } from '@/lib/firebase';
@@ -78,12 +77,12 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
-    console.error('Failed to save template:', error);
     await logErrorToFirestore({
-      message: 'Failed to save template: ' + error.message,
-      stack: error.stack,
+        message: `Failed to save template: ${error.message}`,
+        stack: error.stack,
+        source: 'saveTemplate',
     });
-    return { success: false, error: error.message || 'Failed to save template.' };
+    return { success: false, error: 'Failed to save template. An error has been logged.' };
   }
 }
 
@@ -121,12 +120,12 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
     });
     return { success: true, templates };
   } catch (error: any) {
-    console.error('Failed to fetch templates:', error);
     await logErrorToFirestore({
-      message: 'Failed to fetch templates: ' + error.message,
-      stack: error.stack,
+        message: `Failed to fetch templates: ${error.message}`,
+        stack: error.stack,
+        source: 'getTemplates',
     });
-    return { success: false, error: error.message || 'Failed to fetch templates.' };
+    return { success: false, error: 'Failed to fetch templates. An error has been logged.' };
   }
 }
 
@@ -159,12 +158,12 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
         const template = { id: docSnap.id, ...serializableData } as Template;
         return { success: true, template };
     } catch (error: any) {
-        console.error(`Failed to fetch template with ID ${id}:`, error);
         await logErrorToFirestore({
-            message: `Failed to fetch template with ID ${id}: ` + error.message,
+            message: `Failed to fetch template with ID ${id}: ${error.message}`,
             stack: error.stack,
+            source: 'getTemplate',
         });
-        return { success: false, error: error.message || 'Failed to fetch template.' };
+        return { success: false, error: 'Failed to fetch template. An error has been logged.' };
     }
 }
 
@@ -185,11 +184,11 @@ export async function deleteTemplate(id: string) {
     await deleteDoc(templateRef);
     return { success: true };
   } catch (error: any) {
-    console.error('Failed to delete template:', error);
     await logErrorToFirestore({
-      message: `Failed to delete template with ID ${id}: ` + error.message,
-      stack: error.stack,
+        message: `Failed to delete template with ID ${id}: ${error.message}`,
+        stack: error.stack,
+        source: 'deleteTemplate',
     });
-    return { success: false, error: error.message || 'Failed to delete template.' };
+    return { success: false, error: `Failed to delete template with ID ${id}. An error has been logged.` };
   }
 }

@@ -1,5 +1,4 @@
-
-
+import { logErrorToFirestore } from '@/actions/logging';
 import type { CanvasElementData } from '@/lib/schemas';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {
@@ -35,8 +34,7 @@ function renderElementToJsx(element: CanvasElementData, level: number, isInsideL
         <div key={${loopVar}.id || ${indexVar}}>
 ${childrenJsx}
         </div>
-    ))}
-`;
+    ))}\n`;
     }
 
     const style = propertiesToStyleObject(properties);
@@ -171,41 +169,41 @@ ${childrenJsx}
 }
 
 
-export function convertJsonToJsx(elements: CanvasElementData[]): string {
-  const hasImage = JSON.stringify(elements).includes('"type":"image"');
-  let imports = `import React from 'react';\n`;
-  if (hasImage) {
-      imports += `import Image from 'next/image';\n`;
-  }
-  
-  const componentBody = elements.map((element, index) => {
-    // A top-level element might be a repeater itself.
-    const isRepeater = element.repeater && element.repeater.enabled && element.repeater.dataPath;
-    if (isRepeater) {
-        const loopVar = 'item';
-        const indexVar = 'index';
-        const childrenJsx = element.children ? element.children.map(child => renderElementToJsx(child, 3, true)).join('\n') : '';
-        const rootElementAttributes = `key={${loopVar}.id || ${indexVar}}`;
-
-        return `
-      {items?.${element.repeater.dataPath}?.map((${loopVar}, ${indexVar}) => (
-        <div ${rootElementAttributes}>
-${childrenJsx}
-        </div>
-      ))}
-`;
+export async function convertJsonToJsx(elements: CanvasElementData[]): Promise<string> {
+  try {
+    const hasImage = JSON.stringify(elements).includes('"type":"image"');
+    let imports = `import React from 'react';\n`;
+    if (hasImage) {
+        imports += `import Image from 'next/image';\n`;
     }
+    
+    const componentBody = elements.map((element, index) => {
+      // A top-level element might be a repeater itself.
+      const isRepeater = element.repeater && element.repeater.enabled && element.repeater.dataPath;
+      if (isRepeater) {
+          const loopVar = 'item';
+          const indexVar = 'index';
+          const childrenJsx = element.children ? element.children.map(child => renderElementToJsx(child, 3, true)).join('\n') : '';
+          const rootElementAttributes = `key={${loopVar}.id || ${indexVar}}`;
 
-    const singleElementJsx = renderElementToJsx(element, 2, false);
-    return singleElementJsx;
-  }).join('\n');
+          return `
+        {items?.${element.repeater.dataPath}?.map((${loopVar}, ${indexVar}) => (
+          <div ${rootElementAttributes}>
+${childrenJsx}
+          </div>
+        ))}`;
+      }
+
+      const singleElementJsx = renderElementToJsx(element, 2, false);
+      return singleElementJsx;
+    }).join('\n');
 
 
-  // If the top-level is not a repeater, we assume it's a single item component.
-  const containsRepeater = elements.some(el => el.repeater && el.repeater.enabled);
-  if (!containsRepeater) {
-    const singleItemJsx = elements.map(el => renderElementToJsx(el, 3, true)).join('\n');
-     return `
+    // If the top-level is not a repeater, we assume it's a single item component.
+    const containsRepeater = elements.some(el => el.repeater && el.repeater.enabled);
+    if (!containsRepeater) {
+      const singleItemJsx = elements.map(el => renderElementToJsx(el, 3, true)).join('\n');
+       return `
 ${imports}
 
 export default function GeneratedComponent({ items }) {
@@ -224,10 +222,10 @@ ${singleItemJsx}
   );
 }
   `.trim();
-  }
+    }
 
 
-  return `
+    return `
 ${imports}
 
 export default function GeneratedComponent({ items }) {
@@ -242,4 +240,24 @@ ${componentBody}
   );
 }
   `.trim();
+} catch (error: any) {
+    await logErrorToFirestore({
+        message: `Failed to convert JSON to JSX: ${error.message}`,
+        stack: error.stack,
+        source: 'convertJsonToJsx',
+    });
+    // Return a component that displays an error
+    return `
+import React from 'react';
+
+export default function ErrorComponent() {
+  return (
+    <div style={{ color: 'red', padding: '20px', border: '1px solid red', borderRadius: '5px' }}>
+      <h1>Error Generating Component</h1>
+      <p>An error occurred while trying to generate the component from JSON. The error has been logged.</p>
+    </div>
+  );
+}
+    `.trim();
+  }
 }

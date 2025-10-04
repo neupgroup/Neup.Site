@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview Refines a given code snippet based on a user's prompt.

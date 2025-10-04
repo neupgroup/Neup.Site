@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview Converts HTML into the CanvasElementData JSON structure.
@@ -9,17 +8,27 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/lib/schemas';
+import { logErrorToFirestore } from '@/actions/logging';
 
 const HtmlToJsonOutputSchema = z.object({
   elements: z.array(CanvasElementDataSchema),
 });
 
 export async function convertHtmlToJson(html: string): Promise<CanvasElementData[]> {
-  const { output } = await htmlToJsonPrompt(html);
-  if (!output?.elements) {
-    throw new Error('AI failed to generate a valid element array.');
-  }
-  return output.elements;
+    try {
+        const { output } = await htmlToJsonPrompt(html);
+        if (!output?.elements) {
+            throw new Error('AI failed to generate a valid element array.');
+        }
+        return output.elements;
+    } catch (error: any) {
+        await logErrorToFirestore({
+            message: `Failed to convert HTML to JSON: ${error.message}`,
+            stack: error.stack,
+            source: 'convertHtmlToJson',
+        });
+        throw new Error('Failed to convert HTML to JSON. An error has been logged.');
+    }
 }
 
 const htmlToJsonPrompt = ai.definePrompt({
@@ -47,15 +56,15 @@ const htmlToJsonPrompt = ai.definePrompt({
     - Map style attributes to properties directly (e.g., 'style="font-weight: bold;"' becomes '"fontWeight": "bold"').
 
     Example HTML:
-    \'\'\'html
+    '''html
     <section style="background-color: #f0f0f0; padding: 20px;">
       <h1>Welcome</h1>
       <p>This is a paragraph.</p>
     </section>
-    \'\'\'
+    '''
 
     Example JSON Output:
-    \'\'\'json
+    '''json
     {
       "elements": [
         {
@@ -85,7 +94,7 @@ const htmlToJsonPrompt = ai.definePrompt({
         }
       ]
     }
-    \'\'\'
+    '''
 
     IMPORTANT:
     - Generate unique, descriptive IDs for each element (e.g., 'section-123').
