@@ -1,5 +1,5 @@
 
-import { getNewsArticleBySlug, type NewsArticle } from '@/actions/news';
+import { getNewsArticleById, type NewsArticle } from '@/actions/news';
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import Image from 'next/image';
 
 export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
-  const { article, error } = await getNewsArticleBySlug(slug);
+  const { article, error } = await getNewsArticleById(slug);
 
   if (error || !article) {
     return (
@@ -64,7 +64,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
           <Button asChild>
-            <Link href={`/news/${article.slug}/edit`}>
+            <Link href={`/news/${article.id}/edit`}>
               <Pencil className="mr-2 h-4 w-4" /> Edit
             </Link>
           </Button>
@@ -73,3 +73,5 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
     </div>
   );
 }
+
+    

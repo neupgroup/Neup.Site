@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createNewsArticle } from '@/actions/news';
@@ -25,7 +25,6 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   author: z.string().min(1, 'Author is required'),
-  slug: z.string().optional(),
   imageUrl: z.string().optional(),
   content: z.string().min(1, 'Content is required'),
 });
@@ -42,7 +41,6 @@ export default function CreateNewsArticlePage() {
     defaultValues: {
       title: '',
       author: '',
-      slug: '',
       imageUrl: '',
       content: '',
     },
@@ -62,7 +60,7 @@ export default function CreateNewsArticlePage() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/news">
@@ -82,9 +80,6 @@ export default function CreateNewsArticlePage() {
             )} />
             <FormField control={form.control} name="author" render={({ field }) => (
               <FormItem><FormLabel>Author</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="slug" render={({ field }) => (
-              <FormItem><FormLabel>Slug (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormDescription>If left blank, a slug will be generated from the title.</FormDescription><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="imageUrl" render={({ field }) => (
               <FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -110,3 +105,5 @@ export default function CreateNewsArticlePage() {
     </Form>
   );
 }
+
+    

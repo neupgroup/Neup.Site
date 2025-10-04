@@ -13,10 +13,10 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Save, ArrowLeft, Loader2, AlertCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getNewsArticleBySlug, updateNewsArticle, deleteNewsArticle, type NewsArticle } from '@/actions/news';
+import { getNewsArticleById, updateNewsArticle, deleteNewsArticle, type NewsArticle } from '@/actions/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +29,6 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   author: z.string().min(1, 'Author is required'),
-  slug: z.string().optional(),
   imageUrl: z.string().optional(),
   content: z.string().min(1, 'Content is required'),
 });
@@ -52,7 +51,6 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
     defaultValues: {
       title: '',
       author: '',
-      slug: '',
       imageUrl: '',
       content: '',
     },
@@ -61,13 +59,12 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
   useEffect(() => {
     const fetchArticle = async () => {
       setLoading(true);
-      const result = await getNewsArticleBySlug(slug);
+      const result = await getNewsArticleById(slug);
       if (result.success && result.article) {
         setArticle(result.article);
         form.reset({
           title: result.article.title,
           author: result.article.author,
-          slug: result.article.slug,
           imageUrl: result.article.imageUrl,
           content: result.article.content,
         });
@@ -87,7 +84,7 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
 
     if (result.success) {
       toast({ title: 'Article Updated!', description: `Successfully updated ${data.title}.` });
-      router.push(`/news/${data.slug || slug}`);
+      router.push(`/news/${article.id}`);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
       setIsSaving(false);
@@ -135,7 +132,7 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" asChild>
@@ -160,9 +157,6 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
             )} />
             <FormField control={form.control} name="author" render={({ field }) => (
               <FormItem><FormLabel>Author</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="slug" render={({ field }) => (
-              <FormItem><FormLabel>Slug</FormLabel><FormControl><Input {...field} /></FormControl><FormDescription>Changing this will change the URL of the article.</FormDescription><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="imageUrl" render={({ field }) => (
               <FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -202,3 +196,5 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
     </Form>
   );
 }
+
+    

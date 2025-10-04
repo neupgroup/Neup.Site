@@ -65,7 +65,7 @@ export default async function NewsListPage() {
                 {articles?.map((article) => (
                   <TableRow key={article.id}>
                     <TableCell className="font-medium">
-                        <Link href={`/news/${article.slug}`} className="hover:underline">
+                        <Link href={`/news/${article.id}`} className="hover:underline">
                             {article.title}
                         </Link>
                     </TableCell>
@@ -81,3 +81,5 @@ export default async function NewsListPage() {
     </div>
   );
 }
+
+    

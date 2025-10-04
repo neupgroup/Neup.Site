@@ -144,9 +144,8 @@
       "type": "object",
       "description": "Represents a news article.",
       "properties": {
-        "id": { "type": "string", "description": "Unique identifier." },
+        "id": { "type": "string", "description": "Unique identifier, formatted as [slug]-[random-string]." },
         "title": { "type": "string", "description": "The title of the article." },
-        "slug": { "type": "string", "description": "URL-friendly slug." },
         "content": { "type": "string", "description": "The main content of the article, likely in Markdown." },
         "author": { "type": "string", "description": "The name of the author." },
         "imageUrl": { "type": "string", "format": "uri", "description": "URL for a feature image." },
@@ -154,7 +153,7 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "title", "slug", "content", "author", "publishedAt"]
+      "required": ["id", "title", "content", "author", "publishedAt"]
     }
   },
   "auth": {
@@ -208,7 +207,7 @@
           "schema": {
             "$ref": "#/backend/entities/NewsArticle"
           },
-          "description": "Stores individual news articles.",
+          "description": "Stores individual news articles. The document ID is a combination of a slug and a random ID.",
           "params": [
             {
               "name": "newsId",
@@ -221,3 +220,5 @@
     "reasoning": "This design prioritizes security and scalability by adhering to the principles of Authorization Independence, Structural Segregation, Access Modeling, and Data Clarity. \n\nThe `sites` collection stores site data. The `pages` subcollection stores page data related to the site.\n\n**Authorization Independence**: No `get()` calls are needed in the security rules because access control is based on the `status` field in the `sites` collection and `requiresPendingSite` field in the `pages` collection. All required attributes for pages authorization are denormalized into the page document itself, removing the need for hierarchical dependencies.\n\n**Structural Segregation**: The `sites` collection is dedicated solely to site data, ensuring a homogeneous security posture. Similarly, the `pages` subcollection only contains page documents associated to a specific site.\n\n**Access Modeling**: The structure uses path-based ownership (`/sites/{siteId}/pages/{pageId}`).\n\n**QAPs**: The segregation of sites and pages based on the site ID supports efficient and secure list operations, as queries can be scoped to a specific site.\n\n**Invariants**: The structure supports invariants by associating pages to sites via the `siteId` field in the `pages` subcollection. This ensures the integrity of the 1:N relationship between sites and pages."
   }
 }
+
+    
