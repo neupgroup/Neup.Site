@@ -116,7 +116,7 @@ export default function PrebuiltEditorPage() {
         const content = item.content;
         if (!content || !Array.isArray(content) || content.length === 0) {
             const errorMsg = `Library item "${item.name}" (ID: ${item.id}) has no valid content to add.`;
-            toast({ variant: 'destructive', title: 'Empty Item', description: 'This item has no content to add.' });
+            toast({ variant: 'destructive', title: 'Empty Item', description: 'This template has no content to add.' });
             logErrorToFirestore({
                 message: errorMsg,
                 source: 'PrebuiltEditorPage.addSection',
