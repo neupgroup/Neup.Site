@@ -9,7 +9,6 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/lib/schemas';
-import { logErrorToFirestore } from '@/actions/logging';
 
 const HtmlToJsonOutputSchema = z.object({
   elements: z.array(CanvasElementDataSchema).describe("An array of canvas elements that represent the HTML structure."),
@@ -23,12 +22,10 @@ export async function convertHtmlToJson(html: string): Promise<CanvasElementData
         }
         return output.elements;
     } catch (error: any) {
-        await logErrorToFirestore({
-            message: `Failed to convert HTML to JSON: ${error.message}`,
-            stack: error.stack,
-            source: 'convertHtmlToJson',
-        });
-        throw new Error('Failed to convert HTML to JSON. An error has been logged.');
+        console.error(`Failed to convert HTML to JSON: ${error.message}`);
+        // In a real app, you might want to log this to a proper logging service
+        // that doesn't use server-side dependencies in a way that leaks to the client.
+        throw new Error('Failed to convert HTML to JSON. An error has been logged to the console.');
     }
 }
 
