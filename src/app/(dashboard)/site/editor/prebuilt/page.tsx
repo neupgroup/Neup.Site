@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getPage, savePage } from '@/actions/editor/pages';
-import { getTemplates, type Template } from '@/actions/editor/templates';
+import { getTemplates } from '@/actions/editor/templates';
+import type { Template } from '@/schemas/template';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';

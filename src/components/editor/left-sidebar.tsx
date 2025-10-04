@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search } from 'lucide-react';
-import type { CanvasElementData, Template } from '@/schemas/site';
+import type { CanvasElementData } from '@/schemas/canvas';
+import type { Template } from '@/schemas/template';
 import { cn } from '@/lib/utils';
 import { logErrorToFirestore } from '@/lib/logging';
 import Link from 'next/link';
@@ -13,6 +14,7 @@ import { Skeleton } from '../ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Input } from '../ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (
   <div
@@ -160,6 +162,7 @@ const TemplateLibrary = ({addGeneratedElement}: {addGeneratedElement: (element: 
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -190,6 +193,9 @@ const TemplateLibrary = ({addGeneratedElement}: {addGeneratedElement: (element: 
         element: jsonContent[0],
       };
       e.dataTransfer.setData('application/json', JSON.stringify(data));
+    } else {
+        e.preventDefault();
+        toast({ variant: 'destructive', title: 'Empty Template', description: 'This template has no JSON content to add.' });
     }
   };
   
