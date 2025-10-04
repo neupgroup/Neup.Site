@@ -4,8 +4,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getPage, savePage } from '@/actions/editor/pages';
-import { getTemplates } from '@/actions/editor/templates';
-import type { Template } from '@/schemas/template';
+import { getTemplates, type Template } from '@/actions/editor/templates';
+import { getSections, type Section } from '@/actions/editor/sections';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -17,12 +17,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
 import { logErrorToFirestore } from '@/lib/logging';
 
+// A unified interface for items in the section library
+interface LibraryItem {
+    id: string;
+    name: string;
+    description?: string;
+    content: CanvasElementData[];
+    sourceType: 'template' | 'section';
+}
+
 export default function PrebuiltEditorPage() {
     const searchParams = useSearchParams();
     const id = searchParams.get('id');
 
     const [pageElements, setPageElements] = useState<CanvasElementData[]>([]);
-    const [templates, setTemplates] = useState<Template[]>([]);
+    const [libraryItems, setLibraryItems] = useState<LibraryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -38,21 +47,64 @@ export default function PrebuiltEditorPage() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const [pageResult, templatesResult] = await Promise.all([getPage(id), getTemplates()]);
+                const [pageResult, templatesResult, sectionsResult] = await Promise.all([
+                    getPage(id), 
+                    getTemplates(),
+                    getSections(),
+                ]);
 
                 if (pageResult.success && pageResult.page) {
                     setPageElements(pageResult.page.elements || []);
                 } else {
                     setError(pageResult.error || 'Failed to load page data.');
                 }
+                
+                const combinedLibrary: LibraryItem[] = [];
 
                 if (templatesResult.success && templatesResult.templates) {
-                    setTemplates(templatesResult.templates.filter(t => t.type === 'section' && t.usableOn.includes('json')));
+                    const filteredTemplates = templatesResult.templates
+                        .filter(t => t.type === 'section' && t.usableOn.includes('json') && t.content?.json && t.content.json.length > 0)
+                        .map(t => ({
+                            id: t.id,
+                            name: t.name,
+                            description: t.description,
+                            content: t.content.json!,
+                            sourceType: 'template' as const,
+                        }));
+                    combinedLibrary.push(...filteredTemplates);
                 } else {
-                    setError(prev => prev ? `${prev} And failed to load templates: ${templatesResult.error}` : templatesResult.error || 'Failed to load templates.');
+                    setError(prev => (prev ? `${prev} And failed to load templates: ${templatesResult.error}` : templatesResult.error || 'Failed to load templates.'));
                 }
+
+                if (sectionsResult.success && sectionsResult.sections) {
+                    const mappedSections = sectionsResult.sections.map(s => {
+                        try {
+                            const parsedContent = JSON.parse(s.content);
+                            return {
+                                id: s.id,
+                                name: s.name,
+                                description: `Custom section of type: ${s.type}`,
+                                content: Array.isArray(parsedContent) ? parsedContent : [parsedContent],
+                                sourceType: 'section' as const,
+                            }
+                        } catch {
+                            return null;
+                        }
+                    }).filter((s): s is LibraryItem => s !== null && s.content.length > 0);
+                    combinedLibrary.push(...mappedSections);
+                } else {
+                     setError(prev => (prev ? `${prev} And failed to load sections: ${sectionsResult.error}` : sectionsResult.error || 'Failed to load sections.'));
+                }
+                
+                setLibraryItems(combinedLibrary);
+
             } catch (e: any) {
                 setError('An unexpected error occurred while fetching data.');
+                 await logErrorToFirestore({
+                    message: e.message,
+                    stack: e.stack,
+                    source: 'PrebuiltEditorPage.fetchData',
+                });
             } finally {
                 setLoading(false);
             }
@@ -60,22 +112,23 @@ export default function PrebuiltEditorPage() {
         fetchData();
     }, [id]);
 
-    const addSection = (template: Template) => {
-        const jsonContent = template.content?.json;
-        if (!jsonContent || !Array.isArray(jsonContent) || jsonContent.length === 0) {
-            const errorMsg = `Template "${template.name}" (ID: ${template.id}) has no valid JSON content to add.`;
-            toast({ variant: 'destructive', title: 'Empty Template', description: 'This template has no content to add.' });
+    const addSection = (item: LibraryItem) => {
+        const content = item.content;
+        if (!content || !Array.isArray(content) || content.length === 0) {
+            const errorMsg = `Library item "${item.name}" (ID: ${item.id}) has no valid content to add.`;
+            toast({ variant: 'destructive', title: 'Empty Item', description: 'This item has no content to add.' });
             logErrorToFirestore({
                 message: errorMsg,
                 source: 'PrebuiltEditorPage.addSection',
-                details: `Attempted to add a template where 'content.json' is missing, not an array, or empty.`,
+                details: `Attempted to add a library item where 'content' is missing, not an array, or empty.`,
             });
             return;
         }
         
+        // Ensure unique ID for the new section instance
         const newSection = {
-            ...jsonContent[0],
-            id: `${jsonContent[0].id}-${Date.now()}` // Ensure unique ID
+            ...content[0],
+            id: `${content[0].id}-${Date.now()}` 
         };
         setPageElements(prev => [...prev, newSection]);
     };
@@ -119,13 +172,13 @@ export default function PrebuiltEditorPage() {
                     </CardHeader>
                     <ScrollArea className="max-h-96">
                         <CardContent className="space-y-2">
-                            {templates.map(template => (
-                                 <div key={template.id} className="flex items-center justify-between p-2 border rounded-lg hover:bg-muted/50">
+                            {libraryItems.map(item => (
+                                 <div key={item.id} className="flex items-center justify-between p-2 border rounded-lg hover:bg-muted/50">
                                     <div className="flex-1 overflow-hidden">
-                                        <p className="font-medium truncate">{template.name}</p>
-                                        <p className="text-xs text-muted-foreground truncate">{template.description}</p>
+                                        <p className="font-medium truncate">{item.name}</p>
+                                        <p className="text-xs text-muted-foreground truncate">{item.description}</p>
                                     </div>
-                                    <Button size="sm" variant="outline" onClick={() => addSection(template)}>
+                                    <Button size="sm" variant="outline" onClick={() => addSection(item)}>
                                         <Plus className="h-4 w-4 mr-2" /> Add
                                     </Button>
                                 </div>
