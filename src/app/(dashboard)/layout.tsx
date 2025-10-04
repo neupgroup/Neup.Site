@@ -15,6 +15,7 @@ import {
   Puzzle,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function DashboardLayout({
   children,
@@ -40,7 +41,7 @@ export default function DashboardLayout({
               <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-card lg:sticky lg:top-16 lg:flex">
                   <div className="flex flex-1 flex-col overflow-y-auto p-4">
                       <nav className="flex flex-col gap-2">
-                        <Link href="/" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                        <Link href="/" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname === '/' ? 'bg-muted' : '')}>
                            <Home className="h-4 w-4" />
                            <span>Dashboard</span>
                         </Link>
@@ -48,23 +49,23 @@ export default function DashboardLayout({
                             <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
                                 Site
                             </div>
-                            <Link href="/site/pages" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/site/pages" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/pages') ? 'bg-muted' : '')}>
                                 <Globe className="h-4 w-4" />
                                 <span>Pages</span>
                             </Link>
-                            <Link href="/site/paths" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/site/paths" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/paths') ? 'bg-muted' : '')}>
                                 <LinkIcon className="h-4 w-4" />
                                 <span>Paths</span>
                             </Link>
-                            <Link href="/site/sources" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/site/sources" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/sources') ? 'bg-muted' : '')}>
                                 <Database className="h-4 w-4" />
                                 <span>Sources</span>
                             </Link>
-                            <Link href="/site/editor/dragger" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/site/editor/dragger" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/editor') ? 'bg-muted' : '')}>
                                 <LayoutTemplate className="h-4 w-4" />
                                 <span>Editor</span>
                             </Link>
-                            <Link href="/site/sections" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/site/sections" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/sections') ? 'bg-muted' : '')}>
                                 <Layers className="h-4 w-4" />
                                 <span>Sections</span>
                             </Link>
@@ -73,19 +74,19 @@ export default function DashboardLayout({
                             <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
                                 Root
                             </div>
-                            <Link href="/root/templates" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/root/templates" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/root/templates') ? 'bg-muted' : '')}>
                                 <LayoutTemplate className="h-4 w-4" />
                                 <span>Templates</span>
                             </Link>
-                            <Link href="/root/servers" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/root/servers" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/root/servers') ? 'bg-muted' : '')}>
                                 <Server className="h-4 w-4" />
                                 <span>Servers</span>
                             </Link>
-                             <Link href="/root/modules" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                             <Link href="/root/modules" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/root/modules') ? 'bg-muted' : '')}>
                                 <Puzzle className="h-4 w-4" />
                                 <span>Modules</span>
                             </Link>
-                            <Link href="/root/errors" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/root/errors" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/root/errors') ? 'bg-muted' : '')}>
                                 <Bug className="h-4 w-4" />
                                 <span>Errors</span>
                             </Link>
