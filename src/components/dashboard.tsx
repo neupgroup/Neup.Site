@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -31,19 +32,19 @@ function Header() {
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex items-center gap-4">
-          {loading.logo ? (
-            <Skeleton className="h-5 w-5" />
+          {loading.logo || logoUrl === null ? (
+            <Skeleton className="h-6 w-6" />
           ) : logoUrl ? (
-             <div className="relative h-5 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-5 !w-auto" />
+             <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
+                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
              </div>
           ) : (
-            <Rocket className="h-5 w-5 text-primary" />
+            <Rocket className="h-6 w-6 text-primary" />
           )}
 
-          {!hideSitename && (
+          {(!hideSitename && hideSitename !== null) && (
             <h1 className="font-headline text-xl font-semibold tracking-tight">
-              {loading.name ? <Skeleton className="h-6 w-32" /> : (profileName?.trim() ? profileName : 'Neup.Sites')}
+              {loading.name || profileName === null ? <Skeleton className="h-6 w-32" /> : (profileName?.trim() ? profileName : 'Neup.Sites')}
             </h1>
           )}
         </Link>
