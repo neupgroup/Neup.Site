@@ -4,7 +4,7 @@
 import React, { type FC, DragEvent } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
 import { Input } from '../ui/input';

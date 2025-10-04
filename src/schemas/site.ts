@@ -1,5 +1,5 @@
 
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 
 export interface Site {
   id: string;
