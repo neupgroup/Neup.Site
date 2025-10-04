@@ -1,28 +1,16 @@
 
 'use server';
 
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
-import {
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  getDocs,
-  getDoc,
-  deleteDoc,
-  serverTimestamp,
-  Timestamp,
-  query
-} from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query } from 'firebase/firestore';
 import { Template } from '@/schemas/template';
-import { logErrorToFirestore } from '@/lib/logging';
+import { initializeFirebase } from '@/lib/firebase';
 
 /**
  * Saves or updates a template in Firestore.
  */
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' | 'siteId'>, id?: string) {
   try {
-    const adminDb = getAdminDb();
+    const { firestore } = initializeFirebase();
     let dataToSave: any = { 
         name: template.name,
         description: template.description || '',
@@ -37,20 +25,15 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
     };
       
     if (id) {
-      const templateRef = doc(adminDb, 'templates', id);
+      const templateRef = doc(firestore, 'templates', id);
       await setDoc(templateRef, dataToSave, { merge: true });
       return { success: true, id };
     } else {
       dataToSave.createdAt = serverTimestamp();
-      const docRef = await addDoc(collection(adminDb, 'templates'), dataToSave);
+      const docRef = await addDoc(collection(firestore, 'templates'), dataToSave);
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
-    await logErrorToFirestore({
-        message: `Failed to save template: ${error.message}`,
-        stack: error.stack,
-        source: 'saveTemplate',
-    });
     return { success: false, error: 'Failed to save template. An error has been logged.' };
   }
 }
@@ -61,8 +44,8 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
  */
 export async function getTemplates(): Promise<{ success: boolean, templates?: Template[], error?: string }> {
   try {
-    const adminDb = getAdminDb();
-    const q = query(collection(adminDb, 'templates'));
+    const { firestore } = initializeFirebase();
+    const q = query(collection(firestore, 'templates'));
     const querySnapshot = await getDocs(q);
     const templates = querySnapshot.docs.map(doc => {
       const data = doc.data();
@@ -86,11 +69,6 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
     });
     return { success: true, templates };
   } catch (error: any) {
-    await logErrorToFirestore({
-        message: `Failed to fetch templates: ${error.message}`,
-        stack: error.stack,
-        source: 'getTemplates',
-    });
     return { success: false, error: 'Failed to fetch templates. An error has been logged.' };
   }
 }
@@ -100,8 +78,8 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
  */
 export async function getTemplate(id: string): Promise<{ success: boolean, template?: Template, error?: string }> {
     try {
-        const adminDb = getAdminDb();
-        const templateRef = doc(adminDb, 'templates', id);
+        const { firestore } = initializeFirebase();
+        const templateRef = doc(firestore, 'templates', id);
         const docSnap = await getDoc(templateRef);
 
         if (!docSnap.exists()) {
@@ -127,11 +105,6 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
         };
         return { success: true, template };
     } catch (error: any) {
-        await logErrorToFirestore({
-            message: `Failed to fetch template with ID ${id}: ${error.message}`,
-            stack: error.stack,
-            source: 'getTemplate',
-        });
         return { success: false, error: 'Failed to fetch template. An error has been logged.' };
     }
 }
@@ -142,16 +115,11 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
  */
 export async function deleteTemplate(id: string) {
   try {
-    const adminDb = getAdminDb();
-    const templateRef = doc(adminDb, 'templates', id);
+    const { firestore } = initializeFirebase();
+    const templateRef = doc(firestore, 'templates', id);
     await deleteDoc(templateRef);
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({
-        message: `Failed to delete template with ID ${id}: ${error.message}`,
-        stack: error.stack,
-        source: 'deleteTemplate',
-    });
     return { success: false, error: `Failed to delete template with ID ${id}. An error has been logged.` };
   }
 }

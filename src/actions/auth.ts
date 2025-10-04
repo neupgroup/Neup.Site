@@ -2,31 +2,28 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
-import { Timestamp } from 'firebase-admin/firestore';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { initializeFirebase } from '@/lib/firebase';
  
 export async function setSiteIdCookie(siteId: string) {
   if (!siteId) {
     throw new Error('Site ID cannot be empty.');
   }
-
-  const adminDb = getAdminDb();
-
-  // Reference to the document in the 'sites' collection
-  const siteRef = adminDb.collection('sites').doc(siteId);
-
+  
   try {
-    const docSnap = await siteRef.get();
+    const { firestore } = initializeFirebase();
+    const siteRef = doc(firestore, 'sites', siteId);
+    const docSnap = await getDoc(siteRef);
 
     // If the document does not exist, create it.
-    if (!docSnap.exists) {
-      await siteRef.set({
+    if (!docSnap.exists()) {
+      await setDoc(siteRef, {
         id: siteId,
         name: siteId, // Default name to the siteId
         status: 'active', // Default status
         type: 'corporate portfolio', // Default type
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       });
     }
     

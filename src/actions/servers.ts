@@ -1,40 +1,22 @@
 
 'use server';
 
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
-import {
-  collection,
-  addDoc,
-  doc,
-  deleteDoc,
-  getDocs,
-  getDoc,
-  query,
-  where,
-  serverTimestamp,
-  setDoc,
-  Timestamp
-} from 'firebase-admin/firestore';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { Server } from '@/schemas/server';
+import { initializeFirebase } from '@/lib/firebase';
 
 /**
  * Creates a new server.
  */
 export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>) {
   try {
-    const adminDb = getAdminDb();
-    const docRef = await adminDb.collection('servers').add({
+    const { firestore } = initializeFirebase();
+    const docRef = await addDoc(collection(firestore, 'servers'), {
       ...serverData,
       createdAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
-    console.error('Failed to create server:', error);
-    await logErrorToFirestore({
-      message: 'Failed to create server: ' + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: 'Failed to create server.' };
   }
 }
@@ -44,9 +26,9 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>)
  */
 export async function getServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
   try {
-    const adminDb = getAdminDb();
-    const q = adminDb.collection('servers');
-    const querySnapshot = await q.get();
+    const { firestore } = initializeFirebase();
+    const q = query(collection(firestore, 'servers'));
+    const querySnapshot = await getDocs(q);
     const servers = querySnapshot.docs.map(doc => {
         const data = doc.data();
         const createdAt = data.createdAt;
@@ -61,11 +43,6 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
     });
     return { success: true, servers };
   } catch (error: any) {
-    console.error('Failed to fetch servers:', error);
-    await logErrorToFirestore({
-      message: 'Failed to fetch servers: ' + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: 'Failed to fetch servers.' };
   }
 }
@@ -75,9 +52,9 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  */
 export async function getServer(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
     try {
-        const adminDb = getAdminDb();
-        const serverRef = adminDb.collection('servers').doc(id);
-        const docSnap = await serverRef.get();
+        const { firestore } = initializeFirebase();
+        const serverRef = doc(firestore, 'servers', id);
+        const docSnap = await getDoc(serverRef);
 
         if (!docSnap.exists) {
             return { success: false, error: 'Server not found or unauthorized.' };
@@ -95,10 +72,6 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
         };
         return { success: true, server };
     } catch (error: any) {
-        await logErrorToFirestore({
-            message: `Failed to fetch server with ID ${id}: ` + error.message,
-            stack: error.stack,
-        });
         return { success: false, error: 'Failed to fetch server.' };
     }
 }
@@ -108,8 +81,8 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
  */
 export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt'>>) {
   try {
-    const adminDb = getAdminDb();
-    const serverRef = adminDb.collection('servers').doc(id);
+    const { firestore } = initializeFirebase();
+    const serverRef = doc(firestore, 'servers', id);
 
     const dataToUpdate: Record<string, any> = {
         name: serverData.name,
@@ -125,13 +98,9 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
         dataToUpdate.privateKey = serverData.privateKey;
     }
 
-    await serverRef.set(dataToUpdate, { merge: true });
+    await setDoc(serverRef, dataToUpdate, { merge: true });
     return { success: true, id };
   } catch (error: any) {
-    await logErrorToFirestore({
-      message: `Failed to update server ${id}: ` + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: `Failed to update server ${id}.` };
   }
 }
@@ -141,15 +110,11 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
  */
 export async function deleteServer(id: string) {
   try {
-    const adminDb = getAdminDb();
-    const serverRef = adminDb.collection('servers').doc(id);
-    await serverRef.delete();
+    const { firestore } = initializeFirebase();
+    const serverRef = doc(firestore, 'servers', id);
+    await deleteDoc(serverRef);
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({
-      message: `Failed to delete server with ID ${id}: ` + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: 'Failed to delete server.' };
   }
 }

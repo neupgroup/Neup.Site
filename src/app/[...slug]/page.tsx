@@ -1,13 +1,14 @@
 
 import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
-import { adminDb } from '@/lib/firebase-admin';
+import { initializeFirebase } from '@/lib/firebase';
 
 async function getPageForPath(slug: string[]): Promise<{html: string | null, theme?: {primary?: string, accent?: string}}> {
     const path = `/${slug.join('/')}`;
+    const { firestore } = initializeFirebase();
     
     try {
-        const pathsRef = collection(adminDb, 'paths');
+        const pathsRef = collection(firestore, 'paths');
         const qPath = query(pathsRef, where('path', '==', path), limit(1));
         const pathSnapshot = await getDocs(qPath);
 
@@ -19,8 +20,8 @@ async function getPageForPath(slug: string[]): Promise<{html: string | null, the
         const pageId = pathData.pageId;
         const siteId = pathData.siteId;
 
-        const pageRef = doc(adminDb, 'pages', pageId);
-        const siteRef = doc(adminDb, 'sites', siteId);
+        const pageRef = doc(firestore, 'pages', pageId);
+        const siteRef = doc(firestore, 'sites', siteId);
 
         const [pageSnap, siteSnap] = await Promise.all([getDoc(pageRef), getDoc(siteRef)]);
 

@@ -1,11 +1,10 @@
 
 'use server';
 
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
-import { logErrorToFirestore } from '@/lib/logging';
 import type { Site } from '@/schemas/site';
+import { initializeFirebase } from '@/lib/firebase';
 
 export interface SiteModule {
     active: boolean;
@@ -26,8 +25,8 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const adminDb = getAdminDb();
-    const siteRef = doc(adminDb, 'sites', siteId);
+    const { firestore } = initializeFirebase();
+    const siteRef = doc(firestore, 'sites', siteId);
     const docSnap = await getDoc(siteRef);
 
     if (!docSnap.exists()) {
@@ -50,12 +49,6 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
 
     return { success: true, modules };
   } catch (error: any) {
-    console.error(`Failed to get modules for site ${siteId}:`, error);
-    await logErrorToFirestore({
-      message: `Failed to get modules for site ${siteId}: ${error.message}`,
-      stack: error.stack,
-      source: 'getSiteModules'
-    });
     return { success: false, error: 'Failed to fetch site modules.' };
   }
 }
@@ -69,8 +62,8 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const adminDb = getAdminDb();
-    const siteRef = doc(adminDb, 'sites', siteId);
+    const { firestore } = initializeFirebase();
+    const siteRef = doc(firestore, 'sites', siteId);
     const key = `modules.${moduleId}`;
     
     let updateData: any = {
@@ -91,12 +84,6 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
 
     return { success: true };
   } catch (error: any) {
-    console.error(`Failed to update module ${moduleId} for site ${siteId}:`, error);
-    await logErrorToFirestore({
-      message: `Failed to update module ${moduleId}: ${error.message}`,
-      stack: error.stack,
-      source: 'updateSiteModule'
-    });
     return { success: false, error: 'Failed to update module.' };
   }
 }

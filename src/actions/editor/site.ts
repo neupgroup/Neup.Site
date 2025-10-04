@@ -9,7 +9,6 @@ import {
   Timestamp,
   serverTimestamp
 } from 'firebase/firestore';
-import { logErrorToFirestore } from '@/lib/logging';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
 import { Site } from '@/schemas/site';
@@ -61,11 +60,6 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
         return { success: true, site };
 
     } catch (error: any) {
-        await logErrorToFirestore({
-            message: `Failed to fetch site config for ${siteId}: ${error.message}`,
-            stack: error.stack,
-            source: 'getSite',
-        });
         return { success: false, error: 'Failed to fetch site configuration. An error has been logged.' };
     }
 }
@@ -107,11 +101,6 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
     await setDoc(siteRef, dataToSave, { merge: true });
     return { success: true, id: siteId };
   } catch (error: any) {
-    await logErrorToFirestore({
-        message: `Failed to save site config for ${siteId}: ${error.message}`,
-        stack: error.stack,
-        source: 'saveSite',
-    });
     return { success: false, error: `Failed to save site config for ${siteId}. An error has been logged.` };
   }
 }

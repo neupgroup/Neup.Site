@@ -1,11 +1,10 @@
 
 'use server';
 
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
-import { collection, doc, setDoc, getDoc, query, where, getDocs, limit } from 'firebase/firestore';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getFirestore, collection, doc, setDoc, getDoc, query, where, getDocs, limit } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { PageDataSourceBinding } from '@/schemas/data';
+import { initializeFirebase } from '@/lib/firebase';
 
 
 /**
@@ -17,9 +16,9 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const adminDb = getAdminDb();
+        const { firestore } = initializeFirebase();
         const bindingId = `${pageId}_${sourceId}`; // Create a deterministic ID
-        const bindingRef = doc(adminDb, 'page_data_sources', bindingId);
+        const bindingRef = doc(firestore, 'page_data_sources', bindingId);
         
         await setDoc(bindingRef, {
             siteId,
@@ -30,11 +29,6 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
 
         return { success: true, id: bindingId };
     } catch (error: any) {
-        console.error(`Failed to set page data source for page ${pageId}:`, error);
-        await logErrorToFirestore({
-            message: `Failed to set page data source for page ${pageId}: ` + error.message,
-            stack: error.stack,
-        });
         return { success: false, error: 'Failed to link data source.' };
     }
 }
@@ -49,8 +43,8 @@ export async function getPageDataSource(pageId: string): Promise<{ success: bool
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const adminDb = getAdminDb();
-        const q = query(collection(adminDb, 'page_data_sources'), where('pageId', '==', pageId), where('siteId', '==', siteId), limit(1));
+        const { firestore } = initializeFirebase();
+        const q = query(collection(firestore, 'page_data_sources'), where('pageId', '==', pageId), where('siteId', '==', siteId), limit(1));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -62,11 +56,6 @@ export async function getPageDataSource(pageId: string): Promise<{ success: bool
 
         return { success: true, binding };
     } catch (error: any) {
-        console.error(`Failed to get page data source for page ${pageId}:`, error);
-        await logErrorToFirestore({
-            message: `Failed to get page data source for page ${pageId}: ` + error.message,
-            stack: error.stack,
-        });
         return { success: false, error: 'Failed to fetch data source link.' };
     }
 }

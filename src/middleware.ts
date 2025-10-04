@@ -3,8 +3,26 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
  
 export function middleware(request: NextRequest) {
-  // The authentication logic has been removed.
-  // You can add new middleware logic here in the future.
+  const siteId = request.cookies.get('siteId')?.value
+
+  const { pathname } = request.nextUrl
+
+  // If the user is trying to access the dashboard and doesn't have a siteId,
+  // redirect them to the auth page.
+  if (!siteId && !pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth'
+    return NextResponse.redirect(url)
+  }
+
+  // If the user is authenticated (has a siteId) and tries to visit the auth page,
+  // redirect them to the dashboard.
+  if (siteId && pathname.startsWith('/auth')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+ 
   return NextResponse.next()
 }
  
@@ -18,9 +36,8 @@ export const config = {
      * - favicon.ico (favicon file)
      * - landing (public landing page)
      * - preview (public preview pages)
-     * - auth (if you re-add an auth page)
      * - any file with a dot (e.g., .png)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|landing|preview|auth|.*\\..*).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|landing|preview|.*\\..*).*)',
   ],
 }

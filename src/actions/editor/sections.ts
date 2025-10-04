@@ -1,22 +1,9 @@
 
 'use server';
 
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
-import {
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  getDocs,
-  getDoc,
-  deleteDoc,
-  serverTimestamp,
-  Timestamp,
-  query,
-  where
-} from 'firebase/firestore';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query, where } from 'firebase/firestore';
 import { cookies } from 'next/headers';
+import { initializeFirebase } from '@/lib/firebase';
 
 export interface Section {
   id: string;
@@ -38,7 +25,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const adminDb = getAdminDb();
+    const { firestore } = initializeFirebase();
     let dataToSave: any = {
         siteId,
         name: section.name,
@@ -49,7 +36,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
     };
       
     if (id) {
-      const sectionRef = doc(adminDb, 'sections', id);
+      const sectionRef = doc(firestore, 'sections', id);
       const sectionSnap = await getDoc(sectionRef);
       if (!sectionSnap.exists() || sectionSnap.data().siteId !== siteId) {
           return { success: false, error: 'Unauthorized.' };
@@ -58,15 +45,10 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
       return { success: true, id };
     } else {
       dataToSave.createdAt = serverTimestamp();
-      const docRef = await addDoc(collection(adminDb, 'sections'), dataToSave);
+      const docRef = await addDoc(collection(firestore, 'sections'), dataToSave);
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
-    await logErrorToFirestore({
-        message: `Failed to save section: ${error.message}`,
-        stack: error.stack,
-        source: 'saveSection',
-    });
     return { success: false, error: 'Failed to save section. An error has been logged.' };
   }
 }
@@ -80,8 +62,8 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const adminDb = getAdminDb();
-    const q = query(collection(adminDb, 'sections'), where('siteId', '==', siteId));
+    const { firestore } = initializeFirebase();
+    const q = query(collection(firestore, 'sections'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sections = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
@@ -101,11 +83,6 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
     });
     return { success: true, sections };
   } catch (error: any) {
-    await logErrorToFirestore({
-        message: `Failed to fetch sections: ${error.message}`,
-        stack: error.stack,
-        source: 'getSections',
-    });
     return { success: false, error: 'Failed to fetch sections. An error has been logged.' };
   }
 }
@@ -119,8 +96,8 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const adminDb = getAdminDb();
-        const sectionRef = doc(adminDb, 'sections', id);
+        const { firestore } = initializeFirebase();
+        const sectionRef = doc(firestore, 'sections', id);
         const docSnap = await getDoc(sectionRef);
 
         if (!docSnap.exists()) {
@@ -146,11 +123,6 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
         };
         return { success: true, section };
     } catch (error: any) {
-        await logErrorToFirestore({
-            message: `Failed to fetch section with ID ${id}: ${error.message}`,
-            stack: error.stack,
-            source: 'getSection',
-        });
         return { success: false, error: 'Failed to fetch section. An error has been logged.' };
     }
 }
@@ -164,8 +136,8 @@ export async function deleteSection(id: string): Promise<{ success: boolean; err
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const adminDb = getAdminDb();
-    const sectionRef = doc(adminDb, 'sections', id);
+    const { firestore } = initializeFirebase();
+    const sectionRef = doc(firestore, 'sections', id);
     const sectionSnap = await getDoc(sectionRef);
     if (!sectionSnap.exists() || sectionSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };
@@ -173,11 +145,6 @@ export async function deleteSection(id: string): Promise<{ success: boolean; err
     await deleteDoc(sectionRef);
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({
-        message: `Failed to delete section with ID ${id}: ${error.message}`,
-        stack: error.stack,
-        source: 'deleteSection',
-    });
     return { success: false, error: `Failed to delete section with ID ${id}. An error has been logged.` };
   }
 }

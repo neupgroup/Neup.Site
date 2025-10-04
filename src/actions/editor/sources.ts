@@ -1,23 +1,9 @@
 
 'use server';
 
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
-import {
-  collection,
-  addDoc,
-  doc,
-  deleteDoc,
-  getDocs,
-  getDoc,
-  query,
-  where,
-  writeBatch,
-  serverTimestamp,
-  setDoc,
-  Timestamp
-} from 'firebase/firestore';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, writeBatch, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
+import { initializeFirebase } from '@/lib/firebase';
 
 export interface SourceMethod {
   methodName: string;
@@ -55,19 +41,14 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const adminDb = getAdminDb();
-    const docRef = await addDoc(collection(adminDb, 'sources'), {
+    const { firestore } = initializeFirebase();
+    const docRef = await addDoc(collection(firestore, 'sources'), {
       ...sourceData,
       siteId,
       createdAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
-    console.error('Failed to create source:', error);
-    await logErrorToFirestore({
-      message: 'Failed to create source: ' + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: error.message || 'Failed to create source.' };
   }
 }
@@ -81,8 +62,8 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const adminDb = getAdminDb();
-    const q = query(collection(adminDb, 'sources'), where('siteId', '==', siteId));
+    const { firestore } = initializeFirebase();
+    const q = query(collection(firestore, 'sources'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sources = querySnapshot.docs.map(doc => {
         const data = doc.data();
@@ -100,11 +81,6 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
     });
     return { success: true, sources };
   } catch (error: any) {
-    console.error('Failed to fetch sources:', error);
-    await logErrorToFirestore({
-      message: 'Failed to fetch sources: ' + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: error.message || 'Failed to fetch sources.' };
   }
 }
@@ -119,8 +95,8 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
     if (!siteId) return { success: false, error: 'Site ID not found.' };
     
     try {
-        const adminDb = getAdminDb();
-        const sourceRef = doc(adminDb, 'sources', id);
+        const { firestore } = initializeFirebase();
+        const sourceRef = doc(firestore, 'sources', id);
         const docSnap = await getDoc(sourceRef);
 
         if (!docSnap.exists()) {
@@ -145,11 +121,6 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
         } as Source;
         return { success: true, source };
     } catch (error: any) {
-        console.error(`Failed to fetch source with ID ${id}:`, error);
-        await logErrorToFirestore({
-            message: `Failed to fetch source with ID ${id}: ` + error.message,
-            stack: error.stack,
-        });
         return { success: false, error: error.message || 'Failed to fetch source.' };
     }
 }
@@ -163,8 +134,8 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const adminDb = getAdminDb();
-    const sourceRef = doc(adminDb, 'sources', id);
+    const { firestore } = initializeFirebase();
+    const sourceRef = doc(firestore, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized' };
@@ -177,11 +148,6 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
     await setDoc(sourceRef, dataToUpdate, { merge: true });
     return { success: true, id };
   } catch (error: any) {
-    console.error(`Failed to update source ${id}:`, error);
-    await logErrorToFirestore({
-      message: `Failed to update source ${id}: ` + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: error.message || `Failed to update source ${id}.` };
   }
 }
@@ -196,9 +162,9 @@ export async function deleteSource(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const adminDb = getAdminDb();
-    const batch = writeBatch(adminDb);
-    const sourceRef = doc(adminDb, 'sources', id);
+    const { firestore } = initializeFirebase();
+    const batch = writeBatch(firestore);
+    const sourceRef = doc(firestore, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
 
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
@@ -206,7 +172,7 @@ export async function deleteSource(id: string) {
     }
     batch.delete(sourceRef);
 
-    const credsQuery = query(collection(adminDb, 'sourceCredentials'), where('sourceId', '==', id));
+    const credsQuery = query(collection(firestore, 'sourceCredentials'), where('sourceId', '==', id));
     const credsSnapshot = await getDocs(credsQuery);
     credsSnapshot.forEach(doc => {
       batch.delete(doc.ref);
@@ -215,11 +181,6 @@ export async function deleteSource(id: string) {
     await batch.commit();
     return { success: true };
   } catch (error: any) {
-    console.error(`Failed to delete source with ID ${id}:`, error);
-    await logErrorToFirestore({
-      message: `Failed to delete source with ID ${id}: ` + error.message,
-      stack: error.stack,
-    });
     return { success: false, error: error.message || 'Failed to delete source.' };
   }
 }
