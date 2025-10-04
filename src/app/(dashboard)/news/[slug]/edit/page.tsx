@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -107,7 +108,7 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl space-y-6">
+      <div className="w-full space-y-6">
         <Skeleton className="h-8 w-48" />
         <Card>
           <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
@@ -134,7 +135,7 @@ export default function EditNewsArticlePage({ params }: { params: { slug: string
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-4xl space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" asChild>
