@@ -66,6 +66,7 @@ export default function AuthPage() {
                     onChange={(e) => setSiteId(e.target.value)}
                     placeholder="e.g., my-awesome-site"
                     required
+                    autoComplete="off"
                     />
                 </div>
             </CardContent>
