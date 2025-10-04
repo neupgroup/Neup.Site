@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useCallback, useRef, type RefAttributes } from 'react'
@@ -43,12 +44,12 @@ export function RichTextEditor({
     handleInput()
   }
 
-  const handleLink = ()=>( {
+  const handleLink = () => {
     const url = prompt('Enter the URL')
     if (url) {
       execCommand('createLink', url)
     }
-  })
+  }
 
   return (
     <div className="rounded-md border border-input bg-background ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
