@@ -2,6 +2,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Rocket,
   LayoutTemplate,
@@ -25,12 +26,19 @@ import { ProgressBar } from '@/components/ui/progress-bar';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function Header() {
-  const { profileName, loading } = useProfile();
+  const { profileName, logoUrl, loading } = useProfile();
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <Rocket className="h-6 w-6 text-primary" />
+          {loading ? (
+            <Skeleton className="h-8 w-8 rounded-full" />
+          ) : logoUrl ? (
+             <Image src={logoUrl} alt="Site Logo" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
+          ) : (
+            <Rocket className="h-6 w-6 text-primary" />
+          )}
+
           {loading ? (
              <Skeleton className="h-6 w-32" />
           ) : (

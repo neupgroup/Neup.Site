@@ -43,7 +43,7 @@ const removeUrlPrefix = (url: string) => {
 }
 
 export default function ProfilePage() {
-    const { setProfileName } = useProfile();
+    const { setProfileName, setLogoUrl } = useProfile();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
     const [siteId, setSiteId] = useState<string | null>(null);
@@ -121,6 +121,7 @@ export default function ProfilePage() {
         if (result.success) {
             toast({ title: 'Profile Saved', description: 'Your profile information has been updated.' });
             setProfileName(data.name);
+            setLogoUrl(data.logoUrl || null);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }
