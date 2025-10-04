@@ -10,25 +10,34 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Terminal } from 'lucide-react';
+import { AlertCircle, Terminal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getErrorLogsAction, type ErrorLog } from '@/actions/errors';
+import { Button } from '@/components/ui/button';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 
 const ErrorsPage = () => {
   const [errors, setErrors] = useState<ErrorLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+  
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const pageSize = 10;
 
   useEffect(() => {
     const fetchErrors = async () => {
       setLoading(true);
-      // Call the server action instead of the local function
-      const { logs, error } = await getErrorLogsAction();
+      const { logs, error, totalCount } = await getErrorLogsAction({ page: currentPage, pageSize });
       if (logs) {
         setErrors(logs);
+        setTotalCount(totalCount || 0);
       } else {
         setFetchError(error || 'Unknown error occurred.');
       }
@@ -36,7 +45,15 @@ const ErrorsPage = () => {
     };
 
     fetchErrors();
-  }, []);
+  }, [currentPage]);
+  
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  const handlePageChange = (newPage: number) => {
+      const params = new URLSearchParams(searchParams);
+      params.set('page', newPage.toString());
+      router.push(`${pathname}?${params.toString()}`);
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -97,6 +114,33 @@ const ErrorsPage = () => {
                 </Table>
             )}
         </CardContent>
+        {totalPages > 1 && (
+            <CardFooter className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage <= 1}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages}
+                    >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        )}
       </Card>
     </div>
   );
