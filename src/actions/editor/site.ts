@@ -22,6 +22,7 @@ export interface Site {
   id: string; // The document ID from Firestore (matches the siteId from the cookie)
   name: string;
   logoUrl?: string;
+  hideSitename?: boolean;
   description?: string;
   socialProfiles?: { platformName: string; url: string; }[];
   contactEmail?: { value: string; }[];
@@ -57,6 +58,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
           id: docSnap.id,
           name: data.name || '',
           logoUrl: data.logoUrl,
+          hideSitename: data.hideSitename || false,
           description: data.description,
           socialProfiles: data.socialProfiles || [],
           contactEmail: data.contactEmail || [],

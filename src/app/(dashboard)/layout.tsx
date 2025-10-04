@@ -26,25 +26,29 @@ import { ProgressBar } from '@/components/ui/progress-bar';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function Header() {
-  const { profileName, logoUrl, loading } = useProfile();
+  const { profileName, logoUrl, hideSitename, loading } = useProfile();
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex items-center gap-2">
-          {loading ? (
-            <Skeleton className="h-8 w-8 rounded-full" />
+          {loading.logo ? (
+            <Skeleton className="h-8 w-8" />
           ) : logoUrl ? (
-             <Image src={logoUrl} alt="Site Logo" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
+             <div className="relative h-8 w-auto" style={{ aspectRatio: 'auto' }}>
+                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-8 !w-auto" />
+             </div>
           ) : (
             <Rocket className="h-6 w-6 text-primary" />
           )}
 
-          {loading ? (
+          {loading.name ? (
              <Skeleton className="h-6 w-32" />
           ) : (
-            <h1 className="font-headline text-xl font-semibold tracking-tight">
-              {profileName?.trim() ? profileName : 'Neup.Sites'}
-            </h1>
+            !hideSitename && (
+                <h1 className="font-headline text-xl font-semibold tracking-tight">
+                  {profileName?.trim() ? profileName : 'Neup.Sites'}
+                </h1>
+            )
           )}
         </Link>
         <div className="text-lg font-semibold">Dashboard</div>

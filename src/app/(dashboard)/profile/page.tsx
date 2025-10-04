@@ -19,6 +19,7 @@ import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
+import { Switch } from '@/components/ui/switch';
 
 export const SocialProfileSchema = z.object({
   platformName: z.string().min(1, 'Platform name is required'),
@@ -27,6 +28,7 @@ export const SocialProfileSchema = z.object({
 
 export const ProfileFormSchema = z.object({
   name: z.string().min(1, 'Profile Name is required'),
+  hideSitename: z.boolean().default(false),
   logoUrl: z.string().optional(),
   description: z.string().optional(),
   socialProfiles: z.array(SocialProfileSchema).max(9, 'You can add a maximum of 9 social profiles.'),
@@ -37,7 +39,7 @@ export const ProfileFormSchema = z.object({
 export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 
 export default function ProfilePage() {
-    const { setProfileName, setLogoUrl } = useProfile();
+    const { setProfileName, setLogoUrl, setHideSitename } = useProfile();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
 
@@ -45,6 +47,7 @@ export default function ProfilePage() {
         resolver: zodResolver(ProfileFormSchema),
         defaultValues: {
             name: '',
+            hideSitename: false,
             logoUrl: '',
             description: '',
             socialProfiles: [],
@@ -83,6 +86,7 @@ export default function ProfilePage() {
             if (success && site) {
                 form.reset({
                     name: site.name,
+                    hideSitename: site.hideSitename || false,
                     logoUrl: removeUrlPrefix(site.logoUrl),
                     description: site.description || '',
                     socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
@@ -94,6 +98,7 @@ export default function ProfilePage() {
                  // If the site doesn't exist, we can pre-fill some fields or let the user start fresh
                  form.reset({
                     name: 'My New Site',
+                    hideSitename: false,
                     description: 'A brief description of my new site.',
                     socialProfiles: [],
                     contactEmail: [],
@@ -108,6 +113,7 @@ export default function ProfilePage() {
     const onSubmit = async (data: ProfileFormData) => {
         const result = await saveSite({
             name: data.name,
+            hideSitename: data.hideSitename,
             logoUrl: data.logoUrl,
             description: data.description,
             socialProfiles: data.socialProfiles,
@@ -119,6 +125,7 @@ export default function ProfilePage() {
             toast({ title: 'Profile Saved', description: 'Your site information has been updated.' });
             setProfileName(data.name);
             setLogoUrl(data.logoUrl ? (data.logoUrl.startsWith('http') ? data.logoUrl : `https://${data.logoUrl}`) : null);
+            setHideSitename(data.hideSitename);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }
@@ -159,6 +166,26 @@ export default function ProfilePage() {
                     <FormField control={form.control} name="name" render={({ field }) => (
                         <FormItem><FormLabel>Site Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
+                    <FormField
+                        control={form.control}
+                        name="hideSitename"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                <div className="space-y-0.5">
+                                    <FormLabel>Hide Site Name</FormLabel>
+                                    <FormDescription>
+                                        Enable this if your logo already contains the site name.
+                                    </FormDescription>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                        />
                     <FormField control={form.control} name="logoUrl" render={({ field }) => (
                         <FormItem><FormLabel>Logo URL</FormLabel><FormControl><Input {...field} placeholder="example.com/logo.png" /></FormControl><FormMessage /></FormItem>
                     )} />
