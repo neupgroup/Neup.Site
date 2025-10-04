@@ -4,11 +4,12 @@
 import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query } from 'firebase/firestore';
 import { Template } from '@/schemas/template';
 import { initializeFirebase } from '@/lib/firebase';
+import { logErrorToFirestore } from '@/lib/logging';
 
 /**
  * Saves or updates a template in Firestore.
  */
-export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string) {
+export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
     let dataToSave: any = { 
@@ -33,6 +34,11 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
+    await logErrorToFirestore({
+        message: `Failed to save template: ${error.message}`,
+        stack: error.stack,
+        source: 'saveTemplate',
+    });
     return { success: false, error: 'Failed to save template. An error has been logged.' };
   }
 }
