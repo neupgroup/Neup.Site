@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { Suspense } from 'react';
+import { ProgressBar } from '@/components/ui/progress-bar';
 
 // Note: Metadata is not supported in client components.
 // If you need to set metadata, you would move this to a server component parent.
@@ -27,6 +29,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
+        <Suspense fallback={null}>
+            <ProgressBar />
+        </Suspense>
         <SidebarProvider>
           {children}
         </SidebarProvider>
