@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useCallback, useRef, type RefAttributes } from 'react'
+import React, { useCallback, useRef, type RefAttributes, useEffect } from 'react'
 import {
   Bold,
   Italic,
@@ -31,6 +31,13 @@ export function RichTextEditor({
   disabled,
 }: Omit<EditorProps, 'ref' | 'name'>) {
   const editorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (editorRef.current && value !== editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = value;
+    }
+  }, [value]);
+
 
   const handleInput = useCallback(() => {
     if (editorRef.current) {
@@ -133,7 +140,6 @@ export function RichTextEditor({
         onInput={handleInput}
         onBlur={onBlur}
         className="min-h-[15rem] p-4 text-sm"
-        dangerouslySetInnerHTML={{ __html: value }}
       />
     </div>
   )
