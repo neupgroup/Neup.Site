@@ -2,9 +2,34 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Puzzle } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { useState } from 'react';
+import { Separator } from '@/components/ui/separator';
+
+const initialModules = [
+    { id: 'user', name: 'User Module', description: 'Manages user authentication and profiles.', enabled: true },
+    { id: 'neupid', name: 'NeupID Module', description: 'Integrates with NeupID for single sign-on.', enabled: false },
+    { id: 'analytics', name: 'Analytics Module', description: 'Tracks user engagement and site metrics.', enabled: true },
+    { id: 'ad', name: 'Ad Module', description: 'Manages and displays advertisements.', enabled: false },
+    { id: 'social', name: 'Social Module', description: 'Handles social sharing and feeds.', enabled: false },
+    { id: 'meta-pixel', name: 'Meta Pixel Module', description: 'Integrates with Meta Pixel for tracking.', enabled: false },
+    { id: 'news', name: 'News Module', description: 'Adds a news/articles section to your site.', enabled: false },
+    { id: 'blog', name: 'Blog Module', description: 'Adds a blog section to your site.', enabled: true },
+];
 
 export default function ModulesPage() {
+  const [modules, setModules] = useState(initialModules);
+
+  const handleToggle = (moduleId: string, checked: boolean) => {
+    setModules(prevModules =>
+      prevModules.map(module =>
+        module.id === moduleId ? { ...module, enabled: checked } : module
+      )
+    );
+    // Here you would typically call a server action to persist the change.
+  };
+    
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
@@ -12,17 +37,32 @@ export default function ModulesPage() {
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Manage Modules</CardTitle>
+          <CardTitle>Manage Site Modules</CardTitle>
           <CardDescription>
-            This is where you will manage your site's modules.
+            Enable or disable modules to add or remove functionality from your site.
           </CardDescription>
         </CardHeader>
         <CardContent>
-           <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-                <Puzzle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold">Module Management</h3>
-                <p>This section is under construction.</p>
-            </div>
+           <div className="space-y-4">
+                {modules.map((module, index) => (
+                    <div key={module.id}>
+                        <div className="flex items-center justify-between p-4">
+                            <div className="flex-1 pr-4">
+                                <Label htmlFor={module.id} className="text-base font-medium">
+                                    {module.name}
+                                </Label>
+                                <p className="text-sm text-muted-foreground">{module.description}</p>
+                            </div>
+                            <Switch
+                                id={module.id}
+                                checked={module.enabled}
+                                onCheckedChange={(checked) => handleToggle(module.id, checked)}
+                            />
+                        </div>
+                        {index < modules.length - 1 && <Separator />}
+                   </div>
+                ))}
+           </div>
         </CardContent>
       </Card>
     </div>
