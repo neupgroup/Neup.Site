@@ -7,29 +7,12 @@ import {
   setDoc,
   getDoc,
   Timestamp,
+  serverTimestamp
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
-
-// This type represents the data stored in the 'sites' collection.
-export interface Site {
-  id: string; // The document ID from Firestore (matches the siteId from the cookie)
-  name: string;
-  logoUrl?: string;
-  hideSitename?: boolean;
-  description?: string;
-  socialProfiles?: { platformName: string; url: string; }[];
-  contactEmail?: { value: string; }[];
-  contactPhone?: { value: string; }[];
-  modules?: { [key: string]: any }; // Keeping this flexible
-  theme?: {
-    primary?: string;
-    accent?: string;
-  },
-  createdAt?: string | null;
-  updatedAt?: string | null;
-}
+import { Site } from '@/schemas/site';
 
 /**
  * Fetches a single site configuration document.
@@ -59,6 +42,8 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
         const site: Site = {
           id: docSnap.id,
           name: data.name || '',
+          url: data.url,
+          tier: data.tier,
           logoUrl: data.logoUrl,
           hideSitename: data.hideSitename || false,
           description: data.description,

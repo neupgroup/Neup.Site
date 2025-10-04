@@ -19,3 +19,7 @@
 - Minimalist layout with ample whitespace to create a clean and uncluttered user interface.
 - Use a set of modern, line-based icons to represent common actions and content types.
 - Subtle animations and transitions to enhance the user experience without being distracting.
+
+## Architectural Rules:
+
+- **Schemas**: All schema definitions for the application must be located in the `src/schemas` directory. Each schema should be in its own file, named according to its context and scope (e.g., `user.ts`, `product.ts`). This ensures a single source of truth for all data structures and prevents schema definitions from being scattered throughout the codebase.

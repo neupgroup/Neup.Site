@@ -18,21 +18,10 @@ import {
   limit,
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { cookies } from 'next/headers';
-
-export interface Page {
-  id: string;
-  siteId: string;
-  name: string;
-  elements: CanvasElementData[];
-  reactComponent?: string;
-  type: 'editor' | 'ai' | 'html' | 'template';
-  createdAt?: string | null;
-  updatedAt?: string | null;
-}
-
+import { Page } from '@/schemas/site';
 
 export async function createPage(type: Page['type'] = 'editor') {
   const cookieStore = cookies();

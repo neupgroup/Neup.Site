@@ -11,7 +11,7 @@ import Canvas from '@/components/editor/canvas';
 import { logErrorToFirestore } from '@/actions/logging';
 import { savePage, createPage } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { elementDefinitions } from '@/elements';
 import { temp_element } from '@/elements/html';
 

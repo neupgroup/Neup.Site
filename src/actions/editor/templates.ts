@@ -14,7 +14,7 @@ import {
   Timestamp,
   query
 } from 'firebase/firestore';
-import type { Template } from '@/lib/schemas';
+import { Template } from '@/schemas/template';
 import { logErrorToFirestore } from '../logging';
 
 /**
@@ -25,6 +25,9 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
     let dataToSave: any = { 
         name: template.name,
         description: template.description || '',
+        imageUrl: template.imageUrl,
+        previewUrl: template.previewUrl,
+        category: template.category,
         type: template.type || 'section',
         usableOn: template.usableOn || ['json'],
         elements: template.elements || [],
@@ -67,6 +70,9 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
         id: doc.id,
         name: data.name || '',
         description: data.description || '',
+        imageUrl: data.imageUrl,
+        previewUrl: data.previewUrl,
+        category: data.category,
         type: data.type || 'section',
         usableOn: data.usableOn || ['json'],
         elements: data.elements || [],
@@ -106,6 +112,9 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
             id: docSnap.id, 
             name: data.name || '',
             description: data.description || '',
+            imageUrl: data.imageUrl,
+            previewUrl: data.previewUrl,
+            category: data.category,
             type: data.type || 'section',
             usableOn: data.usableOn || ['json'],
             elements: data.elements || [],

@@ -1,5 +1,5 @@
 
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 
 function propertiesToStyleString(properties: Record<string, any>): string {
     const style: React.CSSProperties = {};

@@ -1,20 +1,12 @@
-
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
-
-interface LogErrorParams {
-  message: string;
-  stack?: string;
-  componentStack?: string;
-  source?: string;
-  details?: string;
-}
+import { LogErrorParams } from '@/schemas/logging';
 
 export async function logErrorToFirestore(error: LogErrorParams): Promise<void> {
   try {
-    const errorsCollectionRef = adminDb.collection('errors');
+    const errorsCollectionRef = getAdminDb.collection('errors');
     await errorsCollectionRef.add({
       ...error,
       source: error.source || 'unknown',

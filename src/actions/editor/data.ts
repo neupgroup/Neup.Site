@@ -5,15 +5,7 @@ import { adminDb } from '@/lib/firebase-admin';
 import { collection, doc, setDoc, getDoc, query, where, getDocs, limit } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
 import { cookies } from 'next/headers';
-
-
-export interface PageDataSourceBinding {
-    id: string;
-    siteId: string; // The cookie siteId
-    pageId: string; // The page document ID
-    sourceId: string;
-    methodName: string;
-}
+import { PageDataSourceBinding } from '@/schemas/data';
 
 
 /**

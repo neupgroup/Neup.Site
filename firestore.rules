@@ -50,6 +50,11 @@ service cloud.firestore {
         allow delete: if isExistingOwner(siteId);
       }
     }
+    
+    match /servers/{serverId} {
+        allow get, list: if isSignedIn();
+        allow create, update, delete: if false; // To-Do: Define admin roles
+    }
 
     /**
      * @description Fallback rule: deny all access to any other path.

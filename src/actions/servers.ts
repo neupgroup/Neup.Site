@@ -16,16 +16,7 @@ import {
   Timestamp
 } from 'firebase-admin/firestore';
 import { logErrorToFirestore } from './logging';
-
-export interface Server {
-  id: string;
-  name: string;
-  publicIp: string;
-  privateIp?: string; // Not fetched for display
-  publicKey: string;
-  privateKey?: string; // Not fetched for display
-  createdAt?: string | null;
-}
+import { Server } from '@/schemas/server';
 
 /**
  * Creates a new server.
