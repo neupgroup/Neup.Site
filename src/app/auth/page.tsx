@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { KeyRound } from 'lucide-react'
+import { KeyRound, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 export default function AuthPage() {
@@ -27,13 +27,23 @@ export default function AuthPage() {
         return
     }
     setLoading(true)
-    await setSiteIdCookie(siteId)
-    toast({
-        title: 'Authentication Success',
-        description: `You are now working on site: ${siteId}`,
-    })
-    router.push('/')
-    router.refresh()
+    const result = await setSiteIdCookie(siteId)
+
+    if (result.success) {
+        toast({
+            title: 'Authentication Success',
+            description: `You are now working on site: ${siteId}`,
+        })
+        router.push('/')
+        router.refresh()
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Authentication Failed',
+            description: result.error,
+        })
+        setLoading(false)
+    }
   }
 
   return (
@@ -45,7 +55,7 @@ export default function AuthPage() {
                     <KeyRound className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle>Enter Site ID</CardTitle>
-                <CardDescription>Enter the Site ID you want to work on.</CardDescription>
+                <CardDescription>Enter the Site ID you want to work on. A new site will be created if it doesn't exist.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="space-y-2">
@@ -61,7 +71,7 @@ export default function AuthPage() {
             </CardContent>
             <CardFooter>
                 <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Authenticating...' : 'Enter'}
+                    {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Authenticating...</> : 'Enter'}
                 </Button>
             </CardFooter>
         </form>
