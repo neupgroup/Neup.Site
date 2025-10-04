@@ -190,12 +190,6 @@ export async function deletePage(id: string) {
     }
     batch.delete(pageRef);
 
-    const pathsQuery = query(collection(firestore, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
-    const pathsSnapshot = await getDocs(pathsQuery);
-    pathsSnapshot.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-
     await batch.commit();
 
     return { success: true };
