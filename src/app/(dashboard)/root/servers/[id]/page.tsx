@@ -1,0 +1,161 @@
+
+'use client';
+import { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
+import { getServer, deleteServer, type Server } from '@/actions/servers';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+
+export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const [server, setServer] = useState<Server | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchServer = async () => {
+      setLoading(true);
+      const result = await getServer(id);
+      if (result.success && result.server) {
+        setServer(result.server);
+      } else {
+        setError(result.error || 'Failed to fetch server.');
+      }
+      setLoading(false);
+    };
+
+    fetchServer();
+  }, [id]);
+  
+  const handleDelete = async () => {
+    setShowDeleteConfirm(false);
+    const result = await deleteServer(id);
+    if(result.success) {
+        toast({ title: 'Server Disconnected', description: 'The server connection has been removed.'});
+        router.push('/root/servers');
+    } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+    }
+  }
+  
+  if (loading) {
+    return (
+        <Card className="w-full max-w-2xl">
+            <CardHeader>
+                <Skeleton className="h-8 w-1/2" />
+                <Skeleton className="h-4 w-3/4" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-20 w-full" />
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 w-24" />
+            </CardFooter>
+        </Card>
+    );
+  }
+
+  if (error || !server) {
+    return (
+      <Alert variant="destructive" className="max-w-2xl">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error || 'Server not found.'}</AlertDescription>
+         <div className="mt-4">
+            <Button asChild variant="outline">
+              <Link href="/root/servers">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Servers
+              </Link>
+            </Button>
+        </div>
+      </Alert>
+    );
+  }
+
+  return (
+    <div className="w-full max-w-2xl">
+        <div className="mb-4">
+            <Button variant="ghost" asChild>
+                <Link href="/root/servers">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Servers
+                </Link>
+            </Button>
+        </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>{server.name}</CardTitle>
+                <CardDescription>ID: {server.id}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div>
+                    <h4 className="font-semibold text-sm text-muted-foreground">Public IP</h4>
+                    <p className="font-mono text-sm">{server.publicIp}</p>
+                </div>
+                 <div>
+                    <Label htmlFor="public-key" className="text-sm text-muted-foreground">Public Key</Label>
+                    <Textarea id="public-key" readOnly value={server.publicKey} rows={6} className="font-mono text-xs mt-1" />
+                </div>
+                 <div>
+                    <h4 className="font-semibold text-sm text-muted-foreground">Created At</h4>
+                    <p className="text-sm">{server.createdAt ? new Date(server.createdAt).toLocaleString() : 'N/A'}</p>
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+                <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                    <Trash2 className="mr-2 h-4 w-4"/> Disconnect
+                </Button>
+                <Button asChild>
+                    <Link href={`/root/servers/${id}/edit`}>
+                        <Pencil className="mr-2 h-4 w-4"/> Edit
+                    </Link>
+                </Button>
+            </CardFooter>
+        </Card>
+
+        <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently disconnect the server "{server.name}".
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>Disconnect</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+    </div>
+  );
+}
