@@ -43,26 +43,31 @@ export default function DashboardLayout({
                            <Home className="h-4 w-4" />
                            <span>Dashboard</span>
                         </Link>
-                        <Link href="/site/pages" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <Globe className="h-4 w-4" />
-                            <span>Pages</span>
-                        </Link>
-                         <Link href="/site/paths" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <LinkIcon className="h-4 w-4" />
-                            <span>Paths</span>
-                        </Link>
-                        <Link href="/site/sources" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <Database className="h-4 w-4" />
-                            <span>Sources</span>
-                        </Link>
-                         <Link href="/site/editor/dragger" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <LayoutTemplate className="h-4 w-4" />
-                            <span>Site Editor</span>
-                        </Link>
-                         <Link href="/site/sections" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <Layers className="h-4 w-4" />
-                            <span>Sections</span>
-                        </Link>
+                        <div className="mt-4 space-y-2">
+                            <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+                                Site
+                            </div>
+                            <Link href="/site/pages" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <Globe className="h-4 w-4" />
+                                <span>Pages</span>
+                            </Link>
+                            <Link href="/site/paths" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <LinkIcon className="h-4 w-4" />
+                                <span>Paths</span>
+                            </Link>
+                            <Link href="/site/sources" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <Database className="h-4 w-4" />
+                                <span>Sources</span>
+                            </Link>
+                            <Link href="/site/editor/dragger" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <LayoutTemplate className="h-4 w-4" />
+                                <span>Site Editor</span>
+                            </Link>
+                            <Link href="/site/sections" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <Layers className="h-4 w-4" />
+                                <span>Sections</span>
+                            </Link>
+                        </div>
                         <div className="mt-4 space-y-2">
                             <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
                                 Root
