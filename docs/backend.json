@@ -27,6 +27,32 @@
         "type": {
           "type": "string",
           "description": "The type of website (e.g., real estate, news portal, academic institution, personal portfolio, corporate portfolio)."
+        },
+        "modules": {
+          "type": "object",
+          "description": "A map of feature modules and their activation status for the site.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "active": {
+                "type": "boolean",
+                "description": "Whether the module is active for the site."
+              },
+              "enabledOn": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The date and time when the module was enabled."
+              },
+              "expiresOn": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The optional date and time when the module access expires."
+              }
+            },
+            "required": [
+              "active"
+            ]
+          }
         }
       },
       "required": [
