@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import {
   collection,
   addDoc,
@@ -37,7 +37,7 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdAt' |
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const docRef = await addDoc(collection(db, 'servers'), {
+    const docRef = await addDoc(collection(adminDb, 'servers'), {
       ...serverData,
       siteId,
       createdAt: serverTimestamp(),
@@ -61,7 +61,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const q = query(collection(db, 'servers'), where('siteId', '==', siteId));
+    const q = query(collection(adminDb, 'servers'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const servers = querySnapshot.docs.map(doc => {
         const data = doc.data();
@@ -95,7 +95,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
     if (!siteId) return { success: false, error: 'Site ID not found.' };
     
     try {
-        const serverRef = doc(db, 'servers', id);
+        const serverRef = doc(adminDb, 'servers', id);
         const docSnap = await getDoc(serverRef);
 
         if (!docSnap.exists() || docSnap.data().siteId !== siteId) {
@@ -131,7 +131,7 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const serverRef = doc(db, 'servers', id);
+    const serverRef = doc(adminDb, 'servers', id);
     const serverSnap = await getDoc(serverRef);
     if (!serverSnap.exists() || serverSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized' };
@@ -170,7 +170,7 @@ export async function deleteServer(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const serverRef = doc(db, 'servers', id);
+    const serverRef = doc(adminDb, 'servers', id);
     const serverSnap = await getDoc(serverRef);
 
     if (!serverSnap.exists() || serverSnap.data().siteId !== siteId) {

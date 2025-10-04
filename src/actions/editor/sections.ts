@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import {
   collection,
   addDoc,
@@ -47,7 +47,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
     };
       
     if (id) {
-      const sectionRef = doc(db, 'sections', id);
+      const sectionRef = doc(adminDb, 'sections', id);
       const sectionSnap = await getDoc(sectionRef);
       if (!sectionSnap.exists() || sectionSnap.data().siteId !== siteId) {
           return { success: false, error: 'Unauthorized.' };
@@ -56,7 +56,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
       return { success: true, id };
     } else {
       dataToSave.createdAt = serverTimestamp();
-      const docRef = await addDoc(collection(db, 'sections'), dataToSave);
+      const docRef = await addDoc(collection(adminDb, 'sections'), dataToSave);
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
@@ -77,7 +77,7 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const q = query(collection(db, 'sections'), where('siteId', '==', siteId));
+    const q = query(collection(adminDb, 'sections'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sections = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
@@ -114,7 +114,7 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const sectionRef = doc(db, 'sections', id);
+        const sectionRef = doc(adminDb, 'sections', id);
         const docSnap = await getDoc(sectionRef);
 
         if (!docSnap.exists()) {
@@ -157,7 +157,7 @@ export async function deleteSection(id: string): Promise<{ success: boolean; err
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const sectionRef = doc(db, 'sections', id);
+    const sectionRef = doc(adminDb, 'sections', id);
     const sectionSnap = await getDoc(sectionRef);
     if (!sectionSnap.exists() || sectionSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };

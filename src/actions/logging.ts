@@ -1,6 +1,7 @@
+
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface LogErrorParams {
@@ -13,7 +14,7 @@ interface LogErrorParams {
 
 export async function logErrorToFirestore(error: LogErrorParams): Promise<void> {
   try {
-    const errorsCollectionRef = collection(db, 'errors');
+    const errorsCollectionRef = collection(adminDb, 'errors');
     await addDoc(errorsCollectionRef, {
       ...error,
       source: error.source || 'unknown',

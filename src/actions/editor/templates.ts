@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import {
   collection,
   addDoc,
@@ -39,7 +39,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
     };
       
     if (id) {
-      const templateRef = doc(db, 'templates', id);
+      const templateRef = doc(adminDb, 'templates', id);
       const templateSnap = await getDoc(templateRef);
       if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
           return { success: false, error: 'Unauthorized.' };
@@ -48,7 +48,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
       return { success: true, id };
     } else {
       dataToSave.createdAt = serverTimestamp();
-      const docRef = await addDoc(collection(db, 'templates'), dataToSave);
+      const docRef = await addDoc(collection(adminDb, 'templates'), dataToSave);
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
@@ -70,7 +70,7 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const q = query(collection(db, 'templates'), where('siteId', '==', siteId));
+    const q = query(collection(adminDb, 'templates'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const templates = querySnapshot.docs.map(doc => {
       const data = doc.data();
@@ -109,7 +109,7 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const templateRef = doc(db, 'templates', id);
+        const templateRef = doc(adminDb, 'templates', id);
         const docSnap = await getDoc(templateRef);
 
         if (!docSnap.exists()) {
@@ -155,7 +155,7 @@ export async function deleteTemplate(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const templateRef = doc(db, 'templates', id);
+    const templateRef = doc(adminDb, 'templates', id);
     const templateSnap = await getDoc(templateRef);
     if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };

@@ -1,17 +1,12 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import {
-  collection,
   doc,
   setDoc,
   getDoc,
-  getDocs,
   Timestamp,
-  query,
-  where,
-  limit,
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
 import { cookies } from 'next/headers';
@@ -41,7 +36,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const siteRef = doc(db, 'sites', siteId);
+        const siteRef = doc(adminDb, 'sites', siteId);
         const docSnap = await getDoc(siteRef);
 
         if (!docSnap.exists()) {
@@ -90,7 +85,7 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const siteRef = doc(db, 'sites', siteId);
+    const siteRef = doc(adminDb, 'sites', siteId);
     
     // Check if the document exists to determine if this is a create or update
     const docSnap = await getDoc(siteRef);

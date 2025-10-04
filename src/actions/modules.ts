@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { logErrorToFirestore } from './logging';
@@ -25,7 +25,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const siteRef = doc(db, 'sites', siteId);
+    const siteRef = doc(adminDb, 'sites', siteId);
     const docSnap = await getDoc(siteRef);
 
     if (!docSnap.exists()) {
@@ -65,7 +65,7 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const siteRef = doc(db, 'sites', siteId);
+    const siteRef = doc(adminDb, 'sites', siteId);
     const key = `modules.${moduleId}`;
     
     let updateData: any = {
@@ -94,4 +94,3 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
     return { success: false, error: 'Failed to update module.' };
   }
 }
-

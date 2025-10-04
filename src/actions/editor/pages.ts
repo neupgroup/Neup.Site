@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import {
   collection,
   addDoc,
@@ -39,7 +39,7 @@ export async function createPage(type: Page['type'] = 'editor') {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const docRef = await addDoc(collection(db, 'pages'), {
+    const docRef = await addDoc(collection(adminDb, 'pages'), {
       siteId: siteId,
       name: 'New Page',
       elements: [],
@@ -63,7 +63,7 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const pageRef = doc(db, 'pages', id);
+    const pageRef = doc(adminDb, 'pages', id);
     const pageSnap = await getDoc(pageRef);
     if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };
@@ -94,7 +94,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
 
     try {
         const q = query(
-            collection(db, 'pages'),
+            collection(adminDb, 'pages'),
             where('__name__', '==', id),
             where('siteId', '==', siteId),
             limit(1)
@@ -143,7 +143,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const q = query(collection(db, 'pages'), where('siteId', '==', siteId));
+    const q = query(collection(adminDb, 'pages'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const pages = querySnapshot.docs.map(doc => {
       const data = doc.data();
@@ -182,16 +182,16 @@ export async function deletePage(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const batch = writeBatch(db);
+    const batch = writeBatch(adminDb);
 
-    const pageRef = doc(db, 'pages', id);
+    const pageRef = doc(adminDb, 'pages', id);
     const pageSnap = await getDoc(pageRef);
     if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };
     }
     batch.delete(pageRef);
 
-    const pathsQuery = query(collection(db, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
+    const pathsQuery = query(collection(adminDb, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
     const pathsSnapshot = await getDocs(pathsQuery);
     pathsSnapshot.forEach(doc => {
       batch.delete(doc.ref);

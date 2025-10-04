@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import {
   collection,
   addDoc,
@@ -54,7 +54,7 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const docRef = await addDoc(collection(db, 'sources'), {
+    const docRef = await addDoc(collection(adminDb, 'sources'), {
       ...sourceData,
       siteId,
       createdAt: serverTimestamp(),
@@ -78,7 +78,7 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const q = query(collection(db, 'sources'), where('siteId', '==', siteId));
+    const q = query(collection(adminDb, 'sources'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sources = querySnapshot.docs.map(doc => {
         const data = doc.data();
@@ -114,7 +114,7 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
     if (!siteId) return { success: false, error: 'Site ID not found.' };
     
     try {
-        const sourceRef = doc(db, 'sources', id);
+        const sourceRef = doc(adminDb, 'sources', id);
         const docSnap = await getDoc(sourceRef);
 
         if (!docSnap.exists()) {
@@ -156,7 +156,7 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const sourceRef = doc(db, 'sources', id);
+    const sourceRef = doc(adminDb, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized' };
@@ -187,8 +187,8 @@ export async function deleteSource(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const batch = writeBatch(db);
-    const sourceRef = doc(db, 'sources', id);
+    const batch = writeBatch(adminDb);
+    const sourceRef = doc(adminDb, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
 
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
@@ -196,7 +196,7 @@ export async function deleteSource(id: string) {
     }
     batch.delete(sourceRef);
 
-    const credsQuery = query(collection(db, 'sourceCredentials'), where('sourceId', '==', id));
+    const credsQuery = query(collection(adminDb, 'sourceCredentials'), where('sourceId', '==', id));
     const credsSnapshot = await getDocs(credsQuery);
     credsSnapshot.forEach(doc => {
       batch.delete(doc.ref);
