@@ -138,6 +138,35 @@
         "requiresPendingSite"
       ]
     },
+    "Path": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Path",
+      "type": "object",
+      "description": "Represents a URL path that maps to a page.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the path."
+        },
+        "siteId": {
+          "type": "string",
+          "description": "The ID of the site this path belongs to."
+        },
+        "pageId": {
+          "type": "string",
+          "description": "The ID of the page this path maps to."
+        },
+        "path": {
+          "type": "string",
+          "description": "The URL path (e.g., /about, /products/cool-widget)."
+        },
+        "createdAt": {
+            "type": "string",
+            "format": "date-time"
+        }
+      },
+      "required": ["id", "siteId", "pageId", "path"]
+    },
     "NewsArticle": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "News Article",
@@ -215,10 +244,24 @@
             }
           ]
         }
+      },
+       {
+        "path": "/paths/{pathId}",
+        "definition": {
+          "entityName": "Path",
+          "schema": {
+            "$ref": "#/backend/entities/Path"
+          },
+          "description": "Stores URL path mappings to pages.",
+          "params": [
+            {
+              "name": "pathId",
+              "description": "The unique identifier for the path mapping."
+            }
+          ]
+        }
       }
     ],
     "reasoning": "This design prioritizes security and scalability by adhering to the principles of Authorization Independence, Structural Segregation, Access Modeling, and Data Clarity. \n\nThe `sites` collection stores site data. The `pages` subcollection stores page data related to the site.\n\n**Authorization Independence**: No `get()` calls are needed in the security rules because access control is based on the `status` field in the `sites` collection and `requiresPendingSite` field in the `pages` collection. All required attributes for pages authorization are denormalized into the page document itself, removing the need for hierarchical dependencies.\n\n**Structural Segregation**: The `sites` collection is dedicated solely to site data, ensuring a homogeneous security posture. Similarly, the `pages` subcollection only contains page documents associated to a specific site.\n\n**Access Modeling**: The structure uses path-based ownership (`/sites/{siteId}/pages/{pageId}`).\n\n**QAPs**: The segregation of sites and pages based on the site ID supports efficient and secure list operations, as queries can be scoped to a specific site.\n\n**Invariants**: The structure supports invariants by associating pages to sites via the `siteId` field in the `pages` subcollection. This ensures the integrity of the 1:N relationship between sites and pages."
   }
 }
-
-    

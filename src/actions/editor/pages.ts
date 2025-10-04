@@ -189,6 +189,13 @@ export async function deletePage(id: string) {
         return { success: false, error: 'Unauthorized.' };
     }
     batch.delete(pageRef);
+    
+    // Also delete all paths associated with this page
+    const pathsQuery = query(collection(firestore, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
+    const pathsSnapshot = await getDocs(pathsQuery);
+    pathsSnapshot.forEach(doc => {
+        batch.delete(doc.ref);
+    });
 
     await batch.commit();
 

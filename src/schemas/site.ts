@@ -1,5 +1,6 @@
 
 import type { CanvasElementData } from '@/schemas/canvas';
+import type { Path } from '@/actions/paths';
 
 export interface GeneratedTheme {
     light: Record<string, string>;
