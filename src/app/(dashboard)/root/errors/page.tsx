@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import { collection, getDocs, Timestamp, query, orderBy, limit } from 'firebase/firestore';
 import {
   Table,
@@ -20,19 +20,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 interface ErrorLog {
   id: string;
   message: string;
+  source?: string;
   stack?: string;
-  timestamp: string; // Changed to string
+  timestamp: string;
 }
 
-const ErrorsPage = () => {
-  const [errors, setErrors] = useState<ErrorLog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchErrors = async () => {
-      try {
-        const errorsCollection = collection(db, 'errors');
+// Server action to fetch errors
+async function getErrorLogs(): Promise<{ logs?: ErrorLog[], error?: string }> {
+    try {
+        const errorsCollection = collection(adminDb, 'errors');
         const q = query(errorsCollection, orderBy('timestamp', 'desc'), limit(50));
         const errorSnapshot = await getDocs(q);
         const errorsList = errorSnapshot.docs.map(doc => {
@@ -41,23 +37,40 @@ const ErrorsPage = () => {
           return {
             id: doc.id,
             message: data.message,
+            source: data.source,
             stack: data.stack,
             timestamp: timestamp?.toDate().toISOString() || new Date().toISOString(),
           };
         });
-        setErrors(errorsList);
-      } catch (e: any) {
+        return { logs: errorsList };
+    } catch (e: any) {
         console.error("Error fetching errors: ", e);
-        if (e.code === 'permission-denied' || e.code === 'unauthenticated') {
-            setFetchError("Permission denied. Please check your Firestore security rules in the Firebase Console. You may need to create the 'errors' collection and ensure your rules allow read access.");
-        } else if (e.message.includes('firestore/unavailable')) {
-            setFetchError('Failed to connect to Firestore. Please ensure Firestore is enabled and properly configured for your project in the Firebase Console.');
-        } else {
-            setFetchError('An unexpected error occurred while fetching error logs from Firestore.');
+        if (e.code === 'permission-denied') {
+            return { error: "Permission denied. Please check your Firestore security rules in the Firebase Console." };
         }
-      } finally {
-        setLoading(false);
+        if (e.message.includes('FIRESTORE_PROJECT_ID')) {
+             return { error: 'Firebase project not configured on the server. Please check your service account setup.' };
+        }
+        return { error: 'An unexpected error occurred while fetching error logs.' };
+    }
+}
+
+
+const ErrorsPage = () => {
+  const [errors, setErrors] = useState<ErrorLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchErrors = async () => {
+      setLoading(true);
+      const { logs, error } = await getErrorLogs();
+      if (logs) {
+        setErrors(logs);
+      } else {
+        setFetchError(error || 'Unknown error occurred.');
       }
+      setLoading(false);
     };
 
     fetchErrors();
@@ -85,6 +98,7 @@ const ErrorsPage = () => {
                     <TableHeader>
                         <TableRow>
                         <TableHead>Timestamp</TableHead>
+                        <TableHead>Source</TableHead>
                         <TableHead>Message</TableHead>
                         <TableHead>Stack Trace</TableHead>
                         </TableRow>
@@ -94,6 +108,7 @@ const ErrorsPage = () => {
                             Array.from({ length: 5 }).map((_, i) => (
                                 <TableRow key={i}>
                                     <TableCell><Skeleton className="h-5 w-48" /></TableCell>
+                                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
                                     <TableCell><Skeleton className="h-5 w-full" /></TableCell>
                                     <TableCell><Skeleton className="h-5 w-full" /></TableCell>
                                 </TableRow>
@@ -102,6 +117,7 @@ const ErrorsPage = () => {
                         errors.map(error => (
                             <TableRow key={error.id}>
                             <TableCell>{new Date(error.timestamp).toLocaleString()}</TableCell>
+                            <TableCell><span className="font-mono text-xs bg-muted px-2 py-1 rounded-md">{error.source || 'N/A'}</span></TableCell>
                             <TableCell>{error.message}</TableCell>
                             <TableCell className="text-xs text-muted-foreground font-mono">
                                 <pre className="whitespace-pre-wrap break-all">{error.stack || 'N/A'}</pre>
@@ -110,7 +126,7 @@ const ErrorsPage = () => {
                         ))
                         ) : (
                         <TableRow>
-                            <TableCell colSpan={3} className="text-center text-muted-foreground">
+                            <TableCell colSpan={4} className="text-center text-muted-foreground py-10">
                             No errors logged.
                             </TableCell>
                         </TableRow>

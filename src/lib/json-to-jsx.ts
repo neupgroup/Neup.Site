@@ -1,3 +1,4 @@
+
 import { logErrorToFirestore } from '@/actions/logging';
 import type { CanvasElementData } from '@/lib/schemas';
 
