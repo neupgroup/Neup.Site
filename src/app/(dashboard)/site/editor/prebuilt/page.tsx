@@ -50,28 +50,32 @@ export default function PrebuiltEditorPage() {
     }, [id]);
 
     const addSection = (item: LibraryItem) => {
-        if (item.jsonContent.length === 0 && item.reactContent) {
-            toast({ variant: 'default', title: 'React Component', description: 'This section is a React component and cannot be added here.' });
-            return;
-        }
-        
-        const content = item.jsonContent;
-        if (!content || !Array.isArray(content) || content.length === 0) {
+        if (item.jsonContent && item.jsonContent.length > 0) {
+            const content = item.jsonContent;
+            const newSection = {
+                ...content[0],
+                id: `${content[0].id}-${Date.now()}`,
+            };
+            setPageElements(prev => [...prev, newSection]);
+        } else if (item.reactContent) {
+            // Handle adding a React component as a special HTML element
+            const newElement: CanvasElementData = {
+                id: `react-component-${item.id}-${Date.now()}`,
+                type: 'html',
+                properties: {
+                    htmlContent: `<div data-react-template-id="${item.id}" style="padding: 2rem; border: 1px dashed #ccc; text-align: center; color: #666; background-color: #f9f9f9;">React Component: <strong>${item.name}</strong></div>`,
+                },
+            };
+            setPageElements(prev => [...prev, newElement]);
+        } else {
             const errorMsg = `Library item "${item.name}" (ID: ${item.id}) has no valid content to add.`;
             toast({ variant: 'destructive', title: 'Empty Item', description: 'This template has no content to add.' });
             logErrorToFirestore({
                 message: errorMsg,
                 source: 'PrebuiltEditorPage.addSection',
-                details: `Attempted to add a library item where 'content' is missing, not an array, or empty.`,
+                details: `Attempted to add a library item where both 'jsonContent' and 'reactContent' are missing or empty.`,
             });
-            return;
         }
-
-        const newSection = {
-            ...content[0],
-            id: `${content[0].id}-${Date.now()}`,
-        };
-        setPageElements(prev => [...prev, newSection]);
     };
 
     const removeSection = (index: number) => {
