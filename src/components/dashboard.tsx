@@ -30,12 +30,12 @@ function Header() {
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-3">
           {loading.logo ? (
-            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-6 w-6" />
           ) : logoUrl ? (
-             <div className="relative h-8 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-8 !w-auto" />
+             <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
+                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
              </div>
           ) : (
             <Rocket className="h-6 w-6 text-primary" />
