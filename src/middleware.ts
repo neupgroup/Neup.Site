@@ -3,16 +3,8 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
  
 export function middleware(request: NextRequest) {
-  const siteId = request.cookies.get('siteId')?.value
- 
-  if (!siteId && request.nextUrl.pathname !== '/auth') {
-    return NextResponse.redirect(new URL('/auth', request.url))
-  }
- 
-  if (siteId && request.nextUrl.pathname === '/auth') {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
+  // The authentication logic has been removed.
+  // You can add new middleware logic here in the future.
   return NextResponse.next()
 }
  
@@ -24,7 +16,11 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - landing (public landing page)
+     * - preview (public preview pages)
+     * - auth (if you re-add an auth page)
+     * - any file with a dot (e.g., .png)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|landing|preview|.*\\..*).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|landing|preview|auth|.*\\..*).*)',
   ],
 }
