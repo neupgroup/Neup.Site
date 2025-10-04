@@ -8,7 +8,7 @@ import type { CanvasElementData } from '@/lib/schemas';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -27,21 +27,6 @@ import Link from 'next/link';
 import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const getEditUrlForType = (type: Site['type'], id: string) => {
-    switch (type) {
-        case 'editor':
-            return `/site/editor/dragger?id=${id}`;
-        case 'ai':
-            return `/site/editor/textual?id=${id}`;
-        case 'html':
-            return `/site/editor/coder?id=${id}`;
-        case 'template':
-            return `/site/editor/prebuilt?id=${id}`;
-        default:
-            return `/site/editor/dragger?id=${id}`;
-    }
-}
-
 
 export default function ViewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -53,15 +38,12 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [editUrl, setEditUrl] = useState<string>('');
-
 
   const fetchPage = useCallback(async () => {
     setLoading(true);
     const siteResult = await getSite(id);
     if (siteResult.success && siteResult.site) {
       setSite(siteResult.site);
-      setEditUrl(getEditUrlForType(siteResult.site.type, id));
     } else {
       setError(siteResult.error || 'Failed to load page content.');
     }
@@ -92,7 +74,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
     setSite(updatedSite); // Optimistic update
 
     setIsSaving(true);
-    const result = await saveSite(id, updatedElements);
+    const result = await saveSite(id, { elements: updatedElements });
     if(result.success) {
         toast({ title: 'Section Updated!', description: `Section visibility has been saved.`});
     } else {
@@ -113,6 +95,42 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
     }
   }
 
+  if (loading) {
+      return (
+        <div className="flex flex-col h-full space-y-4">
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div className="space-y-2">
+                        <Skeleton className="h-8 w-48" />
+                        <Skeleton className="h-4 w-64" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="h-10 w-28" />
+                        <Skeleton className="h-10 w-24" />
+                        <Skeleton className="h-10 w-28" />
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <Skeleton className="h-8 w-1/3" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                    </div>
+                </CardContent>
+             </Card>
+        </div>
+      )
+  }
+
+  if (error || !site) {
+      return (
+        <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error || 'An unexpected error occurred.'}</AlertDescription>
+        </Alert>
+      )
+  }
 
   return (
     <div className="flex flex-col h-full space-y-4">
@@ -130,7 +148,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
               </Link>
             </Button>
             <Button asChild>
-                <Link href={editUrl}>
+                <Link href={`/site/pages/${id}/edit`}>
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit Page
                 </Link>
@@ -142,21 +160,6 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
           </div>
         </CardHeader>
         <CardContent>
-          {loading && (
-            <div className="space-y-4">
-                <Skeleton className="h-8 w-1/3" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-            </div>
-          )}
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          {!loading && site && (
              <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -190,7 +193,6 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
                     )}
                 </CardContent>
              </Card>
-          )}
         </CardContent>
       </Card>
       

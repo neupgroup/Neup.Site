@@ -56,7 +56,7 @@ export async function createSite(type: Site['type'] = 'editor') {
   }
 }
 
-export async function saveSite(id: string, elements: any) {
+export async function saveSite(id: string, data: Partial<Site>) {
   const siteId = cookies().get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
@@ -66,13 +66,15 @@ export async function saveSite(id: string, elements: any) {
     if (!siteSnap.exists() || siteSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };
     }
+    
+    let dataToSave = { ...data, updatedAt: serverTimestamp() };
 
-    const reactComponent = convertJsonToJsx(elements);
-    await setDoc(siteRef, {
-      elements,
-      reactComponent,
-      updatedAt: serverTimestamp(),
-    }, { merge: true });
+    // If elements are being updated, also regenerate the reactComponent
+    if (data.elements) {
+        dataToSave.reactComponent = await convertJsonToJsx(data.elements);
+    }
+    
+    await setDoc(siteRef, dataToSave, { merge: true });
     return { success: true, id };
   } catch (error: any) {
     await logErrorToFirestore({
