@@ -9,40 +9,44 @@ const SESSION_STORAGE_KEY = 'profileName';
 interface ProfileContextType {
   profileName: string;
   setProfileName: Dispatch<SetStateAction<string>>;
+  loading: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [profileName, setProfileName] = useState('Neup.Sites');
+  const [profileName, setProfileName] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Try to load from sessionStorage first
-    const cachedName = sessionStorage.getItem(SESSION_STORAGE_KEY);
-    if (cachedName) {
-      setProfileName(cachedName);
-    } else {
-        // If not in session, fetch from the database
-        async function fetchProfileName() {
-            const { success, profile } = await getProfile();
-            if (success && profile?.name) {
-                setProfileName(profile.name);
-                sessionStorage.setItem(SESSION_STORAGE_KEY, profile.name);
-            }
+    async function initializeProfile() {
+      setLoading(true);
+      const cachedName = sessionStorage.getItem(SESSION_STORAGE_KEY);
+      if (cachedName) {
+        setProfileName(cachedName);
+        setLoading(false);
+      } else {
+        const { success, profile } = await getProfile();
+        const finalName = profile?.name?.trim() ? profile.name : 'Neup.Sites';
+        setProfileName(finalName);
+        if (success && profile?.name) {
+            sessionStorage.setItem(SESSION_STORAGE_KEY, profile.name);
         }
-        fetchProfileName();
+        setLoading(false);
+      }
     }
+    initializeProfile();
   }, []);
 
   // Effect to update sessionStorage whenever profileName changes
   useEffect(() => {
-    if (profileName !== 'Neup.Sites') {
+    if (profileName && profileName !== 'Neup.Sites') {
         sessionStorage.setItem(SESSION_STORAGE_KEY, profileName);
     }
   }, [profileName]);
 
   return (
-    <ProfileContext.Provider value={{ profileName, setProfileName }}>
+    <ProfileContext.Provider value={{ profileName, setProfileName, loading }}>
       {children}
     </ProfileContext.Provider>
   );

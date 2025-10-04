@@ -22,17 +22,22 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ProfileProvider, useProfile } from '@/context/ProfileContext';
 import { ProgressBar } from '@/components/ui/progress-bar';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function Header() {
-  const { profileName } = useProfile();
+  const { profileName, loading } = useProfile();
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <Link href="/" className="flex items-center gap-2">
           <Rocket className="h-6 w-6 text-primary" />
-          <h1 className="font-headline text-xl font-semibold tracking-tight">
-            {profileName}
-          </h1>
+          {loading ? (
+             <Skeleton className="h-6 w-32" />
+          ) : (
+            <h1 className="font-headline text-xl font-semibold tracking-tight">
+              {profileName?.trim() ? profileName : 'Neup.Sites'}
+            </h1>
+          )}
         </Link>
         <div className="text-lg font-semibold">Dashboard</div>
       </div>
