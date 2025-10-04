@@ -28,8 +28,8 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
       const result = await getTemplate(id);
       if (result.success && result.template) {
         setTemplate(result.template);
-        setJsonContent(JSON.stringify(result.template.elements || [], null, 2));
-        setReactContent(result.template.reactComponent || '');
+        setJsonContent(JSON.stringify(result.template.content?.json || [], null, 2));
+        setReactContent(result.template.content?.react || '');
       } else {
         setError(result.error || 'Failed to load template.');
       }
@@ -42,19 +42,23 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
     if (!template) return;
     setIsSaving(true);
     
-    let elements;
+    let parsedJson;
     try {
-        elements = template.usableOn?.includes('json') ? JSON.parse(jsonContent) : template.elements;
+        parsedJson = template.usableOn?.includes('json') ? JSON.parse(jsonContent) : template.content.json;
     } catch (e) {
         toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The JSON content is not correctly formatted.' });
         setIsSaving(false);
         return;
     }
 
+    const newContent = {
+        json: parsedJson,
+        react: template.usableOn?.includes('react') ? reactContent : template.content.react,
+    };
+
     const result = await saveTemplate({
       ...template,
-      elements: elements,
-      reactComponent: template.usableOn?.includes('react') ? reactContent : template.reactComponent,
+      content: newContent,
     }, id);
 
     if (result.success) {

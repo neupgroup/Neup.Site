@@ -59,14 +59,15 @@ export default function PrebuiltEditorPage() {
     }, [id]);
 
     const addSection = (template: Template) => {
-        if (!template.elements || template.elements.length === 0) {
+        const jsonContent = template.content?.json;
+        if (!jsonContent || jsonContent.length === 0) {
             toast({ variant: 'destructive', title: 'Empty Template', description: 'This template has no content to add.' });
             return;
         }
         
         const newSection = {
-            ...template.elements[0],
-            id: `${template.elements[0].id}-${Date.now()}` // Ensure unique ID
+            ...jsonContent[0],
+            id: `${jsonContent[0].id}-${Date.now()}` // Ensure unique ID
         };
         setPageElements(prev => [...prev, newSection]);
     };

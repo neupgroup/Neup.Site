@@ -45,8 +45,7 @@ export default function CreateTemplatePage() {
     const result = await saveTemplate({ 
         ...data,
         createdBy: 'user',
-        elements: [],
-        reactComponent: '',
+        content: {},
     });
 
     if (result.success && result.id) {

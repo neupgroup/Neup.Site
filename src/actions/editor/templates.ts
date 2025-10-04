@@ -8,7 +8,7 @@ import { initializeFirebase } from '@/lib/firebase';
 /**
  * Saves or updates a template in Firestore.
  */
-export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' | 'siteId'>, id?: string) {
+export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string) {
   try {
     const { firestore } = initializeFirebase();
     let dataToSave: any = { 
@@ -19,8 +19,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
         category: template.category,
         type: template.type || 'section',
         usableOn: template.usableOn || ['json'],
-        elements: template.elements || [],
-        reactComponent: template.reactComponent || '',
+        content: template.content || {},
         createdBy: template.createdBy || 'user',
     };
       
@@ -60,8 +59,7 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
         category: data.category,
         type: data.type || 'section',
         usableOn: data.usableOn || ['json'],
-        elements: data.elements || [],
-        reactComponent: data.reactComponent || '',
+        content: data.content || {},
         createdBy: data.createdBy,
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
       };
@@ -98,8 +96,7 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
             category: data.category,
             type: data.type || 'section',
             usableOn: data.usableOn || ['json'],
-            elements: data.elements || [],
-            reactComponent: data.reactComponent || '',
+            content: data.content || {},
             createdBy: data.createdBy || 'user',
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         };

@@ -4,9 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search } from 'lucide-react';
-import type { CanvasElementData, Template } from '@/lib/schemas';
+import type { CanvasElementData, Template } from '@/schemas/site';
 import { cn } from '@/lib/utils';
-import { logErrorToFirestore } from '@/actions/logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import Link from 'next/link';
 import { getTemplates } from '@/actions/editor/templates';
 import { Skeleton } from '../ui/skeleton';
@@ -183,11 +183,11 @@ const TemplateLibrary = ({addGeneratedElement}: {addGeneratedElement: (element: 
   }, []);
 
   const handleDragStart = (e: React.DragEvent, template: Template) => {
-    // We only drag the first element, assuming templates are single sections/elements for now.
-    if(template.elements && template.elements.length > 0) {
+    const jsonContent = template.content?.json;
+    if(jsonContent && jsonContent.length > 0) {
       const data = {
         type: 'template-element',
-        element: template.elements[0],
+        element: jsonContent[0],
       };
       e.dataTransfer.setData('application/json', JSON.stringify(data));
     }
@@ -350,5 +350,3 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
 };
 
 export default LeftSidebar;
-
-    
