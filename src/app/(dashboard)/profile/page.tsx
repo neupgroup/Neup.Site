@@ -67,22 +67,30 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
-        const removeUrlPrefix = (url: string) => url.replace(/^(https?:\/\/)/, '');
+        const removeUrlPrefix = (url: string | undefined): string => {
+            if (!url) return '';
+            return url.replace(/^(https?:\/\/)/, '');
+        }
         
         const fetchProfileData = async () => {
             setLoading(true);
-            const { success, site } = await getSite();
+            const { success, site, error } = await getSite();
+
+            if (error) {
+                toast({ variant: 'destructive', title: 'Error', description: error });
+            }
+
             if (success && site) {
                 form.reset({
                     name: site.name,
-                    logoUrl: site.logoUrl ? removeUrlPrefix(site.logoUrl) : '',
+                    logoUrl: removeUrlPrefix(site.logoUrl),
                     description: site.description || '',
                     socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
                     contactEmail: site.contactEmail || [],
                     contactPhone: site.contactPhone || [],
                 });
             } else {
-                 toast({ variant: 'destructive', title: 'Error', description: 'Could not load site data. A new site profile will be created on save.' });
+                 toast({ variant: 'destructive', title: 'Notice', description: 'Could not load site data. A new site profile will be created on save.' });
                  // If the site doesn't exist, we can pre-fill some fields or let the user start fresh
                  form.reset({
                     name: 'My New Site',

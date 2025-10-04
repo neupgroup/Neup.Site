@@ -44,7 +44,9 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
         const docSnap = await getDoc(siteRef);
 
         if (!docSnap.exists()) {
-            return { success: false, error: 'Site configuration not found. It may need to be created first.' };
+            // This is not an error, but the site document may not have been created yet.
+            // A new one will be created on the first save in the profile page.
+            return { success: true, site: undefined };
         }
         
         const data = docSnap.data();
@@ -88,7 +90,14 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
   try {
     const siteRef = doc(db, 'sites', siteId);
     
+    // Check if the document exists to determine if this is a create or update
+    const docSnap = await getDoc(siteRef);
+    
     let dataToSave: any = { ...data, updatedAt: serverTimestamp() };
+
+    if (!docSnap.exists()) {
+      dataToSave.createdAt = serverTimestamp();
+    }
 
     if (data.logoUrl) {
       dataToSave.logoUrl = normalizeUrl(data.logoUrl);
