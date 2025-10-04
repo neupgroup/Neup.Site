@@ -12,12 +12,14 @@ import { logErrorToFirestore } from '@/lib/logging';
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
-    let dataToSave: any = { 
+    
+    // Ensure no undefined values are sent to Firestore.
+    const dataToSave: any = { 
         name: template.name,
         description: template.description || '',
-        imageUrl: template.imageUrl,
-        previewUrl: template.previewUrl,
-        category: template.category,
+        imageUrl: template.imageUrl || null,
+        previewUrl: template.previewUrl || null,
+        category: template.category || null,
         type: template.type || 'section',
         usableOn: template.usableOn || ['json'],
         content: template.content || {},
