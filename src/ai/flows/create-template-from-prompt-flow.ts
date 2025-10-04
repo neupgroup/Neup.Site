@@ -11,7 +11,7 @@ import {z} from 'genkit';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/lib/schemas';
 
 const TemplateFromPromptOutputSchema = z.object({
-  elements: z.array(CanvasElementDataSchema),
+  elements: z.array(CanvasElementDataSchema).describe("An array of canvas elements that make up the component."),
 });
 
 export async function createTemplateFromPrompt(prompt: string): Promise<CanvasElementData[]> {

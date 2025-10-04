@@ -12,7 +12,7 @@ import { CanvasElementDataSchema, type CanvasElementData } from '@/lib/schemas';
 import { logErrorToFirestore } from '@/actions/logging';
 
 const HtmlToJsonOutputSchema = z.object({
-  elements: z.array(CanvasElementDataSchema),
+  elements: z.array(CanvasElementDataSchema).describe("An array of canvas elements that represent the HTML structure."),
 });
 
 export async function convertHtmlToJson(html: string): Promise<CanvasElementData[]> {
