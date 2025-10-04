@@ -10,10 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/hooks/use-toast';
 import { Sun, Moon, Save, Twitter, Github, Linkedin, Mail, Phone } from 'lucide-react';
+import { useProfile } from '@/context/ProfileContext';
 
 export default function ProfilePage() {
+  const { profileName, setProfileName } = useProfile();
   const [theme, setTheme] = useState('light');
-  const [profileName, setProfileName] = useState('Neup.Sites');
   const [description, setDescription] = useState('Your Site Description');
   const [logoUrl, setLogoUrl] = useState('');
 

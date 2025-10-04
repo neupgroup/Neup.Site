@@ -16,8 +16,27 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { ProfileProvider, useProfile } from '@/context/ProfileContext';
 
-export default function DashboardLayout({
+function Header() {
+  const { profileName } = useProfile();
+  return (
+    <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background shadow">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
+             <div className="flex items-center gap-2">
+                <Rocket className="h-6 w-6 text-primary" />
+                <h1 className="font-headline text-xl font-semibold tracking-tight">
+                  {profileName}
+                </h1>
+              </div>
+              <div className="text-lg font-semibold">Dashboard</div>
+        </div>
+    </header>
+  )
+}
+
+
+function Dashboard({
   children,
 }: {
   children: React.ReactNode;
@@ -26,17 +45,7 @@ export default function DashboardLayout({
 
   return (
       <div className="min-h-screen w-full bg-background text-foreground">
-          <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background shadow">
-              <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
-                   <div className="flex items-center gap-2">
-                      <Rocket className="h-6 w-6 text-primary" />
-                      <h1 className="font-headline text-xl font-semibold tracking-tight">
-                        Neup.Sites
-                      </h1>
-                    </div>
-                    <div className="text-lg font-semibold">Dashboard</div>
-              </div>
-          </header>
+          <Header />
           <div className="mx-auto grid w-full max-w-[1440px] lg:grid-cols-[280px_1fr]">
               <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-card lg:sticky lg:top-16 lg:flex">
                   <div className="flex flex-1 flex-col overflow-y-auto p-4">
@@ -110,4 +119,16 @@ export default function DashboardLayout({
           </div>
       </div>
   );
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <ProfileProvider>
+      <Dashboard>{children}</Dashboard>
+    </ProfileProvider>
+  )
 }
