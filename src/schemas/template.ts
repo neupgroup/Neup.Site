@@ -9,6 +9,7 @@ export interface Template {
   previewUrl?: string;
   category?: string;
   type: 'section' | 'page' | string;
+  status: 'draft' | 'published';
   usableOn: ('json' | 'react')[];
   content: {
     json?: CanvasElementData[];

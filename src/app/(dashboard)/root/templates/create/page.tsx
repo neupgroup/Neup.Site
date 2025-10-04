@@ -44,6 +44,7 @@ export default function CreateTemplatePage() {
   const handleManualSave = async (data: FormValues) => {
     const result = await saveTemplate({ 
         ...data,
+        status: 'draft', // Always start as a draft
         createdBy: 'user',
         content: {},
     });

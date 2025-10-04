@@ -12,6 +12,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function ViewTemplatePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -71,8 +73,13 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
         </Button>
       <Card>
         <CardHeader>
-          <CardTitle>{template.name}</CardTitle>
-          <CardDescription>ID: {template.id}</CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+                <CardTitle>{template.name}</CardTitle>
+                <CardDescription>ID: {template.id}</CardDescription>
+            </div>
+            <Badge variant={template.status === 'published' ? 'default' : 'secondary'} className={cn(template.status === 'published' && 'bg-green-600')}>{template.status}</Badge>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -82,10 +89,6 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
           <div>
             <h4 className="font-semibold text-sm">Type</h4>
             <p className="text-muted-foreground capitalize">{template.type}</p>
-          </div>
-          <div>
-            <h4 className="font-semibold text-sm">Method</h4>
-            <p className="text-muted-foreground capitalize">{template.method || 'N/A'}</p>
           </div>
            <div>
             <h4 className="font-semibold text-sm">Created By</h4>

@@ -23,6 +23,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   type: z.enum(['section', 'page', 'element']),
+  status: z.enum(['draft', 'published']),
   usableOn: z.array(z.enum(['json', 'react'])).min(1, 'Select at least one usage target'),
 });
 
@@ -42,6 +43,7 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
       name: '',
       description: '',
       type: 'section',
+      status: 'draft',
       usableOn: ['json'],
     },
   });
@@ -57,6 +59,7 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
           name: templateResult.template.name,
           description: templateResult.template.description,
           type: templateResult.template.type,
+          status: templateResult.template.status,
           usableOn: templateResult.template.usableOn || ['json'],
         });
       } else {
@@ -128,28 +131,51 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a template type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="section">Section</SelectItem>
-                      <SelectItem value="page">Page</SelectItem>
-                      <SelectItem value="element">Element</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+                <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a template type" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                        <SelectItem value="section">Section</SelectItem>
+                        <SelectItem value="page">Page</SelectItem>
+                        <SelectItem value="element">Element</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="draft">Draft</SelectItem>
+                                <SelectItem value="published">Published</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
             <FormField
                 control={form.control}
                 name="usableOn"

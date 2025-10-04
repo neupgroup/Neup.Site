@@ -63,7 +63,7 @@ export default function PrebuiltEditorPage() {
 
                 if (templatesResult.success && templatesResult.templates) {
                     const filteredTemplates = templatesResult.templates
-                        .filter(t => t.type === 'section' && t.usableOn.includes('json') && t.content?.json && t.content.json.length > 0)
+                        .filter(t => t.type === 'section' && t.status === 'published' && t.usableOn.includes('json') && t.content?.json && t.content.json.length > 0)
                         .map(t => ({
                             id: t.id,
                             name: t.name,
