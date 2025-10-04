@@ -18,7 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Newspaper, ArrowRight } from 'lucide-react';
+import { AlertCircle, Plus, Newspaper } from 'lucide-react';
 
 export default async function NewsListPage() {
   const { articles, error } = await getNewsArticles();
@@ -59,22 +59,18 @@ export default async function NewsListPage() {
                   <TableHead>Title</TableHead>
                   <TableHead>Author</TableHead>
                   <TableHead>Published</TableHead>
-                  <TableHead className="text-right">View</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {articles?.map((article) => (
                   <TableRow key={article.id}>
-                    <TableCell className="font-medium">{article.title}</TableCell>
+                    <TableCell className="font-medium">
+                        <Link href={`/news/${article.slug}`} className="hover:underline">
+                            {article.title}
+                        </Link>
+                    </TableCell>
                     <TableCell>{article.author}</TableCell>
                     <TableCell>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : 'N/A'}</TableCell>
-                    <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="icon">
-                        <Link href={`/news/${article.slug}`}>
-                          <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
