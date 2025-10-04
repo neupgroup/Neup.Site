@@ -18,6 +18,7 @@ import {
   Palette,
   HardDrive,
   CreditCard,
+  Newspaper,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -154,6 +155,16 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 >
                   <Globe className="h-4 w-4" />
                   <span>Pages</span>
+                </Link>
+                <Link
+                  href="/news"
+                  className={cn(
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
+                    pathname.startsWith('/news') && 'bg-muted'
+                  )}
+                >
+                  <Newspaper className="h-4 w-4" />
+                  <span>News</span>
                 </Link>
                 <Link
                   href="/site/paths"

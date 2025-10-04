@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Site": {
@@ -136,6 +137,24 @@
         "content",
         "requiresPendingSite"
       ]
+    },
+    "NewsArticle": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "News Article",
+      "type": "object",
+      "description": "Represents a news article.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier." },
+        "title": { "type": "string", "description": "The title of the article." },
+        "slug": { "type": "string", "description": "URL-friendly slug." },
+        "content": { "type": "string", "description": "The main content of the article, likely in Markdown." },
+        "author": { "type": "string", "description": "The name of the author." },
+        "imageUrl": { "type": "string", "format": "uri", "description": "URL for a feature image." },
+        "publishedAt": { "type": "string", "format": "date-time", "description": "The date and time the article was published." },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "slug", "content", "author", "publishedAt"]
     }
   },
   "auth": {
@@ -178,6 +197,22 @@
             {
               "name": "pageId",
               "description": "The unique identifier for the page."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/news/{newsId}",
+        "definition": {
+          "entityName": "NewsArticle",
+          "schema": {
+            "$ref": "#/backend/entities/NewsArticle"
+          },
+          "description": "Stores individual news articles.",
+          "params": [
+            {
+              "name": "newsId",
+              "description": "The unique identifier for the news article."
             }
           ]
         }
