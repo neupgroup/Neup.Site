@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,7 +31,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 const NO_SOURCE_VALUE = '--none--';
 
-export default function EditBasicsPage({ params }: { params: { id: string } }) {
+export default function EditBasicsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [template, setTemplate] = useState<Template | null>(null);
   const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +53,6 @@ export default function EditBasicsPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { id } = params;
       setLoading(true);
       const [templateResult, sourcesResult] = await Promise.all([
         getTemplate(id),
@@ -79,10 +79,9 @@ export default function EditBasicsPage({ params }: { params: { id: string } }) {
     };
 
     fetchData();
-  }, [params, form]);
+  }, [id, form]);
 
   const onSubmit = async (data: FormValues) => {
-    const { id } = params;
     const result = await saveTemplate({
       ...data,
       source: data.source === NO_SOURCE_VALUE ? '' : data.source,

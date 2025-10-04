@@ -1,14 +1,15 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, use } from 'react';
 import { redirect } from 'next/navigation';
 
-export default function EditTemplatePage({ params }: { params: { id: string } }) {
+export default function EditTemplatePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  
   useEffect(() => {
-    const { id } = params;
     redirect(`/root/templates/${id}/edit/basics`);
-  }, [params]);
+  }, [id]);
 
   return null;
 }

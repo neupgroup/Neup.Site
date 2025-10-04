@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { getTemplate, saveTemplate, type Template } from '@/actions/editor/templates';
 import { refineCode } from '@/ai/flows/refine-code-flow';
@@ -14,7 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2, AlertCircle, Wand2, Sparkles } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 
-export default function EditContentPage({ params }: { params: { id: string } }) {
+export default function EditContentPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [template, setTemplate] = useState<Template | null>(null);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(true);
@@ -26,7 +27,6 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     const fetchTemplate = async () => {
-      const { id } = params;
       setLoading(true);
       const result = await getTemplate(id);
       if (result.success && result.template) {
@@ -42,11 +42,10 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
       setLoading(false);
     };
     fetchTemplate();
-  }, [params]);
+  }, [id]);
 
   const handleSave = async () => {
     if (!template) return;
-    const { id } = params;
     setIsSaving(true);
     
     // We only need to pass the code and name. The backend will re-process it.

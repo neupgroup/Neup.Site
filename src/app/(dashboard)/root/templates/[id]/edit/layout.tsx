@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, use } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,10 +14,10 @@ export default function EditTemplateLayout({
   params,
 }: {
   children: ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const pathname = usePathname();
-  const { id } = params;
+  const { id } = use(params);
   const activeTab = pathname.includes('/content') ? 'content' : 'basics';
 
   return (

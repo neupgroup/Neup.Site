@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 import {
@@ -38,7 +38,8 @@ type FormValues = {
   }[];
 };
 
-export default function EditSourcePage({ params }: { params: { id: string } }) {
+export default function EditSourcePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -60,7 +61,6 @@ export default function EditSourcePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     const fetchSource = async () => {
-      const { id } = params;
       setLoading(true);
       const result = await getSource(id);
       if (result.success && result.source) {
@@ -76,10 +76,9 @@ export default function EditSourcePage({ params }: { params: { id: string } }) {
     };
 
     fetchSource();
-  }, [params, methods]);
+  }, [id, methods]);
 
   const handleUpdateSource = async (data: FormValues) => {
-    const { id } = params;
     const result = await updateSource(id, data);
 
     if (result.success) {
@@ -200,7 +199,7 @@ export default function EditSourcePage({ params }: { params: { id: string } }) {
 
         <div className="flex justify-between sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
           <Button variant="ghost" asChild>
-            <Link href={`/site/sources/${params.id}`}>
+            <Link href={`/site/sources/${id}`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Cancel
             </Link>
