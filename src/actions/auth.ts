@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers'
 import { adminDb } from '@/lib/firebase-admin';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
  
 export async function setSiteIdCookie(siteId: string) {
   if (!siteId) {
@@ -11,20 +11,20 @@ export async function setSiteIdCookie(siteId: string) {
   }
 
   // Reference to the document in the 'sites' collection
-  const siteRef = doc(adminDb, 'sites', siteId);
+  const siteRef = adminDb.collection('sites').doc(siteId);
 
   try {
-    const docSnap = await getDoc(siteRef);
+    const docSnap = await siteRef.get();
 
     // If the document does not exist, create it.
-    if (!docSnap.exists()) {
-      await setDoc(siteRef, {
+    if (!docSnap.exists) {
+      await siteRef.set({
         id: siteId,
         name: siteId, // Default name to the siteId
         status: 'active', // Default status
         type: 'corporate portfolio', // Default type
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
       });
     }
     
