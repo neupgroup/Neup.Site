@@ -3,10 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { getSite } from '@/actions/editor/site';
+import { Dashboard } from '@/components/dashboard';
 
-export default function DashboardPage() {
-  return (
-    <div className="p-8">
+export default async function DashboardPage() {
+  const { site } = await getSite();
+
+  const pageContent = (
+     <div className="p-8">
       <h1 className="text-3xl font-bold font-headline mb-8">Welcome to Neup.Sites</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card>
@@ -77,4 +81,11 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+
+  // Since this is the default page for the dashboard, we re-wrap it with the Dashboard
+  // component and pass the site theme, just like the layout used to.
+  // Other site-specific pages would need a similar pattern if they were at the root of /(dashboard).
+  return (
+    <Dashboard theme={site?.theme}>{pageContent}</Dashboard>
+  )
 }

@@ -97,14 +97,22 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
   const primaryHsl = theme?.primary ? hexToHsl(theme.primary) : null;
   const accentHsl = theme?.accent ? hexToHsl(theme.accent) : null;
 
+  const isRootPage = pathname.startsWith('/root');
+  // For root pages, we don't pass a theme, so we can avoid rendering the style tag.
+  // For site pages, the theme prop will be provided.
+  const renderThemeStyles = !isRootPage && (primaryHsl || accentHsl);
+
+
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
+      {renderThemeStyles && (
         <style jsx global>{`
           :root {
               ${primaryHsl ? `--primary: ${primaryHsl};` : ''}
               ${accentHsl ? `--accent: ${accentHsl};` : ''}
           }
       `}</style>
+      )}
       <Header />
       <div className="mx-auto grid w-full max-w-[1440px] lg:grid-cols-[280px_1fr]">
         {/* Sidebar */}
