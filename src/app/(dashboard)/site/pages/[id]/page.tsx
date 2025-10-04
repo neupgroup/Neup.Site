@@ -1,9 +1,10 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, use } from 'react';
+import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPage, savePage, deletePage, type Page } from '@/actions/editor/pages';
+import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/actions/paths';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +25,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import Link from 'next/link';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2, Link as LinkIcon, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -33,25 +35,66 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
   const router = useRouter();
 
   const [page, setPage] = useState<Page | null>(null);
+  const [paths, setPaths] = useState<Path[]>([]);
+  const [newPathValue, setNewPathValue] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const fetchPage = useCallback(async () => {
+  const fetchPageData = useCallback(async () => {
     setLoading(true);
-    const pageResult = await getPage(id);
+    const [pageResult, pathsResult] = await Promise.all([
+        getPage(id),
+        getPathsForPage(id)
+    ]);
+    
     if (pageResult.success && pageResult.page) {
       setPage(pageResult.page);
     } else {
       setError(pageResult.error || 'Failed to load page content.');
     }
+
+    if (pathsResult.success && pathsResult.paths) {
+        setPaths(pathsResult.paths);
+    } else {
+        // Don't set a page-level error for paths, just log it.
+        console.error(pathsResult.error || 'Failed to load paths.');
+    }
+
     setLoading(false);
   }, [id]);
 
   useEffect(() => {
-    fetchPage();
-  }, [fetchPage]);
+    fetchPageData();
+  }, [fetchPageData]);
+  
+  const handleAddPath = async (e: FormEvent) => {
+      e.preventDefault();
+      if (!newPathValue) {
+          toast({ variant: 'destructive', title: 'Error', description: 'Path cannot be empty.' });
+          return;
+      }
+      
+      const result = await addPath(id, newPathValue);
+       if (result.success) {
+          toast({ title: "Path Added", description: `Added path ${newPathValue}`});
+          setNewPathValue('');
+          fetchPageData();
+      } else {
+          toast({ variant: "destructive", title: "Error", description: result.error });
+      }
+  };
+  
+  const handleDeletePath = async (pathId: string) => {
+      const result = await deletePathAction(pathId);
+       if (result.success) {
+          toast({ title: "Path Deleted", description: "The path has been removed."});
+          fetchPageData();
+      } else {
+          toast({ variant: "destructive", title: "Error", description: result.error });
+      }
+  }
 
   const handleSectionVisibilityChange = async (sectionId: string, isVisible: boolean) => {
     if (!page) return;
@@ -78,7 +121,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
         toast({ title: 'Section Updated!', description: `Section visibility has been saved.`});
     } else {
         toast({ variant: 'destructive', title: 'Error Saving', description: result.error });
-        fetchPage(); // Revert on error
+        fetchPageData(); // Revert on error
     }
     setIsSaving(false);
   };
@@ -109,12 +152,9 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
                         <Skeleton className="h-10 w-28" />
                     </div>
                 </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <Skeleton className="h-8 w-1/3" />
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-12 w-full" />
-                    </div>
+                <CardContent className="space-y-6">
+                    <Skeleton className="h-48 w-full" />
+                    <Skeleton className="h-32 w-full" />
                 </CardContent>
              </Card>
         </div>
@@ -136,7 +176,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Manage Page</CardTitle>
+            <CardTitle>Manage Page: {page.name || page.id}</CardTitle>
             <CardDescription>Page ID: {id}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -158,7 +198,37 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
              </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                        URL Paths
+                    </CardTitle>
+                    <CardDescription>The public URLs that will render this page.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        {paths.map(path => (
+                            <div key={path.id} className="flex items-center justify-between text-sm p-2 bg-muted rounded-md">
+                                <span className="font-mono">{path.path}</span>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeletePath(path.id)}>
+                                    <X className="h-4 w-4"/>
+                                </Button>
+                            </div>
+                        ))}
+                         {paths.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No paths are assigned to this page.</p>}
+                    </div>
+                    <form onSubmit={handleAddPath} className="flex gap-2">
+                        <Input 
+                            placeholder="/new-path"
+                            value={newPathValue}
+                            onChange={(e) => setNewPathValue(e.target.value)}
+                            className="h-9"
+                        />
+                        <Button type="submit" size="sm">Add Path</Button>
+                    </form>
+                </CardContent>
+             </Card>
              <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
@@ -169,7 +239,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {page.elements.length === 0 ? (
-                        <p className="text-muted-foreground">This page has no sections yet.</p>
+                        <p className="text-muted-foreground text-center py-4">This page has no sections yet. Go to 'Edit Page' to add content.</p>
                     ) : (
                         <div className="border rounded-lg">
                            {page.elements.map((element, index) => (
