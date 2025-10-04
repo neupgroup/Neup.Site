@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -18,19 +19,19 @@ import {
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ProfileProvider, useProfile } from '@/context/ProfileContext';
-import { ProgressBar } from '@/components/ui/progress-bar'; // ✅ Added import
+import { ProgressBar } from '@/components/ui/progress-bar';
 
 function Header() {
   const { profileName } = useProfile();
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Rocket className="h-6 w-6 text-primary" />
           <h1 className="font-headline text-xl font-semibold tracking-tight">
             {profileName}
           </h1>
-        </div>
+        </Link>
         <div className="text-lg font-semibold">Dashboard</div>
       </div>
     </header>
@@ -213,7 +214,7 @@ export default function DashboardLayout({
 }) {
   return (
     <ProfileProvider>
-      <ProgressBar /> {/* ✅ Mounted globally for all routes */}
+      <ProgressBar />
       <Dashboard>{children}</Dashboard>
     </ProfileProvider>
   );
