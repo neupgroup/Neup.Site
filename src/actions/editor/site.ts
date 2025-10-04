@@ -56,7 +56,7 @@ export async function createSite(type: Site['type'] = 'editor') {
   }
 }
 
-export async function saveSite(id: string, data: Partial<Site>) {
+export async function saveSite(id: string, elements: CanvasElementData[]) {
   const siteId = cookies().get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
@@ -67,11 +67,11 @@ export async function saveSite(id: string, data: Partial<Site>) {
         return { success: false, error: 'Unauthorized.' };
     }
     
-    let dataToSave = { ...data, updatedAt: serverTimestamp() };
+    let dataToSave: Partial<Site> = { elements, updatedAt: serverTimestamp() as any };
 
     // If elements are being updated, also regenerate the reactComponent
-    if (data.elements) {
-        dataToSave.reactComponent = await convertJsonToJsx(data.elements);
+    if (elements) {
+        dataToSave.reactComponent = await convertJsonToJsx(elements);
     }
     
     await setDoc(siteRef, dataToSave, { merge: true });

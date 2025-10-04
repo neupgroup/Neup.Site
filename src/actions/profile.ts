@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { logErrorToFirestore } from './logging';
 import type { Profile } from '@/lib/profile-schema';
@@ -29,8 +29,18 @@ export async function getProfile(): Promise<{ success: boolean; profile?: Profil
     if (!docSnap.exists()) {
       return { success: true, profile: undefined };
     }
+    
+    const data = docSnap.data();
+    const updatedAt = data.updatedAt;
 
-    return { success: true, profile: { id: docSnap.id, ...docSnap.data() } as Profile };
+    const profile: Profile = {
+        id: docSnap.id,
+        ...data,
+        updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null
+    } as Profile;
+
+
+    return { success: true, profile };
   } catch (error: any) {
     console.error('Failed to get profile:', error);
     await logErrorToFirestore({

@@ -16,4 +16,4 @@ export const ProfileFormSchema = z.object({
   contactPhone: z.array(z.object({ value: z.string() })).max(9, 'You can add a maximum of 9 phone numbers.'),
 });
 
-export type Profile = z.infer<typeof ProfileFormSchema> & { id: string };
+export type Profile = z.infer<typeof ProfileFormSchema> & { id: string, updatedAt?: string | null };

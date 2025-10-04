@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, Timestamp, query, orderBy, limit } from 'firebase/firestore';
 import {
   Table,
   TableHeader,
@@ -33,7 +33,8 @@ const ErrorsPage = () => {
     const fetchErrors = async () => {
       try {
         const errorsCollection = collection(db, 'errors');
-        const errorSnapshot = await getDocs(errorsCollection);
+        const q = query(errorsCollection, orderBy('timestamp', 'desc'), limit(50));
+        const errorSnapshot = await getDocs(q);
         const errorsList = errorSnapshot.docs.map(doc => {
           const data = doc.data();
           const timestamp = data.timestamp as Timestamp;
@@ -44,7 +45,7 @@ const ErrorsPage = () => {
             timestamp: timestamp?.toDate().toISOString() || new Date().toISOString(),
           };
         });
-        setErrors(errorsList.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
+        setErrors(errorsList);
       } catch (e: any) {
         console.error("Error fetching errors: ", e);
         if (e.code === 'permission-denied' || e.code === 'unauthenticated') {
