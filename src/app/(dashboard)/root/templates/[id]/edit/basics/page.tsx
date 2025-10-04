@@ -6,13 +6,13 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getTemplate, saveTemplate, type Template } from '@/actions/editor/templates';
-import { getSources, type Source } from '@/actions/editor/sources';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -23,18 +23,14 @@ const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   type: z.enum(['section', 'page', 'element']),
-  method: z.enum(['codebase', 'textual', 'dragger']),
-  source: z.string().optional(),
+  usableOn: z.array(z.enum(['json', 'react'])).min(1, 'Select at least one usage target'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const NO_SOURCE_VALUE = '--none--';
-
 export default function EditBasicsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [template, setTemplate] = useState<Template | null>(null);
-  const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -46,18 +42,14 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
       name: '',
       description: '',
       type: 'section',
-      method: 'codebase',
-      source: '',
+      usableOn: ['json'],
     },
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTemplate = async () => {
       setLoading(true);
-      const [templateResult, sourcesResult] = await Promise.all([
-        getTemplate(id),
-        getSources(),
-      ]);
+      const templateResult = await getTemplate(id);
 
       if (templateResult.success && templateResult.template) {
         setTemplate(templateResult.template);
@@ -65,26 +57,22 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
           name: templateResult.template.name,
           description: templateResult.template.description,
           type: templateResult.template.type,
-          method: templateResult.template.method || 'codebase',
-          source: templateResult.template.source || NO_SOURCE_VALUE,
+          usableOn: templateResult.template.usableOn || ['json'],
         });
       } else {
         setError(templateResult.error || 'Failed to load template.');
       }
-
-      if (sourcesResult.success && sourcesResult.sources) {
-        setSources(sourcesResult.sources);
-      }
       setLoading(false);
     };
 
-    fetchData();
+    fetchTemplate();
   }, [id, form]);
 
   const onSubmit = async (data: FormValues) => {
+    if (!template) return;
     const result = await saveTemplate({
+      ...template,
       ...data,
-      source: data.source === NO_SOURCE_VALUE ? '' : data.source,
     }, id);
     
     if (result.success) {
@@ -142,48 +130,94 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
             />
             <FormField
               control={form.control}
-              name="method"
+              name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Method</FormLabel>
+                  <FormLabel>Type</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a creation method" />
+                        <SelectValue placeholder="Select a template type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        <SelectItem value="codebase">Codebase (HTML, JSON)</SelectItem>
-                        <SelectItem value="textual">Textual (AI)</SelectItem>
-                        <SelectItem value="dragger" disabled>Dragger (Coming Soon)</SelectItem>
+                      <SelectItem value="section">Section</SelectItem>
+                      <SelectItem value="page">Page</SelectItem>
+                      <SelectItem value="element">Element</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-             <FormField
-              control={form.control}
-              name="source"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Data Source (Optional)</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a data source" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                       <SelectItem value={NO_SOURCE_VALUE}>None</SelectItem>
-                       {sources.map(s => (
-                           <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                       ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <FormField
+                control={form.control}
+                name="usableOn"
+                render={() => (
+                    <FormItem>
+                        <div className="mb-4">
+                            <FormLabel>Usable On</FormLabel>
+                            <FormDescription>
+                                Where can this template be used?
+                            </FormDescription>
+                        </div>
+                        <div className="flex gap-8">
+                        <FormField
+                            control={form.control}
+                            name="usableOn"
+                            render={({ field }) => {
+                            return (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                        <Checkbox
+                                        checked={field.value?.includes("json")}
+                                        onCheckedChange={(checked) => {
+                                            return checked
+                                            ? field.onChange([...field.value, "json"])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                (value) => value !== "json"
+                                                )
+                                            )
+                                        }}
+                                        />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">
+                                        Editor (JSON)
+                                    </FormLabel>
+                                </FormItem>
+                            )}}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="usableOn"
+                            render={({ field }) => {
+                            return (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                        <Checkbox
+                                        checked={field.value?.includes("react")}
+                                        onCheckedChange={(checked) => {
+                                            return checked
+                                            ? field.onChange([...field.value, "react"])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                (value) => value !== "react"
+                                                )
+                                            )
+                                        }}
+                                        />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">
+                                        Codebase (React)
+                                    </FormLabel>
+                                </FormItem>
+                            )}}
+                        />
+                        </div>
+                        <FormMessage />
+                    </FormItem>
+                )}
             />
           </CardContent>
           <CardFooter>

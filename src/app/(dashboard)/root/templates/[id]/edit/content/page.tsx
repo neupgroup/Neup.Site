@@ -2,26 +2,23 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
 import { getTemplate, saveTemplate, type Template } from '@/actions/editor/templates';
-import { refineCode } from '@/ai/flows/refine-code-flow';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Loader2, AlertCircle, Wand2, Sparkles } from 'lucide-react';
+import { Save, Loader2, AlertCircle, Code, Braces } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 
 export default function EditContentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [template, setTemplate] = useState<Template | null>(null);
-  const [code, setCode] = useState('');
+  const [jsonContent, setJsonContent] = useState('');
+  const [reactContent, setReactContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isRefining, setIsRefining] = useState(false);
-  const [refinePrompt, setRefinePrompt] = useState('');
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -31,11 +28,8 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
       const result = await getTemplate(id);
       if (result.success && result.template) {
         setTemplate(result.template);
-        if (result.template.method === 'codebase' && result.template.elements) {
-            setCode(JSON.stringify(result.template.elements, null, 2));
-        } else {
-            setCode(result.template.code || '');
-        }
+        setJsonContent(JSON.stringify(result.template.elements || [], null, 2));
+        setReactContent(result.template.reactComponent || '');
       } else {
         setError(result.error || 'Failed to load template.');
       }
@@ -48,14 +42,19 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
     if (!template) return;
     setIsSaving(true);
     
-    // We only need to pass the code and name. The backend will re-process it.
+    let elements;
+    try {
+        elements = template.usableOn?.includes('json') ? JSON.parse(jsonContent) : template.elements;
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The JSON content is not correctly formatted.' });
+        setIsSaving(false);
+        return;
+    }
+
     const result = await saveTemplate({
-      name: template.name,
-      description: template.description,
-      type: template.type,
-      method: template.method,
-      source: template.source,
-      code: code,
+      ...template,
+      elements: elements,
+      reactComponent: template.usableOn?.includes('react') ? reactContent : template.reactComponent,
     }, id);
 
     if (result.success) {
@@ -65,27 +64,14 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
     }
     setIsSaving(false);
   };
-  
-  const handleRefine = async () => {
-    if (!refinePrompt) {
-        toast({ variant: 'destructive', title: 'Prompt is required for refinement.' });
-        return;
-    }
-    setIsRefining(true);
-    toast({ title: 'AI is refining your code...' });
-    try {
-        const result = await refineCode({ code, prompt: refinePrompt });
-        setCode(result.code);
-        toast({ title: 'Code Refined!', description: 'The AI has updated the code based on your prompt.' });
-    } catch(e: any) {
-        toast({ variant: 'destructive', title: 'Refinement Failed', description: e.message });
-    } finally {
-        setIsRefining(false);
-    }
-  }
 
   if (loading) {
-    return <Skeleton className="h-96 w-full" />;
+    return (
+        <div className="space-y-6">
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-64 w-full" />
+        </div>
+    );
   }
 
   if (error) {
@@ -98,56 +84,61 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
     );
   }
 
+  if (!template) return null;
+
+  const showJsonEditor = template.usableOn?.includes('json');
+  const showReactEditor = template.usableOn?.includes('react');
+
   return (
     <div className="space-y-6">
-        <Card>
-          <CardContent className="space-y-4 pt-6">
-            <div className="space-y-2">
-              <Label htmlFor="content-code">
-                {template?.method === 'codebase' ? 'Component JSON' : 'Template Code'}
-              </Label>
-              <Textarea
-                id="content-code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                rows={20}
-                className="font-mono text-sm"
-                placeholder={template?.method === 'codebase' ? '[ { "id": "el-1", ... } ]' : 'Enter your HTML or template string here.'}
-              />
-               <p className="text-xs text-muted-foreground">
-                {template?.method === 'textual' && "Use {{item.field_name}} for dynamic data."}
-              </p>
-            </div>
-          </CardContent>
-          <CardFooter>
-             <Button onClick={handleSave} disabled={isSaving || isRefining}>
+        {showJsonEditor && (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Braces/> JSON Definition</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="json-content">Editor Elements (JSON Array)</Label>
+                        <Textarea
+                            id="json-content"
+                            value={jsonContent}
+                            onChange={(e) => setJsonContent(e.target.value)}
+                            rows={20}
+                            className="font-mono text-sm"
+                            placeholder='[ { "id": "el-1", ... } ]'
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+        )}
+
+        {showReactEditor && (
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Code/> React Component Code</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="react-content">React/JSX Code</Label>
+                        <Textarea
+                            id="react-content"
+                            value={reactContent}
+                            onChange={(e) => setReactContent(e.target.value)}
+                            rows={20}
+                            className="font-mono text-sm"
+                            placeholder={`export default function MyTemplate({ item }) {\n  return <div>{item.name}</div>;\n}`}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+        )}
+
+        <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
+             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              Save Content
+              Save All Content
             </Button>
-          </CardFooter>
-        </Card>
-        
-        <Card>
-            <CardContent className="space-y-4 pt-6">
-                <div className="flex items-center gap-2">
-                    <Wand2 className="h-5 w-5 text-primary" />
-                    <Label htmlFor="refine-prompt">Refine with AI</Label>
-                </div>
-                <Textarea
-                    id="refine-prompt"
-                    value={refinePrompt}
-                    onChange={(e) => setRefinePrompt(e.target.value)}
-                    placeholder="e.g., 'Make all the text larger and change the button color to blue.'"
-                    rows={3}
-                />
-            </CardContent>
-            <CardFooter>
-                 <Button onClick={handleRefine} disabled={isSaving || isRefining} variant="outline">
-                    {isRefining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Refine
-                </Button>
-            </CardFooter>
-        </Card>
+        </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from '@/lib/firebase';
@@ -16,27 +17,7 @@ import {
 } from 'firebase/firestore';
 import type { Template } from '@/lib/schemas';
 import { logErrorToFirestore } from '../logging';
-import { convertJsonToJsx } from '@/lib/json-to-jsx';
-import { convertHtmlToJson } from '@/ai/flows/html-to-json-flow';
 import { cookies } from 'next/headers';
-
-const TEMPLATES_COLLECTION = 'templates';
-
-
-function isHtml(code: string): boolean {
-    const trimmed = code.trim().toLowerCase();
-    return trimmed.startsWith('<') && trimmed.endsWith('>');
-}
-
-function isJson(code: string): boolean {
-    try {
-        const parsed = JSON.parse(code);
-        return typeof parsed === 'object' && parsed !== null;
-    } catch (e) {
-        return false;
-    }
-}
-
 
 /**
  * Saves or updates a template in Firestore.
@@ -46,25 +27,19 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    let dataToSave: any = { ...template, siteId };
-    
-    if (dataToSave.method === 'codebase' && dataToSave.code) {
-        if (isHtml(dataToSave.code)) {
-            dataToSave.elements = await convertHtmlToJson(dataToSave.code);
-        } else if (isJson(dataToSave.code)) {
-            dataToSave.elements = JSON.parse(dataToSave.code);
-        }
-    } else if (dataToSave.method === 'textual' && dataToSave.code) {
-        dataToSave.code = dataToSave.code.replace(/\{\{/g, '{{item.').replace(/item\.item\./g, 'item.');
-    }
-    
-    if (dataToSave.elements && dataToSave.elements.length > 0) {
-        // If elements are provided directly (e.g., from AI generation), generate the component.
-        dataToSave.reactComponent = convertJsonToJsx(dataToSave.elements);
-    }
+    let dataToSave: any = { 
+        siteId,
+        name: template.name,
+        description: template.description || '',
+        type: template.type || 'section',
+        usableOn: template.usableOn || ['json'],
+        elements: template.elements || [],
+        reactComponent: template.reactComponent || '',
+        createdBy: template.createdBy || 'user',
+    };
       
     if (id) {
-      const templateRef = doc(db, TEMPLATES_COLLECTION, id);
+      const templateRef = doc(db, 'templates', id);
       const templateSnap = await getDoc(templateRef);
       if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
           return { success: false, error: 'Unauthorized.' };
@@ -73,7 +48,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
       return { success: true, id };
     } else {
       dataToSave.createdAt = serverTimestamp();
-      const docRef = await addDoc(collection(db, TEMPLATES_COLLECTION), dataToSave);
+      const docRef = await addDoc(collection(db, 'templates'), dataToSave);
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
@@ -95,24 +70,21 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const q = query(collection(db, TEMPLATES_COLLECTION), where('siteId', '==', siteId));
+    const q = query(collection(db, 'templates'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const templates = querySnapshot.docs.map(doc => {
       const data = doc.data();
       const createdAt = data.createdAt;
       
-      // Explicitly create the object to ensure no complex types are passed through.
       const plainTemplate: Template = {
         id: doc.id,
         siteId: data.siteId,
         name: data.name || '',
         description: data.description || '',
+        type: data.type || 'section',
+        usableOn: data.usableOn || ['json'],
         elements: data.elements || [],
         reactComponent: data.reactComponent || '',
-        type: data.type || 'section',
-        method: data.method,
-        source: data.source,
-        code: data.code,
         createdBy: data.createdBy,
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
       };
@@ -137,7 +109,7 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const templateRef = doc(db, TEMPLATES_COLLECTION, id);
+        const templateRef = doc(db, 'templates', id);
         const docSnap = await getDoc(templateRef);
 
         if (!docSnap.exists()) {
@@ -150,12 +122,19 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
         }
 
         const createdAt = data.createdAt;
-        const serializableData: Partial<Template> = {
-            ...data,
+        
+        const template: Template = { 
+            id: docSnap.id, 
+            siteId: data.siteId,
+            name: data.name || '',
+            description: data.description || '',
+            type: data.type || 'section',
+            usableOn: data.usableOn || ['json'],
+            elements: data.elements || [],
+            reactComponent: data.reactComponent || '',
+            createdBy: data.createdBy || 'user',
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         };
-
-        const template = { id: docSnap.id, ...serializableData } as Template;
         return { success: true, template };
     } catch (error: any) {
         await logErrorToFirestore({
@@ -176,7 +155,7 @@ export async function deleteTemplate(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const templateRef = doc(db, TEMPLATES_COLLECTION, id);
+    const templateRef = doc(db, 'templates', id);
     const templateSnap = await getDoc(templateRef);
     if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };

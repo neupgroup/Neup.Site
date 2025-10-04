@@ -1,5 +1,4 @@
 
-
 'use client';
 import { z } from 'zod';
 
@@ -58,11 +57,13 @@ export const TemplateSchema = z.object({
   siteId: z.string().optional(),
   name: z.string(),
   description: z.string().optional(),
+  type: z.enum(['section', 'page', 'element']),
+  usableOn: z.array(z.enum(['json', 'react'])).default(['json']),
   elements: z.array(CanvasElementDataSchema).optional(),
   reactComponent: z.string().optional(),
-  type: z.enum(['section', 'page', 'element']),
   method: z.enum(['codebase', 'textual', 'dragger']).optional(),
   source: z.string().optional(),
+  // 'code' is deprecated in favor of elements and reactComponent
   code: z.string().optional(),
   createdBy: z.string().optional(),
   createdAt: z.any().optional(),
