@@ -12,29 +12,34 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { Save, ArrowLeft, Loader2, AlertCircle, Settings } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Save, ArrowLeft, Loader2, AlertCircle, Trash2, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getNewsArticleById, updateNewsArticle, type NewsArticle } from '@/actions/news';
+import { getNewsArticleById, updateNewsArticle, deleteNewsArticle, type NewsArticle } from '@/actions/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RichTextEditor } from '@/components/ui/rich-text-editor';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
 
 const formSchema = z.object({
-  content: z.string().min(1, 'Content is required'),
+  title: z.string().min(1, 'Title is required'),
+  author: z.string().min(1, 'Author is required'),
+  imageUrl: z.string().url().optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function EditNewsContentPage({ params }: { params: { slug: string } }) {
+export default function EditNewsSettingsPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   const { toast } = useToast();
   const router = useRouter();
@@ -42,7 +47,9 @@ export default function EditNewsContentPage({ params }: { params: { slug: string
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      content: '',
+      title: '',
+      author: '',
+      imageUrl: '',
     },
   });
 
@@ -53,7 +60,9 @@ export default function EditNewsContentPage({ params }: { params: { slug: string
       if (result.success && result.article) {
         setArticle(result.article);
         form.reset({
-          content: result.article.content,
+          title: result.article.title,
+          author: result.article.author,
+          imageUrl: result.article.imageUrl,
         });
       } else {
         setError(result.error || 'Failed to fetch article details.');
@@ -70,13 +79,25 @@ export default function EditNewsContentPage({ params }: { params: { slug: string
     const result = await updateNewsArticle(article.id, data);
 
     if (result.success) {
-      toast({ title: 'Article Content Saved!', description: 'Your changes have been saved.' });
+      toast({ title: 'Article Settings Updated!', description: `Successfully updated ${data.title}.` });
       router.push(`/news/${article.id}`);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
       setIsSaving(false);
     }
   };
+
+  const handleDelete = async () => {
+      if (!article) return;
+      setShowDeleteConfirm(false);
+      const result = await deleteNewsArticle(article.id);
+      if (result.success) {
+        toast({ title: "Article Deleted", description: "The article has been removed."});
+        router.push('/news');
+      } else {
+        toast({ variant: "destructive", title: "Error", description: result.error });
+      }
+  }
 
   if (loading) {
     return (
@@ -85,7 +106,9 @@ export default function EditNewsContentPage({ params }: { params: { slug: string
         <Card>
           <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
           <CardContent className="space-y-4">
-            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
           </CardContent>
           <CardFooter><Skeleton className="h-10 w-28" /></CardFooter>
         </Card>
@@ -95,7 +118,7 @@ export default function EditNewsContentPage({ params }: { params: { slug: string
 
   if (error) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="max-w-2xl">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error}</AlertDescription>
@@ -113,41 +136,57 @@ export default function EditNewsContentPage({ params }: { params: { slug: string
                 <ArrowLeft />
               </Link>
             </Button>
-            <div>
-                <h1 className="font-headline text-2xl font-semibold tracking-tight">Edit Content</h1>
-                <p className="text-muted-foreground">{article?.title}</p>
-            </div>
+            <h1 className="font-headline text-2xl font-semibold tracking-tight">Article Settings</h1>
           </div>
-          <Button type="button" variant="outline" asChild>
-              <Link href={`/news/${slug}/settings`}>
-                <Settings className="mr-2 h-4 w-4" /> Article Settings
-              </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" asChild>
+                <Link href={`/news/${slug}/edit/content`}>
+                    <FileText className="mr-2 h-4 w-4" /> Edit Content
+                </Link>
+            </Button>
+            <Button type="button" variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Article
+            </Button>
+          </div>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>Article Body</CardTitle>
-            <CardDescription>Write and format the main content of your article here.</CardDescription>
+            <CardTitle>Article Details</CardTitle>
+            <CardDescription>Update the metadata for your article.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <FormField control={form.control} name="content" render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <RichTextEditor {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          <CardContent className="space-y-4">
+            <FormField control={form.control} name="title" render={({ field }) => (
+              <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="author" render={({ field }) => (
+              <FormItem><FormLabel>Author</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="imageUrl" render={({ field }) => (
+              <FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )} />
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              {isSaving ? 'Saving...' : 'Save Content'}
+              {isSaving ? 'Saving...' : 'Save Settings'}
             </Button>
           </CardFooter>
         </Card>
       </form>
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+                This will permanently delete the article "{article?.title}". This action cannot be undone.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Form>
   );
 }
-    

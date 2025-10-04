@@ -44,7 +44,7 @@ export default function CreateNewsArticlePage() {
     const result = await createNewsArticle(data);
     if (result.success && result.id) {
       toast({ title: 'Article Created!', description: 'Now you can write the content.' });
-      router.push(`/news/${result.id}/edit`);
+      router.push(`/news/${result.id}/edit/content`);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
       setIsSaving(false);
@@ -52,7 +52,7 @@ export default function CreateNewsArticlePage() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full">
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex items-center gap-4">
@@ -85,4 +85,3 @@ export default function CreateNewsArticlePage() {
     </div>
   );
 }
-    

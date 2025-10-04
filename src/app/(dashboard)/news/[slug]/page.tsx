@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, ArrowLeft, Pencil } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -63,9 +63,14 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-          <Button asChild>
+           <Button asChild variant="outline">
             <Link href={`/news/${article.id}/edit`}>
-              <Pencil className="mr-2 h-4 w-4" /> Edit
+              <Settings className="mr-2 h-4 w-4" /> Settings
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href={`/news/${article.id}/edit/content`}>
+              <Pencil className="mr-2 h-4 w-4" /> Edit Content
             </Link>
           </Button>
         </CardFooter>
@@ -73,5 +78,3 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
     </div>
   );
 }
-
-    
