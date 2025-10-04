@@ -57,7 +57,7 @@ export default function DashboardPage() {
               View application and server-side errors.
             </p>
             <Button asChild>
-              <Link href="/errors">View Errors <ArrowRight className="ml-2" /></Link>
+              <Link href="/root/errors">View Errors <ArrowRight className="ml-2" /></Link>
             </Button>
           </CardContent>
         </Card>

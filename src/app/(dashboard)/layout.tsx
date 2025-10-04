@@ -72,7 +72,7 @@ export default function DashboardLayout({
                             <Settings className="h-4 w-4" />
                             <span>Manage</span>
                         </Link>
-                        <Link href="/errors" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                        <Link href="/root/errors" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
                             <Bug className="h-4 w-4" />
                             <span>Error Logs</span>
                         </Link>
