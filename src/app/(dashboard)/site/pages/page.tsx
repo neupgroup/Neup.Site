@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getPages, type Page, deletePage } from '@/actions/editor/pages';
+import { getPages, type Page, deletePage, savePage } from '@/actions/editor/pages';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -24,15 +24,21 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Globe, Trash2, Pencil, Link as LinkIcon } from 'lucide-react';
+import { AlertCircle, Plus, Globe, Trash2, Pencil, Link as LinkIcon, Check, X, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 
 export default function PagesPage() {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageToDelete, setPageToDelete] = useState<string | null>(null);
+  
+  const [editingPageId, setEditingPageId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState('');
+  const [isSavingName, setIsSavingName] = useState(false);
+
 
   const { toast } = useToast();
 
@@ -66,6 +72,30 @@ export default function PagesPage() {
       toast({ variant: "destructive", title: "Error", description: result.error });
     }
     setPageToDelete(null);
+  }
+  
+  const handleEditClick = (page: Page) => {
+      setEditingPageId(page.id);
+      setEditingName(page.name || page.id);
+  }
+
+  const handleCancelEdit = () => {
+      setEditingPageId(null);
+      setEditingName('');
+  }
+
+  const handleSaveName = async () => {
+      if (!editingPageId || !editingName) return;
+      setIsSavingName(true);
+      const result = await savePage(editingPageId, { name: editingName });
+      if (result.success) {
+          toast({ title: "Name Updated", description: "The page name has been saved." });
+          setPages(pages.map(p => p.id === editingPageId ? {...p, name: editingName} : p));
+          handleCancelEdit();
+      } else {
+          toast({ variant: "destructive", title: "Error", description: result.error });
+      }
+      setIsSavingName(false);
   }
 
 
@@ -117,7 +147,26 @@ export default function PagesPage() {
             <Card key={page.id}>
               <CardHeader className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex-1">
-                      <CardTitle className="truncate">{page.name || page.id}</CardTitle>
+                      {editingPageId === page.id ? (
+                        <div className="flex items-center gap-2">
+                           <Input 
+                                value={editingName} 
+                                onChange={(e) => setEditingName(e.target.value)} 
+                                className="h-9 text-2xl font-semibold p-1"
+                            />
+                            <Button size="icon" className="h-9 w-9" onClick={handleSaveName} disabled={isSavingName}>
+                                {isSavingName ? <Loader2 className="animate-spin" /> : <Check />}
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-9 w-9" onClick={handleCancelEdit}><X /></Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                            <CardTitle className="truncate">{page.name || page.id}</CardTitle>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(page)}>
+                                <Pencil className="h-4 w-4" />
+                            </Button>
+                        </div>
+                      )}
                       <CardDescription>Last updated: {page.updatedAt ? new Date(page.updatedAt).toLocaleString() : 'N/A'}</CardDescription>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         <LinkIcon className="h-4 w-4 text-muted-foreground" />
