@@ -1,7 +1,7 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import {
   doc,
   setDoc,
@@ -26,6 +26,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
     if (!siteId) return { success: true, site: undefined };
 
     try {
+        const adminDb = getAdminDb();
         const siteRef = doc(adminDb, 'sites', siteId);
         const docSnap = await getDoc(siteRef);
 
@@ -79,6 +80,7 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
+    const adminDb = getAdminDb();
     const siteRef = doc(adminDb, 'sites', siteId);
     
     // Check if the document exists to determine if this is a create or update

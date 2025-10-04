@@ -1,5 +1,5 @@
 
-import { logErrorToFirestore } from '@/actions/logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {

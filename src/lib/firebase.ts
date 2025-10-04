@@ -1,8 +1,8 @@
 
 'use client';
 
-import { initializeFirebase } from '@/firebase';
+import { initializeFirebase } from '@/lib/firebase/index';
 
-const { db, auth } = initializeFirebase();
+const { firestore, auth } = initializeFirebase();
 
-export { db, auth };
+export { firestore, auth };

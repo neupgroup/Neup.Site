@@ -2,13 +2,15 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
  
 export async function setSiteIdCookie(siteId: string) {
   if (!siteId) {
     throw new Error('Site ID cannot be empty.');
   }
+
+  const adminDb = getAdminDb();
 
   // Reference to the document in the 'sites' collection
   const siteRef = adminDb.collection('sites').doc(siteId);
