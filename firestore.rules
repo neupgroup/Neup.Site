@@ -1,55 +1,81 @@
 /**
- * @fileoverview Firestore Security Rules for Neup.Sites.
+ * @fileOverview Firestore Security Rules for Neup.Sites.
  *
  * Core Philosophy:
- * This ruleset enforces a role-based access control model for `sites` and `pages`.
- * Access is determined by the `status` of a site and the `requiresPendingSite` attribute of a page,
- * eliminating the need for complex data validation.
+ * This ruleset prioritizes security and scalability using path-based authorization. It enforces a strict parent-child relationship between sites and pages.
  *
  * Data Structure:
- * - `/sites/{siteId}`: Stores site information, including status and type.
- * - `/sites/{siteId}/pages/{pageId}`: Stores page information, including content and a flag indicating whether the site must be in a pending state for access.
+ * - /sites/{siteId}: Contains site metadata.
+ * - /sites/{siteId}/pages/{pageId}: Contains page content associated with a specific site.
  *
  * Key Security Decisions:
- * - Access to a page at path `/onboarding` requires the site's status to be `pending`.
- * - Read and write access to `sites` and `pages` is generally open, but can be restricted based on the `requiresPendingSite` field on `pages` and the `status` field on `sites`.
- * - Denormalization is used to avoid `get()` calls by including all necessary authorization data directly within each document.
+ * - Access to sites and pages is restricted based on their parent-child relationship.
+ * - Pages are secured using path-based ownership tied to the site ID.
+ * - No external data lookups (`get()` calls) are used for authorization, ensuring efficient and scalable rules.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants access to sites based on their status.
+     * @description Controls access to site documents.
      * @path /sites/{siteId}
      * @allow get, list: if true;
-     * @allow create: if true;
-     * @allow update: if true;
-     * @allow delete: if true;
-     * @principle Allows anyone to create, read, update, and delete sites, regardless of authentication.
+     * @allow create: if request.resource.data.id == request.auth.uid;
+     * @allow update, delete: if isExistingOwner(siteId);
+     * @deny create: if request.resource.data.id != request.auth.uid;
+     * @deny update, delete: if !isExistingOwner(siteId);
+     * @principle Enforces document ownership for writes and allows public reads.
      */
     match /sites/{siteId} {
       allow get, list: if true;
-      allow create: if true;
-      allow update: if true;
-      allow delete: if true;
+      allow create: if request.resource.data.id == request.auth.uid;
+      allow update: if isExistingOwner(siteId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(siteId);
+
+      /**
+       * @description Controls access to page documents within a site.
+       * @path /sites/{siteId}/pages/{pageId}
+       * @allow get, list: if true;
+       * @allow create: if request.resource.data.siteId == siteId;
+       * @allow update, delete: if isExistingOwner(siteId);
+       * @deny create: if request.resource.data.siteId != siteId;
+       * @deny update, delete: if !isExistingOwner(siteId);
+       * @principle Enforces a parent-child relationship between sites and pages for authorization.
+       */
+      match /pages/{pageId} {
+        allow get, list: if true;
+        allow create: if request.resource.data.siteId == siteId;
+        allow update: if isExistingOwner(siteId) && request.resource.data.siteId == resource.data.siteId;
+        allow delete: if isExistingOwner(siteId);
+      }
     }
 
     /**
-     * @description Grants access to pages based on their association to a site and the site's status.
-     * @path /sites/{siteId}/pages/{pageId}
-     * @allow get: if true;
-     * @allow list: if true;
-     * @allow create: if true;
-     * @allow update: if true;
-     * @allow delete: if true;
-     * @principle Allows anyone to create, read, update, and delete pages.
+     * @description Fallback rule: deny all access to any other path.
+     * @path /databases/{database}/documents/{any}/{any}
+     * @allow get, list, create, update, delete: if false;
+     * @principle Provides a default deny-all policy for any unhandled paths.
      */
-    match /sites/{siteId}/pages/{pageId} {
-      allow get, list: if true;
-      allow create: if true;
-      allow update: if true;
-      allow delete: if true;
+    match /{path=**} {
+        allow get: if false;
+        allow list: if false;
+        allow create: if false;
+        allow update: if false;
+        allow delete: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(siteId) {
+      return isSignedIn() && isOwner(siteId) && resource != null;
     }
   }
 }
