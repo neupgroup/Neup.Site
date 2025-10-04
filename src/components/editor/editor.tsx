@@ -1,3 +1,4 @@
+
 'use client';
 import type { FC } from 'react';
 import { useState, useEffect, useCallback, DragEvent } from 'react';
@@ -6,7 +7,7 @@ import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
-import { logErrorToFirestore } from '@/actions/logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { savePage, createPage } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 import type { CanvasElementData } from '@/schemas/canvas';
@@ -773,3 +774,5 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 };
 
 export default Editor;
+
+    
