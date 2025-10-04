@@ -15,6 +15,7 @@ import { AlertCircle, Save, Loader2, Plus, Trash2, ArrowLeft } from 'lucide-reac
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
+import { logErrorToFirestore } from '@/lib/logging';
 
 export default function PrebuiltEditorPage() {
     const searchParams = useSearchParams();
@@ -46,7 +47,7 @@ export default function PrebuiltEditorPage() {
                 }
 
                 if (templatesResult.success && templatesResult.templates) {
-                    setTemplates(templatesResult.templates.filter(t => t.type === 'section'));
+                    setTemplates(templatesResult.templates.filter(t => t.type === 'section' && t.usableOn.includes('json')));
                 } else {
                     setError(prev => prev ? `${prev} And failed to load templates: ${templatesResult.error}` : templatesResult.error || 'Failed to load templates.');
                 }
@@ -61,8 +62,14 @@ export default function PrebuiltEditorPage() {
 
     const addSection = (template: Template) => {
         const jsonContent = template.content?.json;
-        if (!jsonContent || jsonContent.length === 0) {
+        if (!jsonContent || !Array.isArray(jsonContent) || jsonContent.length === 0) {
+            const errorMsg = `Template "${template.name}" (ID: ${template.id}) has no valid JSON content to add.`;
             toast({ variant: 'destructive', title: 'Empty Template', description: 'This template has no content to add.' });
+            logErrorToFirestore({
+                message: errorMsg,
+                source: 'PrebuiltEditorPage.addSection',
+                details: `Attempted to add a template where 'content.json' is missing, not an array, or empty.`,
+            });
             return;
         }
         
