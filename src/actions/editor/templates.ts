@@ -102,20 +102,22 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
       const data = doc.data();
       const createdAt = data.createdAt;
       
-      return {
+      // Explicitly create the object to ensure no complex types are passed through.
+      const plainTemplate: Template = {
         id: doc.id,
         siteId: data.siteId,
-        name: data.name,
-        description: data.description,
-        elements: data.elements,
-        reactComponent: data.reactComponent,
-        type: data.type,
+        name: data.name || '',
+        description: data.description || '',
+        elements: data.elements || [],
+        reactComponent: data.reactComponent || '',
+        type: data.type || 'section',
         method: data.method,
         source: data.source,
         code: data.code,
         createdBy: data.createdBy,
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-      } as Template;
+      };
+      return plainTemplate;
     });
     return { success: true, templates };
   } catch (error: any) {
