@@ -21,6 +21,7 @@ import { logErrorToFirestore } from '../logging';
 import type { CanvasElementData } from '@/lib/schemas';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { cookies } from 'next/headers';
+import { normalizeUrl } from '@/lib/url-utils';
 
 // Define a type for a Site, which can be extended as needed.
 export interface Site {
@@ -75,11 +76,22 @@ export async function saveSite(id: string, data: Partial<Omit<Site, 'id' | 'site
         return { success: false, error: 'Unauthorized.' };
     }
     
-    let dataToSave = { ...data, updatedAt: serverTimestamp() as any };
+    let dataToSave: any = { ...data, updatedAt: serverTimestamp() };
 
     // If elements are being updated, also regenerate the reactComponent
     if (data.elements) {
         dataToSave.reactComponent = await convertJsonToJsx(data.elements);
+    }
+
+    if (data.logoUrl) {
+      dataToSave.logoUrl = normalizeUrl(data.logoUrl);
+    }
+
+    if (data.socialProfiles) {
+      dataToSave.socialProfiles = data.socialProfiles.map(p => ({
+        ...p,
+        url: normalizeUrl(p.url)
+      }));
     }
     
     await setDoc(siteRef, dataToSave, { merge: true });

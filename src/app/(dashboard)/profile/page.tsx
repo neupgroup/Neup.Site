@@ -36,12 +36,6 @@ export const ProfileFormSchema = z.object({
 
 export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 
-
-const removeUrlPrefix = (url: string) => {
-    if (!url) return '';
-    return url.replace(/^https?:\/\//, '');
-}
-
 export default function ProfilePage() {
     const { setProfileName, setLogoUrl } = useProfile();
     const { toast } = useToast();
@@ -86,9 +80,9 @@ export default function ProfilePage() {
                 if (success && site) {
                     form.reset({
                         name: site.name,
-                        logoUrl: removeUrlPrefix(site.logoUrl || ''),
+                        logoUrl: site.logoUrl || '',
                         description: site.description || '',
-                        socialProfiles: (site.socialProfiles || []).map(p => ({...p, url: removeUrlPrefix(p.url)})),
+                        socialProfiles: site.socialProfiles || [],
                         contactEmail: site.contactEmail || [],
                         contactPhone: site.contactPhone || [],
                     });
@@ -137,7 +131,7 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-             <div className="w-full max-w-4xl mx-auto space-y-8">
+             <div class="w-full max-w-4xl mx-auto space-y-8">
                 <Skeleton className="h-12 w-1/3" />
                 <Skeleton className="h-64 w-full" />
                 <Skeleton className="h-64 w-full" />
@@ -163,7 +157,7 @@ export default function ProfilePage() {
                         <FormItem><FormLabel>Profile Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="logoUrl" render={({ field }) => (
-                        <FormItem><FormLabel>Logo URL</FormLabel><FormControl><Input {...field} placeholder="example.com/logo.png" /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Logo URL</FormLabel><FormControl><Input {...field} placeholder="https://example.com/logo.png" /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem>
@@ -191,7 +185,7 @@ export default function ProfilePage() {
                                 <FormItem className="flex-1"><FormLabel>Platform</FormLabel><FormControl><Input {...field} placeholder="e.g., Twitter" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name={`socialProfiles.${index}.url`} render={({ field }) => (
-                                <FormItem className="flex-1"><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="twitter.com/username" /></FormControl><FormMessage /></FormItem>
+                                <FormItem className="flex-1"><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="https://twitter.com/username" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <Button type="button" variant="destructive" size="icon" onClick={() => removeSocial(index)}><Trash2 /></Button>
                         </div>
