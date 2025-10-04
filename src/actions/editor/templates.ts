@@ -12,23 +12,17 @@ import {
   deleteDoc,
   serverTimestamp,
   Timestamp,
-  query,
-  where
+  query
 } from 'firebase/firestore';
 import type { Template } from '@/lib/schemas';
 import { logErrorToFirestore } from '../logging';
-import { cookies } from 'next/headers';
 
 /**
  * Saves or updates a template in Firestore.
  */
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' | 'siteId'>, id?: string) {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
-
   try {
     let dataToSave: any = { 
-        siteId,
         name: template.name,
         description: template.description || '',
         type: template.type || 'section',
@@ -40,10 +34,6 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
       
     if (id) {
       const templateRef = doc(adminDb, 'templates', id);
-      const templateSnap = await getDoc(templateRef);
-      if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
-          return { success: false, error: 'Unauthorized.' };
-      }
       await setDoc(templateRef, dataToSave, { merge: true });
       return { success: true, id };
     } else {
@@ -63,14 +53,11 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
 
 
 /**
- * Fetches all templates from Firestore for the current siteId.
+ * Fetches all templates from Firestore.
  */
 export async function getTemplates(): Promise<{ success: boolean, templates?: Template[], error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
-
   try {
-    const q = query(collection(adminDb, 'templates'), where('siteId', '==', siteId));
+    const q = query(collection(adminDb, 'templates'));
     const querySnapshot = await getDocs(q);
     const templates = querySnapshot.docs.map(doc => {
       const data = doc.data();
@@ -78,7 +65,6 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
       
       const plainTemplate: Template = {
         id: doc.id,
-        siteId: data.siteId,
         name: data.name || '',
         description: data.description || '',
         type: data.type || 'section',
@@ -105,9 +91,6 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
  * Fetches a single template from Firestore by its ID.
  */
 export async function getTemplate(id: string): Promise<{ success: boolean, template?: Template, error?: string }> {
-    const siteId = cookies().get('siteId')?.value;
-    if (!siteId) return { success: false, error: 'Site ID not found.' };
-
     try {
         const templateRef = doc(adminDb, 'templates', id);
         const docSnap = await getDoc(templateRef);
@@ -117,15 +100,10 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
         }
         
         const data = docSnap.data();
-        if (data.siteId !== siteId) {
-            return { success: false, error: 'Unauthorized.' };
-        }
-
         const createdAt = data.createdAt;
         
         const template: Template = { 
             id: docSnap.id, 
-            siteId: data.siteId,
             name: data.name || '',
             description: data.description || '',
             type: data.type || 'section',
@@ -151,15 +129,8 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
  * Deletes a template from Firestore by its ID.
  */
 export async function deleteTemplate(id: string) {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
-  
   try {
     const templateRef = doc(adminDb, 'templates', id);
-    const templateSnap = await getDoc(templateRef);
-    if (!templateSnap.exists() || templateSnap.data().siteId !== siteId) {
-        return { success: false, error: 'Unauthorized.' };
-    }
     await deleteDoc(templateRef);
     return { success: true };
   } catch (error: any) {

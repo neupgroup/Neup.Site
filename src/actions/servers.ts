@@ -16,11 +16,9 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { logErrorToFirestore } from './logging';
-import { cookies } from 'next/headers';
 
 export interface Server {
   id: string;
-  siteId: string;
   name: string;
   publicIp: string;
   privateIp?: string; // Not fetched for display
@@ -32,14 +30,10 @@ export interface Server {
 /**
  * Creates a new server.
  */
-export async function createServer(serverData: Omit<Server, 'id' | 'createdAt' | 'siteId'>) {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
-
+export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>) {
   try {
     const docRef = await addDoc(collection(adminDb, 'servers'), {
       ...serverData,
-      siteId,
       createdAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
@@ -54,14 +48,11 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdAt' |
 }
 
 /**
- * Fetches all servers for the current siteId, excluding private fields.
+ * Fetches all servers, excluding private fields.
  */
 export async function getServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
-
   try {
-    const q = query(collection(adminDb, 'servers'), where('siteId', '==', siteId));
+    const q = query(collection(adminDb, 'servers'));
     const querySnapshot = await getDocs(q);
     const servers = querySnapshot.docs.map(doc => {
         const data = doc.data();
@@ -69,7 +60,6 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
         // Exclude privateIp and privateKey for security
         return {
             id: doc.id,
-            siteId: data.siteId,
             name: data.name,
             publicIp: data.publicIp,
             publicKey: data.publicKey,
@@ -91,14 +81,11 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  * Fetches a single server by its ID, excluding private fields.
  */
 export async function getServer(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
-    const siteId = cookies().get('siteId')?.value;
-    if (!siteId) return { success: false, error: 'Site ID not found.' };
-    
     try {
         const serverRef = doc(adminDb, 'servers', id);
         const docSnap = await getDoc(serverRef);
 
-        if (!docSnap.exists() || docSnap.data().siteId !== siteId) {
+        if (!docSnap.exists()) {
             return { success: false, error: 'Server not found or unauthorized.' };
         }
         
@@ -107,7 +94,6 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
         // Exclude privateIp and privateKey for security
         const server: Server = { 
             id: docSnap.id, 
-            siteId: data.siteId,
             name: data.name,
             publicIp: data.publicIp,
             publicKey: data.publicKey,
@@ -126,16 +112,9 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
 /**
  * Updates a server. Allows overriding privateKey and privateIp without fetching them.
  */
-export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt' | 'siteId'>>) {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
-
+export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt'>>) {
   try {
     const serverRef = doc(adminDb, 'servers', id);
-    const serverSnap = await getDoc(serverRef);
-    if (!serverSnap.exists() || serverSnap.data().siteId !== siteId) {
-        return { success: false, error: 'Unauthorized' };
-    }
 
     const dataToUpdate: Record<string, any> = {
         name: serverData.name,
@@ -166,17 +145,8 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
  * Deletes a server.
  */
 export async function deleteServer(id: string) {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
-  
   try {
     const serverRef = doc(adminDb, 'servers', id);
-    const serverSnap = await getDoc(serverRef);
-
-    if (!serverSnap.exists() || serverSnap.data().siteId !== siteId) {
-        return { success: false, error: 'Unauthorized' };
-    }
-    
     await deleteDoc(serverRef);
     return { success: true };
   } catch (error: any) {
