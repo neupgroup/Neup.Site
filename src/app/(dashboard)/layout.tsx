@@ -11,6 +11,7 @@ import {
   Link as LinkIcon,
   Database,
   Server,
+  Layers,
 } from 'lucide-react';
 
 export default function DashboardLayout({
@@ -54,6 +55,10 @@ export default function DashboardLayout({
                          <Link href="/site/editor/dragger" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
                             <LayoutTemplate className="h-4 w-4" />
                             <span>Site Editor</span>
+                        </Link>
+                         <Link href="/site/sections" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Layers className="h-4 w-4" />
+                            <span>Sections</span>
                         </Link>
                          <Link href="/root/templates" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
                             <LayoutTemplate className="h-4 w-4" />
