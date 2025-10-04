@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,7 +12,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -21,6 +19,7 @@ import { createNewsArticle } from '@/actions/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -90,7 +89,13 @@ export default function CreateNewsArticlePage() {
               <FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="content" render={({ field }) => (
-              <FormItem><FormLabel>Content (Markdown supported)</FormLabel><FormControl><Textarea {...field} rows={15} /></FormControl><FormMessage /></FormItem>
+              <FormItem>
+                <FormLabel>Content</FormLabel>
+                <FormControl>
+                    <RichTextEditor {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )} />
           </CardContent>
           <CardFooter>

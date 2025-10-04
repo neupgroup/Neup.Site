@@ -60,8 +60,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
           </CardDescription>
         </CardHeader>
         <CardContent className="prose prose-lg dark:prose-invert max-w-none">
-          {/* This is a simplified markdown-to-html. A real app would use a library like 'marked' or 'react-markdown'. */}
-          <div dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br />') }} />
+          <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
           <Button asChild>
