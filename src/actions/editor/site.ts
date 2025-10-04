@@ -25,6 +25,12 @@ import { cookies } from 'next/headers';
 export interface Site {
   id: string;
   siteId: string;
+  name: string;
+  logoUrl?: string;
+  description?: string;
+  socialProfiles?: { platformName: string; url: string; }[];
+  contactEmail?: { value: string; }[];
+  contactPhone?: { value: string; }[];
   elements: CanvasElementData[];
   reactComponent?: string;
   type: 'editor' | 'ai' | 'html' | 'template';
@@ -40,6 +46,7 @@ export async function createSite(type: Site['type'] = 'editor') {
   try {
     const docRef = await addDoc(collection(db, 'sites'), {
       siteId: siteId,
+      name: 'New Site',
       elements: [],
       type: type,
       createdAt: serverTimestamp(),
@@ -56,7 +63,7 @@ export async function createSite(type: Site['type'] = 'editor') {
   }
 }
 
-export async function saveSite(id: string, elements: CanvasElementData[]) {
+export async function saveSite(id: string, data: Partial<Omit<Site, 'id' | 'siteId'>>) {
   const siteId = cookies().get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
@@ -67,11 +74,11 @@ export async function saveSite(id: string, elements: CanvasElementData[]) {
         return { success: false, error: 'Unauthorized.' };
     }
     
-    let dataToSave: Partial<Site> = { elements, updatedAt: serverTimestamp() as any };
+    let dataToSave = { ...data, updatedAt: serverTimestamp() as any };
 
     // If elements are being updated, also regenerate the reactComponent
-    if (elements) {
-        dataToSave.reactComponent = await convertJsonToJsx(elements);
+    if (data.elements) {
+        dataToSave.reactComponent = await convertJsonToJsx(data.elements);
     }
     
     await setDoc(siteRef, dataToSave, { merge: true });
@@ -110,6 +117,12 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
         const site: Site = {
           id: docSnap.id,
           siteId: data.siteId,
+          name: data.name || '',
+          logoUrl: data.logoUrl,
+          description: data.description,
+          socialProfiles: data.socialProfiles || [],
+          contactEmail: data.contactEmail || [],
+          contactPhone: data.contactPhone || [],
           elements: data.elements || [],
           reactComponent: data.reactComponent,
           type: data.type || 'editor',
@@ -147,6 +160,7 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
       return {
         id: doc.id,
         siteId: data.siteId,
+        name: data.name || '',
         elements: data.elements,
         reactComponent: data.reactComponent,
         type: data.type || 'editor',

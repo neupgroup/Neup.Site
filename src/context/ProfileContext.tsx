@@ -2,7 +2,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { getProfile } from '@/actions/profile';
+import { getSites } from '@/actions/editor/site';
 
 const SESSION_STORAGE_KEY = 'profileName';
 
@@ -26,11 +26,13 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         setProfileName(cachedName);
         setLoading(false);
       } else {
-        const { success, profile } = await getProfile();
-        const finalName = profile?.name?.trim() ? profile.name : 'Neup.Sites';
+        const { success, sites } = await getSites();
+        // Assuming we use the first site for the profile name
+        const site = sites && sites[0];
+        const finalName = site?.name?.trim() ? site.name : 'Neup.Sites';
         setProfileName(finalName);
-        if (success && profile?.name) {
-            sessionStorage.setItem(SESSION_STORAGE_KEY, profile.name);
+        if (success && site?.name) {
+            sessionStorage.setItem(SESSION_STORAGE_KEY, site.name);
         }
         setLoading(false);
       }

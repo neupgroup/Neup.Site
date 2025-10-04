@@ -4,8 +4,8 @@
 import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ProfileFormSchema, type Profile } from '@/lib/profile-schema';
-import { getProfile, saveProfile } from '@/actions/profile';
+import { z } from 'zod';
+import { getSite, saveSite, type Site } from '@/actions/editor/site';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,11 +14,27 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Loader2, Twitter, Github, Linkedin, Mail, Phone, Plus, Trash2 } from 'lucide-react';
+import { Save, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { remove } from 'firebase/database';
+import { useSearchParams } from 'next/navigation';
+
+export const SocialProfileSchema = z.object({
+  platformName: z.string().min(1, 'Platform name is required'),
+  url: z.string().min(1, 'URL is required'),
+});
+
+export const ProfileFormSchema = z.object({
+  name: z.string().min(1, 'Profile Name is required'),
+  logoUrl: z.string().optional(),
+  description: z.string().optional(),
+  socialProfiles: z.array(SocialProfileSchema).max(9, 'You can add a maximum of 9 social profiles.'),
+  contactEmail: z.array(z.object({ value: z.string().email() })).max(9, 'You can add a maximum of 9 emails.'),
+  contactPhone: z.array(z.object({ value: z.string() })).max(9, 'You can add a maximum of 9 phone numbers.'),
+});
+
+export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 
 
 const removeUrlPrefix = (url: string) => {
@@ -30,8 +46,12 @@ export default function ProfilePage() {
     const { setProfileName } = useProfile();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
+    const searchParams = useSearchParams();
+    // A default site ID should be provided or inferred from user's context
+    // For now, let's assume it might come from a URL param or a default value
+    const siteId = searchParams.get('id') || 'default-site-id';
 
-    const form = useForm<Profile>({
+    const form = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileFormSchema),
         defaultValues: {
             name: '',
@@ -58,22 +78,46 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const fetchProfileData = async () => {
+            if (!siteId) {
+                toast({ variant: 'destructive', title: 'Error', description: 'No site ID provided.' });
+                setLoading(false);
+                return;
+            }
             setLoading(true);
-            const { success, profile } = await getProfile();
-            if (success && profile) {
+            const { success, site } = await getSite(siteId);
+            if (success && site) {
                 form.reset({
-                    ...profile,
-                    logoUrl: removeUrlPrefix(profile.logoUrl || ''),
-                    socialProfiles: profile.socialProfiles.map(p => ({...p, url: removeUrlPrefix(p.url)}))
+                    name: site.name,
+                    logoUrl: removeUrlPrefix(site.logoUrl || ''),
+                    description: site.description || '',
+                    socialProfiles: (site.socialProfiles || []).map(p => ({...p, url: removeUrlPrefix(p.url)})),
+                    contactEmail: site.contactEmail || [],
+                    contactPhone: site.contactPhone || [],
                 });
+            } else {
+                 toast({ variant: 'destructive', title: 'Error', description: 'Could not load site data.' });
             }
             setLoading(false);
         };
         fetchProfileData();
-    }, [form]);
+    }, [form, siteId, toast]);
 
-    const onSubmit = async (data: Profile) => {
-        const result = await saveProfile(data);
+    const onSubmit = async (data: ProfileFormData) => {
+        if (!siteId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'No site ID to save to.' });
+            return;
+        }
+
+        // We can only save the fields that are part of the Site interface
+        const result = await saveSite(siteId, {
+            name: data.name,
+            logoUrl: data.logoUrl,
+            description: data.description,
+            socialProfiles: data.socialProfiles,
+            contactEmail: data.contactEmail,
+            contactPhone: data.contactPhone
+        });
+
         if (result.success) {
             toast({ title: 'Profile Saved', description: 'Your profile information has been updated.' });
             setProfileName(data.name);
@@ -165,7 +209,6 @@ export default function ProfilePage() {
                         <Label>Contact Emails</Label>
                         {emailFields.map((field, index) => (
                             <div key={field.id} className="flex items-center gap-2">
-                                <Mail className="text-muted-foreground" />
                                 <FormField control={form.control} name={`contactEmail.${index}.value`} render={({ field }) => (
                                     <FormItem className="flex-1"><FormControl><Input type="email" {...field} placeholder="you@example.com" /></FormControl><FormMessage /></FormItem>
                                 )} />
@@ -178,7 +221,6 @@ export default function ProfilePage() {
                         <Label>Contact Phone Numbers</Label>
                         {phoneFields.map((field, index) => (
                            <div key={field.id} className="flex items-center gap-2">
-                                <Phone className="text-muted-foreground" />
                                  <FormField control={form.control} name={`contactPhone.${index}.value`} render={({ field }) => (
                                     <FormItem className="flex-1"><FormControl><Input type="tel" {...field} placeholder="+1 (555) 123-4567" /></FormControl><FormMessage /></FormItem>
                                 )} />

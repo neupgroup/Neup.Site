@@ -19,6 +19,42 @@
           "description": "URL of the website's logo image.",
           "format": "uri"
         },
+        "description": {
+            "type": "string",
+            "description": "A short description of the site."
+        },
+        "socialProfiles": {
+            "type": "array",
+            "description": "A list of social media profiles.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "platformName": { "type": "string" },
+                    "url": { "type": "string", "format": "uri" }
+                },
+                "required": ["platformName", "url"]
+            }
+        },
+        "contactEmail": {
+            "type": "array",
+            "description": "A list of contact emails.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": { "type": "string", "format": "email" }
+                }
+            }
+        },
+        "contactPhone": {
+            "type": "array",
+            "description": "A list of contact phone numbers.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": { "type": "string" }
+                }
+            }
+        },
         "status": {
           "type": "string",
           "description": "The current status of the site (e.g., pending, active, inactive).",
