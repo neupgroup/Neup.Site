@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -9,59 +9,72 @@ export function ProgressBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const inProgressRef = useRef(false);
+  const targetRef = useRef<string | null>(null);
+  const doneTimerRef = useRef<number | null>(null);
+
   useEffect(() => {
     NProgress.configure({ showSpinner: false });
 
-    // Track clicks on all internal links
     const handleLinkClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest('a');
+      if (e.button && e.button !== 0) return; // only left click
 
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a') as HTMLAnchorElement | null;
       if (!anchor) return;
 
       const href = anchor.getAttribute('href');
       const targetAttr = anchor.getAttribute('target');
-
-      // Ignore external links
-      if (!href || href.startsWith('http')) return;
-
-      // Ignore links meant to open in new tab
+      if (!href) return;
+      if (href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
       if (targetAttr === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
 
-      // Ignore hash-only links (anchors on same page)
-      const currentUrl = window.location.pathname + window.location.search;
-      const newUrl = href.startsWith('#') ? currentUrl : href;
+      let url: URL;
+      try {
+        url = new URL(href, window.location.href);
+      } catch {
+        return;
+      }
+      if (url.origin !== window.location.origin) return;
 
-      if (newUrl === currentUrl) return;
+      const targetFull = `${url.pathname}${url.search}`;
+      const currentFull = `${window.location.pathname}${window.location.search}`;
+      if (href.startsWith('#') || targetFull === currentFull) return;
 
-      // Restart NProgress cleanly on each click
-      NProgress.done(true); // clear any running one
-      NProgress.start();
+      // If NProgress is already running for a different target, reset to 0
+      if (inProgressRef.current && targetRef.current !== targetFull) {
+        NProgress.set(0); // instant reset to 0%
+        targetRef.current = targetFull;
+        NProgress.start();
+      }
+
+      // If not running, start normally
+      if (!inProgressRef.current) {
+        inProgressRef.current = true;
+        targetRef.current = targetFull;
+        NProgress.set(0.08);
+        NProgress.start();
+      }
     };
 
     document.addEventListener('click', handleLinkClick);
     return () => {
       document.removeEventListener('click', handleLinkClick);
+      if (doneTimerRef.current) clearTimeout(doneTimerRef.current);
     };
   }, []);
 
-  // When the route actually changes, finish the progress bar
+  // Finish the progress bar on route change
   useEffect(() => {
-    NProgress.done();
+    if (doneTimerRef.current) clearTimeout(doneTimerRef.current);
+
+    doneTimerRef.current = window.setTimeout(() => {
+      NProgress.done();
+      inProgressRef.current = false;
+      targetRef.current = null;
+      doneTimerRef.current = null;
+    }, 80); // slight debounce
   }, [pathname, searchParams]);
 
   return null;
-}
-
-
-// Helper to check if the href is the same as current URL (pathname + search)
-function isSameURL(href: string, currentPathname: string, currentSearch: string): boolean {
-  try {
-    const url = new URL(href, window.location.origin);
-    const currentFull = `${currentPathname}${currentSearch ? `?${currentSearch}` : ''}`;
-    const targetFull = `${url.pathname}${url.search}`;
-    return targetFull === currentFull;
-  } catch {
-    return false;
-  }
 }
