@@ -95,7 +95,16 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    function({ addUtilities }: { addUtilities: (utilities: any) => void }) {
+      addUtilities({
+        '.text-muted-foreground': {
+          '@apply font-medium': {},
+        },
+      });
+    },
+],
 } satisfies Config;
 
 export default config;
