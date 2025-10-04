@@ -51,7 +51,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
         <CardHeader>
           {article.imageUrl && (
             <div className="relative w-full h-64 mb-4 rounded-t-lg overflow-hidden">
-                <Image src={article.imageUrl} alt={article.title} layout="fill" objectFit="cover" />
+                <Image src={article.imageUrl} alt={article.title} fill objectFit="cover" />
             </div>
           )}
           <CardTitle className="text-4xl font-headline">{article.title}</CardTitle>

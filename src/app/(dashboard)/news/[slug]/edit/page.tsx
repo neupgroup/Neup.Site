@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Save, ArrowLeft, Loader2, AlertCircle, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getNewsArticleById, updateNewsArticle, type NewsArticle } from '@/actions/news';
