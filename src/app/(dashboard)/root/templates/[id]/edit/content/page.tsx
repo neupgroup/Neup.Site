@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2, AlertCircle, Wand2, Sparkles } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 
-export default function EditContentPage({ params }: { params: { id: string } }) {
+export default function EditContentPage({ params: { id } }: { params: { id: string } }) {
   const [template, setTemplate] = useState<Template | null>(null);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
   useEffect(() => {
     const fetchTemplate = async () => {
       setLoading(true);
-      const result = await getTemplate(params.id);
+      const result = await getTemplate(id);
       if (result.success && result.template) {
         setTemplate(result.template);
         if (result.template.method === 'codebase' && result.template.elements) {
@@ -41,7 +41,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
       setLoading(false);
     };
     fetchTemplate();
-  }, [params.id]);
+  }, [id]);
 
   const handleSave = async () => {
     if (!template) return;
@@ -55,7 +55,7 @@ export default function EditContentPage({ params }: { params: { id: string } }) 
       method: template.method,
       source: template.source,
       code: code,
-    }, params.id);
+    }, id);
 
     if (result.success) {
       toast({ title: 'Content Saved', description: 'The template content has been updated.' });

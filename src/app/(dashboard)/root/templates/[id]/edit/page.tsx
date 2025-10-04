@@ -4,10 +4,10 @@
 import { useEffect } from 'react';
 import { redirect } from 'next/navigation';
 
-export default function EditTemplatePage({ params }: { params: { id: string } }) {
+export default function EditTemplatePage({ params: { id } }: { params: { id: string } }) {
   useEffect(() => {
-    redirect(`/root/templates/${params.id}/edit/basics`);
-  }, [params.id]);
+    redirect(`/root/templates/${id}/edit/basics`);
+  }, [id]);
 
   return null;
 }

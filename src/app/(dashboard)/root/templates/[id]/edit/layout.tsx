@@ -11,7 +11,7 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function EditTemplateLayout({
   children,
-  params,
+  params: { id },
 }: {
   children: ReactNode;
   params: { id: string };
@@ -22,7 +22,7 @@ export default function EditTemplateLayout({
   return (
     <div className="w-full max-w-4xl space-y-6">
        <Button asChild variant="ghost" className="-ml-4">
-          <Link href={`/root/templates/${params.id}`}>
+          <Link href={`/root/templates/${id}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Template
           </Link>
@@ -37,10 +37,10 @@ export default function EditTemplateLayout({
             <Tabs value={activeTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="basics" asChild>
-                       <Link href={`/root/templates/${params.id}/edit/basics`}>Basics</Link>
+                       <Link href={`/root/templates/${id}/edit/basics`}>Basics</Link>
                     </TabsTrigger>
                     <TabsTrigger value="content" asChild>
-                        <Link href={`/root/templates/${params.id}/edit/content`}>Content</Link>
+                        <Link href={`/root/templates/${id}/edit/content`}>Content</Link>
                     </TabsTrigger>
                 </TabsList>
             </Tabs>

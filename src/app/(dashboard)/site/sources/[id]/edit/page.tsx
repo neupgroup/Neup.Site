@@ -38,8 +38,7 @@ type FormValues = {
   }[];
 };
 
-export default function EditSourcePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function EditSourcePage({ params: { id } }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   

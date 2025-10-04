@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export default function ViewTemplatePage({ params }: { params: { id: string } }) {
+export default function ViewTemplatePage({ params: { id } }: { params: { id: string } }) {
   const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export default function ViewTemplatePage({ params }: { params: { id: string } })
   useEffect(() => {
     const fetchTemplate = async () => {
       setLoading(true);
-      const result = await getTemplate(params.id);
+      const result = await getTemplate(id);
       if (result.success && result.template) {
         setTemplate(result.template);
       } else {
@@ -33,11 +33,11 @@ export default function ViewTemplatePage({ params }: { params: { id: string } })
       setLoading(false);
     };
     fetchTemplate();
-  }, [params.id]);
+  }, [id]);
 
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
-    const result = await deleteTemplate(params.id);
+    const result = await deleteTemplate(id);
     if (result.success) {
       toast({ title: 'Template Deleted', description: 'The template has been permanently removed.' });
       router.push('/root/templates');

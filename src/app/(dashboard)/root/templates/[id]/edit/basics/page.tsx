@@ -31,7 +31,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const NO_SOURCE_VALUE = '--none--';
 
-export default function EditBasicsPage({ params }: { params: { id: string } }) {
+export default function EditBasicsPage({ params: { id } }: { params: { id: string } }) {
   const [template, setTemplate] = useState<Template | null>(null);
   const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,7 @@ export default function EditBasicsPage({ params }: { params: { id: string } }) {
     const fetchData = async () => {
       setLoading(true);
       const [templateResult, sourcesResult] = await Promise.all([
-        getTemplate(params.id),
+        getTemplate(id),
         getSources(),
       ]);
 
@@ -78,13 +78,13 @@ export default function EditBasicsPage({ params }: { params: { id: string } }) {
     };
 
     fetchData();
-  }, [params.id, form]);
+  }, [id, form]);
 
   const onSubmit = async (data: FormValues) => {
     const result = await saveTemplate({
       ...data,
       source: data.source === NO_SOURCE_VALUE ? '' : data.source,
-    }, params.id);
+    }, id);
     
     if (result.success) {
       toast({ title: 'Template Updated', description: 'The basic information has been saved.' });
