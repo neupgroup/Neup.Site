@@ -59,7 +59,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
               <Link
                 href="/"
                 className={cn(
-                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                   pathname === '/' && 'bg-muted'
                 )}
               >
@@ -70,7 +70,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
               <Link
                 href="/profile"
                 className={cn(
-                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                   pathname.startsWith('/profile') && 'bg-muted'
                 )}
               >
@@ -86,7 +86,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/site/pages"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/pages') && 'bg-muted'
                   )}
                 >
@@ -96,7 +96,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/site/paths"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/paths') && 'bg-muted'
                   )}
                 >
@@ -106,7 +106,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/site/sources"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/sources') && 'bg-muted'
                   )}
                 >
@@ -116,7 +116,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/site/theme"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/theme') && 'bg-muted'
                   )}
                 >
@@ -126,7 +126,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                  <Link
                   href="/site/storage"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/storage') && 'bg-muted'
                   )}
                 >
@@ -136,7 +136,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                  <Link
                   href="/site/billing"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/billing') && 'bg-muted'
                   )}
                 >
@@ -146,7 +146,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/site/editor/dragger"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/editor') && 'bg-muted'
                   )}
                 >
@@ -156,7 +156,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/site/sections"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/site/sections') && 'bg-muted'
                   )}
                 >
@@ -173,7 +173,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/root/pages"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/root/pages') && 'bg-muted'
                   )}
                 >
@@ -183,7 +183,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/root/templates"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/root/templates') && 'bg-muted'
                   )}
                 >
@@ -193,7 +193,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/root/servers"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/root/servers') && 'bg-muted'
                   )}
                 >
@@ -203,7 +203,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                  <Link
                   href="/root/storage"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/root/storage') && 'bg-muted'
                   )}
                 >
@@ -213,7 +213,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                  <Link
                   href="/root/billing"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/root/billing') && 'bg-muted'
                   )}
                 >
@@ -223,7 +223,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/root/modules"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/root/modules') && 'bg-muted'
                   )}
                 >
@@ -233,7 +233,7 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 <Link
                   href="/root/errors"
                   className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
                     pathname.startsWith('/root/errors') && 'bg-muted'
                   )}
                 >
