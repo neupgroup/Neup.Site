@@ -2,7 +2,7 @@
 'use server';
 
 import { adminDb } from '@/lib/firebase-admin';
-import { collection, getDocs, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { getDocs, query, orderBy, limit, Timestamp } from 'firebase-admin/firestore';
 
 export interface ErrorLog {
   id: string;
@@ -14,7 +14,7 @@ export interface ErrorLog {
 
 export async function getErrorLogsAction(): Promise<{ logs?: ErrorLog[], error?: string }> {
     try {
-        const errorsCollection = collection(adminDb, 'errors');
+        const errorsCollection = adminDb.collection('errors');
         const q = query(errorsCollection, orderBy('timestamp', 'desc'), limit(50));
         const errorSnapshot = await getDocs(q);
         const errorsList = errorSnapshot.docs.map(doc => {
