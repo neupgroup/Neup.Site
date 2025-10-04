@@ -13,6 +13,7 @@ import {
   Server,
   Layers,
   Puzzle,
+  Palette,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -73,6 +74,10 @@ function Dashboard({
                             <Link href="/site/sources" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/sources') ? 'bg-muted' : '')}>
                                 <Database className="h-4 w-4" />
                                 <span>Sources</span>
+                            </Link>
+                            <Link href="/site/theme" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/theme') ? 'bg-muted' : '')}>
+                                <Palette className="h-4 w-4" />
+                                <span>Theme</span>
                             </Link>
                             <Link href="/site/editor/dragger" className={cn("flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted", pathname.startsWith('/site/editor') ? 'bg-muted' : '')}>
                                 <LayoutTemplate className="h-4 w-4" />

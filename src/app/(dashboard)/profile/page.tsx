@@ -7,14 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/hooks/use-toast';
-import { Sun, Moon, Save, Twitter, Github, Linkedin, Mail, Phone } from 'lucide-react';
+import { Save, Twitter, Github, Linkedin, Mail, Phone } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 
 export default function ProfilePage() {
   const { profileName, setProfileName } = useProfile();
-  const [theme, setTheme] = useState('light');
   const [description, setDescription] = useState('Your Site Description');
   const [logoUrl, setLogoUrl] = useState('');
 
@@ -33,56 +31,13 @@ export default function ProfilePage() {
     });
   };
 
-  const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme);
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(newTheme);
-    toast({
-        title: 'Theme Changed',
-        description: `Switched to ${newTheme} mode.`
-    })
-  }
-
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header>
         <h1 className="text-3xl font-bold font-headline">Profile & Settings</h1>
-        <p className="text-muted-foreground">Manage your site's appearance and basic information.</p>
+        <p className="text-muted-foreground">Manage your site's basic information.</p>
       </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Appearance</CardTitle>
-          <CardDescription>Choose the look and feel of your dashboard.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup value={theme} onValueChange={handleThemeChange}>
-            <div className="flex items-center space-x-4">
-              <Label htmlFor="light-theme" className="flex-1 p-4 border rounded-md cursor-pointer hover:border-primary has-[input:checked]:border-primary">
-                <div className="flex items-center gap-4">
-                    <Sun className="h-6 w-6" />
-                    <div>
-                        <p className="font-semibold">Light Mode</p>
-                        <p className="text-sm text-muted-foreground">For a bright and clean interface.</p>
-                    </div>
-                </div>
-                <RadioGroupItem value="light" id="light-theme" className="sr-only" />
-              </Label>
-              <Label htmlFor="dark-theme" className="flex-1 p-4 border rounded-md cursor-pointer hover:border-primary has-[input:checked]:border-primary">
-                <div className="flex items-center gap-4">
-                    <Moon className="h-6 w-6" />
-                    <div>
-                        <p className="font-semibold">Dark Mode</p>
-                        <p className="text-sm text-muted-foreground">For a focused, low-light experience.</p>
-                    </div>
-                </div>
-                 <RadioGroupItem value="dark" id="dark-theme" className="sr-only" />
-              </Label>
-            </div>
-          </RadioGroup>
-        </CardContent>
-      </Card>
-      
       <Card>
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>
