@@ -12,13 +12,22 @@ import {
   Database,
   Server,
   Layers,
+  ChevronDown,
 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isRootSection = pathname.startsWith('/root');
+  const [isRootOpen, setIsRootOpen] = useState(isRootSection);
+
   return (
       <div className="min-h-screen w-full bg-background text-foreground">
           <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background shadow">
@@ -60,18 +69,29 @@ export default function DashboardLayout({
                             <Layers className="h-4 w-4" />
                             <span>Sections</span>
                         </Link>
-                         <Link href="/root/templates" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <LayoutTemplate className="h-4 w-4" />
-                            <span>Templates</span>
-                        </Link>
-                        <Link href="/root/servers" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <Server className="h-4 w-4" />
-                            <span>Servers</span>
-                        </Link>
-                        <Link href="/root/errors" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <Bug className="h-4 w-4" />
-                            <span>Error Logs</span>
-                        </Link>
+                        <Collapsible open={isRootOpen} onOpenChange={setIsRootOpen}>
+                          <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <div className="flex items-center gap-2">
+                              <Settings className="h-4 w-4" />
+                              <span>Root</span>
+                            </div>
+                            <ChevronDown className={cn("h-4 w-4 transition-transform", isRootOpen && "rotate-180")} />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="space-y-1 py-1 pl-7">
+                             <Link href="/root/templates" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <LayoutTemplate className="h-4 w-4" />
+                                <span>Templates</span>
+                            </Link>
+                            <Link href="/root/servers" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <Server className="h-4 w-4" />
+                                <span>Servers</span>
+                            </Link>
+                            <Link href="/root/errors" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                                <Bug className="h-4 w-4" />
+                                <span>Error Logs</span>
+                            </Link>
+                          </CollapsibleContent>
+                        </Collapsible>
                       </nav>
                   </div>
               </aside>
