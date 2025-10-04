@@ -21,12 +21,12 @@ const allPossibleModules = [
     { id: 'payment', name: 'Payment Processing Module', description: 'Handles payments and subscriptions.' },
 ];
 
-export default function ModuleDefinitionsPage() {
+export default function ModulesPage() {
     
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Module Definitions</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Root Modules</h1>
       </header>
       <Card>
         <CardHeader>
