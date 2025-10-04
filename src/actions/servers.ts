@@ -14,7 +14,7 @@ import {
   serverTimestamp,
   setDoc,
   Timestamp
-} from 'firebase/firestore';
+} from 'firebase-admin/firestore';
 import { logErrorToFirestore } from './logging';
 
 export interface Server {
@@ -32,7 +32,7 @@ export interface Server {
  */
 export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>) {
   try {
-    const docRef = await addDoc(collection(adminDb, 'servers'), {
+    const docRef = await adminDb.collection('servers').add({
       ...serverData,
       createdAt: serverTimestamp(),
     });
@@ -52,8 +52,8 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>)
  */
 export async function getServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
   try {
-    const q = query(collection(adminDb, 'servers'));
-    const querySnapshot = await getDocs(q);
+    const q = adminDb.collection('servers');
+    const querySnapshot = await q.get();
     const servers = querySnapshot.docs.map(doc => {
         const data = doc.data();
         const createdAt = data.createdAt;
@@ -82,14 +82,14 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  */
 export async function getServer(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
     try {
-        const serverRef = doc(adminDb, 'servers', id);
-        const docSnap = await getDoc(serverRef);
+        const serverRef = adminDb.collection('servers').doc(id);
+        const docSnap = await serverRef.get();
 
-        if (!docSnap.exists()) {
+        if (!docSnap.exists) {
             return { success: false, error: 'Server not found or unauthorized.' };
         }
         
-        const data = docSnap.data();
+        const data = docSnap.data()!;
         const createdAt = data.createdAt;
         // Exclude privateIp and privateKey for security
         const server: Server = { 
@@ -114,7 +114,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
  */
 export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt'>>) {
   try {
-    const serverRef = doc(adminDb, 'servers', id);
+    const serverRef = adminDb.collection('servers').doc(id);
 
     const dataToUpdate: Record<string, any> = {
         name: serverData.name,
@@ -130,7 +130,7 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
         dataToUpdate.privateKey = serverData.privateKey;
     }
 
-    await setDoc(serverRef, dataToUpdate, { merge: true });
+    await serverRef.set(dataToUpdate, { merge: true });
     return { success: true, id };
   } catch (error: any) {
     await logErrorToFirestore({
@@ -146,8 +146,8 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
  */
 export async function deleteServer(id: string) {
   try {
-    const serverRef = doc(adminDb, 'servers', id);
-    await deleteDoc(serverRef);
+    const serverRef = adminDb.collection('servers').doc(id);
+    await serverRef.delete();
     return { success: true };
   } catch (error: any) {
     await logErrorToFirestore({
