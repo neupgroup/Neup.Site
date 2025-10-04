@@ -1,7 +1,7 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import {
   collection,
   addDoc,
@@ -15,7 +15,7 @@ import {
   setDoc,
   Timestamp
 } from 'firebase-admin/firestore';
-import { logErrorToFirestore } from './logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { Server } from '@/schemas/server';
 
 /**
@@ -23,6 +23,7 @@ import { Server } from '@/schemas/server';
  */
 export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>) {
   try {
+    const adminDb = getAdminDb();
     const docRef = await adminDb.collection('servers').add({
       ...serverData,
       createdAt: serverTimestamp(),
@@ -43,6 +44,7 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>)
  */
 export async function getServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
   try {
+    const adminDb = getAdminDb();
     const q = adminDb.collection('servers');
     const querySnapshot = await q.get();
     const servers = querySnapshot.docs.map(doc => {
@@ -73,6 +75,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  */
 export async function getServer(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
     try {
+        const adminDb = getAdminDb();
         const serverRef = adminDb.collection('servers').doc(id);
         const docSnap = await serverRef.get();
 
@@ -105,6 +108,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
  */
 export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt'>>) {
   try {
+    const adminDb = getAdminDb();
     const serverRef = adminDb.collection('servers').doc(id);
 
     const dataToUpdate: Record<string, any> = {
@@ -137,6 +141,7 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
  */
 export async function deleteServer(id: string) {
   try {
+    const adminDb = getAdminDb();
     const serverRef = adminDb.collection('servers').doc(id);
     await serverRef.delete();
     return { success: true };

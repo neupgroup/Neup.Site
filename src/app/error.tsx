@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { logErrorToFirestore } from '@/actions/logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
@@ -23,7 +23,6 @@ export default function GlobalError({
                 message: error.message,
                 stack: error.stack,
                 source: 'global-error-boundary',
-                details: error.digest,
             });
             console.log("Error logged to Firestore via server action.");
         } catch (loggingError) {

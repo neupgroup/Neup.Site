@@ -1,7 +1,7 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import {
   collection,
   addDoc,
@@ -15,7 +15,7 @@ import {
   query,
   where
 } from 'firebase/firestore';
-import { logErrorToFirestore } from '@/actions/logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { cookies } from 'next/headers';
 
 export interface Section {
@@ -38,6 +38,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     let dataToSave: any = {
         siteId,
         name: section.name,
@@ -79,6 +80,7 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const q = query(collection(adminDb, 'sections'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sections = querySnapshot.docs.map(docSnap => {
@@ -117,6 +119,7 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
+        const adminDb = getAdminDb();
         const sectionRef = doc(adminDb, 'sections', id);
         const docSnap = await getDoc(sectionRef);
 
@@ -161,6 +164,7 @@ export async function deleteSection(id: string): Promise<{ success: boolean; err
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
+    const adminDb = getAdminDb();
     const sectionRef = doc(adminDb, 'sections', id);
     const sectionSnap = await getDoc(sectionRef);
     if (!sectionSnap.exists() || sectionSnap.data().siteId !== siteId) {

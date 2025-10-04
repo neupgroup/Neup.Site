@@ -1,7 +1,7 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getFirestore } from 'firebase/firestore';
 import {
   collection,
   addDoc,
@@ -17,11 +17,12 @@ import {
   writeBatch,
   limit,
 } from 'firebase/firestore';
-import { logErrorToFirestore } from '../logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/schemas/site';
+import { initializeFirebase } from '@/lib/firebase';
 
 export async function createPage(type: Page['type'] = 'editor') {
   const cookieStore = cookies();
@@ -29,7 +30,8 @@ export async function createPage(type: Page['type'] = 'editor') {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const docRef = await addDoc(collection(adminDb, 'pages'), {
+    const { firestore } = initializeFirebase();
+    const docRef = await addDoc(collection(firestore, 'pages'), {
       siteId: siteId,
       name: 'New Page',
       elements: [],
@@ -54,7 +56,8 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const pageRef = doc(adminDb, 'pages', id);
+    const { firestore } = initializeFirebase();
+    const pageRef = doc(firestore, 'pages', id);
     const pageSnap = await getDoc(pageRef);
     if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };
@@ -62,7 +65,6 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
     
     let dataToSave: any = { ...data, updatedAt: serverTimestamp() };
 
-    // If elements are being updated, also regenerate the reactComponent
     if (data.elements) {
         dataToSave.reactComponent = await convertJsonToJsx(data.elements);
     }
@@ -85,8 +87,9 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
+        const { firestore } = initializeFirebase();
         const q = query(
-            collection(adminDb, 'pages'),
+            collection(firestore, 'pages'),
             where('__name__', '==', id),
             where('siteId', '==', siteId),
             limit(1)
@@ -136,7 +139,8 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const q = query(collection(adminDb, 'pages'), where('siteId', '==', siteId));
+    const { firestore } = initializeFirebase();
+    const q = query(collection(firestore, 'pages'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const pages = querySnapshot.docs.map(doc => {
       const data = doc.data();
@@ -176,16 +180,17 @@ export async function deletePage(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const batch = writeBatch(adminDb);
+    const { firestore } = initializeFirebase();
+    const batch = writeBatch(firestore);
 
-    const pageRef = doc(adminDb, 'pages', id);
+    const pageRef = doc(firestore, 'pages', id);
     const pageSnap = await getDoc(pageRef);
     if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };
     }
     batch.delete(pageRef);
 
-    const pathsQuery = query(collection(adminDb, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
+    const pathsQuery = query(collection(firestore, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
     const pathsSnapshot = await getDocs(pathsQuery);
     pathsSnapshot.forEach(doc => {
       batch.delete(doc.ref);

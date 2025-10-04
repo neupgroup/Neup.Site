@@ -1,7 +1,7 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import {
   collection,
   addDoc,
@@ -15,13 +15,14 @@ import {
   query
 } from 'firebase/firestore';
 import { Template } from '@/schemas/template';
-import { logErrorToFirestore } from '../logging';
+import { logErrorToFirestore } from '@/lib/logging';
 
 /**
  * Saves or updates a template in Firestore.
  */
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' | 'siteId'>, id?: string) {
   try {
+    const adminDb = getAdminDb();
     let dataToSave: any = { 
         name: template.name,
         description: template.description || '',
@@ -60,6 +61,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt' |
  */
 export async function getTemplates(): Promise<{ success: boolean, templates?: Template[], error?: string }> {
   try {
+    const adminDb = getAdminDb();
     const q = query(collection(adminDb, 'templates'));
     const querySnapshot = await getDocs(q);
     const templates = querySnapshot.docs.map(doc => {
@@ -98,6 +100,7 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
  */
 export async function getTemplate(id: string): Promise<{ success: boolean, template?: Template, error?: string }> {
     try {
+        const adminDb = getAdminDb();
         const templateRef = doc(adminDb, 'templates', id);
         const docSnap = await getDoc(templateRef);
 
@@ -139,6 +142,7 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
  */
 export async function deleteTemplate(id: string) {
   try {
+    const adminDb = getAdminDb();
     const templateRef = doc(adminDb, 'templates', id);
     await deleteDoc(templateRef);
     return { success: true };

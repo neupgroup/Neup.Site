@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAdminDb } from '@/lib/firebase/firebase-admin';
+import { getFirestore } from 'firebase/firestore';
 import {
   doc,
   setDoc,
@@ -9,10 +9,11 @@ import {
   Timestamp,
   serverTimestamp
 } from 'firebase/firestore';
-import { logErrorToFirestore } from '../logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
 import { Site } from '@/schemas/site';
+import { initializeFirebase } from '@/lib/firebase';
 
 /**
  * Fetches a single site configuration document.
@@ -26,8 +27,8 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
     if (!siteId) return { success: true, site: undefined };
 
     try {
-        const adminDb = getAdminDb();
-        const siteRef = doc(adminDb, 'sites', siteId);
+        const { firestore } = initializeFirebase();
+        const siteRef = doc(firestore, 'sites', siteId);
         const docSnap = await getDoc(siteRef);
 
         if (!docSnap.exists()) {
@@ -80,8 +81,8 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
-    const adminDb = getAdminDb();
-    const siteRef = doc(adminDb, 'sites', siteId);
+    const { firestore } = initializeFirebase();
+    const siteRef = doc(firestore, 'sites', siteId);
     
     // Check if the document exists to determine if this is a create or update
     const docSnap = await getDoc(siteRef);

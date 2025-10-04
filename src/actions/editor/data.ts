@@ -1,9 +1,9 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import { collection, doc, setDoc, getDoc, query, where, getDocs, limit } from 'firebase/firestore';
-import { logErrorToFirestore } from '../logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { cookies } from 'next/headers';
 import { PageDataSourceBinding } from '@/schemas/data';
 
@@ -17,6 +17,7 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
+        const adminDb = getAdminDb();
         const bindingId = `${pageId}_${sourceId}`; // Create a deterministic ID
         const bindingRef = doc(adminDb, 'page_data_sources', bindingId);
         
@@ -48,6 +49,7 @@ export async function getPageDataSource(pageId: string): Promise<{ success: bool
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
+        const adminDb = getAdminDb();
         const q = query(collection(adminDb, 'page_data_sources'), where('pageId', '==', pageId), where('siteId', '==', siteId), limit(1));
         const querySnapshot = await getDocs(q);
 

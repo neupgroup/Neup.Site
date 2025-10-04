@@ -1,9 +1,9 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import { collection, addDoc, getDocs, doc, deleteDoc, query, where, writeBatch, getDoc, limit } from 'firebase/firestore';
-import { logErrorToFirestore } from './logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { cookies } from 'next/headers';
 
 export interface Path {
@@ -23,6 +23,7 @@ export async function createPath(path: string, pageId: string): Promise<{ succes
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
+    const adminDb = getAdminDb();
     const pathsRef = collection(adminDb, 'paths');
     const batch = writeBatch(adminDb);
 
@@ -48,9 +49,9 @@ export async function createPath(path: string, pageId: string): Promise<{ succes
 
     return { success: true, id: newPathRef.id };
   } catch (error: any) {
-    console.error(`Failed to create path "${path}":`, error);
+    console.error(`Failed to create path \"${path}\":`, error);
     await logErrorToFirestore({
-      message: `Failed to create path "${path}": ` + error.message,
+      message: `Failed to create path \"${path}\": ` + error.message,
       stack: error.stack,
     });
     return { success: false, error: error.message || 'Failed to create path.' };
@@ -66,6 +67,7 @@ export async function getPaths(): Promise<{ success: boolean, paths?: Path[], er
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const q = query(collection(adminDb, 'paths'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const paths = querySnapshot.docs.map(doc => ({
@@ -92,6 +94,7 @@ export async function deletePath(id: string): Promise<{ success: boolean, error?
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const pathRef = doc(adminDb, 'paths', id);
     const pathSnap = await getDoc(pathRef);
     if (!pathSnap.exists() || pathSnap.data().siteId !== siteId) {
@@ -119,6 +122,7 @@ export async function getPathForPage(pageId: string): Promise<{ success: boolean
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const pathsRef = collection(adminDb, 'paths');
     const q = query(pathsRef, where('pageId', '==', pageId), where('siteId', '==', siteId), limit(1));
     const querySnapshot = await getDocs(q);

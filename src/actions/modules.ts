@@ -1,11 +1,11 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
-import { logErrorToFirestore } from './logging';
-import type { Site } from './editor/site';
+import { logErrorToFirestore } from '@/lib/logging';
+import type { Site } from '@/schemas/site';
 
 export interface SiteModule {
     active: boolean;
@@ -26,6 +26,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const siteRef = doc(adminDb, 'sites', siteId);
     const docSnap = await getDoc(siteRef);
 
@@ -53,6 +54,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
     await logErrorToFirestore({
       message: `Failed to get modules for site ${siteId}: ${error.message}`,
       stack: error.stack,
+      source: 'getSiteModules'
     });
     return { success: false, error: 'Failed to fetch site modules.' };
   }
@@ -67,6 +69,7 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const siteRef = doc(adminDb, 'sites', siteId);
     const key = `modules.${moduleId}`;
     
@@ -92,6 +95,7 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
     await logErrorToFirestore({
       message: `Failed to update module ${moduleId}: ${error.message}`,
       stack: error.stack,
+      source: 'updateSiteModule'
     });
     return { success: false, error: 'Failed to update module.' };
   }

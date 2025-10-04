@@ -1,7 +1,7 @@
 
 'use server';
 
-import { adminDb } from '@/lib/firebase-admin';
+import { getAdminDb } from '@/lib/firebase/firebase-admin';
 import {
   collection,
   addDoc,
@@ -16,7 +16,7 @@ import {
   setDoc,
   Timestamp
 } from 'firebase/firestore';
-import { logErrorToFirestore } from '../logging';
+import { logErrorToFirestore } from '@/lib/logging';
 import { cookies } from 'next/headers';
 
 export interface SourceMethod {
@@ -55,6 +55,7 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const docRef = await addDoc(collection(adminDb, 'sources'), {
       ...sourceData,
       siteId,
@@ -80,6 +81,7 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const q = query(collection(adminDb, 'sources'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sources = querySnapshot.docs.map(doc => {
@@ -117,6 +119,7 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
     if (!siteId) return { success: false, error: 'Site ID not found.' };
     
     try {
+        const adminDb = getAdminDb();
         const sourceRef = doc(adminDb, 'sources', id);
         const docSnap = await getDoc(sourceRef);
 
@@ -160,6 +163,7 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
+    const adminDb = getAdminDb();
     const sourceRef = doc(adminDb, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
@@ -192,6 +196,7 @@ export async function deleteSource(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
+    const adminDb = getAdminDb();
     const batch = writeBatch(adminDb);
     const sourceRef = doc(adminDb, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
