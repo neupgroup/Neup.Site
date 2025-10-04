@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Creates a template's CanvasElementData JSON from a natural language prompt.
@@ -23,7 +24,7 @@ export async function createTemplateFromPrompt(prompt: string): Promise<CanvasEl
 
 const createTemplatePrompt = ai.definePrompt({
   name: 'createTemplateFromPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.0-flash',
   input: {
     schema: z.string(),
   },

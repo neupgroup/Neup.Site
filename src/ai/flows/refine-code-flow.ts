@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Refines a given code snippet based on a user's prompt.
@@ -30,7 +31,7 @@ export async function refineCode(input: RefineCodeInput): Promise<RefineCodeOutp
 
 const refineCodePrompt = ai.definePrompt({
   name: 'refineCodePrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.0-flash',
   input: {
     schema: RefineCodeInputSchema,
   },

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Converts HTML into the CanvasElementData JSON structure.
@@ -33,7 +34,7 @@ export async function convertHtmlToJson(html: string): Promise<CanvasElementData
 
 const htmlToJsonPrompt = ai.definePrompt({
   name: 'htmlToJsonPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-2.0-flash',
   input: {
     schema: z.string(),
   },
