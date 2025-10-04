@@ -39,4 +39,5 @@ export interface Page {
   type: 'editor' | 'ai' | 'html' | 'template';
   createdAt?: string | null;
   updatedAt?: string | null;
+  paths?: Path[];
 }

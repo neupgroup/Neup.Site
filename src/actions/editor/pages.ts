@@ -23,6 +23,7 @@ import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/schemas/site';
 import { initializeFirebase } from '@/lib/firebase';
+import { getPathsForPage } from '../paths';
 
 export async function createPage(type: Page['type'] = 'editor') {
   const cookieStore = cookies();
@@ -131,7 +132,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
 }
 
 /**
- * Fetches all pages from Firestore for the current siteId.
+ * Fetches all pages from Firestore for the current siteId, including their paths.
  */
 export async function getPages(): Promise<{ success: boolean, pages?: Page[], error?: string }> {
   const cookieStore = cookies();
@@ -142,11 +143,14 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
     const { firestore } = initializeFirebase();
     const q = query(collection(firestore, 'pages'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
-    const pages = querySnapshot.docs.map(doc => {
+    
+    const pages = await Promise.all(querySnapshot.docs.map(async (doc) => {
       const data = doc.data();
       const createdAt = data.createdAt;
       const updatedAt = data.updatedAt;
       
+      const { paths: pagePaths } = await getPathsForPage(doc.id);
+
       return {
         id: doc.id,
         siteId: data.siteId,
@@ -156,8 +160,9 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
         type: data.type || 'editor',
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
+        paths: pagePaths || [],
       } as Page;
-    });
+    }));
     return { success: true, pages };
   } catch (error: any) {
     await logErrorToFirestore({

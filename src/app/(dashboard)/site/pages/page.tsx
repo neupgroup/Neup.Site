@@ -24,8 +24,9 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Globe, Trash2, Pencil } from 'lucide-react';
+import { AlertCircle, Plus, Globe, Trash2, Pencil, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 export default function PagesPage() {
   const [pages, setPages] = useState<Page[]>([]);
@@ -114,25 +115,38 @@ export default function PagesPage() {
         <div className="space-y-4">
           {pages.map((page) => (
             <Card key={page.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle className="truncate">{page.name || page.id}</CardTitle>
-                        <CardDescription>Last updated: {page.updatedAt ? new Date(page.updatedAt).toLocaleString() : 'N/A'}</CardDescription>
-                    </div>
-                     <div className="flex items-center gap-2 flex-shrink-0">
-                        <Button asChild variant="outline" size="sm">
-                            <Link href={`/site/pages/${page.id}`}>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Manage
-                            </Link>
-                        </Button>
-                        <Button variant="destructive" size="sm" onClick={() => setPageToDelete(page.id)}>
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                        </Button>
-                    </div>
-                </div>
+              <CardHeader className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex-1">
+                      <CardTitle className="truncate">{page.name || page.id}</CardTitle>
+                      <CardDescription>Last updated: {page.updatedAt ? new Date(page.updatedAt).toLocaleString() : 'N/A'}</CardDescription>
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                        {page.paths && page.paths.length > 0 ? (
+                           <>
+                            {page.paths.slice(0, 3).map(path => (
+                                <Badge key={path.id} variant="secondary" className="font-mono">{path.path}</Badge>
+                            ))}
+                            {page.paths.length > 3 && (
+                                <Badge variant="outline">+{page.paths.length - 3} more</Badge>
+                            )}
+                           </>
+                        ) : (
+                            <span className="text-xs text-muted-foreground">No paths assigned</span>
+                        )}
+                      </div>
+                  </div>
+                   <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-center">
+                      <Button asChild variant="outline" size="sm">
+                          <Link href={`/site/pages/${page.id}`}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Manage
+                          </Link>
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => setPageToDelete(page.id)}>
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                      </Button>
+                  </div>
               </CardHeader>
             </Card>
           ))}
