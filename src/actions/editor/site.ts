@@ -15,6 +15,7 @@ import {
   query,
   where,
   writeBatch,
+  limit,
 } from 'firebase/firestore';
 import { logErrorToFirestore } from '../logging';
 import type { CanvasElementData } from '@/lib/schemas';
@@ -98,18 +99,21 @@ export async function getSite(id: string): Promise<{ success: boolean, site?: Si
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const docRef = doc(db, 'sites', id);
-        const docSnap = await getDoc(docRef);
+        const q = query(
+            collection(db, 'sites'),
+            where('__name__', '==', id),
+            where('siteId', '==', siteId),
+            limit(1)
+        );
 
-        if (!docSnap.exists()) {
-            return { success: false, error: 'Site not found.' };
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            return { success: false, error: 'Site not found or you do not have permission to access it.' };
         }
-
+        
+        const docSnap = querySnapshot.docs[0];
         const data = docSnap.data();
-
-        if (data.siteId !== siteId) {
-            return { success: false, error: 'Unauthorized.' };
-        }
         
         const createdAt = data.createdAt;
         const updatedAt = data.updatedAt;
@@ -161,6 +165,11 @@ export async function getSites(): Promise<{ success: boolean, sites?: Site[], er
         id: doc.id,
         siteId: data.siteId,
         name: data.name || '',
+        logoUrl: data.logoUrl,
+        description: data.description,
+        socialProfiles: data.socialProfiles || [],
+        contactEmail: data.contactEmail || [],
+        contactPhone: data.contactPhone || [],
         elements: data.elements,
         reactComponent: data.reactComponent,
         type: data.type || 'editor',

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getSite, saveSite, type Site } from '@/actions/editor/site';
+import { getSite, saveSite, getSites, type Site } from '@/actions/editor/site';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,10 +46,7 @@ export default function ProfilePage() {
     const { setProfileName } = useProfile();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
-    const searchParams = useSearchParams();
-    // A default site ID should be provided or inferred from user's context
-    // For now, let's assume it might come from a URL param or a default value
-    const siteId = searchParams.get('id') || 'default-site-id';
+    const [siteId, setSiteId] = useState<string | null>(null);
 
     const form = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileFormSchema),
@@ -78,29 +75,33 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const fetchProfileData = async () => {
-            if (!siteId) {
-                toast({ variant: 'destructive', title: 'Error', description: 'No site ID provided.' });
-                setLoading(false);
-                return;
-            }
             setLoading(true);
-            const { success, site } = await getSite(siteId);
-            if (success && site) {
-                form.reset({
-                    name: site.name,
-                    logoUrl: removeUrlPrefix(site.logoUrl || ''),
-                    description: site.description || '',
-                    socialProfiles: (site.socialProfiles || []).map(p => ({...p, url: removeUrlPrefix(p.url)})),
-                    contactEmail: site.contactEmail || [],
-                    contactPhone: site.contactPhone || [],
-                });
+            const sitesResult = await getSites();
+            if (sitesResult.success && sitesResult.sites && sitesResult.sites.length > 0) {
+                // For now, we assume the user is editing the first site associated with their siteId.
+                const siteToEdit = sitesResult.sites[0];
+                setSiteId(siteToEdit.id);
+                
+                const { success, site } = await getSite(siteToEdit.id);
+                if (success && site) {
+                    form.reset({
+                        name: site.name,
+                        logoUrl: removeUrlPrefix(site.logoUrl || ''),
+                        description: site.description || '',
+                        socialProfiles: (site.socialProfiles || []).map(p => ({...p, url: removeUrlPrefix(p.url)})),
+                        contactEmail: site.contactEmail || [],
+                        contactPhone: site.contactPhone || [],
+                    });
+                } else {
+                     toast({ variant: 'destructive', title: 'Error', description: 'Could not load site data.' });
+                }
             } else {
-                 toast({ variant: 'destructive', title: 'Error', description: 'Could not load site data.' });
+                 toast({ variant: 'destructive', title: 'Error', description: sitesResult.error || 'No sites found for your account.' });
             }
             setLoading(false);
         };
         fetchProfileData();
-    }, [form, siteId, toast]);
+    }, [form, toast]);
 
     const onSubmit = async (data: ProfileFormData) => {
         if (!siteId) {
@@ -108,7 +109,6 @@ export default function ProfilePage() {
             return;
         }
 
-        // We can only save the fields that are part of the Site interface
         const result = await saveSite(siteId, {
             name: data.name,
             logoUrl: data.logoUrl,
