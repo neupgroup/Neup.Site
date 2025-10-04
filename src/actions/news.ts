@@ -34,7 +34,7 @@ function slugify(text: string) {
         .replace(/-+$/, '');            // Trim - from end of text
 }
 
-export async function createNewsArticle(data: Omit<NewsArticle, 'id' | 'publishedAt' | 'createdAt' | 'updatedAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | 'publishedAt' | 'createdAt' | 'updatedAt'>> & { title: string }): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
     
@@ -45,7 +45,10 @@ export async function createNewsArticle(data: Omit<NewsArticle, 'id' | 'publishe
     const newArticleRef = doc(firestore, 'news', id);
 
     await setDoc(newArticleRef, {
-      ...data,
+      title: data.title,
+      author: data.author || 'Author Name',
+      content: data.content || '<p>Start writing your article here...</p>',
+      imageUrl: data.imageUrl || '',
       id,
       publishedAt: serverTimestamp(),
       createdAt: serverTimestamp(),

@@ -20,13 +20,9 @@ import { createNewsArticle } from '@/actions/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RichTextEditor } from '@/components/ui/rich-text-editor';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  author: z.string().min(1, 'Author is required'),
-  imageUrl: z.string().optional(),
-  content: z.string().min(1, 'Content is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -40,18 +36,15 @@ export default function CreateNewsArticlePage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      author: '',
-      imageUrl: '',
-      content: '',
     },
   });
 
   const onSubmit = async (data: FormValues) => {
     setIsSaving(true);
     const result = await createNewsArticle(data);
-    if (result.success) {
-      toast({ title: 'Article Created!', description: `Successfully created "${data.title}".` });
-      router.push('/news');
+    if (result.success && result.id) {
+      toast({ title: 'Article Created!', description: 'Now you can write the content.' });
+      router.push(`/news/${result.id}/edit`);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
       setIsSaving(false);
@@ -59,51 +52,37 @@ export default function CreateNewsArticlePage() {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/news">
-              <ArrowLeft />
-            </Link>
-          </Button>
-          <h1 className="font-headline text-2xl font-semibold tracking-tight">Create New Article</h1>
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Article Details</CardTitle>
-            <CardDescription>Fill in the information for your new article.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField control={form.control} name="title" render={({ field }) => (
-              <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="author" render={({ field }) => (
-              <FormItem><FormLabel>Author</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="imageUrl" render={({ field }) => (
-              <FormItem><FormLabel>Image URL (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="content" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Content</FormLabel>
-                <FormControl>
-                    <RichTextEditor {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              {isSaving ? 'Saving...' : 'Save Article'}
+    <div className="w-full max-w-2xl mx-auto">
+        <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" asChild>
+                <Link href="/news">
+                <ArrowLeft />
+                </Link>
             </Button>
-          </CardFooter>
-        </Card>
-      </form>
-    </Form>
+            <h1 className="font-headline text-2xl font-semibold tracking-tight">Create New Article</h1>
+            </div>
+            <Card>
+            <CardHeader>
+                <CardTitle>Article Title</CardTitle>
+                <CardDescription>Give your new article a title to begin.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <FormField control={form.control} name="title" render={({ field }) => (
+                <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+            </CardContent>
+            <CardFooter>
+                <Button type="submit" disabled={isSaving} className="w-full">
+                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {isSaving ? 'Saving...' : 'Save and Continue'}
+                </Button>
+            </CardFooter>
+            </Card>
+        </form>
+        </Form>
+    </div>
   );
 }
-
     
