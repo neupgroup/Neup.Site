@@ -9,6 +9,10 @@ import {
   ListOrdered,
   Link as LinkIcon,
   Strikethrough,
+  Heading2,
+  Heading3,
+  Quote,
+  Image as ImageIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from './button'
@@ -51,17 +55,10 @@ export function RichTextEditor({
     handleInput()
   }
 
-  const handleLink = () => {
-    const url = prompt('Enter the URL')
-    if (url) {
-      execCommand('createLink', url)
-    }
-  }
-
   return (
     <div className="rounded-md border border-input bg-background ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
       <div className="p-2 border-b">
-        <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-1">
           <Button
             type="button"
             size="icon"
@@ -85,6 +82,30 @@ export function RichTextEditor({
             onClick={() => execCommand('strikeThrough')}
           >
             <Strikethrough className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            onClick={() => execCommand('formatBlock', '<h2>')}
+          >
+            <Heading2 className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            onClick={() => execCommand('formatBlock', '<h3>')}
+          >
+            <Heading3 className="h-4 w-4" />
+          </Button>
+           <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            onClick={() => execCommand('formatBlock', '<blockquote>')}
+          >
+            <Quote className="h-4 w-4" />
           </Button>
           <Button
             type="button"
@@ -132,6 +153,36 @@ export function RichTextEditor({
                 </div>
             </PopoverContent>
           </Popover>
+           <Popover>
+            <PopoverTrigger asChild>
+                <Button type="button" size="icon" variant="ghost">
+                    <ImageIcon className="h-4 w-4" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+                <div className="grid gap-4">
+                    <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Add Image</h4>
+                        <p className="text-sm text-muted-foreground">
+                        Enter the URL of the image.
+                        </p>
+                    </div>
+                     <div className="grid gap-2">
+                        <Input
+                            id="image-url"
+                            placeholder="https://example.com/image.png"
+                            className="h-9"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    execCommand('insertImage', (e.target as HTMLInputElement).value);
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       <div
@@ -139,7 +190,7 @@ export function RichTextEditor({
         contentEditable={!disabled}
         onInput={handleInput}
         onBlur={onBlur}
-        className="min-h-[15rem] p-4 text-sm"
+        className="min-h-[15rem] p-4 text-sm prose prose-sm dark:prose-invert max-w-full focus:outline-none"
       />
     </div>
   )
