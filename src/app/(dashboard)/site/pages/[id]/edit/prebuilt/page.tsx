@@ -78,14 +78,14 @@ export default function PrebuiltPage({ params }: { params: Promise<{ id: string 
     };
 
     if (loading) {
-        return <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-4 h-full"><Skeleton className="h-full" /><Skeleton className="h-full" /></div>
+        return <div className="p-4 space-y-4"><Skeleton className="h-48" /><Skeleton className="h-48" /></div>
     }
      if (error) {
         return <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>;
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_350px] gap-6 h-full p-4">
+        <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
             <div className="flex flex-col gap-4">
                  <Button asChild variant="ghost" className="mb-4 self-start">
                     <Link href={`/site/pages/${id}/edit`}>
@@ -93,10 +93,32 @@ export default function PrebuiltPage({ params }: { params: Promise<{ id: string 
                         Back to Edit Options
                     </Link>
                 </Button>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Section Library</CardTitle>
+                        <CardDescription>Click a section to add it to your page below.</CardDescription>
+                    </CardHeader>
+                    <ScrollArea className="max-h-96">
+                        <CardContent className="space-y-2">
+                            {templates.map(template => (
+                                 <div key={template.id} className="flex items-center justify-between p-2 border rounded-lg hover:bg-muted/50">
+                                    <div className="flex-1 overflow-hidden">
+                                        <p className="font-medium truncate">{template.name}</p>
+                                        <p className="text-xs text-muted-foreground truncate">{template.description}</p>
+                                    </div>
+                                    <Button size="sm" variant="outline" onClick={() => addSection(template)}>
+                                        <Plus className="h-4 w-4 mr-2" /> Add
+                                    </Button>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </ScrollArea>
+                </Card>
+
                 <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>Page Sections</CardTitle>
-                        <CardDescription>Drag and drop sections from the library to build your page.</CardDescription>
+                        <CardDescription>The sections currently on your page. Drag to reorder.</CardDescription>
                     </CardHeader>
                     <CardContent>
                          <div className="space-y-4">
@@ -110,7 +132,7 @@ export default function PrebuiltPage({ params }: { params: Promise<{ id: string 
                             ))}
                              {pageElements.length === 0 && (
                                 <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-                                    <p>Add sections from the library on the right to begin.</p>
+                                    <p>Add sections from the library above to begin.</p>
                                 </div>
                             )}
                         </div>
@@ -123,26 +145,6 @@ export default function PrebuiltPage({ params }: { params: Promise<{ id: string 
                     </Button>
                 </div>
             </div>
-             <Card className="flex flex-col h-[calc(100vh-2rem)]">
-                <CardHeader>
-                    <CardTitle>Section Library</CardTitle>
-                </CardHeader>
-                <ScrollArea className="flex-1">
-                    <CardContent className="space-y-2">
-                        {templates.map(template => (
-                             <div key={template.id} className="flex items-center justify-between p-2 border rounded-lg hover:bg-muted/50">
-                                <div className="flex-1 overflow-hidden">
-                                    <p className="font-medium truncate">{template.name}</p>
-                                    <p className="text-xs text-muted-foreground truncate">{template.description}</p>
-                                </div>
-                                <Button size="sm" variant="outline" onClick={() => addSection(template)}>
-                                    <Plus className="h-4 w-4 mr-2" /> Add
-                                </Button>
-                            </div>
-                        ))}
-                    </CardContent>
-                </ScrollArea>
-             </Card>
         </div>
     );
 }
