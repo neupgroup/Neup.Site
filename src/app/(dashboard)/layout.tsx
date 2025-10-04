@@ -12,12 +12,8 @@ import {
   Database,
   Server,
   Layers,
-  ChevronDown,
 } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { useState } from 'react';
 
 export default function DashboardLayout({
   children,
@@ -25,8 +21,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isRootSection = pathname.startsWith('/root');
-  const [isRootOpen, setIsRootOpen] = useState(isRootSection);
 
   return (
       <div className="min-h-screen w-full bg-background text-foreground">
@@ -69,16 +63,11 @@ export default function DashboardLayout({
                             <Layers className="h-4 w-4" />
                             <span>Sections</span>
                         </Link>
-                        <Collapsible open={isRootOpen} onOpenChange={setIsRootOpen}>
-                          <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
-                            <div className="flex items-center gap-2">
-                              <Settings className="h-4 w-4" />
-                              <span>Root</span>
+                        <div className="mt-4 space-y-2">
+                            <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+                                Root
                             </div>
-                            <ChevronDown className={cn("h-4 w-4 transition-transform", isRootOpen && "rotate-180")} />
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="space-y-1 py-1 pl-7">
-                             <Link href="/root/templates" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+                            <Link href="/root/templates" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
                                 <LayoutTemplate className="h-4 w-4" />
                                 <span>Templates</span>
                             </Link>
@@ -90,8 +79,7 @@ export default function DashboardLayout({
                                 <Bug className="h-4 w-4" />
                                 <span>Error Logs</span>
                             </Link>
-                          </CollapsibleContent>
-                        </Collapsible>
+                        </div>
                       </nav>
                   </div>
               </aside>
