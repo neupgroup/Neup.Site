@@ -98,9 +98,58 @@ function renderElementToHtml(element: CanvasElementData): string {
     }
 }
 
+function hexToHsl(hex: string): string | null {
+    if (!hex.startsWith('#')) return null;
 
-export function convertJsonToHtml(elements: CanvasElementData[]): string {
+    let r = 0, g = 0, b = 0;
+    if (hex.length === 4) {
+        r = parseInt(hex[1] + hex[1], 16);
+        g = parseInt(hex[2] + hex[2], 16);
+        b = parseInt(hex[3] + hex[3], 16);
+    } else if (hex.length === 7) {
+        r = parseInt(hex.substring(1, 3), 16);
+        g = parseInt(hex.substring(3, 5), 16);
+        b = parseInt(hex.substring(5, 7), 16);
+    } else {
+        return null;
+    }
+
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+
+    if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    h = Math.round(h * 360);
+    s = Math.round(s * 100);
+    l = Math.round(l * 100);
+
+    return `${h} ${s}% ${l}%`;
+}
+
+
+export function convertJsonToHtml(elements: CanvasElementData[], theme?: { primary?: string, accent?: string }): string {
   const bodyContent = elements.map(renderElementToHtml).join('');
+  
+  const primaryHsl = theme?.primary ? hexToHsl(theme.primary) : null;
+  const accentHsl = theme?.accent ? hexToHsl(theme.accent) : null;
+
+  const themeStyles = `
+    :root {
+      ${primaryHsl ? `--primary: ${primaryHsl};` : ''}
+      ${accentHsl ? `--accent: ${accentHsl};` : ''}
+    }
+  `;
+
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -112,6 +161,7 @@ export function convertJsonToHtml(elements: CanvasElementData[]): string {
         <style>
           body { font-family: 'Inter', sans-serif; margin: 0; }
           * { box-sizing: border-box; }
+          ${themeStyles}
         </style>
       </head>
       <body>

@@ -1,48 +1,53 @@
 
-import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
+import { adminDb } from '@/lib/firebase-admin';
 
-async function getPageForPath(slug: string[]): Promise<string | null> {
+async function getPageForPath(slug: string[]): Promise<{html: string | null, theme?: {primary?: string, accent?: string}}> {
     const path = `/${slug.join('/')}`;
     
     try {
-        // 1. Find the path mapping
-        const pathsRef = collection(db, 'paths');
-        const q = query(pathsRef, where('path', '==', path), limit(1));
-        const querySnapshot = await getDocs(q);
+        const pathsRef = collection(adminDb, 'paths');
+        const qPath = query(pathsRef, where('path', '==', path), limit(1));
+        const pathSnapshot = await getDocs(qPath);
 
-        if (querySnapshot.empty) {
-            return null; // No path mapping found
+        if (pathSnapshot.empty) {
+            return { html: null };
         }
         
-        const pathData = querySnapshot.docs[0].data();
+        const pathData = pathSnapshot.docs[0].data();
         const pageId = pathData.pageId;
+        const siteId = pathData.siteId;
 
-        // 2. Fetch the corresponding page content from the 'pages' collection
-        const pageRef = doc(db, 'pages', pageId);
-        const pageSnap = await getDoc(pageRef);
+        const pageRef = doc(adminDb, 'pages', pageId);
+        const siteRef = doc(adminDb, 'sites', siteId);
+
+        const [pageSnap, siteSnap] = await Promise.all([getDoc(pageRef), getDoc(siteRef)]);
+
 
         if (!pageSnap.exists()) {
-            return null; // Page document not found
+            return { html: null }; // Page document not found
         }
 
         const pageData = pageSnap.data();
         const elements = pageData.elements;
+        
+        const siteData = siteSnap.exists() ? siteSnap.data() : null;
 
-        // 3. Convert JSON to HTML
-        return convertJsonToHtml(elements);
+        const html = convertJsonToHtml(elements, siteData?.theme);
+
+        return { html, theme: siteData?.theme };
 
     } catch (error) {
         console.error("Error resolving path:", error);
-        return null;
+        return { html: null };
     }
 }
 
 
 export default async function CatchAllPage({ params }: { params: { slug: string[] } }) {
   
-  const htmlContent = await getPageForPath(params.slug);
+  const { html: htmlContent } = await getPageForPath(params.slug);
 
   if (!htmlContent) {
      const notFoundHtml = `

@@ -23,6 +23,10 @@ export interface Site {
   contactEmail?: { value: string; }[];
   contactPhone?: { value: string; }[];
   modules?: { [key: string]: any }; // Keeping this flexible
+  theme?: {
+    primary?: string;
+    accent?: string;
+  },
   createdAt?: string | null;
   updatedAt?: string | null;
 }
@@ -59,6 +63,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
           contactEmail: data.contactEmail || [],
           contactPhone: data.contactPhone || [],
           modules: data.modules || {},
+          theme: data.theme || {},
           createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
           updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
         }
