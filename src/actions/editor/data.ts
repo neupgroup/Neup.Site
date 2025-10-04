@@ -20,7 +20,8 @@ export interface PageDataSourceBinding {
  * Sets or updates the data source binding for a specific page.
  */
 export async function setPageDataSource(pageId: string, sourceId: string, methodName: string): Promise<{ success: boolean; id?: string; error?: string }> {
-    const siteId = cookies().get('siteId')?.value;
+    const cookieStore = cookies();
+    const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
@@ -50,7 +51,8 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
  * Fetches the data source binding for a specific page.
  */
 export async function getPageDataSource(pageId: string): Promise<{ success: boolean; binding?: PageDataSourceBinding; error?: string }> {
-    const siteId = cookies().get('siteId')?.value;
+    const cookieStore = cookies();
+    const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {

@@ -36,7 +36,8 @@ export interface Site {
  * The ID of the document is expected to be the siteId from the cookie.
  */
 export async function getSite(): Promise<{ success: boolean, site?: Site, error?: string }> {
-    const siteId = cookies().get('siteId')?.value;
+    const cookieStore = cookies();
+    const siteId = cookieStore.get('siteId')?.value;
     // If there's no siteId, we are likely in a root context. This is not an error.
     // Simply return successfully with no site data.
     if (!siteId) return { success: true, site: undefined };
@@ -88,7 +89,8 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
  * The ID of the document is the siteId from the cookie.
  */
 export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {

@@ -21,7 +21,8 @@ export interface SiteModules {
  * Fetches the modules for the current site.
  */
 export async function getSiteModules(): Promise<{ success: boolean; modules?: SiteModules; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -61,7 +62,8 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
  * Updates a specific module's status for the current site.
  */
 export async function updateSiteModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {

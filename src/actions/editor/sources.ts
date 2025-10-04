@@ -50,7 +50,8 @@ export interface SourceCredential {
  * Creates a new data source.
  */
 export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'siteId'>) {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -74,7 +75,8 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
  * Fetches all data sources for the current siteId.
  */
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -110,7 +112,8 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
  * Fetches a single data source by its ID.
  */
 export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
-    const siteId = cookies().get('siteId')?.value;
+    const cookieStore = cookies();
+    const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
     
     try {
@@ -152,7 +155,8 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
  * Updates a data source.
  */
 export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'siteId'>>) {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -183,7 +187,8 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
  * Deletes a data source and its associated credentials.
  */
 export async function deleteSource(id: string) {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {

@@ -33,7 +33,8 @@ export interface Section {
  * Saves or updates a section in Firestore.
  */
 export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'siteId'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -73,7 +74,8 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
  * Fetches all sections from Firestore for the current siteId.
  */
 export async function getSections(): Promise<{ success: boolean; sections?: Section[]; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -110,7 +112,8 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
  * Fetches a single section from Firestore by its ID.
  */
 export async function getSection(id: string): Promise<{ success: boolean; section?: Section; error?: string }> {
-    const siteId = cookies().get('siteId')?.value;
+    const cookieStore = cookies();
+    const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
@@ -153,7 +156,8 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
  * Deletes a section from Firestore by its ID.
  */
 export async function deleteSection(id: string): Promise<{ success: boolean; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {

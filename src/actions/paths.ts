@@ -18,7 +18,8 @@ export interface Path {
  * Ensures that each path is unique within a siteId.
  */
 export async function createPath(path: string, pageId: string): Promise<{ success: boolean, id?: string, error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
   try {
@@ -60,7 +61,8 @@ export async function createPath(path: string, pageId: string): Promise<{ succes
  * Fetches all path mappings from Firestore for the current siteId.
  */
 export async function getPaths(): Promise<{ success: boolean, paths?: Path[], error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -85,7 +87,8 @@ export async function getPaths(): Promise<{ success: boolean, paths?: Path[], er
  * Deletes a path mapping from Firestore by its ID.
  */
 export async function deletePath(id: string): Promise<{ success: boolean, error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
@@ -111,7 +114,8 @@ export async function deletePath(id: string): Promise<{ success: boolean, error?
  * Fetches the path mapping for a specific page.
  */
 export async function getPathForPage(pageId: string): Promise<{ success: boolean; path?: Path; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
