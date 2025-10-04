@@ -38,7 +38,7 @@ type FormValues = {
   }[];
 };
 
-export default function EditSourcePage({ params: { id } }: { params: { id: string } }) {
+export default function EditSourcePage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -60,6 +60,7 @@ export default function EditSourcePage({ params: { id } }: { params: { id: strin
 
   useEffect(() => {
     const fetchSource = async () => {
+      const { id } = params;
       setLoading(true);
       const result = await getSource(id);
       if (result.success && result.source) {
@@ -75,9 +76,10 @@ export default function EditSourcePage({ params: { id } }: { params: { id: strin
     };
 
     fetchSource();
-  }, [id, methods]);
+  }, [params, methods]);
 
   const handleUpdateSource = async (data: FormValues) => {
+    const { id } = params;
     const result = await updateSource(id, data);
 
     if (result.success) {
@@ -198,7 +200,7 @@ export default function EditSourcePage({ params: { id } }: { params: { id: strin
 
         <div className="flex justify-between sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
           <Button variant="ghost" asChild>
-            <Link href={`/site/sources/${id}`}>
+            <Link href={`/site/sources/${params.id}`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Cancel
             </Link>

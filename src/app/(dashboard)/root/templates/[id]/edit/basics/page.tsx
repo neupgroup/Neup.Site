@@ -31,7 +31,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const NO_SOURCE_VALUE = '--none--';
 
-export default function EditBasicsPage({ params: { id } }: { params: { id: string } }) {
+export default function EditBasicsPage({ params }: { params: { id: string } }) {
   const [template, setTemplate] = useState<Template | null>(null);
   const [sources, setSources] = useState<Source[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +52,7 @@ export default function EditBasicsPage({ params: { id } }: { params: { id: strin
 
   useEffect(() => {
     const fetchData = async () => {
+      const { id } = params;
       setLoading(true);
       const [templateResult, sourcesResult] = await Promise.all([
         getTemplate(id),
@@ -78,9 +79,10 @@ export default function EditBasicsPage({ params: { id } }: { params: { id: strin
     };
 
     fetchData();
-  }, [id, form]);
+  }, [params, form]);
 
   const onSubmit = async (data: FormValues) => {
+    const { id } = params;
     const result = await saveTemplate({
       ...data,
       source: data.source === NO_SOURCE_VALUE ? '' : data.source,

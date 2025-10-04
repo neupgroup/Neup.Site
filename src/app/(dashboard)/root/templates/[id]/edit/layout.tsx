@@ -11,12 +11,13 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function EditTemplateLayout({
   children,
-  params: { id },
+  params,
 }: {
   children: ReactNode;
   params: { id: string };
 }) {
   const pathname = usePathname();
+  const { id } = params;
   const activeTab = pathname.includes('/content') ? 'content' : 'basics';
 
   return (

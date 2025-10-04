@@ -43,7 +43,7 @@ const getEditUrlForType = (type: Site['type'], id: string) => {
 }
 
 
-export default function ViewPage({ params: { id } }: { params: { id: string } }) {
+export default function ViewPage({ params }: { params: { id: string } }) {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -56,6 +56,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
 
 
   const fetchPage = useCallback(async () => {
+    const { id } = params;
     setLoading(true);
     const siteResult = await getSite(id);
     if (siteResult.success && siteResult.site) {
@@ -65,7 +66,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
       setError(siteResult.error || 'Failed to load page content.');
     }
     setLoading(false);
-  }, [id]);
+  }, [params]);
 
   useEffect(() => {
     fetchPage();
@@ -73,6 +74,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
 
   const handleSectionVisibilityChange = async (sectionId: string, isVisible: boolean) => {
     if (!site) return;
+    const { id } = params;
 
     const updatedElements = site.elements.map(el => {
         if (el.id === sectionId) {
@@ -102,6 +104,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
   };
   
   const handleDelete = async () => {
+    const { id } = params;
     setShowDeleteConfirm(false);
     const result = await deleteSite(id);
     if (result.success) {
@@ -119,7 +122,7 @@ export default function ViewPage({ params: { id } }: { params: { id: string } })
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Manage Page</CardTitle>
-            <CardDescription>Page ID: {id}</CardDescription>
+            <CardDescription>Page ID: {params.id}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <Button asChild variant="outline">

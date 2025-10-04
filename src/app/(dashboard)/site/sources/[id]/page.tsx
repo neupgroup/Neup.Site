@@ -29,7 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
-export default function SourceDetailPage({ params: { id } }: { params: { id: string } }) {
+export default function SourceDetailPage({ params }: { params: { id: string } }) {
   const [source, setSource] = useState<Source | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +39,7 @@ export default function SourceDetailPage({ params: { id } }: { params: { id: str
 
   useEffect(() => {
     const fetchSource = async () => {
+      const { id } = params;
       setLoading(true);
       const result = await getSource(id);
       if (result.success && result.source) {
@@ -50,9 +51,10 @@ export default function SourceDetailPage({ params: { id } }: { params: { id: str
     };
 
     fetchSource();
-  }, [id]);
+  }, [params]);
   
   const handleDelete = async () => {
+    const { id } = params;
     setShowDeleteConfirm(false);
     const result = await deleteSource(id);
     if(result.success) {
@@ -154,7 +156,7 @@ export default function SourceDetailPage({ params: { id } }: { params: { id: str
                     <Trash2 className="mr-2 h-4 w-4"/> Delete
                 </Button>
                 <Button asChild>
-                    <Link href={`/site/sources/${id}/edit`}>
+                    <Link href={`/site/sources/${params.id}/edit`}>
                         <Pencil className="mr-2 h-4 w-4"/> Edit
                     </Link>
                 </Button>

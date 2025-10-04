@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export default function ViewTemplatePage({ params: { id } }: { params: { id: string } }) {
+export default function ViewTemplatePage({ params }: { params: { id: string } }) {
   const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +23,7 @@ export default function ViewTemplatePage({ params: { id } }: { params: { id: str
 
   useEffect(() => {
     const fetchTemplate = async () => {
+      const { id } = params;
       setLoading(true);
       const result = await getTemplate(id);
       if (result.success && result.template) {
@@ -33,9 +34,10 @@ export default function ViewTemplatePage({ params: { id } }: { params: { id: str
       setLoading(false);
     };
     fetchTemplate();
-  }, [id]);
+  }, [params]);
 
   const handleDelete = async () => {
+    const { id } = params;
     setShowDeleteConfirm(false);
     const result = await deleteTemplate(id);
     if (result.success) {

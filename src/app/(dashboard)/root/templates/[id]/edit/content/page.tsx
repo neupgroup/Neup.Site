@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2, AlertCircle, Wand2, Sparkles } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 
-export default function EditContentPage({ params: { id } }: { params: { id: string } }) {
+export default function EditContentPage({ params }: { params: { id: string } }) {
   const [template, setTemplate] = useState<Template | null>(null);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(true);
@@ -26,6 +26,7 @@ export default function EditContentPage({ params: { id } }: { params: { id: stri
 
   useEffect(() => {
     const fetchTemplate = async () => {
+      const { id } = params;
       setLoading(true);
       const result = await getTemplate(id);
       if (result.success && result.template) {
@@ -41,10 +42,11 @@ export default function EditContentPage({ params: { id } }: { params: { id: stri
       setLoading(false);
     };
     fetchTemplate();
-  }, [id]);
+  }, [params]);
 
   const handleSave = async () => {
     if (!template) return;
+    const { id } = params;
     setIsSaving(true);
     
     // We only need to pass the code and name. The backend will re-process it.
