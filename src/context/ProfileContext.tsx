@@ -2,7 +2,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { getSites } from '@/actions/editor/site';
+import { getSite } from '@/actions/editor/site';
 
 const SESSION_STORAGE_KEY_NAME = 'profileName';
 const SESSION_STORAGE_KEY_LOGO = 'logoUrl';
@@ -39,9 +39,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       if (cachedName && cachedLogo) {
         setLoading(false);
       } else {
-        const { success, sites } = await getSites();
-        // Assuming we use the first site for the profile name
-        const site = sites && sites[0];
+        const { success, site } = await getSite();
 
         if (!cachedName) {
             const finalName = site?.name?.trim() ? site.name : 'Neup.Sites';

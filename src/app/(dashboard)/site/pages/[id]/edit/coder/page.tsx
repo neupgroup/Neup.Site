@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { getSite, saveSite } from '@/actions/editor/site';
+import { getPage, savePage } from '@/actions/editor/pages';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -21,22 +21,22 @@ export default function CoderPage({ params }: { params: Promise<{ id: string }> 
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchSiteCode = async () => {
+    const fetchPageCode = async () => {
       setLoading(true);
-      const result = await getSite(id);
-      if (result.success && result.site) {
-        setCode(result.site.reactComponent || '');
+      const result = await getPage(id);
+      if (result.success && result.page) {
+        setCode(result.page.reactComponent || '');
       } else {
-        setError(result.error || 'Failed to fetch site code.');
+        setError(result.error || 'Failed to fetch page code.');
       }
       setLoading(false);
     };
-    fetchSiteCode();
+    fetchPageCode();
   }, [id]);
 
   const handleSave = async () => {
     setIsSaving(true);
-    const result = await saveSite(id, { reactComponent: code });
+    const result = await savePage(id, { reactComponent: code });
     if (result.success) {
       toast({ title: 'Code Saved', description: 'Your React component has been updated.' });
     } else {

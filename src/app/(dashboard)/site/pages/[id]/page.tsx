@@ -3,8 +3,7 @@
 
 import { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSite, saveSite, deleteSite, type Site } from '@/actions/editor/site';
-import type { CanvasElementData } from '@/lib/schemas';
+import { getPage, savePage, deletePage, type Page } from '@/actions/editor/pages';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -33,7 +32,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
   const { toast } = useToast();
   const router = useRouter();
 
-  const [site, setSite] = useState<Site | null>(null);
+  const [page, setPage] = useState<Page | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,11 +40,11 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
 
   const fetchPage = useCallback(async () => {
     setLoading(true);
-    const siteResult = await getSite(id);
-    if (siteResult.success && siteResult.site) {
-      setSite(siteResult.site);
+    const pageResult = await getPage(id);
+    if (pageResult.success && pageResult.page) {
+      setPage(pageResult.page);
     } else {
-      setError(siteResult.error || 'Failed to load page content.');
+      setError(pageResult.error || 'Failed to load page content.');
     }
     setLoading(false);
   }, [id]);
@@ -55,9 +54,9 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
   }, [fetchPage]);
 
   const handleSectionVisibilityChange = async (sectionId: string, isVisible: boolean) => {
-    if (!site) return;
+    if (!page) return;
 
-    const updatedElements = site.elements.map(el => {
+    const updatedElements = page.elements.map(el => {
         if (el.id === sectionId) {
             return {
                 ...el,
@@ -70,11 +69,11 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
         return el;
     });
     
-    const updatedSite = { ...site, elements: updatedElements };
-    setSite(updatedSite); // Optimistic update
+    const updatedPage = { ...page, elements: updatedElements };
+    setPage(updatedPage); // Optimistic update
 
     setIsSaving(true);
-    const result = await saveSite(id, { elements: updatedElements });
+    const result = await savePage(id, { elements: updatedElements });
     if(result.success) {
         toast({ title: 'Section Updated!', description: `Section visibility has been saved.`});
     } else {
@@ -86,7 +85,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
   
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
-    const result = await deleteSite(id);
+    const result = await deletePage(id);
     if (result.success) {
       toast({ title: "Page Deleted", description: "The page has been permanently deleted."});
       router.push('/site/pages');
@@ -122,7 +121,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
       )
   }
 
-  if (error || !site) {
+  if (error || !page) {
       return (
         <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -169,12 +168,12 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
                     <CardDescription>Control the visibility of each top-level section on this page.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {site.elements.length === 0 ? (
+                    {page.elements.length === 0 ? (
                         <p className="text-muted-foreground">This page has no sections yet.</p>
                     ) : (
                         <div className="border rounded-lg">
-                           {site.elements.map((element, index) => (
-                               <div key={element.id} className={`flex items-center justify-between p-4 ${index < site.elements.length - 1 ? 'border-b' : ''}`}>
+                           {page.elements.map((element, index) => (
+                               <div key={element.id} className={`flex items-center justify-between p-4 ${index < page.elements.length - 1 ? 'border-b' : ''}`}>
                                    <span className="font-mono text-sm">{element.id} ({element.type})</span>
                                    <div className="flex items-center gap-2">
                                        <Switch

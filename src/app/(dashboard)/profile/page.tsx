@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getSite, saveSite, getSites, type Site } from '@/actions/editor/site';
+import { getSite, saveSite, type Site } from '@/actions/editor/site';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,7 +40,6 @@ export default function ProfilePage() {
     const { setProfileName, setLogoUrl } = useProfile();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
-    const [siteId, setSiteId] = useState<string | null>(null);
 
     const form = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileFormSchema),
@@ -72,27 +71,26 @@ export default function ProfilePage() {
         
         const fetchProfileData = async () => {
             setLoading(true);
-            const sitesResult = await getSites();
-            if (sitesResult.success && sitesResult.sites && sitesResult.sites.length > 0) {
-                // For now, we assume the user is editing the first site associated with their siteId.
-                const siteToEdit = sitesResult.sites[0];
-                setSiteId(siteToEdit.id);
-                
-                const { success, site } = await getSite(siteToEdit.id);
-                if (success && site) {
-                    form.reset({
-                        name: site.name,
-                        logoUrl: site.logoUrl ? removeUrlPrefix(site.logoUrl) : '',
-                        description: site.description || '',
-                        socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
-                        contactEmail: site.contactEmail || [],
-                        contactPhone: site.contactPhone || [],
-                    });
-                } else {
-                     toast({ variant: 'destructive', title: 'Error', description: 'Could not load site data.' });
-                }
+            const { success, site } = await getSite();
+            if (success && site) {
+                form.reset({
+                    name: site.name,
+                    logoUrl: site.logoUrl ? removeUrlPrefix(site.logoUrl) : '',
+                    description: site.description || '',
+                    socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
+                    contactEmail: site.contactEmail || [],
+                    contactPhone: site.contactPhone || [],
+                });
             } else {
-                 toast({ variant: 'destructive', title: 'Error', description: sitesResult.error || 'No sites found for your account.' });
+                 toast({ variant: 'destructive', title: 'Error', description: 'Could not load site data. A new site profile will be created on save.' });
+                 // If the site doesn't exist, we can pre-fill some fields or let the user start fresh
+                 form.reset({
+                    name: 'My New Site',
+                    description: 'A brief description of my new site.',
+                    socialProfiles: [],
+                    contactEmail: [],
+                    contactPhone: [],
+                 })
             }
             setLoading(false);
         };
@@ -100,12 +98,7 @@ export default function ProfilePage() {
     }, [form, toast]);
 
     const onSubmit = async (data: ProfileFormData) => {
-        if (!siteId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'No site ID to save to.' });
-            return;
-        }
-
-        const result = await saveSite(siteId, {
+        const result = await saveSite({
             name: data.name,
             logoUrl: data.logoUrl,
             description: data.description,
@@ -115,10 +108,8 @@ export default function ProfilePage() {
         });
 
         if (result.success) {
-            toast({ title: 'Profile Saved', description: 'Your profile information has been updated.' });
+            toast({ title: 'Profile Saved', description: 'Your site information has been updated.' });
             setProfileName(data.name);
-            // The result of saving should give back the *normalized* URL to update the context with.
-            // For now, we manually reconstruct it, but this could be improved in the action.
             setLogoUrl(data.logoUrl ? (data.logoUrl.startsWith('http') ? data.logoUrl : `https://${data.logoUrl}`) : null);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
@@ -153,12 +144,12 @@ export default function ProfilePage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Profile Information</CardTitle>
+                    <CardTitle>Site Information</CardTitle>
                     <CardDescription>This information may be used across your site.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <FormField control={form.control} name="name" render={({ field }) => (
-                        <FormItem><FormLabel>Profile Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Site Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="logoUrl" render={({ field }) => (
                         <FormItem><FormLabel>Logo URL</FormLabel><FormControl><Input {...field} placeholder="example.com/logo.png" /></FormControl><FormMessage /></FormItem>

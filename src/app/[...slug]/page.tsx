@@ -1,6 +1,6 @@
 
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
 
 async function getPageForPath(slug: string[]): Promise<string | null> {
@@ -19,16 +19,15 @@ async function getPageForPath(slug: string[]): Promise<string | null> {
         const pathData = querySnapshot.docs[0].data();
         const pageId = pathData.pageId;
 
-        // 2. Fetch the corresponding page content from the 'sites' collection
-        const sitesRef = collection(db, 'sites');
-        const pageQuery = query(sitesRef, where('__name__', '==', pageId), limit(1));
-        const pageSnapshot = await getDocs(pageQuery);
+        // 2. Fetch the corresponding page content from the 'pages' collection
+        const pageRef = doc(db, 'pages', pageId);
+        const pageSnap = await getDoc(pageRef);
 
-        if (pageSnapshot.empty) {
+        if (!pageSnap.exists()) {
             return null; // Page document not found
         }
 
-        const pageData = pageSnapshot.docs[0].data();
+        const pageData = pageSnap.data();
         const elements = pageData.elements;
 
         // 3. Convert JSON to HTML

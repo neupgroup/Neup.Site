@@ -1,13 +1,14 @@
+
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowRight, Code, Edit, MessageSquare, PlusSquare, Loader2 } from 'lucide-react';
-import { createSite, type Site } from '@/actions/editor/site';
+import { createPage, type Page } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 
-type CreationType = Site['type'];
+type CreationType = Page['type'];
 
 const creationOptions: {
     title: string;
@@ -60,7 +61,7 @@ export default function CreatePageHub() {
 
     setIsCreating(option.type);
 
-    const result = await createSite(option.type);
+    const result = await createPage(option.type);
 
     if (result.success && result.id) {
         toast({ title: 'Page Created!', description: 'Redirecting you to the editor...'});

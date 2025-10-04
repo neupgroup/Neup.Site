@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { getSite, saveSite } from '@/actions/editor/site';
+import { getPage, savePage } from '@/actions/editor/pages';
 import { getTemplates, type Template } from '@/actions/editor/templates';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
@@ -27,12 +27,12 @@ export default function PrebuiltPage({ params }: { params: Promise<{ id: string 
         const fetchData = async () => {
             setLoading(true);
             try {
-                const [siteResult, templatesResult] = await Promise.all([getSite(id), getTemplates()]);
+                const [pageResult, templatesResult] = await Promise.all([getPage(id), getTemplates()]);
 
-                if (siteResult.success && siteResult.site) {
-                    setPageElements(siteResult.site.elements || []);
+                if (pageResult.success && pageResult.page) {
+                    setPageElements(pageResult.page.elements || []);
                 } else {
-                    setError(siteResult.error || 'Failed to load page data.');
+                    setError(pageResult.error || 'Failed to load page data.');
                 }
 
                 if (templatesResult.success && templatesResult.templates) {
@@ -68,7 +68,7 @@ export default function PrebuiltPage({ params }: { params: Promise<{ id: string 
 
     const handleSave = async () => {
         setIsSaving(true);
-        const result = await saveSite(id, { elements: pageElements });
+        const result = await savePage(id, { elements: pageElements });
         if (result.success) {
             toast({ title: 'Page Saved', description: 'The page structure has been updated.' });
         } else {

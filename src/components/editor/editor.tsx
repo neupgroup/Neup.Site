@@ -9,7 +9,7 @@ import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
 import { logErrorToFirestore } from '@/actions/logging';
-import { saveSite, createSite } from '@/actions/editor/site';
+import { savePage, createPage } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 import type { CanvasElementData } from '@/lib/schemas';
 import { elementDefinitions } from '@/elements';
@@ -17,11 +17,11 @@ import { temp_element } from '@/elements/html';
 
 interface EditorProps {
     initialElements: CanvasElementData[];
-    siteId?: string;
+    pageId?: string;
 }
 
-const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => {
-  const [siteId, setSiteId] = useState(initialSiteId);
+const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => {
+  const [pageId, setPageId] = useState(initialPageId);
   const router = useRouter();
   const [history, setHistory] = useState<CanvasElementData[][]>([initialElements]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -665,24 +665,24 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
   }, [selectedElement, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
 
   const handleSaveFlow = async () => {
-    let currentSiteId = siteId;
-    if (!currentSiteId) {
-        const createResult = await createSite();
+    let currentPageId = pageId;
+    if (!currentPageId) {
+        const createResult = await createPage();
         if (createResult.success && createResult.id) {
-            currentSiteId = createResult.id;
-            setSiteId(currentSiteId);
+            currentPageId = createResult.id;
+            setPageId(currentPageId);
              // Update the URL to reflect the new ID for editing mode
-            router.push(`/site/editor/dragger?id=${currentSiteId}`, { scroll: false });
+            router.push(`/site/editor/dragger?id=${currentPageId}`, { scroll: false });
         } else {
-            throw new Error(createResult.error || 'Failed to create a new site entry.');
+            throw new Error(createResult.error || 'Failed to create a new page entry.');
         }
     }
 
-    const result = await saveSite(currentSiteId, elements);
+    const result = await savePage(currentPageId, { elements });
     if (!result.success) {
         throw new Error(result.error);
     }
-    return currentSiteId;
+    return currentPageId;
   }
 
   const handlePublish = async () => {
@@ -690,11 +690,11 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
     try {
         await handleSaveFlow();
         toast({
-            title: 'Site Saved!',
-            description: 'Your website has been saved successfully.',
+            title: 'Page Saved!',
+            description: 'Your page has been saved successfully.',
         });
     } catch (error: any) {
-        console.error("Error saving site:", error);
+        console.error("Error saving page:", error);
         toast({
             variant: 'destructive',
             title: 'Saving Failed',
@@ -709,16 +709,16 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
   const handlePreview = async () => {
     setIsPreviewing(true);
     try {
-      const savedSiteId = await handleSaveFlow();
-      if (savedSiteId) {
-        window.open(`/preview/${savedSiteId}`, '_blank');
+      const savedPageId = await handleSaveFlow();
+      if (savedPageId) {
+        window.open(`/preview/${savedPageId}`, '_blank');
       }
     } catch (error: any) {
       console.error("Error saving for preview:", error);
       toast({
         variant: 'destructive',
         title: 'Preview Failed',
-        description: `Could not save the site for previewing. ${error.message}`,
+        description: `Could not save the page for previewing. ${error.message}`,
       });
       logErrorToFirestore({ message: error.message, stack: error.stack });
     } finally {
@@ -767,7 +767,7 @@ const Editor: FC<EditorProps> = ({ initialElements, siteId: initialSiteId }) => 
             deleteElement={deleteElement}
             updateElementId={updateElementId}
             onUpdateAllElements={handleUpdateAllElements}
-            siteId={siteId}
+            pageId={pageId}
         />
       </div>
     </div>

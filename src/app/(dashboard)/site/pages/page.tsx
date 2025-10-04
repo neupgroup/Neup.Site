@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getSites, type Site, deleteSite } from '@/actions/editor/site';
+import { getPages, type Page, deletePage } from '@/actions/editor/pages';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -31,36 +31,36 @@ import { AlertCircle, Plus, Eye, Pencil, Globe, Trash2, ArrowRight } from 'lucid
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-export default function SitesPage() {
-  const [sites, setSites] = useState<Site[]>([]);
+export default function PagesPage() {
+  const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchSites = async () => {
+  const fetchPages = async () => {
     setLoading(true);
-    const result = await getSites();
-    if (result.success && result.sites) {
-      setSites(result.sites.sort((a, b) => {
+    const result = await getPages();
+    if (result.success && result.pages) {
+      setPages(result.pages.sort((a, b) => {
         const dateA = a.updatedAt ? new Date(a.updatedAt) : new Date(0);
         const dateB = b.updatedAt ? new Date(b.updatedAt) : new Date(0);
         return dateB.getTime() - dateA.getTime();
       }));
     } else {
-      setError(result.error || 'Failed to fetch sites');
+      setError(result.error || 'Failed to fetch pages');
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchSites();
+    fetchPages();
   }, []);
 
   const handleDelete = async (id: string) => {
-    const result = await deleteSite(id);
+    const result = await deletePage(id);
     if (result.success) {
       toast({ title: "Page Deleted", description: "The page and its associated paths have been deleted."});
-      fetchSites();
+      fetchPages();
     } else {
       toast({ variant: "destructive", title: "Error", description: result.error });
     }
@@ -113,7 +113,7 @@ export default function SitesPage() {
           </Link>
         </Button>
       </header>
-      {sites.length === 0 ? (
+      {pages.length === 0 ? (
         <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
             <Globe className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold">No Pages Yet</h3>
@@ -121,19 +121,19 @@ export default function SitesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {sites.map((site) => (
-            <Link key={site.id} href={`/site/pages/${site.id}`} className="block group">
+          {pages.map((page) => (
+            <Link key={page.id} href={`/site/pages/${page.id}`} className="block group">
                 <Card className="transition-all group-hover:border-primary group-hover:shadow-md">
                     <div className="flex flex-col sm:flex-row sm:items-center p-6">
                         <div className="flex-1">
-                            <CardTitle className="truncate">Page: {site.id.substring(0, 8)}...</CardTitle>
+                            <CardTitle className="truncate">Page: {page.name || page.id.substring(0,8) + '...'}</CardTitle>
                             <CardDescription>
-                            Last updated: {site.updatedAt ? new Date(site.updatedAt).toLocaleString() : 'N/A'}
+                            Last updated: {page.updatedAt ? new Date(page.updatedAt).toLocaleString() : 'N/A'}
                             </CardDescription>
                         </div>
                         <div className="flex-1 pt-4 sm:pt-0">
                             <p className="text-sm text-muted-foreground">
-                            This page has {site.elements.length} root element(s).
+                            This page has {page.elements.length} root element(s).
                             </p>
                         </div>
                         <div className="flex-shrink-0 pt-4 sm:pt-0">

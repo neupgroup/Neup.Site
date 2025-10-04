@@ -2,7 +2,7 @@
 import { Suspense } from 'react';
 import type { FC } from 'react';
 import Editor from '@/components/editor/editor';
-import { getSite } from '@/actions/editor/site';
+import { getPage } from '@/actions/editor/pages';
 import type { CanvasElementData } from '@/lib/schemas';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -51,24 +51,24 @@ const EditorLoadingSkeleton = () => (
 
 const WebsiteBuilderPage: FC<WebsiteBuilderPageProps> = async ({ searchParams }) => {
   const { id } = searchParams;
-  let siteElements: CanvasElementData[] = initialElements;
-  let siteId: string | undefined = id;
+  let pageElements: CanvasElementData[] = initialElements;
+  let pageId: string | undefined = id;
 
   if (id) {
-    const { success, site } = await getSite(id);
-    if (success && site && site.elements?.length > 0) {
-      siteElements = site.elements;
+    const { success, page } = await getPage(id);
+    if (success && page && page.elements?.length > 0) {
+      pageElements = page.elements;
     } else {
-        // Handle case where site is not found or empty
-        console.warn(`Site with id ${id} not found or is empty. Starting new editor session.`);
-        siteElements = initialElements;
-        siteId = undefined; // Start as a new site
+        // Handle case where page is not found or empty
+        console.warn(`Page with id ${id} not found or is empty. Starting new editor session.`);
+        pageElements = initialElements;
+        pageId = undefined; // Start as a new page
     }
   }
 
   return (
     <Suspense fallback={<EditorLoadingSkeleton />}>
-        <Editor initialElements={siteElements} siteId={siteId} />
+        <Editor initialElements={pageElements} pageId={pageId} />
     </Suspense>
   );
 };

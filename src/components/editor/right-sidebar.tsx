@@ -29,7 +29,7 @@ interface RightSidebarProps {
   deleteElement: (id: string) => void;
   updateElementId: (oldId: string, newId: string) => void;
   onUpdateAllElements: (elements: CanvasElementData[]) => void;
-  siteId?: string;
+  pageId?: string;
 }
 
 const propertyComponents: Record<string, React.FC<any>> = {
@@ -44,7 +44,7 @@ const propertyComponents: Record<string, React.FC<any>> = {
   repeater: RepeaterProperties,
 };
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, siteId }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, pageId }) => {
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
       if (el.id === id) return el;
@@ -115,8 +115,8 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   if (!selectedElement || !elementDef) {
     return (
       <aside className="w-80 border-l bg-card">
-        {siteId ? (
-            <PageDataSource siteId={siteId} />
+        {pageId ? (
+            <PageDataSource pageId={pageId} />
         ) : (
             <GlobalSettings elements={elements} onUpdateAllElements={onUpdateAllElements} />
         )}

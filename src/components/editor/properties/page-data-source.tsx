@@ -12,10 +12,10 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { setPageDataSource, getPageDataSource } from '@/actions/editor/data';
 
 interface PageDataSourceProps {
-    siteId: string;
+    pageId: string;
 }
 
-const PageDataSource: FC<PageDataSourceProps> = ({ siteId }) => {
+const PageDataSource: FC<PageDataSourceProps> = ({ pageId }) => {
     const [sources, setSources] = useState<Source[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -30,7 +30,7 @@ const PageDataSource: FC<PageDataSourceProps> = ({ siteId }) => {
             try {
                 const [sourcesResult, currentBindingResult] = await Promise.all([
                     getSources(),
-                    getPageDataSource(siteId)
+                    getPageDataSource(pageId)
                 ]);
 
                 if (sourcesResult.success && sourcesResult.sources) {
@@ -52,7 +52,7 @@ const PageDataSource: FC<PageDataSourceProps> = ({ siteId }) => {
         };
 
         fetchData();
-    }, [siteId]);
+    }, [pageId]);
 
     const handleSave = async () => {
         if (!selectedSourceId || !selectedMethodName) {
@@ -60,7 +60,7 @@ const PageDataSource: FC<PageDataSourceProps> = ({ siteId }) => {
             return;
         }
         setIsSaving(true);
-        const result = await setPageDataSource(siteId, selectedSourceId, selectedMethodName);
+        const result = await setPageDataSource(pageId, selectedSourceId, selectedMethodName);
         if (result.success) {
             toast({ title: 'Data Source Linked!', description: 'The page is now connected to the selected data source method.' });
         } else {

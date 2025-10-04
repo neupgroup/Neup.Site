@@ -8,7 +8,7 @@ import { Wand2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { createSite } from '@/actions/editor/site';
+import { createPage } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 
 export default function CreateFromTextPage() {
@@ -19,7 +19,7 @@ export default function CreateFromTextPage() {
 
     const handleGenerate = async () => {
         setIsCreating(true);
-        const result = await createSite('ai');
+        const result = await createPage('ai');
         if (result.success && result.id) {
             // Here you would typically pass the description to the AI page
             // For now, we just redirect.

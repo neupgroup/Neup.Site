@@ -41,14 +41,14 @@ import {
 import { AlertCircle, Link as LinkIcon, Plus, Save, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createPath, getPaths, deletePath, type Path } from '@/actions/paths';
-import { getSites, type Site } from '@/actions/editor/site';
+import { getPages, type Page } from '@/actions/editor/pages';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function PathsPage() {
   const [paths, setPaths] = useState<Path[]>([]);
-  const [sites, setSites] = useState<Site[]>([]);
+  const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,7 +61,7 @@ export default function PathsPage() {
     setLoading(true);
     setError(null);
     try {
-      const [pathsResult, sitesResult] = await Promise.all([getPaths(), getSites()]);
+      const [pathsResult, pagesResult] = await Promise.all([getPaths(), getPages()]);
 
       if (pathsResult.success && pathsResult.paths) {
         setPaths(pathsResult.paths);
@@ -69,10 +69,10 @@ export default function PathsPage() {
         setError(pathsResult.error || 'Failed to fetch paths');
       }
 
-      if (sitesResult.success && sitesResult.sites) {
-        setSites(sitesResult.sites);
+      if (pagesResult.success && pagesResult.pages) {
+        setPages(pagesResult.pages);
       } else {
-        setError(sitesResult.error || 'Failed to fetch sites');
+        setError(pagesResult.error || 'Failed to fetch pages');
       }
     } catch (e: any) {
         setError(e.message || 'An unexpected error occurred.');
@@ -140,8 +140,8 @@ export default function PathsPage() {
                         <SelectValue placeholder="Select a page..." />
                     </SelectTrigger>
                     <SelectContent>
-                        {sites.map(site => (
-                            <SelectItem key={site.id} value={site.id}>Page: {site.id.substring(0, 8)}...</SelectItem>
+                        {pages.map(page => (
+                            <SelectItem key={page.id} value={page.id}>Page: {page.name || page.id.substring(0, 8) + '...'}</SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
