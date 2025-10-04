@@ -7,62 +7,48 @@ import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 
-const initialModules = [
-    { id: 'user', name: 'User Module', description: 'Manages user authentication and profiles.', enabled: true },
-    { id: 'neupid', name: 'NeupID Module', description: 'Integrates with NeupID for single sign-on.', enabled: false },
-    { id: 'analytics', name: 'Analytics Module', description: 'Tracks user engagement and site metrics.', enabled: true },
-    { id: 'ad', name: 'Ad Module', description: 'Manages and displays advertisements.', enabled: false },
-    { id: 'social', name: 'Social Module', description: 'Handles social sharing and feeds.', enabled: false },
-    { id: 'meta-pixel', name: 'Meta Pixel Module', description: 'Integrates with Meta Pixel for tracking.', enabled: false },
-    { id: 'news', name: 'News Module', description: 'Adds a news/articles section to your site.', enabled: false },
-    { id: 'blog', name: 'Blog Module', description: 'Adds a blog section to your site.', enabled: true },
-    { id: 'database', name: 'Database Integration', description: 'Connects to a database for dynamic content.', enabled: false },
-    { id: 'google-analytics', name: 'Google Analytics Integration', description: 'Integrates with Google Analytics for detailed tracking.', enabled: false },
-    { id: 'payment', name: 'Payment Processing Module', description: 'Handles payments and subscriptions.', enabled: false },
+const allPossibleModules = [
+    { id: 'user', name: 'User Module', description: 'Manages user authentication and profiles.' },
+    { id: 'neupid', name: 'NeupID Module', description: 'Integrates with NeupID for single sign-on.' },
+    { id: 'analytics', name: 'Analytics Module', description: 'Tracks user engagement and site metrics.' },
+    { id: 'ad', name: 'Ad Module', description: 'Manages and displays advertisements.' },
+    { id: 'social', name: 'Social Module', description: 'Handles social sharing and feeds.' },
+    { id: 'meta-pixel', name: 'Meta Pixel Module', description: 'Integrates with Meta Pixel for tracking.' },
+    { id: 'news', name: 'News Module', description: 'Adds a news/articles section to your site.' },
+    { id: 'blog', name: 'Blog Module', description: 'Adds a blog section to your site.' },
+    { id: 'database', name: 'Database Integration', description: 'Connects to a database for dynamic content.' },
+    { id: 'google-analytics', name: 'Google Analytics Integration', description: 'Integrates with Google Analytics for detailed tracking.' },
+    { id: 'payment', name: 'Payment Processing Module', description: 'Handles payments and subscriptions.' },
 ];
 
-export default function ModulesPage() {
-  const [modules, setModules] = useState(initialModules);
-
-  const handleToggle = (moduleId: string, checked: boolean) => {
-    setModules(prevModules =>
-      prevModules.map(module =>
-        module.id === moduleId ? { ...module, enabled: checked } : module
-      )
-    );
-    // Here you would typically call a server action to persist the change.
-  };
+export default function ModuleDefinitionsPage() {
     
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Modules</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Module Definitions</h1>
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Manage Site Modules</CardTitle>
+          <CardTitle>Global Module Definitions</CardTitle>
           <CardDescription>
-            Enable or disable modules to add or remove functionality from your site.
+            This is a global list of all possible modules available in the system. Enable or disable modules for individual sites under "Site" &gt; "Modules".
           </CardDescription>
         </CardHeader>
         <CardContent>
            <div className="space-y-4">
-                {modules.map((module, index) => (
+                {allPossibleModules.map((module, index) => (
                     <div key={module.id}>
                         <div className="flex items-center justify-between p-4">
                             <div className="flex-1 pr-4">
-                                <Label htmlFor={module.id} className="text-base font-medium">
+                                <p className="text-base font-medium">
                                     {module.name}
-                                </Label>
+                                </p>
                                 <p className="text-sm text-muted-foreground">{module.description}</p>
                             </div>
-                            <Switch
-                                id={module.id}
-                                checked={module.enabled}
-                                onCheckedChange={(checked) => handleToggle(module.id, checked)}
-                            />
+                            <p className="text-sm font-mono text-muted-foreground bg-muted px-2 py-1 rounded-md">{module.id}</p>
                         </div>
-                        {index < modules.length - 1 && <Separator />}
+                        {index < allPossibleModules.length - 1 && <Separator />}
                    </div>
                 ))}
            </div>

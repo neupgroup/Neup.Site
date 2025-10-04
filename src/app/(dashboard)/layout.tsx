@@ -114,6 +114,16 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                   <span>Sources</span>
                 </Link>
                 <Link
+                  href="/site/modules"
+                  className={cn(
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
+                    pathname.startsWith('/site/modules') && 'bg-muted'
+                  )}
+                >
+                  <Puzzle className="h-4 w-4" />
+                  <span>Modules</span>
+                </Link>
+                <Link
                   href="/site/theme"
                   className={cn(
                     'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
@@ -221,14 +231,14 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                   <span>Billing</span>
                 </Link>
                 <Link
-                  href="/root/modules"
+                  href="/root/module-definitions"
                   className={cn(
                     'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/root/modules') && 'bg-muted'
+                    pathname.startsWith('/root/module-definitions') && 'bg-muted'
                   )}
                 >
                   <Puzzle className="h-4 w-4" />
-                  <span>Modules</span>
+                  <span>Module Definitions</span>
                 </Link>
                 <Link
                   href="/root/errors"
