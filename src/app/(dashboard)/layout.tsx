@@ -15,6 +15,8 @@ import {
   Layers,
   Puzzle,
   Palette,
+  HardDrive,
+  CreditCard,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -116,6 +118,26 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                   <Palette className="h-4 w-4" />
                   <span>Theme</span>
                 </Link>
+                 <Link
+                  href="/site/storage"
+                  className={cn(
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    pathname.startsWith('/site/storage') && 'bg-muted'
+                  )}
+                >
+                  <HardDrive className="h-4 w-4" />
+                  <span>Storage</span>
+                </Link>
+                 <Link
+                  href="/site/billing"
+                  className={cn(
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    pathname.startsWith('/site/billing') && 'bg-muted'
+                  )}
+                >
+                  <CreditCard className="h-4 w-4" />
+                  <span>Billing</span>
+                </Link>
                 <Link
                   href="/site/editor/dragger"
                   className={cn(
@@ -172,6 +194,26 @@ function Dashboard({ children }: { children: React.ReactNode }) {
                 >
                   <Server className="h-4 w-4" />
                   <span>Servers</span>
+                </Link>
+                 <Link
+                  href="/root/storage"
+                  className={cn(
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    pathname.startsWith('/root/storage') && 'bg-muted'
+                  )}
+                >
+                  <HardDrive className="h-4 w-4" />
+                  <span>Storage</span>
+                </Link>
+                 <Link
+                  href="/root/billing"
+                  className={cn(
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted',
+                    pathname.startsWith('/root/billing') && 'bg-muted'
+                  )}
+                >
+                  <CreditCard className="h-4 w-4" />
+                  <span>Billing</span>
                 </Link>
                 <Link
                   href="/root/modules"
