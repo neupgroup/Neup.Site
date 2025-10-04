@@ -19,6 +19,7 @@ import {
   HardDrive,
   CreditCard,
   Newspaper,
+  BarChart,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -196,6 +197,16 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 >
                   <Puzzle className="h-4 w-4" />
                   <span>Modules</span>
+                </Link>
+                 <Link
+                  href="/analytics"
+                  className={cn(
+                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
+                    pathname.startsWith('/analytics') && 'bg-muted'
+                  )}
+                >
+                  <BarChart className="h-4 w-4" />
+                  <span>Analytics</span>
                 </Link>
                 <Link
                   href="/site/theme"
