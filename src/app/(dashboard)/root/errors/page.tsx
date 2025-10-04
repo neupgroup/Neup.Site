@@ -10,14 +10,14 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Terminal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, Terminal, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getErrorLogsAction, type ErrorLog } from '@/actions/errors';
 import { Button } from '@/components/ui/button';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-
+import Link from 'next/link';
 
 const ErrorsPage = () => {
   const [errors, setErrors] = useState<ErrorLog[]>([]);
@@ -63,6 +63,7 @@ const ErrorsPage = () => {
             <Terminal className="h-6 w-6" />
             Application Errors
           </CardTitle>
+          <CardDescription>A list of errors logged by the application.</CardDescription>
         </CardHeader>
         <CardContent>
             {fetchError && (
@@ -79,7 +80,7 @@ const ErrorsPage = () => {
                         <TableHead>Timestamp</TableHead>
                         <TableHead>Source</TableHead>
                         <TableHead>Message</TableHead>
-                        <TableHead>Stack Trace</TableHead>
+                        <TableHead className="text-right">Details</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -89,7 +90,7 @@ const ErrorsPage = () => {
                                     <TableCell><Skeleton className="h-5 w-48" /></TableCell>
                                     <TableCell><Skeleton className="h-5 w-24" /></TableCell>
                                     <TableCell><Skeleton className="h-5 w-full" /></TableCell>
-                                    <TableCell><Skeleton className="h-5 w-full" /></TableCell>
+                                    <TableCell className="text-right"><Skeleton className="h-8 w-8 inline-block" /></TableCell>
                                 </TableRow>
                             ))
                         ) : errors.length > 0 ? (
@@ -97,9 +98,17 @@ const ErrorsPage = () => {
                             <TableRow key={error.id}>
                             <TableCell>{new Date(error.timestamp).toLocaleString()}</TableCell>
                             <TableCell><span className="font-mono text-xs bg-muted px-2 py-1 rounded-md">{error.source || 'N/A'}</span></TableCell>
-                            <TableCell>{error.message}</TableCell>
-                            <TableCell className="text-xs text-muted-foreground font-mono">
-                                <pre className="whitespace-pre-wrap break-all">{error.stack || 'N/A'}</pre>
+                            <TableCell className="max-w-md truncate">
+                                <Link href={`/root/errors/${error.id}`} className="hover:underline">
+                                    {error.message}
+                                </Link>
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <Button asChild variant="ghost" size="icon">
+                                    <Link href={`/root/errors/${error.id}`}>
+                                        <ArrowRight className="h-4 w-4" />
+                                    </Link>
+                                </Button>
                             </TableCell>
                             </TableRow>
                         ))

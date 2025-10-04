@@ -3,9 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getPage, savePage } from '@/actions/editor/pages';
-import { getTemplates, type Template } from '@/actions/editor/templates';
-import { getSections, type Section } from '@/actions/editor/sections';
+import { savePage } from '@/actions/editor/pages';
+import { getPrebuiltEditorData, type LibraryItem } from '@/actions/editor/prebuilt';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -16,15 +15,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
 import { logErrorToFirestore } from '@/lib/logging';
-
-// A unified interface for items in the section library
-interface LibraryItem {
-    id: string;
-    name: string;
-    description?: string;
-    content: CanvasElementData[];
-    sourceType: 'template' | 'section';
-}
 
 export default function PrebuiltEditorPage() {
     const searchParams = useSearchParams();
@@ -46,74 +36,26 @@ export default function PrebuiltEditorPage() {
 
         const fetchData = async () => {
             setLoading(true);
-            try {
-                const [pageResult, templatesResult, sectionsResult] = await Promise.all([
-                    getPage(id), 
-                    getTemplates(),
-                    getSections(),
-                ]);
-
-                if (pageResult.success && pageResult.page) {
-                    setPageElements(pageResult.page.elements || []);
-                } else {
-                    setError(pageResult.error || 'Failed to load page data.');
-                }
-                
-                const combinedLibrary: LibraryItem[] = [];
-
-                if (templatesResult.success && templatesResult.templates) {
-                    const filteredTemplates = templatesResult.templates
-                        .filter(t => t.type === 'section' && t.status === 'published' && t.usableOn.includes('json') && t.content?.json && t.content.json.length > 0)
-                        .map(t => ({
-                            id: t.id,
-                            name: t.name,
-                            description: t.description,
-                            content: t.content.json!,
-                            sourceType: 'template' as const,
-                        }));
-                    combinedLibrary.push(...filteredTemplates);
-                } else {
-                    setError(prev => (prev ? `${prev} And failed to load templates: ${templatesResult.error}` : templatesResult.error || 'Failed to load templates.'));
-                }
-
-                if (sectionsResult.success && sectionsResult.sections) {
-                    const mappedSections = sectionsResult.sections.map(s => {
-                        try {
-                            const parsedContent = JSON.parse(s.content);
-                            return {
-                                id: s.id,
-                                name: s.name,
-                                description: `Custom section of type: ${s.type}`,
-                                content: Array.isArray(parsedContent) ? parsedContent : [parsedContent],
-                                sourceType: 'section' as const,
-                            }
-                        } catch {
-                            return null;
-                        }
-                    }).filter((s): s is LibraryItem => s !== null && s.content.length > 0);
-                    combinedLibrary.push(...mappedSections);
-                } else {
-                     setError(prev => (prev ? `${prev} And failed to load sections: ${sectionsResult.error}` : sectionsResult.error || 'Failed to load sections.'));
-                }
-                
-                setLibraryItems(combinedLibrary);
-
-            } catch (e: any) {
-                setError('An unexpected error occurred while fetching data.');
-                 await logErrorToFirestore({
-                    message: e.message,
-                    stack: e.stack,
-                    source: 'PrebuiltEditorPage.fetchData',
-                });
-            } finally {
-                setLoading(false);
+            const result = await getPrebuiltEditorData(id);
+            if (result.success && result.data) {
+                setPageElements(result.data.pageElements);
+                setLibraryItems(result.data.libraryItems);
+            } else {
+                setError(result.error || 'Failed to load editor data.');
             }
+            setLoading(false);
         };
+
         fetchData();
     }, [id]);
 
     const addSection = (item: LibraryItem) => {
-        const content = item.content;
+        if (item.jsonContent.length === 0 && item.reactContent) {
+            toast({ variant: 'default', title: 'React Component', description: 'This section is a React component and cannot be added here.' });
+            return;
+        }
+        
+        const content = item.jsonContent;
         if (!content || !Array.isArray(content) || content.length === 0) {
             const errorMsg = `Library item "${item.name}" (ID: ${item.id}) has no valid content to add.`;
             toast({ variant: 'destructive', title: 'Empty Item', description: 'This template has no content to add.' });
@@ -124,11 +66,10 @@ export default function PrebuiltEditorPage() {
             });
             return;
         }
-        
-        // Ensure unique ID for the new section instance
+
         const newSection = {
             ...content[0],
-            id: `${content[0].id}-${Date.now()}` 
+            id: `${content[0].id}-${Date.now()}`,
         };
         setPageElements(prev => [...prev, newSection]);
     };
@@ -150,16 +91,23 @@ export default function PrebuiltEditorPage() {
     };
 
     if (loading) {
-        return <div className="p-4 space-y-4"><Skeleton className="h-48" /><Skeleton className="h-48" /></div>
+        return <div className="p-4 space-y-4"><Skeleton className="h-48" /><Skeleton className="h-48" /></div>;
     }
-     if (error) {
-        return <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>;
+
+    if (error) {
+        return (
+            <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        );
     }
 
     return (
         <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
             <div className="flex flex-col gap-4">
-                 <Button asChild variant="ghost" className="mb-4 self-start">
+                <Button asChild variant="ghost" className="mb-4 self-start">
                     <Link href={`/site/pages/${id}/edit`}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Edit Options
@@ -173,7 +121,7 @@ export default function PrebuiltEditorPage() {
                     <ScrollArea className="max-h-96">
                         <CardContent className="space-y-2">
                             {libraryItems.map(item => (
-                                 <div key={item.id} className="flex items-center justify-between p-2 border rounded-lg hover:bg-muted/50">
+                                <div key={item.id} className="flex items-center justify-between p-2 border rounded-lg hover:bg-muted/50">
                                     <div className="flex-1 overflow-hidden">
                                         <p className="font-medium truncate">{item.name}</p>
                                         <p className="text-xs text-muted-foreground truncate">{item.description}</p>
@@ -193,7 +141,7 @@ export default function PrebuiltEditorPage() {
                         <CardDescription>The sections currently on your page. Drag to reorder.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                         <div className="space-y-4">
+                        <div className="space-y-4">
                             {pageElements.map((element, index) => (
                                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
                                     <span className="font-mono text-sm">{element.id} ({element.type})</span>
@@ -202,7 +150,7 @@ export default function PrebuiltEditorPage() {
                                     </Button>
                                 </div>
                             ))}
-                             {pageElements.length === 0 && (
+                            {pageElements.length === 0 && (
                                 <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
                                     <p>Add sections from the library above to begin.</p>
                                 </div>
@@ -210,7 +158,7 @@ export default function PrebuiltEditorPage() {
                         </div>
                     </CardContent>
                 </Card>
-                 <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
+                <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
                     <Button onClick={handleSave} disabled={isSaving}>
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                         Save Page

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getFirestore, collection, getDocs, orderBy, query, limit, getCountFromServer, startAfter, DocumentSnapshot, doc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, orderBy, query, limit, getCountFromServer, startAfter, DocumentSnapshot, doc, getDoc } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 
 export interface ErrorLog {
@@ -17,13 +17,11 @@ export async function getErrorLogsAction({ page = 1, pageSize = 10 }: { page?: n
         const { firestore } = initializeFirebase();
         const logsRef = collection(firestore, 'errors');
         
-        // Get total count
         const countSnapshot = await getCountFromServer(logsRef);
         const totalCount = countSnapshot.data().count;
 
         let q;
         if (page > 1) {
-            // To get the document to start after, we need to query for the last document of the previous page
             const prevPageQuery = query(logsRef, orderBy('timestamp', 'desc'), limit((page - 1) * pageSize));
             const prevPageSnapshot = await getDocs(prevPageQuery);
             const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
@@ -47,5 +45,31 @@ export async function getErrorLogsAction({ page = 1, pageSize = 10 }: { page?: n
     } catch (e: any) {
         console.error('Failed to fetch error logs:', e);
         return { error: e.message || 'Unknown error occurred while fetching logs.' };
+    }
+}
+
+export async function getErrorLogById(id: string): Promise<{ log?: ErrorLog, error?: string }> {
+    try {
+        const { firestore } = initializeFirebase();
+        const docRef = doc(firestore, 'errors', id);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+            return { error: 'Error log not found.' };
+        }
+
+        const data = docSnap.data();
+        const log: ErrorLog = {
+            id: docSnap.id,
+            message: data.message,
+            stack: data.stack,
+            source: data.source,
+            timestamp: data.timestamp.toDate().toISOString(),
+        };
+
+        return { log };
+    } catch (e: any) {
+        console.error(`Failed to fetch error log with ID ${id}:`, e);
+        return { error: e.message || `Unknown error occurred while fetching log ${id}.` };
     }
 }
