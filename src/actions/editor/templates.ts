@@ -102,14 +102,19 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
       const data = doc.data();
       const createdAt = data.createdAt;
       
-      const serializableData: Partial<Template> = {
-        ...data,
-        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-      };
-
       return {
         id: doc.id,
-        ...serializableData,
+        siteId: data.siteId,
+        name: data.name,
+        description: data.description,
+        elements: data.elements,
+        reactComponent: data.reactComponent,
+        type: data.type,
+        method: data.method,
+        source: data.source,
+        code: data.code,
+        createdBy: data.createdBy,
+        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
       } as Template;
     });
     return { success: true, templates };
