@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -31,15 +30,15 @@ function Header() {
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-4">
           {loading.logo ? (
-            <Skeleton className="h-6 w-6" />
+            <Skeleton className="h-5 w-5" />
           ) : logoUrl ? (
-             <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
+             <div className="relative h-5 w-auto" style={{ aspectRatio: 'auto' }}>
+                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-5 !w-auto" />
              </div>
           ) : (
-            <Rocket className="h-6 w-6 text-primary" />
+            <Rocket className="h-5 w-5 text-primary" />
           )}
 
           {!hideSitename && (
@@ -141,6 +140,17 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 <span>Profile</span>
               </Link>
 
+              <Link
+                href="/news"
+                className={cn(
+                  'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
+                  pathname.startsWith('/news') && 'bg-muted'
+                )}
+              >
+                <Newspaper className="h-4 w-4" />
+                <span>News</span>
+              </Link>
+
               {/* Site Section */}
               <div className="mt-4 space-y-2">
                 <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
@@ -155,16 +165,6 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 >
                   <Globe className="h-4 w-4" />
                   <span>Pages</span>
-                </Link>
-                <Link
-                  href="/news"
-                  className={cn(
-                    'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                    pathname.startsWith('/news') && 'bg-muted'
-                  )}
-                >
-                  <Newspaper className="h-4 w-4" />
-                  <span>News</span>
                 </Link>
                 <Link
                   href="/site/paths"
