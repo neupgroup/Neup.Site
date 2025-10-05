@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -57,28 +58,30 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const router = useRouter();
 
   const fetchLogs = async (page = 1) => {
-    console.log('ServerDetailPage.fetchLogs: Calling getServerLogs for serverId:', id, 'page:', page);
+    console.log('[Page] fetchLogs: Initiating fetch for page', page);
     setLoadingLogs(true);
     setLogsError(null);
     const result = await getServerLogs({ serverId: id, page });
-    console.log('ServerDetailPage.fetchLogs: Result from getServerLogs:', result);
+    console.log('[Page] fetchLogs: Received result from action:', result);
+
     if (result.success && result.logs) {
+        console.log(`[Page] fetchLogs: Successfully received ${result.logs.length} logs.`);
         setLogs(prev => (page === 1 ? result.logs! : [...prev, ...result.logs!]));
         setHasMoreLogs(result.hasMore || false);
     } else {
         const errorMessage = result.error || 'Failed to load logs.';
+        console.error('[Page] fetchLogs: Error processing logs:', errorMessage);
         setLogsError(errorMessage);
-        console.error('ServerDetailPage.fetchLogs: Error processing logs:', errorMessage);
-        // Log the error to Firestore if it's not already logged by the action
-        if (errorMessage !== result.error) { // Only log if it's a generic error from the client
+        if (errorMessage !== result.error) {
             logErrorToFirestore({
-                message: `Client-side error loading server logs for serverId: ${id}. Error: ${errorMessage}`,
-                stack: new Error().stack, // Capture client-side stack trace
+                message: `Client-side error in fetchLogs for serverId: ${id}. Error: ${errorMessage}`,
+                stack: new Error().stack,
                 source: 'ServerDetailPage.fetchLogs',
             });
         }
     }
     setLoadingLogs(false);
+    console.log('[Page] fetchLogs: Finished processing fetch for page', page);
   }
 
   useEffect(() => {
