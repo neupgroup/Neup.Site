@@ -7,7 +7,11 @@ interface NginxConfigParams {
 }
 
 export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxConfigParams): Promise<string> {
-  if (urls.length === 0) throw new Error('At least one URL is required.');
+  if (urls.length === 0) {
+    throw new Error('At least one URL is required.');
+  }
+
+  // --- 1. Process and build the complete Nginx configuration string first ---
 
   const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
   const primaryDomain = firstUrl.hostname.replace(/\./g, '_');
@@ -18,11 +22,13 @@ export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: N
   const allDomains = new Set<string>();
   const locations = new Map<string, string>();
 
+  // Process all URLs to gather unique domains and create location blocks
   urls.forEach(urlStr => {
     const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
     allDomains.add(url.hostname);
     const path = url.pathname === '/' && urlStr.endsWith('/') ? '/' : (url.pathname || '/');
 
+    // Create a location block for each unique path
     if (!locations.has(path)) {
       locations.set(path, `
     location ${path} {
@@ -35,28 +41,38 @@ export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: N
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-    }
-`);
+    }`);
     }
   });
 
   const serverName = Array.from(allDomains).join(' ');
-  const locationBlocks = Array.from(locations.values()).join('\n');
+  const locationBlocks = Array.from(locations.values()).join('');
 
-  const config = `server {
+  // The final Nginx configuration string is now complete
+  const nginxConfig = `server {
     listen ${listenPort};
     server_name ${serverName};
 ${locationBlocks}
-}`;
+}
+`;
 
-  // FIX: Increased escaping for the dollar sign
-  const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\\\$');
+  // --- 2. Create the shell command to save the finalized string to a file ---
 
-  return `
+  const configFilePath = `/etc/nginx/sites-available/${configFileName}`;
+  const enabledConfigPath = `/etc/nginx/sites-enabled/${configFileName}`;
+
+  // Use a 'here-document' (cat <<'EOF') to write the string.
+  // Quoting 'EOF' prevents the shell from expanding variables (like $http_upgrade) inside the block.
+  // This is a much safer way to write multi-line content with special characters.
+  const command = `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
-sudo bash -c "echo \\"${escapedConfig}\\" > /etc/nginx/sites-available/${configFileName}" &&
-sudo ln -s -f /etc/nginx/sites-available/${configFileName} /etc/nginx/sites-enabled/${configFileName} &&
+sudo bash -c "cat > ${configFilePath}" <<'EOF'
+${nginxConfig}
+EOF
+sudo ln -s -f ${configFilePath} ${enabledConfigPath} &&
 sudo nginx -t &&
 sudo systemctl reload nginx
 `.trim();
+
+  return command;
 }
