@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -122,7 +123,7 @@ export default function ServerLogsPage({ params }: { params: Promise<{ id: strin
                 <Accordion type="single" collapsible className="w-full space-y-2">
                     {logs.map(log => (
                         <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
-                            <AccordionTrigger>
+                            <AccordionTrigger className="hover:no-underline">
                                 <div className="flex flex-col items-start text-left w-full gap-2">
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                         <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>
