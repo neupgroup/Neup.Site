@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -93,11 +94,7 @@ const handleNginxConfig = () => {
             return;
         }
 
-        const listenPort = parseInt(proxyPort, 10) - 1;
-        if (isNaN(listenPort) || listenPort < 1) {
-            toast({ variant: 'destructive', title: 'Invalid Port', description: `Could not determine a valid listen port from proxy URL.`});
-            return;
-        }
+        const listenPort = 80;
 
         const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
         const primaryDomain = firstUrl.hostname;
