@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
+import { useForm, useFieldArray, FormProvider, Controller } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -17,26 +17,62 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, ArrowLeft, Loader2, Plus, Trash2, Code } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getSource, updateSource, type Source } from '@/actions/editor/sources';
+import { getSource, updateSource, type Source, type SourceType } from '@/actions/editor/sources';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-type FormValues = {
-  name: string;
-  basePath: string;
-  methods: {
-    methodName: string;
-    subPath: string;
-    responseFormat: {
-      correct: string;
-      incorrect: string;
-    };
-    moreDetails: string;
-  }[];
+type FormValues = Partial<Source>;
+
+const ApiFields = ({ control }: { control: any }) => {
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label>URL</Label>
+        <Controller name="url" control={control} render={({ field }) => <Input {...field} placeholder="https://api.example.com/data" />} />
+      </div>
+      <div className="space-y-2">
+        <Label>Method</Label>
+        <Controller name="method" control={control} render={({ field }) => (
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <SelectTrigger><SelectValue placeholder="Select method" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="GET">GET</SelectItem>
+              <SelectItem value="POST">POST</SelectItem>
+            </SelectContent>
+          </Select>
+        )} />
+      </div>
+    </div>
+  );
 };
+
+const DatabaseFields = ({ control }: { control: any }) => {
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+            <Label>Connection String</Label>
+            <Controller name="connection" control={control} render={({ field }) => <Input {...field} placeholder="your-db-connection-string" />} />
+        </div>
+         <div className="space-y-2">
+            <Label>Query</Label>
+            <Controller name="query" control={control} render={({ field }) => <Textarea {...field} placeholder="SELECT * FROM users" />} />
+        </div>
+      </div>
+    )
+}
+
+const StaticFields = ({ control }: { control: any }) => {
+     return (
+      <div className="space-y-2">
+        <Label>JSON Data</Label>
+        <Controller name="data" control={control} render={({ field }) => <Textarea {...field} rows={10} placeholder='{ "key": "value" }' />} />
+      </div>
+    )
+}
+
 
 export default function EditSourcePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -49,26 +85,22 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
   const methods = useForm<FormValues>({
       defaultValues: {
           name: '',
-          basePath: '',
-          methods: [],
+          type: 'api',
       }
   });
   
-  const { fields, append, remove } = useFieldArray({
-      control: methods.control,
-      name: 'methods'
-  });
+  const sourceType = methods.watch('type');
 
   useEffect(() => {
     const fetchSource = async () => {
       setLoading(true);
       const result = await getSource(id);
       if (result.success && result.source) {
-        methods.reset({
-            name: result.source.name,
-            basePath: result.source.basePath,
-            methods: result.source.methods || [],
-        });
+        const sourceData = result.source;
+        if (sourceData.type === 'static' && typeof sourceData.data !== 'string') {
+          sourceData.data = JSON.stringify(sourceData.data, null, 2);
+        }
+        methods.reset(sourceData);
       } else {
         setError(result.error || 'Failed to fetch source.');
       }
@@ -79,7 +111,17 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
   }, [id, methods]);
 
   const handleUpdateSource = async (data: FormValues) => {
-    const result = await updateSource(id, data);
+    let dataToSave = { ...data };
+    if (data.type === 'static' && typeof data.data === 'string') {
+      try {
+        dataToSave.data = JSON.parse(data.data);
+      } catch (e) {
+        toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The static data is not valid JSON.' });
+        return;
+      }
+    }
+    
+    const result = await updateSource(id, dataToSave);
 
     if (result.success) {
       toast({ title: 'Source Updated!', description: `Successfully updated ${data.name}.` });
@@ -92,23 +134,12 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
   if (loading) {
     return (
       <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <Skeleton className="h-8 w-1/2" />
-        </CardHeader>
+        <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-10 w-full" />
-          </div>
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-24 w-full" />
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Skeleton className="h-10 w-24" />
-          <Skeleton className="h-10 w-28" />
-        </CardFooter>
+        <CardFooter><Skeleton className="h-10 w-28" /></CardFooter>
       </Card>
     );
   }
@@ -135,65 +166,34 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="space-y-2">
-              <Label htmlFor="source-name">Source Name</Label>
-              <Input id="source-name" {...methods.register('name')} placeholder="e.g., My CRM API" />
+              <Label>Source Name</Label>
+              <Controller name="name" control={methods.control} render={({ field }) => <Input {...field} placeholder="e.g., My CRM API" />} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="base-path">Base Path</Label>
-              <Input id="base-path" {...methods.register('basePath')} placeholder="https://api.example.com/v1" />
+                <Label>Source Type</Label>
+                <Controller name="type" control={methods.control} render={({ field }) => (
+                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="api">API</SelectItem>
+                            <SelectItem value="database">Database</SelectItem>
+                            <SelectItem value="static">Static</SelectItem>
+                        </SelectContent>
+                    </Select>
+                )} />
             </div>
           </CardContent>
         </Card>
         
         <Card>
             <CardHeader>
-                 <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle>Methods</CardTitle>
-                        <CardDescription>Define the available API calls for this source.</CardDescription>
-                    </div>
-                    <Button type="button" variant="outline" size="sm" onClick={() => append({ methodName: '', subPath: '/', moreDetails: '', responseFormat: { correct: '', incorrect: '' } })}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Method
-                    </Button>
-                </div>
+                 <CardTitle>Configuration</CardTitle>
+                 <CardDescription>Specific settings for the "{sourceType}" source type.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-                {fields.map((field, index) => (
-                    <div key={field.id} className="border p-4 rounded-lg relative space-y-4 bg-muted/30">
-                         <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => remove(index)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                        <div className="flex items-center gap-2 text-primary">
-                            <Code className="h-5 w-5" />
-                            <h4 className="font-semibold">Method #{index + 1}</h4>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                             <div className="space-y-2">
-                                <Label>Method Name</Label>
-                                <Input {...methods.register(`methods.${index}.methodName`)} placeholder="e.g., getUserDetails" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Sub Path</Label>
-                                <Input {...methods.register(`methods.${index}.subPath`)} placeholder="/users/{userId}" />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>More Details</Label>
-                            <Textarea {...methods.register(`methods.${index}.moreDetails`)} placeholder="Briefly describe what this method does." />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Correct Response Format</Label>
-                            <Input {...methods.register(`methods.${index}.responseFormat.correct`)} placeholder={`e.g., { "user": { "name": "..." } }`} />
-                        </div>
-                         <div className="space-y-2">
-                            <Label>Incorrect Response Format</Label>
-                            <Input {...methods.register(`methods.${index}.responseFormat.incorrect`)} placeholder={`e.g., { "error": "User not found" }`} />
-                        </div>
-                    </div>
-                ))}
-                {fields.length === 0 && (
-                    <p className="text-muted-foreground text-sm text-center py-8">No methods defined. Click "Add Method" to start.</p>
-                )}
+            <CardContent>
+                {sourceType === 'api' && <ApiFields control={methods.control} />}
+                {sourceType === 'database' && <DatabaseFields control={methods.control} />}
+                {sourceType === 'static' && <StaticFields control={methods.control} />}
             </CardContent>
         </Card>
 

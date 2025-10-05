@@ -21,6 +21,7 @@ import GlobalSettings from './properties/global-settings';
 import ShadowProperties from './properties/shadow';
 import PageDataSource from './properties/page-data-source';
 import RepeaterProperties from './properties/repeater';
+import DataBindingProperties from './properties/data-binding';
 
 interface RightSidebarProps {
   selectedElementId: string | null;
@@ -42,6 +43,7 @@ const propertyComponents: Record<string, React.FC<any>> = {
   borders: BorderProperties,
   effects: ShadowProperties,
   repeater: RepeaterProperties,
+  databinding: DataBindingProperties,
 };
 
 const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, pageId }) => {
@@ -126,10 +128,14 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
 
   const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(selectedElement.type);
 
+  // Extend editorProperties with 'databinding' if it doesn't already exist
+  const editorProperties = [...(elementDef.editorProperties || []), 'databinding'];
+
+
   return (
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
-        <Accordion type="multiple" className="w-full" defaultValue={['attributes', 'content', 'image', 'repeater']}>
+        <Accordion type="multiple" className="w-full" defaultValue={['attributes', 'content', 'image', 'repeater', 'databinding']}>
             <AccordionItem value="attributes">
                 <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
                 <AccordionContent className="px-4 space-y-4">
@@ -148,7 +154,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 </AccordionContent>
             </AccordionItem>
             
-            {elementDef.editorProperties?.map(groupKey => {
+            {editorProperties.map(groupKey => {
                 const PropertyComponent = propertyComponents[groupKey];
                 
                 if (!PropertyComponent) {
@@ -157,7 +163,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
                 }
 
                 // Pass the data binding updater to relevant components
-                if (groupKey === 'content' || groupKey === 'image' || groupKey === 'repeater') {
+                if (groupKey === 'content' || groupKey === 'image' || groupKey === 'repeater' || groupKey === 'databinding') {
                      return (
                         <PropertyComponent 
                             key={groupKey} 

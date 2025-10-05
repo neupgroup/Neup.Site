@@ -5,32 +5,40 @@ import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, quer
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
 
-export interface SourceMethod {
-  methodName: string;
-  subPath: string;
-  responseFormat: {
-    correct: string;
-    incorrect: string;
-  };
-  moreDetails: string;
-}
+export type SourceType = 'api' | 'database' | 'static';
 
-export interface Source {
+export interface BaseSource {
   id: string;
   siteId: string;
   name: string;
-  basePath: string;
-  methods: SourceMethod[];
-  permitControl: boolean;
-  ownedBy: string;
+  type: SourceType;
   createdAt?: string | null;
 }
 
-export interface SourceCredential {
-  id: string;
-  sourceId: string;
-  credentials: { name: string; value: string }[];
+export interface ApiSource extends BaseSource {
+  type: 'api';
+  url: string;
+  method: 'GET' | 'POST';
+  headers?: Record<string, string>;
+  query?: Record<string, string>;
+  body?: Record<string, any>;
+  fallback?: Record<string, any>;
 }
+
+export interface DatabaseSource extends BaseSource {
+  type: 'database';
+  connection: string; // e.g., custom-db-connection
+  query: string;
+  fallback?: Record<string, any>;
+}
+
+export interface StaticSource extends BaseSource {
+  type: 'static';
+  data: Record<string, any>;
+}
+
+export type Source = ApiSource | DatabaseSource | StaticSource;
+
 
 /**
  * Creates a new data source.
@@ -70,12 +78,7 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
         const createdAt = data.createdAt;
         return {
             id: doc.id,
-            siteId: data.siteId,
-            name: data.name,
-            basePath: data.basePath,
-            methods: data.methods || [],
-            permitControl: data.permitControl,
-            ownedBy: data.ownedBy,
+            ...data,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as Source
     });
@@ -111,12 +114,7 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
         const createdAt = data.createdAt;
         const source = { 
             id: docSnap.id, 
-            siteId: data.siteId,
-            name: data.name,
-            basePath: data.basePath,
-            methods: data.methods || [],
-            permitControl: data.permitControl,
-            ownedBy: data.ownedBy,
+            ...data,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as Source;
         return { success: true, source };
@@ -141,11 +139,7 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
         return { success: false, error: 'Unauthorized' };
     }
 
-    const dataToUpdate = {
-        ...sourceData,
-        methods: sourceData.methods || [],
-    };
-    await setDoc(sourceRef, dataToUpdate, { merge: true });
+    await setDoc(sourceRef, sourceData, { merge: true });
     return { success: true, id };
   } catch (error: any) {
     return { success: false, error: error.message || `Failed to update source ${id}.` };
@@ -172,11 +166,12 @@ export async function deleteSource(id: string) {
     }
     batch.delete(sourceRef);
 
-    const credsQuery = query(collection(firestore, 'sourceCredentials'), where('sourceId', '==', id));
-    const credsSnapshot = await getDocs(credsQuery);
-    credsSnapshot.forEach(doc => {
-      batch.delete(doc.ref);
-    });
+    // If you add credentials back, uncomment this.
+    // const credsQuery = query(collection(firestore, 'sourceCredentials'), where('sourceId', '==', id));
+    // const credsSnapshot = await getDocs(credsQuery);
+    // credsSnapshot.forEach(doc => {
+    //   batch.delete(doc.ref);
+    // });
 
     await batch.commit();
     return { success: true };

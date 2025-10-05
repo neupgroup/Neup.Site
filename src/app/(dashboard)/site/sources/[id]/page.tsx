@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSource, deleteSource, type Source } from '@/actions/editor/sources';
+import { getSource, deleteSource, type Source, ApiSource, DatabaseSource, StaticSource } from '@/actions/editor/sources';
 import {
   Card,
   CardContent,
@@ -28,6 +28,17 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+
+const DetailItem = ({ label, value }: { label: string, value: string | undefined | null }) => {
+    if (!value) return null;
+    return (
+        <div>
+            <h4 className="font-semibold text-sm text-muted-foreground">{label}</h4>
+            <p className="font-mono text-sm break-all">{value}</p>
+        </div>
+    )
+};
 
 export default function SourceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -78,7 +89,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                 <Skeleton className="h-10 w-1/3" />
                 <Skeleton className="h-20 w-full" />
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex justify-end gap-2">
                 <Skeleton className="h-10 w-24" />
                 <Skeleton className="h-10 w-24" />
             </CardFooter>
@@ -108,46 +119,41 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
         </div>
         <Card>
             <CardHeader>
-                <CardTitle>{source.name}</CardTitle>
-                <CardDescription>ID: {source.id}</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{source.name}</CardTitle>
+                        <CardDescription>ID: {source.id}</CardDescription>
+                    </div>
+                    <Badge variant="outline">{source.type}</Badge>
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground">Base Path</h4>
-                    <p className="font-mono text-sm">{source.basePath}</p>
-                </div>
-                 <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground">Created At</h4>
-                    <p className="text-sm">{source.createdAt ? new Date(source.createdAt).toLocaleString() : 'N/A'}</p>
-                </div>
-                
+                <DetailItem label="Created At" value={source.createdAt ? new Date(source.createdAt).toLocaleString() : 'N/A'} />
+
                 <Separator />
 
-                <div>
-                    <h3 className="text-lg font-semibold mb-4">Methods</h3>
-                    {source.methods && source.methods.length > 0 ? (
-                        <div className="space-y-4">
-                            {source.methods.map((method, index) => (
-                                <Card key={index} className="bg-muted/50">
-                                    <CardHeader>
-                                        <CardTitle className="text-base flex items-center gap-2">
-                                            <Code className="h-5 w-5 text-primary" />
-                                            {method.methodName}
-                                        </CardTitle>
-                                        <CardDescription>{method.subPath}</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2 text-sm">
-                                        <p><strong className="text-muted-foreground">Details:</strong> {method.moreDetails}</p>
-                                        <p><strong className="text-muted-foreground">Success Format:</strong> <code className="text-xs">{method.responseFormat.correct}</code></p>
-                                        <p><strong className="text-muted-foreground">Error Format:</strong> <code className="text-xs">{method.responseFormat.incorrect}</code></p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-muted-foreground text-sm">No methods have been defined for this source yet.</p>
-                    )}
-                </div>
+                <h3 className="text-lg font-semibold">Configuration</h3>
+
+                {source.type === 'api' && (
+                    <div className="space-y-4">
+                        <DetailItem label="URL" value={(source as ApiSource).url} />
+                        <DetailItem label="Method" value={(source as ApiSource).method} />
+                    </div>
+                )}
+                 {source.type === 'database' && (
+                    <div className="space-y-4">
+                        <DetailItem label="Connection" value={(source as DatabaseSource).connection} />
+                        <DetailItem label="Query" value={(source as DatabaseSource).query} />
+                    </div>
+                )}
+                 {source.type === 'static' && (
+                    <div className="space-y-2">
+                       <h4 className="font-semibold text-sm text-muted-foreground">Data</h4>
+                       <pre className="text-xs bg-muted p-4 rounded-md overflow-x-auto">
+                           <code>{JSON.stringify((source as StaticSource).data, null, 2)}</code>
+                       </pre>
+                    </div>
+                )}
 
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
