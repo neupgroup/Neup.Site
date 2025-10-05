@@ -92,8 +92,8 @@ ${result.stderr}
             finalOutput = `SSH Authentication Failed. Please check server credentials and username. Error: ${error.message}`;
         } else if (error.message.includes('Connection timed out')) {
             finalOutput = `SSH Connection Timed Out. Server might be unreachable or IP is incorrect. Error: ${error.message}`;
-        } else if (error.message.includes('Failed to retrieve server credentials')) {
-             finalOutput = `Failed to retrieve server credentials. Error: ${error.message}`;
+        } else if (error.message.includes('Server username is not defined')) {
+             finalOutput = `Execution failed: ${error.message}`;
         }
 
         await updateServerLog(logId, {
