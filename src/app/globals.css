@@ -40,11 +40,15 @@
     --sidebar-border: 210 10% 85%;
     --sidebar-ring: 173 58% 39%;
     --radius: 0.5rem; /* Default medium radius */
+    --radius-none: 0rem;
     --radius-low: 0.25rem;
     --radius-medium: 0.5rem;
     --radius-high: 1rem;
   }
 
+  .radius-none {
+      --radius: var(--radius-none);
+  }
   .radius-low {
       --radius: var(--radius-low);
   }

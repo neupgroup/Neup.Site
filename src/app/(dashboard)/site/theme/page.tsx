@@ -17,7 +17,7 @@ const colorLabels = ['Primary', 'Accent', 'Tertiary'];
 export default function ThemePage() {
   const [themeMode, setThemeMode] = useState('light');
   const [colors, setColors] = useState(['#64C5CF']);
-  const [radius, setRadius] = useState<'low' | 'medium' | 'high'>('medium');
+  const [radius, setRadius] = useState<'none' | 'low' | 'medium' | 'high'>('medium');
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -150,7 +150,12 @@ export default function ThemePage() {
                 <Skeleton className="h-24 w-full" />
             ) : (
             <RadioGroup value={radius} onValueChange={(value) => setRadius(value as any)}>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-4 gap-4">
+                <Label htmlFor="radius-none" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                    <div className="w-12 h-8 bg-muted rounded-none mx-auto mb-2"></div>
+                    None
+                    <RadioGroupItem value="none" id="radius-none" className="sr-only" />
+                </Label>
                 <Label htmlFor="radius-low" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
                     <div className="w-12 h-8 bg-muted rounded-sm mx-auto mb-2"></div>
                     Low
