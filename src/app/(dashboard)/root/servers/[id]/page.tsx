@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { getServer, deleteServer, type Server } from '@/actions/servers';
-import { getServerLogs, createServerLog, type ServerLog } from '@/actions/server-logs';
+import { getServerLogs, createServerLog, updateServerLog, type ServerLog } from '@/actions/server-logs';
 import {
   Card,
   CardContent,
@@ -82,41 +82,53 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
 
   const handleRunCommand = async (commandName: string, command: string) => {
     setRunningCommand(commandName);
-    
-    await createServerLog({ 
-        serverId: id, 
-        command, 
-        output: 'Command initiated...', 
-        status: 'pending' 
+
+    const createResult = await createServerLog({
+      serverId: id,
+      command,
+      output: `Initiating command: ${commandName}`,
+      status: 'pending',
     });
-    
+
+    if (!createResult.success || !createResult.id) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to create log entry.' });
+        setRunningCommand(null);
+        return;
+    }
+    const logId = createResult.id;
     await fetchLogs(1);
 
-    // Simulate sending to a queue and getting a 'running' state
+    // Simulate command starting
     setTimeout(async () => {
-        await createServerLog({ 
-            serverId: id, 
-            command, 
-            output: `Task "${commandName}" is now running.`, 
-            status: 'ongoing' 
+        await updateServerLog(logId, {
+            status: 'ongoing',
+            output: `Running: ${command}\n...`,
         });
         await fetchLogs(1);
-    }, 1000);
+    }, 1500);
 
-
-    // Simulate command execution
+    // Simulate command completion
     setTimeout(async () => {
-        // In a real app, you would have an actual result from your backend runner.
-        const output = `Dummy output for: ${command}\n\nTask completed successfully.\n${new Date().toLocaleTimeString()}`;
-        const status: 'completed' | 'failed' = 'completed';
-        
-        await createServerLog({ serverId: id, command, output, status, completedAt: new Date().toISOString() });
-        
-        toast({ title: 'Command Finished', description: commandName });
-        setRunningCommand(null);
-        await fetchLogs(1); // Refresh logs again
-    }, 4000);
-  }
+      const isSuccess = Math.random() > 0.1; // 90% success rate
+      const finalStatus = isSuccess ? 'completed' : 'failed';
+      const finalOutput = isSuccess
+        ? `Running: ${command}\n...\nFake process output line 1...\nFake process output line 2...\nTask finished successfully.`
+        : `Running: ${command}\n...\nError: Something went wrong during execution.\nPermission denied (fake error).`;
+
+      await updateServerLog(logId, {
+        status: finalStatus,
+        output: finalOutput,
+      });
+
+      toast({
+        title: `Command ${finalStatus}`,
+        description: `${commandName} has ${finalStatus}.`,
+        variant: isSuccess ? 'default' : 'destructive',
+      });
+      setRunningCommand(null);
+      await fetchLogs(1);
+    }, 5000);
+  };
   
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
@@ -232,9 +244,9 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <h4 className="font-medium">Update &amp; Upgrade Server</h4>
                 <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
               </div>
-              <Button onClick={() => handleRunCommand('update', 'apt-get update && apt-get upgrade -y')} disabled={!!runningCommand}>
-                  {runningCommand === 'update' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
-                  {runningCommand === 'update' ? 'Running...' : 'Run Update'}
+              <Button onClick={() => handleRunCommand('Update & Upgrade', 'sudo apt-get update && sudo apt-get upgrade -y')} disabled={!!runningCommand}>
+                  {runningCommand === 'Update & Upgrade' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
+                  {runningCommand === 'Update & Upgrade' ? 'Running...' : 'Run Update'}
               </Button>
             </div>
             <div className="flex items-center justify-between rounded-lg border p-4">
@@ -242,9 +254,9 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <h4 className="font-medium">Install npm</h4>
                 <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
               </div>
-              <Button onClick={() => handleRunCommand('npm', 'apt-get install -y nodejs npm')} disabled={!!runningCommand}>
-                 {runningCommand === 'npm' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
-                 {runningCommand === 'npm' ? 'Installing...' : 'Install npm'}
+              <Button onClick={() => handleRunCommand('Install npm', 'sudo apt-get install -y nodejs npm')} disabled={!!runningCommand}>
+                 {runningCommand === 'Install npm' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
+                 {runningCommand === 'Install npm' ? 'Installing...' : 'Install npm'}
               </Button>
             </div>
             <div className="rounded-lg border p-4">
@@ -258,9 +270,9 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                         className="max-w-[120px]"
                     />
                      <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                    <Button className="ml-auto" onClick={() => handleRunCommand('swap', `fallocate -l ${swapSize}M /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile`)} disabled={!!runningCommand}>
-                        {runningCommand === 'swap' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
-                        {runningCommand === 'swap' ? 'Creating...' : 'Create Swap'}
+                    <Button className="ml-auto" onClick={() => handleRunCommand('Create Swap', `sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`)} disabled={!!runningCommand}>
+                        {runningCommand === 'Create Swap' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
+                        {runningCommand === 'Create Swap' ? 'Creating...' : 'Create Swap'}
                     </Button>
                 </div>
             </div>
@@ -303,6 +315,9 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                                 </div>
                                 <p className="font-mono text-sm mt-2 bg-muted p-2 rounded-md overflow-x-auto">{log.command}</p>
                                 <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">{log.output}</pre>
+                                {log.completedAt && (
+                                    <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
+                                )}
                             </div>
                         ))}
                     </div>

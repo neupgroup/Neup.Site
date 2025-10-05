@@ -1,26 +1,47 @@
 
 'use server';
 
-import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, setDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import type { ServerLog } from '@/schemas/server';
 
 /**
  * Creates a new server log entry.
  */
-export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiatedAt' | 'initiatedBy'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiatedAt' | 'initiatedBy' | 'completedAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'serverLogs'), {
       ...logData,
       initiatedBy: 'system', // Placeholder for user auth
       initiatedAt: serverTimestamp(),
+      completedAt: null,
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
     return { success: false, error: 'Failed to create server log.' };
   }
 }
+
+/**
+ * Updates an existing server log entry.
+ */
+export async function updateServerLog(id: string, logData: Partial<Omit<ServerLog, 'id'>>): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { firestore } = initializeFirebase();
+    const logRef = doc(firestore, 'serverLogs', id);
+
+    let dataToUpdate: Record<string, any> = { ...logData };
+    if (logData.status === 'completed' || logData.status === 'failed') {
+        dataToUpdate.completedAt = serverTimestamp();
+    }
+    await setDoc(logRef, dataToUpdate, { merge: true });
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: 'Failed to update server log.' };
+  }
+}
+
 
 /**
  * Fetches server logs with pagination.
