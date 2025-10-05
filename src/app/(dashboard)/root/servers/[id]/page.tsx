@@ -80,29 +80,42 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     fetchLogs(1);
   }, [id]);
 
-  const handleRunCommand = async (command: string, description: string) => {
-    setRunningCommand(command);
-    // Simulate API call and log creation
-    const logResult = await createServerLog({ serverId: id, command, output: `Running: ${description}...`, status: 'running' });
+  const handleRunCommand = async (commandName: string, command: string) => {
+    setRunningCommand(commandName);
     
-    // Refresh logs to show the 'running' state
+    await createServerLog({ 
+        serverId: id, 
+        command, 
+        output: 'Command initiated...', 
+        status: 'pending' 
+    });
+    
     await fetchLogs(1);
+
+    // Simulate sending to a queue and getting a 'running' state
+    setTimeout(async () => {
+        await createServerLog({ 
+            serverId: id, 
+            command, 
+            output: `Task "${commandName}" is now running.`, 
+            status: 'ongoing' 
+        });
+        await fetchLogs(1);
+    }, 1000);
+
 
     // Simulate command execution
     setTimeout(async () => {
-        // In a real app, you would have an actual result.
-        // For now, we just update the log to success.
-        const output = `Successfully completed: ${description}.`;
-        const status: 'success' | 'error' = 'success';
+        // In a real app, you would have an actual result from your backend runner.
+        const output = `Dummy output for: ${command}\n\nTask completed successfully.\n${new Date().toLocaleTimeString()}`;
+        const status: 'completed' | 'failed' = 'completed';
         
-        // This is where you would update the log, but since we don't have that action,
-        // we'll just create a new one for demonstration. For a real app, you'd implement `updateServerLog`.
-        await createServerLog({ serverId: id, command, output, status });
+        await createServerLog({ serverId: id, command, output, status, completedAt: new Date().toISOString() });
         
-        toast({ title: 'Command Finished', description });
+        toast({ title: 'Command Finished', description: commandName });
         setRunningCommand(null);
         await fetchLogs(1); // Refresh logs again
-    }, 3000);
+    }, 4000);
   }
   
   const handleDelete = async () => {
@@ -219,7 +232,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <h4 className="font-medium">Update &amp; Upgrade Server</h4>
                 <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
               </div>
-              <Button onClick={() => handleRunCommand('update', 'Update &amp; Upgrade')} disabled={!!runningCommand}>
+              <Button onClick={() => handleRunCommand('update', 'apt-get update && apt-get upgrade -y')} disabled={!!runningCommand}>
                   {runningCommand === 'update' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
                   {runningCommand === 'update' ? 'Running...' : 'Run Update'}
               </Button>
@@ -229,7 +242,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <h4 className="font-medium">Install npm</h4>
                 <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
               </div>
-              <Button onClick={() => handleRunCommand('npm', 'Install npm')} disabled={!!runningCommand}>
+              <Button onClick={() => handleRunCommand('npm', 'apt-get install -y nodejs npm')} disabled={!!runningCommand}>
                  {runningCommand === 'npm' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
                  {runningCommand === 'npm' ? 'Installing...' : 'Install npm'}
               </Button>
@@ -245,7 +258,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                         className="max-w-[120px]"
                     />
                      <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                    <Button className="ml-auto" onClick={() => handleRunCommand('swap', `Create ${swapSize}MB Swap`)} disabled={!!runningCommand}>
+                    <Button className="ml-auto" onClick={() => handleRunCommand('swap', `fallocate -l ${swapSize}M /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile`)} disabled={!!runningCommand}>
                         {runningCommand === 'swap' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
                         {runningCommand === 'swap' ? 'Creating...' : 'Create Swap'}
                     </Button>
@@ -283,14 +296,13 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                              <div key={log.id} className="border p-3 rounded-md">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        {log.status === 'success' && <CheckCircle className="h-4 w-4 text-green-500" />}
-                                        {log.status === 'error' && <XCircle className="h-4 w-4 text-red-500" />}
-                                        {log.status === 'running' && <Loader2 className="h-4 w-4 animate-spin" />}
-                                        <p className="font-mono text-sm">{log.command}</p>
+                                        <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>{log.status}</Badge>
+                                        <p className="text-xs text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</p>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">{log.timestamp ? formatDistanceToNow(new Date(log.timestamp), { addSuffix: true }) : 'Just now'}</p>
+                                    <p className="text-xs text-muted-foreground">by {log.initiatedBy}</p>
                                 </div>
-                                <pre className="text-xs bg-muted p-2 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">{log.output}</pre>
+                                <p className="font-mono text-sm mt-2 bg-muted p-2 rounded-md overflow-x-auto">{log.command}</p>
+                                <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">{log.output}</pre>
                             </div>
                         ))}
                     </div>
@@ -322,5 +334,4 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         </AlertDialog>
     </div>
   );
-
-    
+}

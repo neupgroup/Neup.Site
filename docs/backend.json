@@ -194,10 +194,12 @@
         "serverId": { "type": "string", "description": "The ID of the server where the command was run." },
         "command": { "type": "string", "description": "The command that was executed." },
         "output": { "type": "string", "description": "The output or result of the command." },
-        "status": { "type": "string", "enum": ["running", "success", "error"], "description": "The status of the command execution." },
-        "timestamp": { "type": "string", "format": "date-time", "description": "When the command was logged." }
+        "status": { "type": "string", "enum": ["pending", "ongoing", "completed", "failed", "cancelled"], "description": "The status of the command execution." },
+        "initiatedBy": { "type": "string", "description": "Identifier for the user or system that initiated the command." },
+        "initiatedAt": { "type": "string", "format": "date-time", "description": "When the command was logged." },
+        "completedAt": { "type": "string", "format": "date-time", "description": "When the command finished execution." }
       },
-      "required": ["serverId", "command", "output", "status", "timestamp"]
+      "required": ["serverId", "command", "output", "status", "initiatedBy", "initiatedAt"]
     }
   },
   "auth": {

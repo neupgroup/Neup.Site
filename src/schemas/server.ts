@@ -1,6 +1,5 @@
 
 
-
 export interface ServerAllocation {
   id: string;
   siteId: string;
@@ -27,6 +26,8 @@ export interface ServerLog {
   serverId: string;
   command: string;
   output: string;
-  status: 'running' | 'success' | 'error';
-  timestamp: string | null;
+  status: 'pending' | 'ongoing' | 'completed' | 'failed' | 'cancelled';
+  initiatedBy: string;
+  initiatedAt: string | null;
+  completedAt?: string | null;
 }

@@ -1,19 +1,20 @@
 
 'use server';
 
-import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, DocumentSnapshot, doc, getDoc, addDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import type { ServerLog } from '@/schemas/server';
 
 /**
  * Creates a new server log entry.
  */
-export async function createServerLog(logData: Omit<ServerLog, 'id' | 'timestamp'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiatedAt' | 'initiatedBy'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'serverLogs'), {
       ...logData,
-      timestamp: serverTimestamp(),
+      initiatedBy: 'system', // Placeholder for user auth
+      initiatedAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
@@ -32,7 +33,7 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
         let q = query(
             logsRef, 
             where('serverId', '==', serverId), 
-            orderBy('timestamp', 'desc')
+            orderBy('initiatedAt', 'desc')
         );
 
         if (page > 1) {
@@ -55,7 +56,9 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
                 command: data.command,
                 output: data.output,
                 status: data.status,
-                timestamp: data.timestamp instanceof Timestamp ? data.timestamp.toDate().toISOString() : null,
+                initiatedBy: data.initiatedBy,
+                initiatedAt: data.initiatedAt instanceof Timestamp ? data.initiatedAt.toDate().toISOString() : null,
+                completedAt: data.completedAt instanceof Timestamp ? data.completedAt.toDate().toISOString() : null,
             } as ServerLog;
         });
 
