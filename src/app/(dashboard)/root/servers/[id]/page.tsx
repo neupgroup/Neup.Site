@@ -1,9 +1,10 @@
 'use client';
-import { useState, useEffect, use, useTransition } from 'react';
+import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { getServer, deleteServer, type Server } from '@/actions/servers';
 import { getServerLogs, type ServerLog } from '@/actions/server-logs';
 import { runCommand } from '@/actions/runner';
+import { logErrorToFirestore } from '@/lib/logging';
 import {
   Card,
   CardContent,
@@ -56,14 +57,26 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const router = useRouter();
 
   const fetchLogs = async (page = 1) => {
+    console.log('ServerDetailPage.fetchLogs: Calling getServerLogs for serverId:', id, 'page:', page);
     setLoadingLogs(true);
     setLogsError(null);
     const result = await getServerLogs({ serverId: id, page });
+    console.log('ServerDetailPage.fetchLogs: Result from getServerLogs:', result);
     if (result.success && result.logs) {
         setLogs(prev => (page === 1 ? result.logs! : [...prev, ...result.logs!]));
         setHasMoreLogs(result.hasMore || false);
     } else {
-        setLogsError(result.error || 'Failed to load logs.');
+        const errorMessage = result.error || 'Failed to load logs.';
+        setLogsError(errorMessage);
+        console.error('ServerDetailPage.fetchLogs: Error processing logs:', errorMessage);
+        // Log the error to Firestore if it's not already logged by the action
+        if (errorMessage !== result.error) { // Only log if it's a generic error from the client
+            logErrorToFirestore({
+                message: `Client-side error loading server logs for serverId: ${id}. Error: ${errorMessage}`,
+                stack: new Error().stack, // Capture client-side stack trace
+                source: 'ServerDetailPage.fetchLogs',
+            });
+        }
     }
     setLoadingLogs(false);
   }
@@ -75,7 +88,13 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
       if (result.success && result.server) {
         setServer(result.server);
       } else {
-        setError(result.error || 'Failed to fetch server.');
+        const errorMessage = result.error || 'Failed to fetch server.';
+        setError(errorMessage);
+         logErrorToFirestore({
+            message: `Client-side error fetching server details for serverId: ${id}. Error: ${errorMessage}`,
+            stack: new Error().stack,
+            source: 'ServerDetailPage.fetchInitialData',
+        });
       }
       setLoading(false);
     };
@@ -114,7 +133,13 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         toast({ title: 'Server Deleted', description: 'The server has been removed.'});
         router.push('/root/servers');
     } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
+        const errorMessage = result.error || 'Failed to delete server.';
+        toast({ variant: 'destructive', title: 'Error', description: errorMessage });
+        logErrorToFirestore({
+            message: `Client-side error deleting server for serverId: ${id}. Error: ${errorMessage}`,
+            stack: new Error().stack,
+            source: 'ServerDetailPage.handleDelete',
+        });
     }
   }
   

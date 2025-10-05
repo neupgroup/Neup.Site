@@ -1,7 +1,7 @@
-
 import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
 import { initializeFirebase } from '@/lib/firebase';
+import { use } from 'react';
 
 async function getPageForPath(slug: string[]): Promise<{html: string | null, theme?: {primary?: string, accent?: string}}> {
     const path = `/${slug.join('/')}`;
@@ -46,9 +46,10 @@ async function getPageForPath(slug: string[]): Promise<{html: string | null, the
 }
 
 
-export default async function CatchAllPage({ params }: { params: { slug: string[] } }) {
+export default async function CatchAllPage({ params }: { params: Promise<{ slug: string[] }> }) {
   
-  const { html: htmlContent } = await getPageForPath(params.slug);
+  const { slug } = await params;
+  const { html: htmlContent } = await getPageForPath(slug);
 
   if (!htmlContent) {
      const notFoundHtml = `

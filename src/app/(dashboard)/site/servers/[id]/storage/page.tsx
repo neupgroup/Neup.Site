@@ -1,10 +1,11 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { HardDrive } from 'lucide-react';
+import { use } from 'react';
 
-export default function SiteStoragePage({ params }: { params: { id: string }}) {
+export default function SiteStoragePage({ params }: { params: Promise<{ id: string }>}) {
+    const { id } = use(params);
     
   return (
     <div className="w-full">
@@ -13,7 +14,7 @@ export default function SiteStoragePage({ params }: { params: { id: string }}) {
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Storage for Server: {params.id}</CardTitle>
+          <CardTitle>Storage for Server: {id}</CardTitle>
           <CardDescription>
             View storage and usage details for this server allocation.
           </CardDescription>

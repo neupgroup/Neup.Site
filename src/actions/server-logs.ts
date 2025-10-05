@@ -20,6 +20,11 @@ export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiated
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
+    logErrorToFirestore({
+        message: `Failed to create server log. Command: ${logData.command}. Error: ${JSON.stringify(error)}`,
+        stack: error.stack,
+        source: 'createServerLog',
+    });
     return { success: false, error: 'Failed to create server log.' };
   }
 }
@@ -39,6 +44,11 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
     await setDoc(logRef, dataToUpdate, { merge: true });
     return { success: true };
   } catch (error: any) {
+     logErrorToFirestore({
+        message: `Failed to update server log. Log ID: ${id}. Error: ${JSON.stringify(error)}`,
+        stack: error.stack,
+        source: 'updateServerLog',
+    });
     return { success: false, error: 'Failed to update server log.' };
   }
 }
@@ -88,12 +98,13 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
 
         return { logs, hasMore };
     } catch (e: any) {
-        const errorMessage = e.message || 'Unknown error occurred while fetching logs. This might be due to a missing Firestore index.';
-        await logErrorToFirestore({
-            message: `Failed to fetch server logs for serverId: ${serverId}. Error: ${errorMessage}`,
+        // Log the entire error object for better debugging
+        logErrorToFirestore({
+            message: `Failed to fetch server logs for serverId: ${serverId}. Error: ${JSON.stringify(e)}`,
             stack: e.stack,
             source: 'getServerLogs',
         });
-        return { error: errorMessage };
+        // Return a more user-friendly error message, as the detailed error is logged to Firestore
+        return { error: 'Failed to load logs. Please check the error logs for more details.' };
     }
 }

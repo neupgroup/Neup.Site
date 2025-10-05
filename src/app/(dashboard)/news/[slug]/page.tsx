@@ -1,4 +1,3 @@
-
 import { getNewsArticleById, type NewsArticle } from '@/actions/news';
 import {
   Card,
@@ -13,9 +12,10 @@ import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
+import { use } from 'react';
 
-export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const { article, error } = await getNewsArticleById(slug);
 
   if (error || !article) {

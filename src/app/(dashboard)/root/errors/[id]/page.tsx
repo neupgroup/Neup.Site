@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
@@ -11,8 +10,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 
-export default function ErrorDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ErrorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [log, setLog] = useState<ErrorLog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
