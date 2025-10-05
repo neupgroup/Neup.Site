@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Server as ServerIcon, ArrowRight } from 'lucide-react';
+import { AlertCircle, Plus, Server as ServerIcon } from 'lucide-react';
 
 export default function ServersPage() {
   const [servers, setServers] = useState<Server[]>([]);
@@ -98,22 +98,22 @@ export default function ServersPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>Public IP</TableHead>
                   <TableHead>Created At</TableHead>
-                  <TableHead className="text-right">View</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {servers.map((server) => (
                   <TableRow key={server.id}>
-                    <TableCell className="font-medium">{server.name}</TableCell>
-                    <TableCell>{server.publicIp}</TableCell>
-                    <TableCell>{server.createdAt ? new Date(server.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
-                    <TableCell className="text-right">
-                        <Button asChild variant="ghost" size="icon">
-                            <Link href={`/root/servers/${server.id}`}>
-                                <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        </Button>
+                    <TableCell className="font-medium">
+                        <Link href={`/root/servers/${server.id}`} className="hover:underline">
+                            {server.name}
+                        </Link>
                     </TableCell>
+                    <TableCell>
+                        <Link href={`/root/servers/${server.id}`} className="hover:underline">
+                            {server.publicIp}
+                        </Link>
+                    </TableCell>
+                    <TableCell>{server.createdAt ? new Date(server.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
