@@ -19,12 +19,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { site } = await getSite();
-  const radiusClass = site?.theme?.radius ? `radius-${site.theme.radius}` : 'radius-medium';
+  const radius = site?.theme?.radius;
+  const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
   
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn(radiusClass)}>
       <head />
-      <body className={cn("font-body antialiased", radiusClass)}>
+      <body className={cn("font-body antialiased")}>
         <Suspense fallback={null}>
             <ProgressBar />
         </Suspense>
