@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -30,6 +29,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -37,6 +38,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [swapSize, setSwapSize] = useState('3072');
   const { toast } = useToast();
   const router = useRouter();
 
@@ -105,7 +107,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-6">
         <div className="mb-4">
             <Button variant="ghost" asChild>
                 <Link href="/root/servers">
@@ -156,6 +158,43 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                     </Link>
                 </Button>
             </CardFooter>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Server Management</CardTitle>
+            <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between rounded-lg border p-4">
+              <div>
+                <h4 className="font-medium">Update & Upgrade Server</h4>
+                <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
+              </div>
+              <Button><GitCommit className="mr-2 h-4 w-4" /> Run Update</Button>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border p-4">
+               <div>
+                <h4 className="font-medium">Install npm</h4>
+                <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
+              </div>
+              <Button><Package className="mr-2 h-4 w-4" /> Install npm</Button>
+            </div>
+            <div className="rounded-lg border p-4">
+                <h4 className="font-medium">Create Swap Space</h4>
+                <p className="text-sm text-muted-foreground">Create a swap file to use as virtual RAM.</p>
+                <div className="flex items-center gap-2 mt-3">
+                    <Input 
+                        id="swap-size"
+                        value={swapSize}
+                        onChange={(e) => setSwapSize(e.target.value)}
+                        className="max-w-[120px]"
+                    />
+                     <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
+                    <Button className="ml-auto"><Disc className="mr-2 h-4 w-4" /> Create Swap</Button>
+                </div>
+            </div>
+          </CardContent>
         </Card>
 
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
