@@ -35,9 +35,9 @@ export default function DeployPage() {
 
         if (deploymentResult.success) {
             setLastDeployment(deploymentResult.deployment || null);
-        } else {
-            // Non-critical error, just log it.
-            console.error("Could not fetch last deployment:", deploymentResult.error);
+        } else if (deploymentResult.error) {
+            // Only log an error if there was an actual error, not just if it was not found.
+            console.warn("Could not fetch last deployment:", deploymentResult.error);
         }
 
         setLoading(false);
