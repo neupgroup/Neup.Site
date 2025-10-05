@@ -151,22 +151,22 @@ export default function ThemePage() {
             ) : (
             <RadioGroup value={radius} onValueChange={(value) => setRadius(value as any)}>
                 <div className="grid grid-cols-4 gap-4">
-                <Label htmlFor="radius-none" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                <Label htmlFor="radius-none" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary hover:border-primary text-center">
                     <div className="w-12 h-8 bg-muted rounded-none mx-auto mb-2"></div>
                     None
                     <RadioGroupItem value="none" id="radius-none" className="sr-only" />
                 </Label>
-                <Label htmlFor="radius-low" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                <Label htmlFor="radius-low" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary hover:border-primary text-center">
                     <div className="w-12 h-8 bg-muted rounded-sm mx-auto mb-2"></div>
                     Low
                     <RadioGroupItem value="low" id="radius-low" className="sr-only" />
                 </Label>
-                <Label htmlFor="radius-medium" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                <Label htmlFor="radius-medium" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary hover:border-primary text-center">
                     <div className="w-12 h-8 bg-muted rounded-md mx-auto mb-2"></div>
                     Medium
                     <RadioGroupItem value="medium" id="radius-medium" className="sr-only" />
                 </Label>
-                <Label htmlFor="radius-high" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                <Label htmlFor="radius-high" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary hover:border-primary text-center">
                     <div className="w-12 h-8 bg-muted rounded-full mx-auto mb-2"></div>
                     High
                     <RadioGroupItem value="high" id="radius-high" className="sr-only" />
