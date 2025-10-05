@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect, use, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
@@ -221,7 +220,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
             <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit('Update & Upgrade')}>
+             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit('Update & Upgrade'); (e.target as HTMLFormElement).submit(); }}>
                 <input type="hidden" name="command" value="sudo apt-get update && sudo apt-get upgrade -y" />
                 <div className="flex items-center justify-between rounded-lg border p-4">
                     <div>
@@ -234,7 +233,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                     </Button>
                 </div>
             </form>
-             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit('Install npm')}>
+             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit('Install npm'); (e.target as HTMLFormElement).submit(); }}>
                 <input type="hidden" name="command" value="sudo apt-get install -y nodejs npm" />
                 <div className="flex items-center justify-between rounded-lg border p-4">
                    <div>
@@ -247,7 +246,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                   </Button>
                 </div>
             </form>
-             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit('Create Swap')}>
+             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit('Create Swap'); (e.target as HTMLFormElement).submit(); }}>
                 <input type="hidden" name="command" value={`sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`} />
                 <div className="rounded-lg border p-4">
                     <h4 className="font-medium">Create Swap Space</h4>
@@ -276,7 +275,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <CardDescription>Execute any shell command on the server.</CardDescription>
             </CardHeader>
             <CardContent>
-                 <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit(customCommand)}>
+                 <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit(customCommand); (e.target as HTMLFormElement).submit(); }}>
                     <div className="grid w-full gap-2">
                         <Textarea 
                             name="command"

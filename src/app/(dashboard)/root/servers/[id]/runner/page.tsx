@@ -1,11 +1,11 @@
 
+'use server';
+
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
 async function runCommand(serverId: string, command: string) {
-    'use server';
-
     const createResult = await createServerLog({
         serverId: serverId,
         command,
@@ -19,7 +19,6 @@ async function runCommand(serverId: string, command: string) {
     }
     const logId = createResult.id;
 
-    // Revalidate the server detail page to show the pending log immediately
     revalidatePath(`/root/servers/${serverId}`);
 
     // Simulate starting the command after a short delay
@@ -44,18 +43,16 @@ async function runCommand(serverId: string, command: string) {
     }, 5000);
 }
 
-export default async function RunnerPage({ params, searchParams }: { params: { id: string }, searchParams: { command?: string } }) {
+// This function will be called via a form POST
+export default async function RunnerPage({ params, request }: { params: { id: string }, request: Request }) {
     const { id } = params;
+    const formData = await request.formData();
+    const command = formData.get('command') as string;
 
-    // This check is for POST requests from forms
-    if (searchParams && typeof searchParams === 'object') {
-        const formData = searchParams as unknown as FormData;
-        const command = formData.get('command') as string;
-        if (command) {
-            await runCommand(id, command);
-        }
+    if (command) {
+        await runCommand(id, command);
     }
     
-    // Always redirect back after handling the action or if accessed directly
+    // Always redirect back after handling the action
     redirect(`/root/servers/${id}`);
 }
