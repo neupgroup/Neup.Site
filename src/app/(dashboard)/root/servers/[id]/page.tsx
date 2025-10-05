@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -26,7 +27,9 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Separator } from '@/components/ui/separator';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -111,8 +114,13 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         </div>
         <Card>
             <CardHeader>
-                <CardTitle>{server.name}</CardTitle>
-                <CardDescription>ID: {server.id}</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{server.name}</CardTitle>
+                        <CardDescription>ID: {server.id}</CardDescription>
+                    </div>
+                    <Badge variant={server.type === 'shared' ? 'secondary' : 'default'}>{server.type}</Badge>
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div>
@@ -125,6 +133,32 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                     <h4 className="font-semibold text-sm text-muted-foreground">Created At</h4>
                     <p className="text-sm">{server.createdAt ? new Date(server.createdAt).toLocaleString() : 'N/A'}</p>
                 </div>
+                {server.type === 'shared' && (
+                    <div>
+                        <Separator className="my-4" />
+                        <h4 className="font-semibold text-sm text-muted-foreground mb-2">Allocations</h4>
+                        {server.allocations && server.allocations.length > 0 ? (
+                             <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                    <TableHead>Site ID</TableHead>
+                                    <TableHead>Port</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {server.allocations.map((alloc, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell className="font-mono">{alloc.siteId}</TableCell>
+                                            <TableCell className="font-mono">{alloc.port}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No sites allocated to this shared server.</p>
+                        )}
+                    </div>
+                )}
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
                 <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>

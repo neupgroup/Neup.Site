@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,6 +23,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Server as ServerIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export default function ServersPage() {
   const [servers, setServers] = useState<Server[]>([]);
@@ -43,31 +45,6 @@ export default function ServersPage() {
     fetchServers();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="w-full space-y-4">
-        <div className="flex justify-between items-center mb-4">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-10 w-40" />
-        </div>
-        <Card>
-            <CardHeader><Skeleton className="h-6 w-1/2" /></CardHeader>
-            <CardContent><Skeleton className="h-24 w-full" /></CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert variant="destructive" className="w-full">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    );
-  }
-
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-4">
@@ -82,7 +59,19 @@ export default function ServersPage() {
         </Button>
       </header>
         <div className="border rounded-lg">
-          {servers.length === 0 ? (
+          {loading ? (
+            <div className="p-4">
+                 <Skeleton className="h-24 w-full" />
+            </div>
+          ) : error ? (
+            <div className="p-4">
+                <Alert variant="destructive" className="w-full">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            </div>
+          ) : servers.length === 0 ? (
             <div className="text-center text-muted-foreground p-12">
                 <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold">No Servers Created</h3>
@@ -94,6 +83,7 @@ export default function ServersPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Public IP</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Created At</TableHead>
                 </TableRow>
               </TableHeader>
@@ -109,6 +99,9 @@ export default function ServersPage() {
                         <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                             {server.publicIp}
                         </a>
+                    </TableCell>
+                    <TableCell>
+                        <Badge variant={server.type === 'shared' ? 'secondary' : 'default'}>{server.type}</Badge>
                     </TableCell>
                     <TableCell>{server.createdAt ? new Date(server.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                   </TableRow>
