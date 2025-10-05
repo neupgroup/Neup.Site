@@ -95,7 +95,13 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
 
         const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
         const primaryDomain = firstUrl.hostname;
-        const safeDomain = primaryDomain.replace(/[^a-zA-Z0-9.-]/g, '');
+        const primaryPath = firstUrl.pathname.replace(/\//g, '_').replace(/^_/, '');
+        
+        let safeDomain = primaryDomain.replace(/[^a-zA-Z0-9.-]/g, '_');
+        if (primaryPath) {
+            safeDomain = `${safeDomain}_${primaryPath}`;
+        }
+
 
         const allDomains = new Set<string>();
         const locations = new Map<string, string>();
@@ -124,15 +130,25 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         const serverName = Array.from(allDomains).join(' ');
         const locationBlocks = Array.from(locations.values()).join('\n');
 
-        const config = `
-server {
+        const config = `server {
     listen 80;
     server_name ${serverName};
     ${locationBlocks}
-}
-        `.trim();
+}`;
 
-        const command = `sudo bash -c 'echo "${config}" > /etc/nginx/sites-available/${safeDomain}.conf' && sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
+        // Escape the config string for safe inclusion in the shell command
+        const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\$');
+
+        const command = `
+sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
+if [ -f /etc/nginx/sites-available/${safeDomain}.conf ]; then
+    sudo rm -f /etc/nginx/sites-enabled/${safeDomain}.conf;
+    sudo rm -f /etc/nginx/sites-available/${safeDomain}.conf;
+fi &&
+sudo bash -c 'echo "${escapedConfig}" > /etc/nginx/sites-available/${safeDomain}.conf' &&
+sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ &&
+sudo systemctl restart nginx
+`.trim();
         
         handleRunCommand(command, `Configure Nginx for ${primaryDomain}`);
 
