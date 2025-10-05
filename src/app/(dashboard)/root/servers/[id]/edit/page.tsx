@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -15,16 +15,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, ArrowLeft, Loader2, AlertCircle, KeyRound, Plus, Trash2, Server as ServerIcon } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, AlertCircle, KeyRound, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getServer, updateServer, type Server } from '@/actions/servers';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
-type FormValues = Omit<Server, 'id' | 'createdAt'>;
+type FormValues = Omit<Server, 'id' | 'createdOn'>;
 
 export default function EditServerPage({ params }: { params: Promise<{ id:string }> }) {
   const { id } = use(params);
@@ -34,23 +36,17 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
   const { toast } = useToast();
   const router = useRouter();
 
-  const { register, control, handleSubmit, watch, formState: { isSubmitting }, reset } = useForm<FormValues>({
+  const { register, control, handleSubmit, watch, formState: { isSubmitting }, reset, setValue } = useForm<FormValues>({
     defaultValues: {
       name: '',
       publicIp: '',
       privateIp: '',
       privateKey: '', // This will not be populated from the server
-      type: 'private',
-      allocations: []
+      expiresOn: null,
     }
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'allocations'
-  });
-
-  const serverType = watch('type');
+  const expiresOn = watch('expiresOn');
 
   useEffect(() => {
     const fetchServer = async () => {
@@ -62,8 +58,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
           publicIp: result.server.publicIp,
           privateIp: result.server.privateIp || '',
           privateKey: '', // Keep private key field blank for security
-          type: result.server.type || 'private',
-          allocations: result.server.allocations || [],
+          expiresOn: result.server.expiresOn || null,
         });
       } else {
         setError(result.error || 'Failed to fetch server details.');
@@ -133,51 +128,31 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
                 <Label htmlFor="public-ip">Public IP</Label>
                 <Input id="public-ip" {...register('publicIp')} />
             </div>
-             <div className="space-y-3">
-                <Label>Server Type</Label>
-                <RadioGroup {...register('type')} value={serverType} onValueChange={(value) => register('type').onChange({target: {value}})} className="grid grid-cols-2 gap-4">
-                     <Label className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground", serverType === 'private' && "border-primary")}>
-                        <RadioGroupItem value="private" className="sr-only" />
-                        <ServerIcon className="mb-3 h-6 w-6" />
-                        Private
-                    </Label>
-                     <Label className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground", serverType === 'shared' && "border-primary")}>
-                        <RadioGroupItem value="shared" className="sr-only" />
-                        <ServerIcon className="mb-3 h-6 w-6" />
-                        Shared
-                    </Label>
-                </RadioGroup>
+             <div className="space-y-2">
+                <Label htmlFor="expires-on">Expires On</Label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                        variant={"outline"}
+                        className={cn("w-full justify-start text-left font-normal", !expiresOn && "text-muted-foreground")}
+                        >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {expiresOn ? format(new Date(expiresOn), "PPP") : <span>Pick a date</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <Calendar
+                            mode="single"
+                            selected={expiresOn ? new Date(expiresOn) : undefined}
+                            onSelect={(date) => setValue('expiresOn', date?.toISOString() || null)}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
             </div>
         </CardContent>
       </Card>
       
-      <Card>
-          <CardHeader>
-              <CardTitle>Site Allocations</CardTitle>
-              <CardDescription>Assign sites to this server. A port is required for 'shared' servers to avoid conflicts.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-              {fields.map((field, index) => (
-                  <div key={field.id} className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
-                      <div className="space-y-1">
-                          {index === 0 && <Label>Site ID</Label>}
-                          <Input {...register(`allocations.${index}.siteId`)} placeholder="e.g., my-awesome-site" />
-                      </div>
-                      <div className="space-y-1">
-                         {index === 0 && <Label>Port <span className="text-xs text-muted-foreground">(for shared)</span></Label>}
-                          <Input type="number" {...register(`allocations.${index}.port`, { valueAsNumber: true })} placeholder="e.g., 3001" />
-                      </div>
-                      <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
-                          <Trash2 className="h-4 w-4" />
-                      </Button>
-                  </div>
-              ))}
-               <Button type="button" variant="outline" className="w-full" onClick={() => append({ siteId: '', port: 0 })}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Allocation
-              </Button>
-          </CardContent>
-      </Card>
-
       <Card className="mt-6 border-amber-500/50">
         <CardHeader>
             <CardTitle className="flex items-center gap-2 text-amber-600">

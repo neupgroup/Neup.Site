@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,9 +17,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Server as ServerIcon, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import type { ServerAllocation } from '@/schemas/server';
 
 export default function SiteServersPage() {
-  const [servers, setServers] = useState<Server[]>([]);
+  const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,14 +72,12 @@ export default function SiteServersPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Public IP</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Allocated Port</TableHead>
+                  <TableHead>Allocated Ports</TableHead>
                   <TableHead className="text-right">Storage</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {servers.map((server) => {
-                    const allocation = server.allocations?.find(a => a.siteId); // In a real scenario, you'd filter by current siteId
+                {servers.map(({ allocation, ...server }) => {
                     return (
                         <TableRow key={server.id}>
                             <TableCell className="font-medium">
@@ -89,12 +89,11 @@ export default function SiteServersPage() {
                                 </a>
                             </TableCell>
                             <TableCell>
-                                <Badge variant={server.type === 'shared' ? 'secondary' : 'default'}>{server.type}</Badge>
+                                {allocation.allocatedPorts?.join(', ') || 'N/A'}
                             </TableCell>
-                            <TableCell>{allocation?.port || 'N/A'}</TableCell>
                             <TableCell className="text-right">
                                 <Button asChild variant="ghost" size="sm">
-                                    <Link href={`/site/servers/${server.id}/storage`}>
+                                    <Link href={`/site/servers/${allocation.id}/storage`}>
                                         View Details <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>
                                 </Button>

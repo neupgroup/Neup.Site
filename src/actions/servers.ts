@@ -9,12 +9,13 @@ import { cookies } from 'next/headers';
 /**
  * Creates a new server.
  */
-export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>) {
+export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' | 'expiresOn'>) {
   try {
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'servers'), {
       ...serverData,
-      createdAt: serverTimestamp(),
+      createdOn: serverTimestamp(),
+      expiresOn: null,
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
@@ -32,15 +33,15 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
     const querySnapshot = await getDocs(q);
     const servers = querySnapshot.docs.map(doc => {
         const data = doc.data();
-        const createdAt = data.createdAt;
+        const createdOn = data.createdOn;
+        const expiresOn = data.expiresOn;
         // Exclude privateIp and privateKey for security
         return {
             id: doc.id,
             name: data.name,
             publicIp: data.publicIp,
-            type: data.type || 'private',
-            allocations: data.allocations || [],
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+            createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+            expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         } as Server
     });
     return { success: true, servers };
@@ -50,33 +51,51 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
 }
 
 /**
- * Fetches servers relevant to the current siteId.
+ * Fetches servers relevant to the current siteId by checking the serverAllocations collection.
  */
-export async function getSiteServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
+export async function getSiteServers(): Promise<{ success: boolean; servers?: (Server & { allocation: ServerAllocation })[]; error?: string }> {
   const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
     const { firestore } = initializeFirebase();
-    const q = query(collection(firestore, 'servers'), where('allocations', 'array-contains', { siteId: siteId }));
-    const querySnapshot = await getDocs(q);
-    
-    const servers = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        const createdAt = data.createdAt;
-        
-        const siteAllocation = data.allocations?.find((alloc: ServerAllocation) => alloc.siteId === siteId);
+    const allocationsQuery = query(collection(firestore, 'serverAllocations'), where('siteId', '==', siteId));
+    const allocationsSnapshot = await getDocs(allocationsQuery);
 
-        return {
-            id: doc.id,
-            name: data.name,
-            publicIp: data.publicIp,
-            type: data.type || 'private',
-            allocations: siteAllocation ? [siteAllocation] : [], // Only return the allocation for the current site
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-        } as Server
+    if (allocationsSnapshot.empty) {
+        return { success: true, servers: [] };
+    }
+
+    const serverPromises = allocationsSnapshot.docs.map(async (allocDoc) => {
+        const allocationData = allocDoc.data() as Omit<ServerAllocation, 'id'>;
+        const serverDoc = await getDoc(doc(firestore, 'servers', allocationData.serverId));
+        
+        if (serverDoc.exists()) {
+            const serverData = serverDoc.data();
+            const createdOn = serverData.createdOn;
+            
+            const serverInfo: Server = {
+                id: serverDoc.id,
+                name: serverData.name,
+                publicIp: serverData.publicIp,
+                createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+            };
+
+            const allocation: ServerAllocation = {
+                id: allocDoc.id,
+                ...allocationData,
+                allocatedOn: allocationData.allocatedOn instanceof Timestamp ? allocationData.allocatedOn.toDate().toISOString() : null,
+                expiresOn: allocationData.expiresOn instanceof Timestamp ? allocationData.expiresOn.toDate().toISOString() : null,
+            }
+            
+            return { ...serverInfo, allocation };
+        }
+        return null;
     });
+
+    const servers = (await Promise.all(serverPromises)).filter(s => s !== null) as (Server & { allocation: ServerAllocation })[];
+    
     return { success: true, servers };
   } catch (error: any) {
     return { success: false, error: 'Failed to fetch site-specific servers.' };
@@ -98,15 +117,15 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
         }
         
         const data = docSnap.data()!;
-        const createdAt = data.createdAt;
+        const createdOn = data.createdOn;
+        const expiresOn = data.expiresOn;
         // Exclude privateIp and privateKey for security
         const server: Server = { 
             id: docSnap.id, 
             name: data.name,
             publicIp: data.publicIp,
-            type: data.type || 'private',
-            allocations: data.allocations || [],
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+            createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+            expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
         return { success: true, server };
     } catch (error: any) {
@@ -117,7 +136,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
 /**
  * Updates a server. Allows overriding privateKey and privateIp without fetching them.
  */
-export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt'>>) {
+export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdOn'>>) {
   try {
     const { firestore } = initializeFirebase();
     const serverRef = doc(firestore, 'servers', id);
@@ -125,8 +144,7 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     const dataToUpdate: Record<string, any> = {
         name: serverData.name,
         publicIp: serverData.publicIp,
-        type: serverData.type,
-        allocations: serverData.allocations || [],
+        expiresOn: serverData.expiresOn ? new Date(serverData.expiresOn) : null,
     };
 
     // Only include private fields if they are explicitly provided and not empty

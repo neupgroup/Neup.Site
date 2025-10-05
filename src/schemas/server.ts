@@ -1,8 +1,14 @@
 
 
 export interface ServerAllocation {
+  id: string;
   siteId: string;
-  port: number;
+  serverId: string;
+  username?: string;
+  deploymentPath?: string;
+  allocatedPorts?: number[];
+  allocatedOn?: string | null;
+  expiresOn?: string | null;
 }
 
 export interface Server {
@@ -11,7 +17,6 @@ export interface Server {
   publicIp: string;
   privateIp?: string;
   privateKey?: string;
-  createdAt?: string | null;
-  type: 'shared' | 'private';
-  allocations?: ServerAllocation[];
+  createdOn?: string | null;
+  expiresOn?: string | null;
 }

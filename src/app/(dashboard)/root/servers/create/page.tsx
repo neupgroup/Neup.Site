@@ -2,7 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -15,38 +15,26 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, ArrowLeft, Loader2, Plus, Trash2, Server as ServerIcon } from 'lucide-react';
+import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createServer } from '@/actions/servers';
 import Link from 'next/link';
 import { Server } from '@/schemas/server';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 
-type FormValues = Omit<Server, 'id' | 'createdAt'>;
+type FormValues = Omit<Server, 'id' | 'createdOn' | 'expiresOn'>;
 
 export default function CreateServerPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const { register, control, handleSubmit, watch, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, formState: { isSubmitting } } = useForm<FormValues>({
     defaultValues: {
       name: '',
       publicIp: '',
       privateIp: '',
       privateKey: '',
-      type: 'private',
-      allocations: []
     }
   });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'allocations'
-  });
-
-  const serverType = watch('type');
 
   const handleCreateServer = async (data: FormValues) => {
     if (!data.name || !data.publicIp || !data.privateKey) {
@@ -98,59 +86,14 @@ export default function CreateServerPage() {
                 <Label htmlFor="private-key">Private Key</Label>
                 <Textarea id="private-key" {...register('privateKey')} placeholder="Begins with -----BEGIN RSA PRIVATE KEY-----" rows={8} />
             </div>
-             <div className="space-y-3">
-                <Label>Server Type</Label>
-                <RadioGroup {...register('type')} value={serverType} onValueChange={(value) => register('type').onChange({target: {value}})} className="grid grid-cols-2 gap-4">
-                     <Label className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground", serverType === 'private' && "border-primary")}>
-                        <RadioGroupItem value="private" className="sr-only" />
-                        <ServerIcon className="mb-3 h-6 w-6" />
-                        Private
-                    </Label>
-                     <Label className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground", serverType === 'shared' && "border-primary")}>
-                        <RadioGroupItem value="shared" className="sr-only" />
-                        <ServerIcon className="mb-3 h-6 w-6" />
-                        Shared
-                    </Label>
-                </RadioGroup>
-            </div>
         </CardContent>
+        <CardFooter>
+            <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {isSubmitting ? 'Creating...' : 'Create Server'}
+            </Button>
+        </CardFooter>
       </Card>
-      
-      {serverType === 'shared' && (
-        <Card>
-            <CardHeader>
-                <CardTitle>Site Allocations</CardTitle>
-                <CardDescription>Assign specific Site IDs to ports on this shared server.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {fields.map((field, index) => (
-                    <div key={field.id} className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
-                        <div className="space-y-1">
-                            <Label>Site ID</Label>
-                            <Input {...register(`allocations.${index}.siteId`)} placeholder="e.g., my-awesome-site" />
-                        </div>
-                        <div className="space-y-1">
-                            <Label>Port</Label>
-                            <Input type="number" {...register(`allocations.${index}.port`, { valueAsNumber: true })} placeholder="e.g., 3001" />
-                        </div>
-                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ))}
-                 <Button type="button" variant="outline" className="w-full" onClick={() => append({ siteId: '', port: 0 })}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Allocation
-                </Button>
-            </CardContent>
-        </Card>
-      )}
-
-      <CardFooter>
-        <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            {isSubmitting ? 'Creating...' : 'Create Server'}
-        </Button>
-      </CardFooter>
     </form>
   );
 }

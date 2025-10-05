@@ -26,6 +26,7 @@ import {
   Eye,
   EyeOff,
   Loader2,
+  Share2,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -171,7 +172,6 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 <NavLink href="/site/pages" currentPath={pathname}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
                 <NavLink href="/site/sources" currentPath={pathname}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
                 <NavLink href="/site/servers" currentPath={pathname}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
-                <NavLink href="/site/storage" currentPath={pathname}><HardDrive className="h-4 w-4" /><span>Storage</span></NavLink>
                 <NavLink href="/site/modules" currentPath={pathname}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
                  <NavLink href="/analytics" currentPath={pathname}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
                 <NavLink href="/site/theme" currentPath={pathname}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
@@ -188,6 +188,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 <NavLink href="/root/pages" currentPath={pathname}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
                 <NavLink href="/root/templates" currentPath={pathname}><LayoutTemplate className="h-4 w-4" /><span>Templates</span></NavLink>
                 <NavLink href="/root/servers" currentPath={pathname}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
+                <NavLink href="/root/servers/allocations" currentPath={pathname}><Share2 className="h-4 w-4" /><span>Allocations</span></NavLink>
                  <NavLink href="/root/storage" currentPath={pathname}><HardDrive className="h-4 w-4" /><span>Storage</span></NavLink>
                  <NavLink href="/root/billing" currentPath={pathname}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
                 <NavLink href="/root/modules" currentPath={pathname}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>

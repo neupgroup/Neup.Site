@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -77,7 +77,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <Skeleton className="h-6 w-full" />
                 <Skeleton className="h-20 w-full" />
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex justify-end gap-2">
                 <Skeleton className="h-10 w-24" />
                 <Skeleton className="h-10 w-24" />
             </CardFooter>
@@ -87,18 +87,20 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
 
   if (error || !server) {
     return (
-      <Alert variant="destructive" className="max-w-2xl">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error || 'Server not found.'}</AlertDescription>
-         <div className="mt-4">
+      <div className="w-full">
+         <div className="mb-4">
             <Button asChild variant="outline">
               <Link href="/root/servers">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Servers
               </Link>
             </Button>
         </div>
-      </Alert>
+        <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error || 'Server not found.'}</AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
@@ -119,7 +121,6 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                         <CardTitle>{server.name}</CardTitle>
                         <CardDescription>ID: {server.id}</CardDescription>
                     </div>
-                    <Badge variant={server.type === 'shared' ? 'secondary' : 'default'}>{server.type}</Badge>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -130,35 +131,24 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                     </a>
                 </div>
                  <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground">Created At</h4>
-                    <p className="text-sm">{server.createdAt ? new Date(server.createdAt).toLocaleString() : 'N/A'}</p>
+                    <h4 className="font-semibold text-sm text-muted-foreground">Created On</h4>
+                    <p className="text-sm">{server.createdOn ? new Date(server.createdOn).toLocaleString() : 'N/A'}</p>
                 </div>
-                {server.allocations && server.allocations.length > 0 && (
-                    <div>
-                        <Separator className="my-4" />
-                        <h4 className="font-semibold text-sm text-muted-foreground mb-2">Allocations</h4>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                <TableHead>Site ID</TableHead>
-                                <TableHead>Port</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {server.allocations.map((alloc, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell className="font-mono">{alloc.siteId}</TableCell>
-                                        <TableCell className="font-mono">{alloc.port || 'N/A'}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                 {server.expiresOn && (
+                     <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Expires On</h4>
+                        <p className="text-sm">{new Date(server.expiresOn).toLocaleString()}</p>
                     </div>
-                )}
+                 )}
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
                 <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete
+                </Button>
+                 <Button asChild variant="outline">
+                    <Link href={`/root/servers/allocations/create?serverId=${id}`}>
+                        <Share2 className="mr-2 h-4 w-4"/> Allocate Server
+                    </Link>
                 </Button>
                 <Button asChild>
                     <Link href={`/root/servers/${id}/edit`}>

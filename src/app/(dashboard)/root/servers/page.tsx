@@ -6,13 +6,6 @@ import Link from 'next/link';
 import { getServers, type Server } from '@/actions/servers';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
   Table,
   TableBody,
   TableCell,
@@ -83,8 +76,7 @@ export default function ServersPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Public IP</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Created At</TableHead>
+                  <TableHead>Created On</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -100,10 +92,7 @@ export default function ServersPage() {
                             {server.publicIp}
                         </a>
                     </TableCell>
-                    <TableCell>
-                        <Badge variant={server.type === 'shared' ? 'secondary' : 'default'}>{server.type}</Badge>
-                    </TableCell>
-                    <TableCell>{server.createdAt ? new Date(server.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
+                    <TableCell>{server.createdOn ? new Date(server.createdOn).toLocaleDateString() : 'N/A'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
