@@ -40,7 +40,7 @@ const MethodCard = ({ index, onRemove, isEditing, onEdit, onSave, onCancel }: { 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Method Name</Label>
-                        <Input {...register(`methods.${index}.methodName`)} placeholder="e.g., getProducts" disabled={!isEditing} />
+                        <Input {...register(`methods.${index}.methodName`)} placeholder="e.g., getProducts" disabled />
                     </div>
                     <div className="space-y-2">
                         <Label>HTTP Method</Label>
@@ -76,25 +76,25 @@ const MethodCard = ({ index, onRemove, isEditing, onEdit, onSave, onCancel }: { 
                     <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
                 </div>
             </CardContent>
-            <CardContent className="flex justify-between">
-                <Button type="button" variant="destructive" size="sm" onClick={onRemove}>
-                    <Trash2 className="mr-2" /> Remove
-                </Button>
+            <CardFooter className="flex justify-start gap-2">
                 {isEditing ? (
-                    <div className="flex gap-2">
-                         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-                             <X className="mr-2" /> Cancel
-                        </Button>
+                    <>
                         <Button type="button" size="sm" onClick={onSave}>
                             <Save className="mr-2" /> Save
                         </Button>
-                    </div>
+                         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+                             <X className="mr-2" /> Cancel
+                        </Button>
+                        <Button type="button" variant="destructive" size="sm" onClick={onRemove}>
+                            <Trash2 className="mr-2" /> Remove
+                        </Button>
+                    </>
                 ) : (
                     <Button type="button" variant="outline" size="sm" onClick={onEdit}>
                         <Edit className="mr-2" /> Edit
                     </Button>
                 )}
-            </CardContent>
+            </CardFooter>
         </Card>
     );
 };
