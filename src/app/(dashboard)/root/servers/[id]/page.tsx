@@ -42,6 +42,7 @@ import { getResetNginxCommand } from '@/actions/server/management/reset-nginx';
 import { getInstallNpmCommand } from '@/actions/server/management/install-npm';
 import { getBuildNpmWithMemoryCommand } from '@/actions/server/management/build-npm-with-memory';
 import { getInstallPm2Command } from '@/actions/server/management/install-pm2';
+import { getStartNextWithPm2Command } from '@/actions/server/management/start-next-with-pm2';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -57,6 +58,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [proxyUrl, setProxyUrl] = useState('http://localhost:3000');
   const [buildMemory, setBuildMemory] = useState('1024');
   const [deploymentPath, setDeploymentPath] = useState('/home/ubuntu/app');
+  const [pm2AppName, setPm2AppName] = useState('next-app');
   
   const [isPending, startTransition] = useTransition();
 
@@ -130,6 +132,15 @@ const handleBuildNpm = async () => {
         handleRunCommand(command, `Build NPM Project`);
     } catch (e: any) {
         toast({ variant: 'destructive', title: 'Build Error', description: e.message });
+    }
+};
+
+const handleStartNextWithPm2 = async () => {
+    try {
+        const command = await getStartNextWithPm2Command({ appName: pm2AppName, path: deploymentPath });
+        handleRunCommand(command, `Start Next.js app with PM2`);
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: 'PM2 Start Error', description: e.message });
     }
 };
 
@@ -330,6 +341,23 @@ const handleBuildNpm = async () => {
                 </div>
                 <Button onClick={handleBuildNpm} disabled={isPending}>
                     <Package className="mr-2 h-4 w-4" /> Run Build
+                </Button>
+            </div>
+             <div className="rounded-lg border p-4 space-y-4">
+                <div>
+                    <h4 className="font-medium">Start Next.js App with PM2</h4>
+                    <p className="text-sm text-muted-foreground">Start the Next.js app in the deployment path using PM2.</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="pm2-app-name">PM2 App Name</Label>
+                    <Input id="pm2-app-name" value={pm2AppName} onChange={e => setPm2AppName(e.target.value)} placeholder="my-next-app" />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="pm2-deployment-path">Deployment Path</Label>
+                    <Input id="pm2-deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
+                </div>
+                <Button onClick={handleStartNextWithPm2} disabled={isPending}>
+                    <Package className="mr-2 h-4 w-4" /> Start with PM2
                 </Button>
             </div>
             <div className="rounded-lg border p-4 space-y-4">
