@@ -291,6 +291,15 @@ sudo systemctl restart nginx
                     <GitCommit className="mr-2 h-4 w-4" /> Run Update
                 </Button>
             </div>
+             <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                <h4 className="font-medium">Install Nginx</h4>
+                <p className="text-sm text-muted-foreground">Install and start the Nginx web server.</p>
+                </div>
+                <Button onClick={() => handleRunCommand('sudo apt-get install -y nginx && sudo systemctl start nginx && sudo systemctl enable nginx', 'Install Nginx')} disabled={isPending}>
+                    <Globe className="mr-2 h-4 w-4" /> Install Nginx
+                </Button>
+            </div>
             <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
                 <h4 className="font-medium">Install npm</h4>
