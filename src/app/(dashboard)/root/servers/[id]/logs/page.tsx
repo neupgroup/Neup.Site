@@ -24,7 +24,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 const FullLog = ({ log }: { log: ServerLog }) => {
     return (
         <div className="space-y-2">
-            <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono max-h-[60vh]">
+            <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">
                 {log.output || 'No output from this command.'}
             </pre>
              {log.completedAt && (
@@ -47,7 +47,7 @@ export default function ServerLogsPage({ params }: { params: Promise<{ id: strin
   const fetchLogs = async (page = 1) => {
     setLoadingLogs(true);
     setLogsError(null);
-    const result = await getServerLogs({ serverId: id, page });
+    const result = await getServerLogs({ serverId: id, page, pageSize: 5 });
 
     if (result.success && result.logs) {
         setLogs(result.logs!);
