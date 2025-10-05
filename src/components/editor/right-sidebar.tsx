@@ -1,4 +1,5 @@
 
+'use client';
 
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
 import { Settings, Database } from 'lucide-react';
@@ -19,7 +20,6 @@ import ImageProperties from './properties/image';
 import FlexboxProperties from './properties/flexbox';
 import GlobalSettings from './properties/global-settings';
 import ShadowProperties from './properties/shadow';
-import PageDataSource from './properties/page-data-source';
 import RepeaterProperties from './properties/repeater';
 import DataBindingProperties from './properties/data-binding';
 
@@ -117,11 +117,11 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
   if (!selectedElement || !elementDef) {
     return (
       <aside className="w-80 border-l bg-card">
-        {pageId ? (
-            <PageDataSource pageId={pageId} />
-        ) : (
-            <GlobalSettings elements={elements} onUpdateAllElements={onUpdateAllElements} />
-        )}
+        <GlobalSettings 
+            elements={elements} 
+            onUpdateAllElements={onUpdateAllElements} 
+            pageId={pageId}
+        />
       </aside>
     );
   }

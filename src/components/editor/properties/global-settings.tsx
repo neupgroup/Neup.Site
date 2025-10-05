@@ -1,11 +1,11 @@
 
 import { FC, useState, useEffect } from 'react';
-import { Settings, RefreshCw } from 'lucide-react';
+import { Settings, RefreshCw, Database } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Link as LinkIcon } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +13,10 @@ import { Button } from '@/components/ui/button';
 import type { CanvasElementData } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getSources, type Source } from '@/actions/editor/sources';
+import { setPageDataSource, getPageDataSource } from '@/actions/editor/data';
 
 const breakpoints = [
     { name: 'sm', value: '640px' },
@@ -22,12 +26,161 @@ const breakpoints = [
     { name: '2xl', value: '1536px' },
 ];
 
+interface PageDataSourceProps {
+    pageId?: string;
+}
+
+const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId }) => {
+    const [sources, setSources] = useState<Source[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedSourceId, setSelectedSourceId] = useState<string>('');
+    const [selectedMethodName, setSelectedMethodName] = useState<string>('');
+    const [isSaving, setIsSaving] = useState(false);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        if (!pageId) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const [sourcesResult, currentBindingResult] = await Promise.all([
+                    getSources(),
+                    getPageDataSource(pageId)
+                ]);
+
+                if (sourcesResult.success && sourcesResult.sources) {
+                    setSources(sourcesResult.sources);
+                } else {
+                    setError(sourcesResult.error || 'Failed to load data sources.');
+                }
+                
+                if (currentBindingResult.success && currentBindingResult.binding) {
+                    setSelectedSourceId(currentBindingResult.binding.sourceId);
+                    setSelectedMethodName(currentBindingResult.binding.methodName);
+                }
+
+            } catch (e: any) {
+                setError('An unexpected error occurred.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [pageId]);
+
+    const handleSave = async () => {
+        if (!pageId) return;
+        if (!selectedSourceId || !selectedMethodName) {
+            toast({ variant: 'destructive', title: 'Missing selection', description: 'Please select both a source and a method.'});
+            return;
+        }
+        setIsSaving(true);
+        const result = await setPageDataSource(pageId, selectedSourceId, selectedMethodName);
+        if (result.success) {
+            toast({ title: 'Data Source Linked!', description: 'The page is now connected to the selected data source method.' });
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.error });
+        }
+        setIsSaving(false);
+    };
+
+    const selectedSource = sources.find(s => s.id === selectedSourceId);
+    
+    if (!pageId) {
+        return (
+             <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Page Not Saved</AlertTitle>
+                <AlertDescription>
+                    You must save the page at least once before linking a data source.
+                </AlertDescription>
+            </Alert>
+        );
+    }
+    
+    if (loading) {
+        return (
+            <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-4">
+            {error && (
+                 <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
+            {!error && (
+                <>
+                    <div className="space-y-2">
+                        <Label htmlFor="data-source">Data Source</Label>
+                        <Select value={selectedSourceId} onValueChange={v => {setSelectedSourceId(v); setSelectedMethodName('');}}>
+                            <SelectTrigger id="data-source">
+                                <SelectValue placeholder="Select a source..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sources.map(source => (
+                                    <SelectItem key={source.id} value={source.id}>{source.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    {selectedSource && (
+                        <div className="space-y-2">
+                            <Label htmlFor="data-method">Method</Label>
+                            <Select value={selectedMethodName} onValueChange={setSelectedMethodName}>
+                                <SelectTrigger id="data-method">
+                                    <SelectValue placeholder="Select a method..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {(selectedSource as any).methods?.map((method: any) => (
+                                        <SelectItem key={method.methodName} value={method.methodName}>{method.methodName}</SelectItem>
+                                    )) || []}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                     <Button className="w-full" onClick={handleSave} disabled={isSaving || loading || !selectedSourceId || !selectedMethodName}>
+                        {isSaving ? 'Saving...' : 'Link Data to Page'}
+                    </Button>
+                    {sources.length === 0 && (
+                        <Alert>
+                            <LinkIcon className="h-4 w-4" />
+                            <AlertTitle>No Sources Found</AlertTitle>
+                            <AlertDescription>
+                                You haven't created any data sources yet.
+                                <Button asChild variant="link" className="p-0 h-auto ml-1">
+                                    <a href="/site/sources/create">Create one now.</a>
+                                </Button>
+                            </AlertDescription>
+                        </Alert>
+                    )}
+                </>
+            )}
+        </div>
+    );
+};
+
+
 interface GlobalSettingsProps {
     elements: CanvasElementData[];
     onUpdateAllElements: (elements: CanvasElementData[]) => void;
+    pageId?: string;
 }
 
-const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements }) => {
+const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements, pageId }) => {
     const [jsonString, setJsonString] = useState('');
     const { toast } = useToast();
 
@@ -38,7 +191,6 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
     const handleJsonUpdate = () => {
         try {
             const newElements = JSON.parse(jsonString);
-            // Basic validation
             if (Array.isArray(newElements)) {
                 onUpdateAllElements(newElements);
                 toast({ title: "Canvas Updated", description: "The site structure has been updated from the JSON." });
@@ -59,7 +211,17 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
         </header>
         <ScrollArea className="flex-1">
             <div className="p-4 space-y-6">
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="multiple" className="w-full" defaultValue={['data-source']}>
+                    <AccordionItem value="data-source">
+                        <AccordionTrigger className="text-sm font-medium">
+                            <div className="flex items-center gap-2">
+                                <Database className="h-4 w-4" /> Page Data Source
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                            <PageDataSourceSection pageId={pageId} />
+                        </AccordionContent>
+                    </AccordionItem>
                     <AccordionItem value="css-framework">
                         <AccordionTrigger className="text-sm font-medium">CSS Framework</AccordionTrigger>
                         <AccordionContent className="space-y-4">
