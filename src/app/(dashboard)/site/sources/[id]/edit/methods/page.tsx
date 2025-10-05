@@ -9,7 +9,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,10 +22,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-
-type FormValues = {
-    methods: SourceMethod[];
-};
 
 const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourceId: string; method: SourceMethod, onResult: (result: any) => void, onIsLoadingChange: (isLoading: boolean) => void }) => {
     const [params, setParams] = useState<Record<string, string>>({});
@@ -45,6 +40,7 @@ const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourc
         if (dynamicParams.length === 0) {
             handleTest();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (dynamicParams.length === 0) return null;
@@ -72,31 +68,50 @@ const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourc
 };
 
 
-const MethodCard = ({ index, sourceId, isEditing, setEditingIndex }: { index: number, sourceId: string, isEditing: boolean, setEditingIndex: (index: number | null) => void }) => {
-    const { control, getValues, register, resetField, unregister } = useFormContext<FormValues>();
-    const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
+const MethodCard = ({ method, sourceId, onUpdate, onRemove }: { method: SourceMethod, sourceId: string, onUpdate: (methodName: string, newMethodData: SourceMethod) => Promise<void>, onRemove: (methodName: string) => Promise<void> }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedMethod, setEditedMethod] = useState<SourceMethod>(method);
     const [showTester, setShowTester] = useState(false);
     const [testResult, setTestResult] = useState<any | null>(null);
     const [isTesting, setIsTesting] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        setEditedMethod(method);
+    }, [method]);
 
     const startEditing = () => {
-        setOriginalState(getValues(`methods.${index}`));
+        setIsEditing(true);
         setShowTester(false);
         setTestResult(null);
-        setEditingIndex(index);
     };
     
     const cancelEditing = () => {
-        if (originalState) {
-             resetField(`methods.${index}`, { defaultValue: originalState });
-        }
-        setEditingIndex(null);
-        setOriginalState(null);
+        setEditedMethod(method);
+        setIsEditing(false);
     };
     
-    const saveEditing = () => {
-        setEditingIndex(null);
-        setOriginalState(null);
+    const saveEditing = async () => {
+        setIsSaving(true);
+        try {
+            await onUpdate(method.methodName, editedMethod);
+            setIsEditing(false);
+            toast({ title: 'Method Saved', description: `Method "${editedMethod.methodName}" has been updated.`});
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Error Saving', description: e.message });
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
+    const handleRemove = async () => {
+        try {
+            await onRemove(method.methodName);
+            toast({ title: 'Method Removed' });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Error Removing', description: e.message });
+        }
     }
     
     const toggleTester = () => {
@@ -107,26 +122,28 @@ const MethodCard = ({ index, sourceId, isEditing, setEditingIndex }: { index: nu
         }
     }
 
-    const removeMethod = () => {
-        unregister(`methods.${index}`);
-        setEditingIndex(null);
-    }
-    
     const handleClearTest = () => {
         setShowTester(false);
         setTestResult(null);
     }
 
-    const methodData = getValues(`methods.${index}`);
-    const headersValue = getValues(`methods.${index}.headers` as any) as string;
-    const showHeaders = isEditing || (headersValue && headersValue.trim() !== '{}' && headersValue.trim() !== '');
+    const handleFieldChange = (key: keyof SourceMethod, value: any) => {
+        setEditedMethod(prev => ({...prev, [key]: value}));
+    };
+    
+    const currentMethodData = isEditing ? editedMethod : method;
+    const headersString = typeof currentMethodData.headers === 'object' 
+        ? JSON.stringify(currentMethodData.headers, null, 2)
+        : currentMethodData.headers || '{}';
+
+    const showHeaders = isEditing || (headersString && headersString.trim() !== '{}' && headersString.trim() !== '');
 
     return (
         <Card>
             <CardHeader>
                 <div className="flex items-center gap-2">
                     <CardTitle className="truncate">
-                        {getValues(`methods.${index}.methodName`) || `New Method`}
+                        {method.methodName}
                     </CardTitle>
                     {!isEditing && (
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleTester}>
@@ -139,47 +156,49 @@ const MethodCard = ({ index, sourceId, isEditing, setEditingIndex }: { index: nu
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Method Name</Label>
-                        <Input {...register(`methods.${index}.methodName`)} placeholder="e.g., getProducts" disabled />
+                        <Input value={currentMethodData.methodName} placeholder="e.g., getProducts" disabled />
                     </div>
                     <div className="space-y-2">
                         <Label>HTTP Method</Label>
-                        <Controller
-                            control={control}
-                            name={`methods.${index}.httpMethod`}
-                            render={({ field }) => (
-                                <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                    disabled={!isEditing}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select method" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="GET">GET</SelectItem>
-                                        <SelectItem value="POST">POST</SelectItem>
-                                        <SelectItem value="PUT">PUT</SelectItem>
-                                        <SelectItem value="DELETE">DELETE</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            )}
-                        />
+                        <Select
+                            value={currentMethodData.httpMethod}
+                            onValueChange={(v) => handleFieldChange('httpMethod', v)}
+                            disabled={!isEditing}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select method" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="GET">GET</SelectItem>
+                                <SelectItem value="POST">POST</SelectItem>
+                                <SelectItem value="PUT">PUT</SelectItem>
+                                <SelectItem value="DELETE">DELETE</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
                 <div className="space-y-2">
                     <Label>Endpoint</Label>
-                    <Input {...register(`methods.${index}.path`)} placeholder="/products/[productId]" disabled={!isEditing} />
+                    <Input value={currentMethodData.path} onChange={(e) => handleFieldChange('path', e.target.value)} placeholder="/products/[productId]" disabled={!isEditing} />
                 </div>
                 {showHeaders && (
                     <div className="space-y-2">
                         <Label>Headers (JSON, Optional)</Label>
-                        <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
+                        <Textarea 
+                            value={headersString} 
+                            onChange={(e) => handleFieldChange('headers', e.target.value)}
+                            placeholder='{ "X-Custom-Header": "value" }' 
+                            rows={3} 
+                            className="font-mono" 
+                            disabled={!isEditing} 
+                        />
                     </div>
                 )}
-                {showTester && <MethodTester sourceId={sourceId} method={methodData} onResult={setTestResult} onIsLoadingChange={setIsTesting} />}
+                {showTester && <MethodTester sourceId={sourceId} method={currentMethodData} onResult={setTestResult} onIsLoadingChange={setIsTesting} />}
 
                 {(isTesting || testResult) && (
                     <div className="space-y-2 pt-4 border-t mt-4">
+                        <Label>Response</Label>
                         {isTesting && !testResult && (
                              <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <Loader2 className="animate-spin h-4 w-4" />
@@ -196,16 +215,17 @@ const MethodCard = ({ index, sourceId, isEditing, setEditingIndex }: { index: nu
                     </div>
                 )}
             </CardContent>
-            <CardFooter className="flex justify-start gap-2">
+            <div className="flex justify-start gap-2 p-6 pt-0">
                 {isEditing ? (
                     <>
-                        <Button type="button" size="sm" onClick={saveEditing}>
-                            <Save className="mr-2" /> Save
+                        <Button type="button" size="sm" onClick={saveEditing} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                            Save
                         </Button>
                          <Button type="button" variant="ghost" size="sm" onClick={cancelEditing}>
                              <X className="mr-2" /> Cancel
                         </Button>
-                         <Button type="button" variant="destructive" size="sm" onClick={removeMethod}>
+                         <Button type="button" variant="destructive" size="sm" onClick={handleRemove}>
                             <Trash2 className="mr-2" /> Remove
                         </Button>
                     </>
@@ -221,17 +241,29 @@ const MethodCard = ({ index, sourceId, isEditing, setEditingIndex }: { index: nu
                         )}
                     </>
                 )}
-            </CardFooter>
+            </div>
         </Card>
     );
 };
 
-const AddNewMethodCard = ({ onAdd }: { onAdd: (name: string) => void }) => {
+const AddNewMethodCard = ({ onAdd, existingMethodNames }: { onAdd: (name: string) => void, existingMethodNames: string[] }) => {
     const [newMethodName, setNewMethodName] = useState('');
+    const { toast } = useToast();
 
     const handleAddClick = () => {
-        if (!newMethodName) return;
-        onAdd(newMethodName);
+        const trimmedName = newMethodName.trim();
+        if (!trimmedName) return;
+
+        if (existingMethodNames.some(name => name.toLowerCase() === trimmedName.toLowerCase())) {
+          toast({
+              variant: 'destructive',
+              title: 'Duplicate Method Name',
+              description: `A method named "${trimmedName}" already exists for this source.`
+          });
+          return;
+      }
+
+        onAdd(trimmedName);
         setNewMethodName('');
     };
 
@@ -263,88 +295,83 @@ const AddNewMethodCard = ({ onAdd }: { onAdd: (name: string) => void }) => {
 
 export default function EditSourceMethodsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const [source, setSource] = useState<Source | null>(null);
+  const [methods, setMethods] = useState<SourceMethod[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sourceName, setSourceName] = useState('');
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  
   const { toast } = useToast();
 
-  const formMethods = useForm<FormValues>({
-      defaultValues: {
-          methods: [],
-      }
-  });
-  
-  const { getValues } = formMethods;
-
-  const { fields, append, remove } = useFieldArray({
-      control: formMethods.control,
-      name: 'methods'
-  });
-
-  useEffect(() => {
-    const fetchSource = async () => {
+  const fetchSource = async () => {
       setLoading(true);
       const result = await getSource(id);
       if (result.success && result.source) {
-        setSourceName(result.source.name);
-        if (result.source.methods) {
-            const formattedMethods = result.source.methods.map(m => ({
-                ...m,
-                headers: m.headers ? JSON.stringify(m.headers, null, 2) : '{}'
-            }))
-            formMethods.reset({ methods: formattedMethods as any });
-        }
+          setSource(result.source);
+          setMethods(result.source.methods || []);
       } else {
         setError(result.error || 'Failed to fetch source.');
       }
       setLoading(false);
-    };
+  }
 
+  useEffect(() => {
     fetchSource();
-  }, [id, formMethods]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
   
   const handleAddNewMethod = (name: string) => {
-      const existingMethods = getValues('methods');
-      if (existingMethods.some(method => method.methodName.toLowerCase() === name.toLowerCase())) {
-          toast({
-              variant: 'destructive',
-              title: 'Duplicate Method Name',
-              description: `A method named "${name}" already exists for this source.`
-          });
-          return;
+    const newMethod: SourceMethod = {
+        methodName: name,
+        httpMethod: 'GET',
+        path: '',
+        headers: {}
+    };
+    const updatedMethods = [...methods, newMethod];
+    
+    updateSource(id, { methods: updatedMethods }).then(result => {
+      if (result.success) {
+        setMethods(updatedMethods);
+        toast({ title: "Method Added", description: `You can now configure the "${name}" method.`});
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
-      
-      append({
-          methodName: name,
-          httpMethod: 'GET',
-          path: '',
-          headers: '{}' as any
-      });
-      setEditingIndex(fields.length);
+    });
   };
-  
-  const handleUpdateMethods = async (data: FormValues) => {
-    let methodsToSave;
+
+  const handleUpdateMethod = async (methodName: string, newMethodData: SourceMethod) => {
+    let parsedHeaders;
     try {
-        methodsToSave = data.methods.map(m => ({
-            ...m,
-            headers: m.headers ? JSON.parse(m.headers as any) : undefined
-        }));
+        if (typeof newMethodData.headers === 'string') {
+            parsedHeaders = newMethodData.headers ? JSON.parse(newMethodData.headers) : {};
+        } else {
+            parsedHeaders = newMethodData.headers || {};
+        }
     } catch (e) {
-        toast({ variant: 'destructive', title: 'Invalid JSON in Headers', description: `Please check the headers for all methods.`});
-        return;
+        throw new Error("Headers are not valid JSON.");
     }
 
-    const result = await updateSource(id, { methods: methodsToSave });
+    const updatedMethods = methods.map(m => 
+        m.methodName === methodName ? { ...newMethodData, headers: parsedHeaders } : m
+    );
+    
+    const result = await updateSource(id, { methods: updatedMethods });
 
     if (result.success) {
-      toast({ title: 'Methods Updated!', description: `Successfully updated methods for ${sourceName}.` });
+      setMethods(updatedMethods);
     } else {
-      toast({ variant: 'destructive', title: 'Error', description: result.error });
+      throw new Error(result.error);
     }
   };
+
+  const handleRemoveMethod = async (methodName: string) => {
+      const updatedMethods = methods.filter(m => m.methodName !== methodName);
+      const result = await updateSource(id, { methods: updatedMethods });
+      if (result.success) {
+          setMethods(updatedMethods);
+      } else {
+          throw new Error(result.error);
+      }
+  };
+  
 
   if (loading) {
     return (
@@ -366,14 +393,11 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
     );
   }
   
-  const { isSubmitting } = formMethods.formState;
-
   return (
-    <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(handleUpdateMethods)} className="w-full max-w-4xl space-y-6">
+      <div className="w-full max-w-4xl space-y-6">
         <div className="flex justify-between items-center">
             <div>
-                <p className="text-muted-foreground">Editing methods for: <span className="font-semibold">{sourceName}</span></p>
+                <p className="text-muted-foreground">Editing methods for: <span className="font-semibold">{source?.name}</span></p>
             </div>
             <Button variant="ghost" asChild>
                 <Link href={`/site/sources/${id}/edit`}>
@@ -383,25 +407,20 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
             </Button>
         </div>
         
-        {fields.map((field, index) => (
+        {methods.map((method) => (
             <MethodCard 
-                key={field.id} 
-                index={index} 
+                key={method.methodName} 
+                method={method} 
                 sourceId={id}
-                isEditing={editingIndex === index}
-                setEditingIndex={setEditingIndex}
+                onUpdate={handleUpdateMethod}
+                onRemove={handleRemoveMethod}
             />
         ))}
 
-        <AddNewMethodCard onAdd={handleAddNewMethod} />
-        
-        <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm mt-6">
-            <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                Save All Changes
-            </Button>
-        </div>
-      </form>
-    </FormProvider>
+        <AddNewMethodCard 
+            onAdd={handleAddNewMethod} 
+            existingMethodNames={methods.map(m => m.methodName)} 
+        />
+      </div>
   );
 }
