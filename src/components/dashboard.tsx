@@ -170,6 +170,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 </div>
                 <NavLink href="/site/pages" currentPath={pathname}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
                 <NavLink href="/site/sources" currentPath={pathname}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
+                <NavLink href="/site/servers" currentPath={pathname}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
                 <NavLink href="/site/modules" currentPath={pathname}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
                  <NavLink href="/analytics" currentPath={pathname}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
                 <NavLink href="/site/theme" currentPath={pathname}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>

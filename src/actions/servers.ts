@@ -4,6 +4,7 @@
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { Server, ServerAllocation } from '@/schemas/server';
 import { initializeFirebase } from '@/lib/firebase';
+import { cookies } from 'next/headers';
 
 /**
  * Creates a new server.
@@ -47,6 +48,41 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
     return { success: false, error: 'Failed to fetch servers.' };
   }
 }
+
+/**
+ * Fetches servers relevant to the current siteId.
+ */
+export async function getSiteServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
+  try {
+    const { firestore } = initializeFirebase();
+    const q = query(collection(firestore, 'servers'), where('allocations', 'array-contains', { siteId: siteId }));
+    const querySnapshot = await getDocs(q);
+    
+    const servers = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        const createdAt = data.createdAt;
+        
+        const siteAllocation = data.allocations?.find((alloc: ServerAllocation) => alloc.siteId === siteId);
+
+        return {
+            id: doc.id,
+            name: data.name,
+            publicIp: data.publicIp,
+            type: data.type || 'private',
+            allocations: siteAllocation ? [siteAllocation] : [], // Only return the allocation for the current site
+            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+        } as Server
+    });
+    return { success: true, servers };
+  } catch (error: any) {
+    return { success: false, error: 'Failed to fetch site-specific servers.' };
+  }
+}
+
 
 /**
  * Fetches a single server by its ID, excluding private fields.
