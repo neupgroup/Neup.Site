@@ -197,7 +197,7 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
             <div className="space-y-2">
                 <Label>Source Type</Label>
                 <Controller name="type" control={methods.control} render={({ field }) => (
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                     <Select onValueChange={field.onChange} defaultValue={field.value} disabled>
                         <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="api">API</SelectItem>
