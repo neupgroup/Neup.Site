@@ -3,11 +3,15 @@
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { getPrivateServerDetails } from '@/actions/servers';
-import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
 
-async function runCommand(serverId: string, command: string) {
+export async function runCommand(serverId: string, command: string) {
+    if (!command) {
+        console.error('Runner Error: No command provided.');
+        return;
+    }
+
     const createResult = await createServerLog({
         serverId: serverId,
         command: command,
@@ -21,6 +25,7 @@ async function runCommand(serverId: string, command: string) {
     }
     const logId = createResult.id;
     
+    // Immediately revalidate to show the "pending" log entry
     revalidatePath(`/root/servers/${serverId}`);
 
     const ssh = new NodeSSH();
@@ -48,14 +53,7 @@ async function runCommand(serverId: string, command: string) {
         await updateServerLog(logId, { output: `Connection successful. Running command...\n\n$ ${command}` });
         revalidatePath(`/root/servers/${serverId}`);
 
-        const result = await ssh.execCommand(command, {
-            onStdout: (chunk) => {
-                // This could be used for real-time streaming in the future
-            },
-            onStderr: (chunk) => {
-                 // This could be used for real-time streaming in the future
-            }
-        });
+        const result = await ssh.execCommand(command);
         
         let finalOutput = '';
         if (result.stdout) {
@@ -66,16 +64,17 @@ async function runCommand(serverId: string, command: string) {
         }
         finalOutput += `Exited with code: ${result.code}`;
 
-
         await updateServerLog(logId, {
             status: result.code === 0 ? 'completed' : 'failed',
             output: finalOutput,
+            completedAt: new Date().toISOString(), // Use client-side timestamp for now, can be replaced by serverTimestamp if needed
         });
 
     } catch (error: any) {
         await updateServerLog(logId, {
             status: 'failed',
-            output: `SSH Connection or Command Execution Failed:\n${error.message}`
+            output: `SSH Connection or Command Execution Failed:\n${error.message}`,
+            completedAt: new Date().toISOString(),
         });
     } finally {
         if(ssh.isConnected()) {
@@ -83,18 +82,4 @@ async function runCommand(serverId: string, command: string) {
         }
         revalidatePath(`/root/servers/${serverId}`);
     }
-}
-
-// This function will be called via a form POST
-export default async function RunnerPage({ params, request }: { params: { id: string }, request: Request }) {
-    const { id } = params;
-    const formData = await request.formData();
-    const command = formData.get('command') as string;
-
-    if (command) {
-        await runCommand(id, command);
-    }
-    
-    // Always redirect back after handling the action
-    redirect(`/root/servers/${id}`);
 }

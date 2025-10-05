@@ -3,6 +3,7 @@ import { useState, useEffect, use, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { getServer, deleteServer, type Server } from '@/actions/servers';
 import { getServerLogs, type ServerLog } from '@/actions/server-logs';
+import { runCommand } from '@/actions/runner';
 import {
   Card,
   CardContent,
@@ -48,11 +49,11 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [swapSize, setSwapSize] = useState('3072');
   const [customCommand, setCustomCommand] = useState('');
-  const [runningCommand, setRunningCommand] = useState<string | null>(null);
+  
+  const [isPending, startTransition] = useTransition();
 
   const { toast } = useToast();
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
 
   const fetchLogs = async (page = 1) => {
     setLoadingLogs(true);
@@ -82,32 +83,27 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     fetchInitialData();
     fetchLogs(1);
   }, [id]);
-
+  
   useEffect(() => {
-    // Poll for log updates if a command is running
+    const hasOngoingLog = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
     let interval: NodeJS.Timeout | null = null;
-    if (runningCommand) {
-        interval = setInterval(() => {
-            fetchLogs(1);
-        }, 3000);
+    if (hasOngoingLog) {
+      interval = setInterval(() => {
+        fetchLogs(1);
+      }, 3000);
     }
-    
-    // Check if the running command is now completed or failed
-    const runningLog = logs.find(log => log.output.includes(runningCommand || ''));
-    if (runningLog && (runningLog.status === 'completed' || runningLog.status === 'failed')) {
-        setRunningCommand(null);
-    }
-
     return () => {
-        if (interval) clearInterval(interval);
+      if (interval) clearInterval(interval);
     };
-  }, [runningCommand, logs]);
+  }, [logs]);
 
-  const handleFormSubmit = (commandName: string) => {
-      setRunningCommand(commandName);
-      startTransition(() => {
+
+  const handleRunCommand = (command: string, commandName?: string) => {
+      if (!command) return;
+      startTransition(async () => {
+          await runCommand(id, command);
+          toast({ title: "Command Sent", description: `The command "${commandName || command}" has been sent to the server.`});
           fetchLogs(1);
-          setTimeout(() => setRunningCommand(null), 10000);
       });
   };
 
@@ -159,6 +155,8 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
       </div>
     );
   }
+
+  const hasOngoingCommand = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
 
   return (
     <div className="w-full space-y-6">
@@ -220,52 +218,43 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
             <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit('Update & Upgrade'); (e.target as HTMLFormElement).submit(); }}>
-                <input type="hidden" name="command" value="sudo apt-get update && sudo apt-get upgrade -y" />
-                <div className="flex items-center justify-between rounded-lg border p-4">
-                    <div>
-                        <h4 className="font-medium">Update &amp; Upgrade Server</h4>
-                        <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
-                    </div>
-                    <Button type="submit" disabled={isPending || !!runningCommand}>
-                        {isPending && runningCommand === 'Update & Upgrade' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
-                        {isPending && runningCommand === 'Update & Upgrade' ? 'Running...' : 'Run Update'}
+            <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                    <h4 className="font-medium">Update &amp; Upgrade Server</h4>
+                    <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
+                </div>
+                <Button onClick={() => handleRunCommand('sudo apt-get update && sudo apt-get upgrade -y', 'Update & Upgrade')} disabled={isPending || hasOngoingCommand}>
+                    {isPending || hasOngoingCommand ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
+                    {isPending || hasOngoingCommand ? 'Running...' : 'Run Update'}
+                </Button>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                <h4 className="font-medium">Install npm</h4>
+                <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
+                </div>
+                <Button onClick={() => handleRunCommand('sudo apt-get install -y nodejs npm', 'Install npm')} disabled={isPending || hasOngoingCommand}>
+                    {isPending || hasOngoingCommand ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
+                    {isPending || hasOngoingCommand ? 'Installing...' : 'Install npm'}
+                </Button>
+            </div>
+            <div className="rounded-lg border p-4">
+                <h4 className="font-medium">Create Swap Space</h4>
+                <p className="text-sm text-muted-foreground">Create a swap file to use as virtual RAM.</p>
+                <div className="flex items-center gap-2 mt-3">
+                    <Input 
+                        id="swap-size"
+                        value={swapSize}
+                        onChange={(e) => setSwapSize(e.target.value)}
+                        className="max-w-[120px]"
+                    />
+                        <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
+                    <Button onClick={() => handleRunCommand(`sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`, 'Create Swap')} className="ml-auto" disabled={isPending || hasOngoingCommand}>
+                        {isPending || hasOngoingCommand ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
+                        {isPending || hasOngoingCommand ? 'Creating...' : 'Create Swap'}
                     </Button>
                 </div>
-            </form>
-             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit('Install npm'); (e.target as HTMLFormElement).submit(); }}>
-                <input type="hidden" name="command" value="sudo apt-get install -y nodejs npm" />
-                <div className="flex items-center justify-between rounded-lg border p-4">
-                   <div>
-                    <h4 className="font-medium">Install npm</h4>
-                    <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
-                  </div>
-                  <Button type="submit" disabled={isPending || !!runningCommand}>
-                     {isPending && runningCommand === 'Install npm' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
-                     {isPending && runningCommand === 'Install npm' ? 'Installing...' : 'Install npm'}
-                  </Button>
-                </div>
-            </form>
-             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit('Create Swap'); (e.target as HTMLFormElement).submit(); }}>
-                <input type="hidden" name="command" value={`sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`} />
-                <div className="rounded-lg border p-4">
-                    <h4 className="font-medium">Create Swap Space</h4>
-                    <p className="text-sm text-muted-foreground">Create a swap file to use as virtual RAM.</p>
-                    <div className="flex items-center gap-2 mt-3">
-                        <Input 
-                            id="swap-size"
-                            value={swapSize}
-                            onChange={(e) => setSwapSize(e.target.value)}
-                            className="max-w-[120px]"
-                        />
-                         <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                        <Button type="submit" className="ml-auto" disabled={isPending || !!runningCommand}>
-                            {isPending && runningCommand === 'Create Swap' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
-                            {isPending && runningCommand === 'Create Swap' ? 'Creating...' : 'Create Swap'}
-                        </Button>
-                    </div>
-                </div>
-            </form>
+            </div>
           </CardContent>
         </Card>
         
@@ -275,21 +264,18 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <CardDescription>Execute any shell command on the server.</CardDescription>
             </CardHeader>
             <CardContent>
-                 <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={(e) => { e.preventDefault(); handleFormSubmit(customCommand); (e.target as HTMLFormElement).submit(); }}>
-                    <div className="grid w-full gap-2">
-                        <Textarea 
-                            name="command"
-                            value={customCommand}
-                            onChange={(e) => setCustomCommand(e.target.value)}
-                            placeholder="e.g., ls -la" 
-                            rows={4}
-                            className="font-mono"
-                        />
-                        <Button type="submit" disabled={isPending || !!runningCommand || !customCommand}>
-                            <Send className="mr-2 h-4 w-4" /> Run Command
-                        </Button>
-                    </div>
-                </form>
+                <div className="grid w-full gap-2">
+                    <Textarea 
+                        value={customCommand}
+                        onChange={(e) => setCustomCommand(e.target.value)}
+                        placeholder="e.g., ls -la" 
+                        rows={4}
+                        className="font-mono"
+                    />
+                    <Button onClick={() => handleRunCommand(customCommand)} disabled={isPending || hasOngoingCommand || !customCommand}>
+                        <Send className="mr-2 h-4 w-4" /> Run Command
+                    </Button>
+                </div>
             </CardContent>
         </Card>
 
