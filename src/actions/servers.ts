@@ -8,12 +8,11 @@ import { initializeFirebase } from '@/lib/firebase';
 /**
  * Creates a new server.
  */
-export async function createServer(serverData: Omit<Server, 'id' | 'createdAt' | 'publicKey'>) {
+export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>) {
   try {
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'servers'), {
       ...serverData,
-      publicKey: '', // Public key will be derived on the server or is not needed client-side
       createdAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
@@ -38,7 +37,6 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
             id: doc.id,
             name: data.name,
             publicIp: data.publicIp,
-            publicKey: data.publicKey,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as Server
     });
@@ -68,7 +66,6 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             id: docSnap.id, 
             name: data.name,
             publicIp: data.publicIp,
-            publicKey: data.publicKey,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         };
         return { success: true, server };
@@ -80,7 +77,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
 /**
  * Updates a server. Allows overriding privateKey and privateIp without fetching them.
  */
-export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt' | 'publicKey'>>) {
+export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt'>>) {
   try {
     const { firestore } = initializeFirebase();
     const serverRef = doc(firestore, 'servers', id);

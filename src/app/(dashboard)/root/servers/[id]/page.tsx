@@ -27,7 +27,6 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -120,10 +119,6 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                 <div>
                     <h4 className="font-semibold text-sm text-muted-foreground">Public IP</h4>
                     <p className="font-mono text-sm">{server.publicIp}</p>
-                </div>
-                 <div>
-                    <Label htmlFor="public-key" className="text-sm text-muted-foreground">Public Key</Label>
-                    <Textarea id="public-key" readOnly value={server.publicKey} rows={6} className="font-mono text-xs mt-1" />
                 </div>
                  <div>
                     <h4 className="font-semibold text-sm text-muted-foreground">Created At</h4>
