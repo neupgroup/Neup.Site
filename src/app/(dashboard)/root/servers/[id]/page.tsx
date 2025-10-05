@@ -133,30 +133,26 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                     <h4 className="font-semibold text-sm text-muted-foreground">Created At</h4>
                     <p className="text-sm">{server.createdAt ? new Date(server.createdAt).toLocaleString() : 'N/A'}</p>
                 </div>
-                {server.type === 'shared' && (
+                {server.allocations && server.allocations.length > 0 && (
                     <div>
                         <Separator className="my-4" />
                         <h4 className="font-semibold text-sm text-muted-foreground mb-2">Allocations</h4>
-                        {server.allocations && server.allocations.length > 0 ? (
-                             <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                    <TableHead>Site ID</TableHead>
-                                    <TableHead>Port</TableHead>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                <TableHead>Site ID</TableHead>
+                                <TableHead>Port</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {server.allocations.map((alloc, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell className="font-mono">{alloc.siteId}</TableCell>
+                                        <TableCell className="font-mono">{alloc.port || 'N/A'}</TableCell>
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {server.allocations.map((alloc, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell className="font-mono">{alloc.siteId}</TableCell>
-                                            <TableCell className="font-mono">{alloc.port}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        ) : (
-                            <p className="text-sm text-muted-foreground">No sites allocated to this shared server.</p>
-                        )}
+                                ))}
+                            </TableBody>
+                        </Table>
                     </div>
                 )}
             </CardContent>
