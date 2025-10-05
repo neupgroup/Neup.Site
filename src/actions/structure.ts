@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
 import type { Structure, PathStructure, Deployment, Site } from '@/schemas/site';
