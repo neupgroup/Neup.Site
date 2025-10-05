@@ -125,7 +125,14 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                         <CardTitle>{source.name}</CardTitle>
                         <CardDescription>ID: {source.id}</CardDescription>
                     </div>
-                    <Badge variant="outline">{source.type}</Badge>
+                    <div className="flex items-center gap-2">
+                        <Badge variant="outline">{source.type}</Badge>
+                         <Button asChild variant="outline" size="sm">
+                            <Link href={`/site/sources/${id}/edit`}>
+                                <Pencil className="mr-2 h-4 w-4"/> Edit
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -192,13 +199,15 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
             </CardContent>
              <CardFooter className="flex justify-end gap-2">
                 <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
-                    <Trash2 className="mr-2 h-4 w-4"/> Delete
+                    <Trash2 className="mr-2 h-4 w-4"/> Delete Source
                 </Button>
-                <Button asChild>
-                    <Link href={`/site/sources/${id}/edit`}>
-                        <Pencil className="mr-2 h-4 w-4"/> Edit
-                    </Link>
-                </Button>
+                {source.type === 'api' && (
+                     <Button asChild>
+                        <Link href={`/site/sources/${id}/edit/methods`}>
+                            <Code className="mr-2 h-4 w-4"/> Edit Methods
+                        </Link>
+                    </Button>
+                )}
             </CardFooter>
         </Card>
 
