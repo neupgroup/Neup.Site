@@ -5,6 +5,29 @@ import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { getPrivateServerDetails } from '@/actions/servers';
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
+import { initializeFirebase } from '@/lib/firebase';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+
+
+async function getAllocationUsername(serverId: string): Promise<string> {
+    try {
+        const { firestore } = initializeFirebase();
+        const q = query(
+            collection(firestore, 'serverAllocations'),
+            where('serverId', '==', serverId),
+            limit(1)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            const allocationData = querySnapshot.docs[0].data();
+            return allocationData.username || 'root';
+        }
+        return 'root';
+    } catch (error) {
+        console.warn(`Could not fetch allocation for server ${serverId}, defaulting to 'root' user.`, error);
+        return 'root';
+    }
+}
 
 export async function runCommand(serverId: string, command: string) {
     if (!command) {
@@ -44,13 +67,15 @@ export async function runCommand(serverId: string, command: string) {
         await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
         revalidatePath(`/root/servers/${serverId}`);
 
+        const username = await getAllocationUsername(serverId);
+
         await ssh.connect({
             host: server.publicIp,
-            username: 'root', // This might need to be configurable
+            username: username,
             privateKey: server.privateKey
         });
 
-        await updateServerLog(logId, { output: `Connection successful. Running command...\n\n$ ${command}` });
+        await updateServerLog(logId, { output: `Connection successful as '${username}'. Running command...\n\n$ ${command}` });
         revalidatePath(`/root/servers/${serverId}`);
 
         const result = await ssh.execCommand(command);
