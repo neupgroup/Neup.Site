@@ -87,6 +87,12 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     }
 
     try {
+        const proxyPort = new URL(proxyUrl).port;
+        if (['80', '443', '22'].includes(proxyPort)) {
+            toast({ variant: 'destructive', title: 'Invalid Port', description: `Cannot proxy to reserved port ${proxyPort}.`});
+            return;
+        }
+
         const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
         const primaryDomain = firstUrl.hostname;
         const safeDomain = primaryDomain.replace(/[^a-zA-Z0-9.-]/g, '');
@@ -126,15 +132,16 @@ server {
 }
         `.trim();
 
-        // Escape for shell command
-        const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\$');
-        
-        const command = `echo "${escapedConfig}" | sudo tee /etc/nginx/sites-available/${safeDomain}.conf > /dev/null && sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
+        const command = `sudo bash -c 'echo "${config}" > /etc/nginx/sites-available/${safeDomain}.conf' && sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
         
         handleRunCommand(command, `Configure Nginx for ${primaryDomain}`);
 
-    } catch (e) {
-        toast({ variant: 'destructive', title: 'Invalid URL', description: 'One of the provided URLs is not valid.'});
+    } catch (e: any) {
+        if (e instanceof TypeError && e.message.includes('Invalid URL')) {
+            toast({ variant: 'destructive', title: 'Invalid URL', description: 'One of the provided URLs is not valid.'});
+        } else {
+             toast({ variant: 'destructive', title: 'Configuration Error', description: e.message || 'An unexpected error occurred.'});
+        }
     }
 };
 
@@ -304,7 +311,8 @@ server {
                         id="nginx-domains"
                         value={nginxDomains} 
                         onChange={e => setNginxDomains(e.target.value)} 
-                        placeholder="example.com&#x0a;www.example.com/subpath"
+                        placeholder="example.com
+www.example.com/subpath"
                         rows={3}
                     />
                     <p className="text-xs text-muted-foreground">Enter one URL per line.</p>
@@ -312,6 +320,7 @@ server {
                 <div className="space-y-2">
                     <Label htmlFor="proxy-url">Proxy Pass URL</Label>
                     <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
+                    <p className="text-xs text-muted-foreground">The internal URL of your application (e.g., http://localhost:3000).</p>
                 </div>
                  <Button onClick={handleNginxConfig} disabled={isPending}>
                     <Globe className="mr-2 h-4 w-4" /> Configure Nginx
