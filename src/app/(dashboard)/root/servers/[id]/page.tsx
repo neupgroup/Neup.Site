@@ -41,6 +41,7 @@ import { getConfigureNginxCommand } from '@/actions/server/management/configure-
 import { getResetNginxCommand } from '@/actions/server/management/reset-nginx';
 import { getInstallNpmCommand } from '@/actions/server/management/install-npm';
 import { getBuildNpmWithMemoryCommand } from '@/actions/server/management/build-npm-with-memory';
+import { getInstallPm2Command } from '@/actions/server/management/install-pm2';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -287,6 +288,15 @@ const handleBuildNpm = async () => {
                 </div>
                 <Button onClick={async () => handleRunCommand(await getInstallNpmCommand(), 'Install npm')} disabled={isPending}>
                     <Package className="mr-2 h-4 w-4" /> Install npm
+                </Button>
+            </div>
+             <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                <h4 className="font-medium">Install PM2</h4>
+                <p className="text-sm text-muted-foreground">Install PM2, a production process manager for Node.js.</p>
+                </div>
+                <Button onClick={async () => handleRunCommand(await getInstallPm2Command(), 'Install PM2')} disabled={isPending}>
+                    <Package className="mr-2 h-4 w-4" /> Install PM2
                 </Button>
             </div>
             <div className="rounded-lg border p-4">
