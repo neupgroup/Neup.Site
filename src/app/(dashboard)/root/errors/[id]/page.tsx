@@ -84,7 +84,7 @@ export default function ErrorDetailPage({ params }: { params: { id: string } }) 
         <CardContent className="space-y-6">
             <div className="space-y-2">
                 <h3 className="font-semibold text-lg">Message</h3>
-                <p className="font-mono bg-muted p-3 rounded-md text-sm">{log.message}</p>
+                <p className="font-mono bg-muted p-3 rounded-md text-sm whitespace-pre-wrap break-words">{log.message}</p>
             </div>
             <Separator />
             <div className="space-y-2">
