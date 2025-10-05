@@ -72,8 +72,8 @@ const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourc
 };
 
 
-const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: { index: number, onRemove: () => void, sourceId: string, isEditing: boolean, setEditingIndex: (index: number | null) => void }) => {
-    const { control, getValues, register, resetField } = useFormContext<FormValues>();
+const MethodCard = ({ index, sourceId, isEditing, setEditingIndex }: { index: number, sourceId: string, isEditing: boolean, setEditingIndex: (index: number | null) => void }) => {
+    const { control, getValues, register, resetField, unregister } = useFormContext<FormValues>();
     const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
     const [showTester, setShowTester] = useState(false);
     const [testResult, setTestResult] = useState<any | null>(null);
@@ -105,6 +105,11 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
         if (showTester) { // if we are closing it
             setTestResult(null);
         }
+    }
+
+    const removeMethod = () => {
+        unregister(`methods.${index}`);
+        setEditingIndex(null);
     }
     
     const handleClearTest = () => {
@@ -200,7 +205,7 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
                          <Button type="button" variant="ghost" size="sm" onClick={cancelEditing}>
                              <X className="mr-2" /> Cancel
                         </Button>
-                         <Button type="button" variant="destructive" size="sm" onClick={onRemove}>
+                         <Button type="button" variant="destructive" size="sm" onClick={removeMethod}>
                             <Trash2 className="mr-2" /> Remove
                         </Button>
                     </>
@@ -271,7 +276,9 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
       }
   });
   
-  const { fields, append, remove, control, getValues } = useFieldArray({
+  const { getValues } = formMethods;
+
+  const { fields, append, remove } = useFieldArray({
       control: formMethods.control,
       name: 'methods'
   });
@@ -380,7 +387,6 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
             <MethodCard 
                 key={field.id} 
                 index={index} 
-                onRemove={() => remove(index)}
                 sourceId={id}
                 isEditing={editingIndex === index}
                 setEditingIndex={setEditingIndex}
