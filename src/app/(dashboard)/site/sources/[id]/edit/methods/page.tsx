@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X, Play } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X, Play, Eraser } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getSource, updateSource, testApiMethod, type Source, type SourceMethod } from '@/actions/editor/sources';
 import Link from 'next/link';
@@ -23,25 +23,21 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 type FormValues = {
     methods: SourceMethod[];
 };
 
-const MethodTester = ({ sourceId, method }: { sourceId: string; method: SourceMethod }) => {
+const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourceId: string; method: SourceMethod, onResult: (result: any) => void, onIsLoadingChange: (isLoading: boolean) => void }) => {
     const [params, setParams] = useState<Record<string, string>>({});
-    const [result, setResult] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(false);
-
     const dynamicParams = method.path.match(/\[(\w+)\]/g)?.map(p => p.slice(1, -1)) || [];
     
     const handleTest = async () => {
-        setIsLoading(true);
-        setResult(null);
+        onIsLoadingChange(true);
+        onResult(null); // Clear previous result
         const res = await testApiMethod(sourceId, method, params);
-        setResult(res);
-        setIsLoading(false);
+        onResult(res);
+        onIsLoadingChange(false);
     };
     
     useEffect(() => {
@@ -51,69 +47,42 @@ const MethodTester = ({ sourceId, method }: { sourceId: string; method: SourceMe
         }
     }, []);
 
+    if (dynamicParams.length === 0) return null;
+
     return (
          <div className="space-y-4 pt-4 border-t mt-4">
-            <h4 className="font-medium text-sm">Test Method</h4>
-            {dynamicParams.length > 0 && (
-                <div className="space-y-2">
-                    <Label>Parameters</Label>
-                    {dynamicParams.map(param => (
-                        <div key={param} className="flex items-center gap-2">
-                            <span className="text-sm font-mono text-muted-foreground w-24 truncate">{param}:</span>
-                            <Input 
-                                value={params[param] || ''} 
-                                onChange={e => setParams({...params, [param]: e.target.value })} 
-                                className="h-8"
-                            />
-                        </div>
-                    ))}
-                     <Button size="sm" onClick={handleTest} disabled={isLoading} className="mt-2">
-                        {isLoading ? <Loader2 className="mr-2 animate-spin" /> : <Play className="mr-2" />} Run Test
-                    </Button>
-                </div>
-            )}
-           
-            {result && (
-                <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="result">
-                        <AccordionTrigger>
-                            <span className="text-sm font-medium">View Response</span>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                             <div className="max-h-64 overflow-auto rounded-md bg-muted p-2 mt-2">
-                                {result.success ? (
-                                    <pre className="text-xs">{JSON.stringify(result.data, null, 2)}</pre>
-                                ) : (
-                                    <Alert variant="destructive" className="text-xs">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <AlertTitle>Error</AlertTitle>
-                                        <AlertDescription>{result.error}</AlertDescription>
-                                    </Alert>
-                                )}
-                             </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-            )}
-             {isLoading && dynamicParams.length > 0 && (
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Loader2 className="animate-spin h-4 w-4" />
-                    <span>Loading...</span>
-                </div>
-            )}
+            <div className="space-y-2">
+                <Label>Parameters</Label>
+                {dynamicParams.map(param => (
+                    <div key={param} className="flex items-center gap-2">
+                        <span className="text-sm font-mono text-muted-foreground w-24 truncate">{param}:</span>
+                        <Input 
+                            value={params[param] || ''} 
+                            onChange={e => setParams({...params, [param]: e.target.value })} 
+                            className="h-8"
+                        />
+                    </div>
+                ))}
+                    <Button size="sm" onClick={handleTest} className="mt-2">
+                    <Play className="mr-2" /> Run Test
+                </Button>
+            </div>
         </div>
     );
 };
 
 
 const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: { index: number, onRemove: () => void, sourceId: string, isEditing: boolean, setEditingIndex: (index: number | null) => void }) => {
-    const { control, getValues, register, formState: { errors }, resetField } = useFormContext<FormValues>();
+    const { control, getValues, register, resetField } = useFormContext<FormValues>();
     const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
     const [showTester, setShowTester] = useState(false);
+    const [testResult, setTestResult] = useState<any | null>(null);
+    const [isTesting, setIsTesting] = useState(false);
 
     const startEditing = () => {
         setOriginalState(getValues(`methods.${index}`));
-        setShowTester(false); // Hide tester when editing
+        setShowTester(false);
+        setTestResult(null);
         setEditingIndex(index);
     };
     
@@ -133,6 +102,14 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
     const toggleTester = () => {
         if (isEditing) return;
         setShowTester(prev => !prev);
+        if (showTester) { // if we are closing it
+            setTestResult(null);
+        }
+    }
+    
+    const handleClearTest = () => {
+        setShowTester(false);
+        setTestResult(null);
     }
 
     const methodData = getValues(`methods.${index}`);
@@ -141,14 +118,16 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
                 <div className="flex items-center gap-2">
                     <CardTitle className="truncate">
                         {getValues(`methods.${index}.methodName`) || `New Method`}
                     </CardTitle>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleTester} disabled={isEditing}>
-                        <Play className="h-4 w-4" />
-                    </Button>
+                    {!isEditing && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleTester}>
+                            <Play className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -192,7 +171,26 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
                         <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
                     </div>
                 )}
-                {showTester && <MethodTester sourceId={sourceId} method={methodData} />}
+                {showTester && <MethodTester sourceId={sourceId} method={methodData} onResult={setTestResult} onIsLoadingChange={setIsTesting} />}
+
+                {(isTesting || testResult) && (
+                    <div className="space-y-2 pt-4 border-t mt-4">
+                        <Label>Response</Label>
+                        {isTesting && !testResult && (
+                             <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                <Loader2 className="animate-spin h-4 w-4" />
+                                <span>Loading...</span>
+                            </div>
+                        )}
+                        {testResult && (
+                             <Textarea
+                                readOnly
+                                value={testResult.success ? JSON.stringify(testResult.data, null, 2) : `Error: ${testResult.error}`}
+                                className="font-mono text-xs h-48 bg-muted"
+                            />
+                        )}
+                    </div>
+                )}
             </CardContent>
             <CardFooter className="flex justify-start gap-2">
                 {isEditing ? (
@@ -208,9 +206,16 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
                         </Button>
                     </>
                 ) : (
-                    <Button type="button" variant="outline" size="sm" onClick={startEditing}>
-                        <Edit className="mr-2" /> Edit
-                    </Button>
+                    <>
+                        <Button type="button" variant="outline" size="sm" onClick={startEditing}>
+                            <Edit className="mr-2" /> Edit
+                        </Button>
+                        {testResult && (
+                            <Button type="button" variant="outline" size="sm" onClick={handleClearTest}>
+                                <Eraser className="mr-2"/> Clear
+                            </Button>
+                        )}
+                    </>
                 )}
             </CardFooter>
         </Card>
@@ -260,7 +265,6 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   
   const { toast } = useToast();
-  const router = useRouter();
 
   const formMethods = useForm<FormValues>({
       defaultValues: {
