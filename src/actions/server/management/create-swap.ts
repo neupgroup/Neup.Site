@@ -1,5 +1,4 @@
 
-'use server';
 
 export function getCreateSwapCommand(size: string): string {
     const swapSize = parseInt(size, 10);
