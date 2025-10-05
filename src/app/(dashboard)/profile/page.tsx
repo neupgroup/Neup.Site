@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getSite, saveSite, type Site } from '@/actions/editor/site';
+import { saveSite, type Site } from '@/actions/editor/site';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,9 +44,8 @@ export const ProfileFormSchema = z.object({
 export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 
 export default function ProfilePage() {
-    const { setProfileName, setLogoUrl, setHideSitename, setHideLogo } = useProfile();
+    const { site, setSite, loading } = useProfile();
     const { toast } = useToast();
-    const [loading, setLoading] = useState(true);
 
     const form = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileFormSchema),
@@ -76,66 +75,49 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
+        if (loading) return;
+
         const removeUrlPrefix = (url: string | undefined): string => {
             if (!url) return '';
             return url.replace(/^(https?:\/\/)/, '');
         }
-        
-        const fetchProfileData = async () => {
-            setLoading(true);
-            const { success, site, error } = await getSite();
 
-            if (error) {
-                toast({ variant: 'destructive', title: 'Error', description: error });
-            }
-
-            if (success && site) {
-                form.reset({
-                    name: site.name,
-                    hideSitename: site.hideSitename || false,
-                    logoUrl: removeUrlPrefix(site.logoUrl),
-                    hideLogo: site.hideLogo || false,
-                    description: site.description || '',
-                    socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
-                    contactEmail: site.contactEmail || [],
-                    contactPhone: site.contactPhone || [],
-                });
-            } else {
-                 toast({ variant: 'destructive', title: 'Notice', description: 'Could not load site data. A new site profile will be created on save.' });
-                 // If the site doesn't exist, we can pre-fill some fields or let the user start fresh
-                 form.reset({
-                    name: 'My New Site',
-                    hideSitename: false,
-                    hideLogo: false,
-                    description: 'A brief description of my new site.',
-                    socialProfiles: [],
-                    contactEmail: [],
-                    contactPhone: [],
-                 })
-            }
-            setLoading(false);
-        };
-        fetchProfileData();
-    }, [form, toast]);
+        if (site) {
+            form.reset({
+                name: site.name,
+                hideSitename: site.hideSitename || false,
+                logoUrl: removeUrlPrefix(site.logoUrl),
+                hideLogo: site.hideLogo || false,
+                description: site.description || '',
+                socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
+                contactEmail: site.contactEmail || [],
+                contactPhone: site.contactPhone || [],
+            });
+        } else {
+             toast({ variant: 'destructive', title: 'Notice', description: 'Could not load site data. A new site profile will be created on save.' });
+             form.reset({
+                name: 'My New Site',
+                hideSitename: false,
+                hideLogo: false,
+                description: 'A brief description of my new site.',
+                socialProfiles: [],
+                contactEmail: [],
+                contactPhone: [],
+             })
+        }
+    }, [loading, site, form, toast]);
 
     const onSubmit = async (data: ProfileFormData) => {
-        const result = await saveSite({
-            name: data.name,
-            hideSitename: data.hideSitename,
-            logoUrl: data.logoUrl,
-            hideLogo: data.hideLogo,
-            description: data.description,
-            socialProfiles: data.socialProfiles,
-            contactEmail: data.contactEmail,
-            contactPhone: data.contactPhone
-        });
+        const result = await saveSite(data);
 
-        if (result.success) {
+        if (result.success && result.id) {
             toast({ title: 'Profile Saved', description: 'Your site information has been updated.' });
-            setProfileName(data.name);
-            setLogoUrl(data.logoUrl ? (data.logoUrl.startsWith('http') ? data.logoUrl : `https://${data.logoUrl}`) : null);
-            setHideSitename(data.hideSitename);
-            setHideLogo(data.hideLogo);
+            const newSiteData = {
+                ...(site || { id: result.id, tier: 'free', url: '' }),
+                ...data,
+                logoUrl: data.logoUrl ? (data.logoUrl.startsWith('http') ? data.logoUrl : `https://${data.logoUrl}`) : undefined,
+            };
+            setSite(newSiteData as Site);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }
@@ -301,5 +283,3 @@ export default function ProfilePage() {
     </Form>
   );
 }
-
-    

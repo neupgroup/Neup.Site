@@ -9,34 +9,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sun, Moon, Loader2, Save, Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { saveSite } from '@/actions/editor/site';
+import { saveSite, SiteTheme } from '@/actions/editor/site';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProfile } from '@/context/ProfileContext';
 
 const colorLabels = ['Primary', 'Accent', 'Tertiary'];
 
 export default function ThemePage() {
-  const { theme, setTheme, loading: profileLoading } = useProfile();
+  const { site, setSite, loading } = useProfile();
   const [themeMode, setThemeMode] = useState('light');
-  const [colors, setColors] = useState(['#64C5CF']);
+  const [colors, setColors] = useState<string[]>(['#64C5CF']);
   const [radius, setRadius] = useState<'none' | 'low' | 'medium' | 'high'>('medium');
-  const [loading, setLoading] = useState(true);
+  
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!profileLoading.theme) {
-        if (theme) {
-            if (theme.colors && theme.colors.length > 0) {
-                setColors(theme.colors);
-            }
-            if (theme.radius) {
-                setRadius(theme.radius);
-            }
+    if (!loading && site?.theme) {
+        if (site.theme.colors && site.theme.colors.length > 0) {
+            setColors(site.theme.colors);
         }
-        setLoading(false);
+        if (site.theme.radius) {
+            setRadius(site.theme.radius);
+        }
     }
-  }, [profileLoading.theme, theme]);
+  }, [loading, site]);
 
   const handleThemeModeChange = (newTheme: string) => {
     setThemeMode(newTheme);
@@ -50,11 +47,13 @@ export default function ThemePage() {
 
   const handleSaveTheme = async () => {
       setIsSaving(true);
-      const newTheme = { colors, radius };
+      const newTheme: SiteTheme = { colors, radius };
       const result = await saveSite({ theme: newTheme });
 
       if (result.success) {
-          setTheme(newTheme);
+          if (site) {
+            setSite({ ...site, theme: newTheme });
+          }
           toast({ title: 'Theme Saved', description: 'Your new theme settings have been applied.' });
           // Force a reload to apply the new CSS variables from the server
           window.location.reload();

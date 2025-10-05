@@ -11,9 +11,11 @@ import {
 } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
-import { Site } from '@/schemas/site';
+import { Site, SiteTheme } from '@/schemas/site';
 import { initializeFirebase } from '@/lib/firebase';
 import { generateThemeFromColor } from '@/lib/color-utils';
+
+export type { Site, SiteTheme };
 
 /**
  * Fetches a single site configuration document.

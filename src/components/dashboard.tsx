@@ -32,7 +32,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Site } from '@/actions/editor/site';
+import type { Site } from '@/schemas/site';
 import { saveSite } from '@/actions/editor/site';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from './ui/button';
@@ -41,14 +41,19 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
 function Header() {
-  const { profileName, logoUrl, hideSitename, hideLogo, loading } = useProfile();
+  const { site, loading } = useProfile();
+
+  const profileName = site?.name;
+  const logoUrl = site?.logoUrl;
+  const hideSitename = site?.hideSitename;
+  const hideLogo = site?.hideLogo;
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
           <Link href="/" className="flex items-center gap-4">
-            {!hideLogo && (loading.logo || logoUrl === null ? (
+            {!hideLogo && (loading ? (
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
                <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
@@ -60,7 +65,7 @@ function Header() {
 
             {(!hideSitename && hideSitename !== null) && (
               <h1 className="font-headline text-xl font-semibold tracking-tight">
-                {loading.name || profileName === null ? <Skeleton className="h-6 w-32" /> : (profileName?.trim() ? profileName : 'Neup.Sites')}
+                {loading ? <Skeleton className="h-6 w-32" /> : (profileName?.trim() ? profileName : 'Neup.Sites')}
               </h1>
             )}
           </Link>

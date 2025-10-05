@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils';
 import type { Site } from '@/schemas/site';
 
 function ThemedDashboard({ children }: { children: React.ReactNode }) {
-  const { theme } = useProfile();
-  return <Dashboard theme={theme}>{children}</Dashboard>;
+  const { site } = useProfile();
+  return <Dashboard theme={site?.theme}>{children}</Dashboard>;
 }
 
 export default function DashboardLayout({
