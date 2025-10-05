@@ -269,7 +269,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                      <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error Loading Logs</AlertTitle>
-                        <AlertDescription>{logsError}</AlertDescription>
+                        <AlertDescription className="whitespace-pre-wrap break-words">{logsError}</AlertDescription>
                     </Alert>
                 ) : logs.length === 0 ? (
                     <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
