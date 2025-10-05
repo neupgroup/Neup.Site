@@ -1,9 +1,9 @@
 
 'use client';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { getServer, deleteServer, type Server } from '@/actions/servers';
-import { getServerLogs, createServerLog, updateServerLog, type ServerLog } from '@/actions/server-logs';
+import { getServerLogs, type ServerLog } from '@/actions/server-logs';
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, CheckCircle, XCircle, Loader2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -34,6 +34,7 @@ import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { formatDistanceToNow } from 'date-fns';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -47,9 +48,12 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [logsError, setLogsError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [swapSize, setSwapSize] = useState('3072');
+  const [customCommand, setCustomCommand] = useState('');
   const [runningCommand, setRunningCommand] = useState<string | null>(null);
+
   const { toast } = useToast();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const fetchLogs = async (page = 1) => {
     setLoadingLogs(true);
@@ -80,56 +84,34 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     fetchLogs(1);
   }, [id]);
 
-  const handleRunCommand = async (commandName: string, command: string) => {
-    setRunningCommand(commandName);
-
-    const createResult = await createServerLog({
-      serverId: id,
-      command,
-      output: `Initiating command: ${commandName}`,
-      status: 'pending',
-    });
-
-    if (!createResult.success || !createResult.id) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to create log entry.' });
-        setRunningCommand(null);
-        return;
+  useEffect(() => {
+    // Poll for log updates if a command is running
+    let interval: NodeJS.Timeout | null = null;
+    if (runningCommand) {
+        interval = setInterval(() => {
+            fetchLogs(1);
+        }, 3000);
     }
-    const logId = createResult.id;
-    await fetchLogs(1);
+    
+    // Check if the running command is now completed or failed
+    const runningLog = logs.find(log => log.output.includes(runningCommand || ''));
+    if (runningLog && (runningLog.status === 'completed' || runningLog.status === 'failed')) {
+        setRunningCommand(null);
+    }
 
-    // Simulate command starting
-    setTimeout(async () => {
-        await updateServerLog(logId, {
-            status: 'ongoing',
-            output: `Running: ${command}\n...`,
-        });
-        await fetchLogs(1);
-    }, 1500);
+    return () => {
+        if (interval) clearInterval(interval);
+    };
+  }, [runningCommand, logs]);
 
-    // Simulate command completion
-    setTimeout(async () => {
-      const isSuccess = Math.random() > 0.1; // 90% success rate
-      const finalStatus = isSuccess ? 'completed' : 'failed';
-      const finalOutput = isSuccess
-        ? `Running: ${command}\n...\nFake process output line 1...\nFake process output line 2...\nTask finished successfully.`
-        : `Running: ${command}\n...\nError: Something went wrong during execution.\nPermission denied (fake error).`;
-
-      await updateServerLog(logId, {
-        status: finalStatus,
-        output: finalOutput,
+  const handleFormSubmit = (commandName: string) => {
+      setRunningCommand(commandName);
+      startTransition(() => {
+          fetchLogs(1);
+          setTimeout(() => setRunningCommand(null), 10000);
       });
-
-      toast({
-        title: `Command ${finalStatus}`,
-        description: `${commandName} has ${finalStatus}.`,
-        variant: isSuccess ? 'default' : 'destructive',
-      });
-      setRunningCommand(null);
-      await fetchLogs(1);
-    }, 5000);
   };
-  
+
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
     const result = await deleteServer(id);
@@ -239,44 +221,77 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
             <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div>
-                <h4 className="font-medium">Update &amp; Upgrade Server</h4>
-                <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
-              </div>
-              <Button onClick={() => handleRunCommand('Update & Upgrade', 'sudo apt-get update && sudo apt-get upgrade -y')} disabled={!!runningCommand}>
-                  {runningCommand === 'Update & Upgrade' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
-                  {runningCommand === 'Update & Upgrade' ? 'Running...' : 'Run Update'}
-              </Button>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-               <div>
-                <h4 className="font-medium">Install npm</h4>
-                <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
-              </div>
-              <Button onClick={() => handleRunCommand('Install npm', 'sudo apt-get install -y nodejs npm')} disabled={!!runningCommand}>
-                 {runningCommand === 'Install npm' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
-                 {runningCommand === 'Install npm' ? 'Installing...' : 'Install npm'}
-              </Button>
-            </div>
-            <div className="rounded-lg border p-4">
-                <h4 className="font-medium">Create Swap Space</h4>
-                <p className="text-sm text-muted-foreground">Create a swap file to use as virtual RAM.</p>
-                <div className="flex items-center gap-2 mt-3">
-                    <Input 
-                        id="swap-size"
-                        value={swapSize}
-                        onChange={(e) => setSwapSize(e.target.value)}
-                        className="max-w-[120px]"
-                    />
-                     <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                    <Button className="ml-auto" onClick={() => handleRunCommand('Create Swap', `sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`)} disabled={!!runningCommand}>
-                        {runningCommand === 'Create Swap' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
-                        {runningCommand === 'Create Swap' ? 'Creating...' : 'Create Swap'}
+             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit('Update & Upgrade')}>
+                <input type="hidden" name="command" value="sudo apt-get update && sudo apt-get upgrade -y" />
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                    <div>
+                        <h4 className="font-medium">Update &amp; Upgrade Server</h4>
+                        <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
+                    </div>
+                    <Button type="submit" disabled={isPending || !!runningCommand}>
+                        {isPending && runningCommand === 'Update & Upgrade' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
+                        {isPending && runningCommand === 'Update & Upgrade' ? 'Running...' : 'Run Update'}
                     </Button>
                 </div>
-            </div>
+            </form>
+             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit('Install npm')}>
+                <input type="hidden" name="command" value="sudo apt-get install -y nodejs npm" />
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                   <div>
+                    <h4 className="font-medium">Install npm</h4>
+                    <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
+                  </div>
+                  <Button type="submit" disabled={isPending || !!runningCommand}>
+                     {isPending && runningCommand === 'Install npm' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
+                     {isPending && runningCommand === 'Install npm' ? 'Installing...' : 'Install npm'}
+                  </Button>
+                </div>
+            </form>
+             <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit('Create Swap')}>
+                <input type="hidden" name="command" value={`sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`} />
+                <div className="rounded-lg border p-4">
+                    <h4 className="font-medium">Create Swap Space</h4>
+                    <p className="text-sm text-muted-foreground">Create a swap file to use as virtual RAM.</p>
+                    <div className="flex items-center gap-2 mt-3">
+                        <Input 
+                            id="swap-size"
+                            value={swapSize}
+                            onChange={(e) => setSwapSize(e.target.value)}
+                            className="max-w-[120px]"
+                        />
+                         <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
+                        <Button type="submit" className="ml-auto" disabled={isPending || !!runningCommand}>
+                            {isPending && runningCommand === 'Create Swap' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
+                            {isPending && runningCommand === 'Create Swap' ? 'Creating...' : 'Create Swap'}
+                        </Button>
+                    </div>
+                </div>
+            </form>
           </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Run Custom Command</CardTitle>
+                <CardDescription>Execute any shell command on the server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <form action={`/root/servers/${id}/runner`} method="POST" onSubmit={() => handleFormSubmit(customCommand)}>
+                    <div className="grid w-full gap-2">
+                        <Textarea 
+                            name="command"
+                            value={customCommand}
+                            onChange={(e) => setCustomCommand(e.target.value)}
+                            placeholder="e.g., ls -la" 
+                            rows={4}
+                            className="font-mono"
+                        />
+                        <Button type="submit" disabled={isPending || !!runningCommand || !customCommand}>
+                            <Send className="mr-2 h-4 w-4" /> Run Command
+                        </Button>
+                    </div>
+                </form>
+            </CardContent>
         </Card>
 
         <Card>
@@ -308,7 +323,10 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                              <div key={log.id} className="border p-3 rounded-md">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>{log.status}</Badge>
+                                        <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>
+                                            {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                                            {log.status}
+                                        </Badge>
                                         <p className="text-xs text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</p>
                                     </div>
                                     <p className="text-xs text-muted-foreground">by {log.initiatedBy}</p>

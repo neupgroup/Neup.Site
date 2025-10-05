@@ -8,7 +8,7 @@ import type { ServerLog } from '@/schemas/server';
 /**
  * Creates a new server log entry.
  */
-export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiatedAt' | 'initiatedBy' | 'completedAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiatedAt' | 'completedAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'serverLogs'), {
@@ -26,13 +26,13 @@ export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiated
 /**
  * Updates an existing server log entry.
  */
-export async function updateServerLog(id: string, logData: Partial<Omit<ServerLog, 'id'>>): Promise<{ success: boolean; error?: string }> {
+export async function updateServerLog(id: string, logData: Partial<Omit<ServerLog, 'id' | 'initiatedAt'>>): Promise<{ success: boolean; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
     const logRef = doc(firestore, 'serverLogs', id);
 
     let dataToUpdate: Record<string, any> = { ...logData };
-    if (logData.status === 'completed' || logData.status === 'failed') {
+    if (logData.status === 'completed' || logData.status === 'failed' || logData.status === 'cancelled') {
         dataToUpdate.completedAt = serverTimestamp();
     }
     await setDoc(logRef, dataToUpdate, { merge: true });
