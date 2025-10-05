@@ -35,7 +35,11 @@ export const ProfileFormSchema = z.object({
   socialProfiles: z.array(SocialProfileSchema).max(9, 'You can add a maximum of 9 social profiles.'),
   contactEmail: z.array(z.object({ value: z.string().email() })).max(9, 'You can add a maximum of 9 emails.'),
   contactPhone: z.array(z.object({ value: z.string() })).max(9, 'You can add a maximum of 9 phone numbers.'),
+}).refine(data => !data.hideSitename || !data.hideLogo, {
+    message: "You cannot hide both the site name and the logo.",
+    path: ["hideLogo"], // Arbitrarily choosing one field to show the error
 });
+
 
 export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 
@@ -138,6 +142,9 @@ export default function ProfilePage() {
     };
 
     const descriptionLength = form.watch('description')?.length || 0;
+    const hideSitenameValue = form.watch('hideSitename');
+    const hideLogoValue = form.watch('hideLogo');
+    
     const descIndicatorColor = () => {
         if (descriptionLength >= 60 && descriptionLength <= 180) return 'bg-green-500';
         if (descriptionLength > 180 && descriptionLength <= 220) return 'bg-orange-500';
@@ -187,6 +194,7 @@ export default function ProfilePage() {
                                     <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
+                                    disabled={hideLogoValue}
                                     />
                                 </FormControl>
                             </FormItem>
@@ -210,6 +218,7 @@ export default function ProfilePage() {
                                     <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
+                                    disabled={hideSitenameValue}
                                     />
                                 </FormControl>
                             </FormItem>
@@ -292,3 +301,5 @@ export default function ProfilePage() {
     </Form>
   );
 }
+
+    
