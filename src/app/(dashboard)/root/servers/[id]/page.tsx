@@ -216,10 +216,10 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div>
-                <h4 className="font-medium">Update & Upgrade Server</h4>
+                <h4 className="font-medium">Update &amp; Upgrade Server</h4>
                 <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
               </div>
-              <Button onClick={() => handleRunCommand('update', 'Update & Upgrade')} disabled={!!runningCommand}>
+              <Button onClick={() => handleRunCommand('update', 'Update &amp; Upgrade')} disabled={!!runningCommand}>
                   {runningCommand === 'update' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
                   {runningCommand === 'update' ? 'Running...' : 'Run Update'}
               </Button>
@@ -269,7 +269,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                      <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error Loading Logs</AlertTitle>
-                        <AlertDescription className="whitespace-pre-wrap break-words">{logsError}</AlertDescription>
+                        <AlertDescription className="break-all">{logsError}</AlertDescription>
                     </Alert>
                 ) : logs.length === 0 ? (
                     <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
@@ -322,4 +322,5 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         </AlertDialog>
     </div>
   );
-}
+
+    
