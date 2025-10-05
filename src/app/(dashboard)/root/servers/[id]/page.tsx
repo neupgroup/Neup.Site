@@ -52,6 +52,11 @@ import { formatDistanceToNow } from 'date-fns';
 const FullLog = ({ log }: { log: ServerLog }) => {
     return (
         <div className="space-y-2">
+            <h4 className="font-semibold text-sm">Full Command:</h4>
+            <pre className="text-xs bg-black text-white p-3 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">
+                {log.command}
+            </pre>
+            <h4 className="font-semibold text-sm mt-4">Output:</h4>
             <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">
                 {log.output || 'No output from this command.'}
             </pre>
@@ -589,7 +594,9 @@ www.example.com/subpath"
                                             <span>{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
                                             <span>by {log.initiatedBy}</span>
                                         </div>
-                                        <p className="font-mono text-sm break-all">{log.command}</p>
+                                        <p className="font-mono text-sm break-all whitespace-pre-wrap">
+                                            {log.command.length > 150 ? `${log.command.substring(0, 150)}...` : log.command}
+                                        </p>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent>
