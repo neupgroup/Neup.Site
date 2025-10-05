@@ -1,6 +1,7 @@
 
+'use server';
 
-export function getCreateSwapCommand(size: string): string {
+export async function getCreateSwapCommand(size: string): Promise<string> {
     const swapSize = parseInt(size, 10);
     if (isNaN(swapSize) || swapSize <= 0) {
         throw new Error('Invalid swap size specified.');

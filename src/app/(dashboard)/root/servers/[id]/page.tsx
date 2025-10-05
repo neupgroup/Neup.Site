@@ -87,7 +87,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
       });
   };
 
-const handleNginxConfig = () => {
+const handleNginxConfig = async () => {
     const urls = nginxDomains.split('\n').map(u => u.trim()).filter(Boolean);
     if (urls.length === 0) {
         toast({ variant: 'destructive', title: 'Error', description: 'At least one domain or path is required.' });
@@ -101,13 +101,9 @@ const handleNginxConfig = () => {
             return;
         }
 
-        const listenPort = parseInt(proxyPort) - 1;
-        if (isNaN(listenPort) || listenPort < 1) {
-            toast({ variant: 'destructive', title: 'Invalid Port', description: `Could not determine a valid port to listen on.`});
-            return;
-        }
+        const listenPort = 80;
 
-        const command = getConfigureNginxCommand({
+        const command = await getConfigureNginxCommand({
             urls,
             proxyUrl,
             listenPort,
@@ -250,7 +246,7 @@ const handleNginxConfig = () => {
                     <h4 className="font-medium">Update &amp; Upgrade Server</h4>
                     <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
                 </div>
-                <Button onClick={() => handleRunCommand(getUpdateAndUpgradeCommand(), 'Update & Upgrade')} disabled={isPending}>
+                <Button onClick={async () => handleRunCommand(await getUpdateAndUpgradeCommand(), 'Update & Upgrade')} disabled={isPending}>
                     <GitCommit className="mr-2 h-4 w-4" /> Run Update
                 </Button>
             </div>
@@ -259,7 +255,7 @@ const handleNginxConfig = () => {
                     <h4 className="font-medium">Free Up Port 80</h4>
                     <p className="text-sm text-muted-foreground">Stop any process using port 80 (e.g., Apache).</p>
                 </div>
-                <Button variant="outline" onClick={() => handleRunCommand(getFreePort80Command(), 'Free Up Port 80')} disabled={isPending}>
+                <Button variant="outline" onClick={async () => handleRunCommand(await getFreePort80Command(), 'Free Up Port 80')} disabled={isPending}>
                     <Zap className="mr-2 h-4 w-4" /> Stop Process
                 </Button>
             </div>
@@ -268,7 +264,7 @@ const handleNginxConfig = () => {
                 <h4 className="font-medium">Install Nginx</h4>
                 <p className="text-sm text-muted-foreground">Install and start the Nginx web server.</p>
                 </div>
-                <Button onClick={() => handleRunCommand(getInstallNginxCommand(), 'Install Nginx')} disabled={isPending}>
+                <Button onClick={async () => handleRunCommand(await getInstallNginxCommand(), 'Install Nginx')} disabled={isPending}>
                     <Globe className="mr-2 h-4 w-4" /> Install Nginx
                 </Button>
             </div>
@@ -277,7 +273,7 @@ const handleNginxConfig = () => {
                 <h4 className="font-medium">Install npm</h4>
                 <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
                 </div>
-                <Button onClick={() => handleRunCommand(getInstallNpmCommand(), 'Install npm')} disabled={isPending}>
+                <Button onClick={async () => handleRunCommand(await getInstallNpmCommand(), 'Install npm')} disabled={isPending}>
                     <Package className="mr-2 h-4 w-4" /> Install npm
                 </Button>
             </div>
@@ -292,7 +288,7 @@ const handleNginxConfig = () => {
                         className="max-w-[120px]"
                     />
                         <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                    <Button onClick={() => handleRunCommand(getCreateSwapCommand(swapSize), 'Create Swap')} className="ml-auto" disabled={isPending}>
+                    <Button onClick={async () => handleRunCommand(await getCreateSwapCommand(swapSize), 'Create Swap')} className="ml-auto" disabled={isPending}>
                         <Disc className="mr-2 h-4 w-4" /> Create Swap
                     </Button>
                 </div>
@@ -328,7 +324,7 @@ www.example.com/subpath"
                     <h4 className="font-medium text-destructive">Reset Nginx Configurations</h4>
                     <p className="text-sm text-muted-foreground">Deletes all Nginx site configurations and symlinks.</p>
                 </div>
-                <Button variant="destructive" onClick={() => handleRunCommand(getResetNginxCommand(), 'Reset Nginx')} disabled={isPending}>
+                <Button variant="destructive" onClick={async () => handleRunCommand(await getResetNginxCommand(), 'Reset Nginx')} disabled={isPending}>
                     <ShieldAlert className="mr-2 h-4 w-4" /> Reset Nginx
                 </Button>
             </div>

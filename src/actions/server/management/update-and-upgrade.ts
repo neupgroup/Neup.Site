@@ -1,5 +1,6 @@
 
+'use server';
 
-export function getUpdateAndUpgradeCommand(): string {
+export async function getUpdateAndUpgradeCommand(): Promise<string> {
     return 'sudo apt-get update && sudo apt-get upgrade -y';
 }

@@ -1,3 +1,4 @@
+
 "use server";
 
 interface NginxConfigParams {
@@ -6,7 +7,7 @@ interface NginxConfigParams {
   listenPort: number;
 }
 
-export function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxConfigParams): string {
+export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxConfigParams): Promise<string> {
   if (urls.length === 0) {
     throw new Error('At least one URL is required.');
   }
@@ -20,7 +21,7 @@ export function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxCo
   if (primaryPath) {
     safeDomain = `${safeDomain}_${primaryPath}`;
   }
-
+  
   const configFileName = `${safeDomain}.conf`;
 
   const allDomains = new Set<string>();
@@ -28,15 +29,15 @@ export function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxCo
 
   // Build location blocks for each unique URL path
   urls.forEach(urlStr => {
-    const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
-    allDomains.add(url.hostname);
+      const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
+      allDomains.add(url.hostname);
 
-    const path = url.pathname === '/' && urlStr.endsWith('/')
-      ? '/'
-      : (url.pathname || '/');
+      const path = url.pathname === '/' && urlStr.endsWith('/')
+        ? '/'
+        : (url.pathname || '/');
 
-    if (!locations.has(path)) {
-      locations.set(path, `
+      if (!locations.has(path)) {
+          locations.set(path, `
     location ${path} {
         proxy_pass ${proxyUrl};
         proxy_http_version 1.1;
@@ -49,7 +50,7 @@ export function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxCo
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 `);
-    }
+      }
   });
 
   const serverName = Array.from(allDomains).join(' ');

@@ -1,5 +1,6 @@
 
+'use server';
 
-export function getInstallNpmCommand(): string {
+export async function getInstallNpmCommand(): Promise<string> {
     return 'sudo apt-get install -y nodejs npm';
 }
