@@ -28,9 +28,9 @@ type FormValues = {
     methods: SourceMethod[];
 };
 
-const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }) => {
+const MethodCard = ({ index, onRemove, defaultEditing = false }: { index: number, onRemove: () => void, defaultEditing?: boolean }) => {
     const { control, getValues, setValue, register, formState: { errors } } = useFormContext<FormValues>();
-    const [isEditing, setIsEditing] = useState(false);
+    const [isEditing, setIsEditing] = useState(defaultEditing);
     const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
 
     const startEditing = () => {
@@ -45,11 +45,16 @@ const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }
         setIsEditing(false);
         setOriginalState(null);
     };
+    
+    const saveChanges = () => {
+        setIsEditing(false);
+        setOriginalState(null);
+    }
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="truncate">{getValues(`methods.${index}.methodName`) || `Method ${index + 1}`}</CardTitle>
+                <CardTitle className="truncate">{getValues(`methods.${index}.methodName`) || `New Method`}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -92,20 +97,20 @@ const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }
                 </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-                <Button type="button" variant="destructive" onClick={onRemove}>
+                <Button type="button" variant="destructive" size="sm" onClick={onRemove}>
                     <Trash2 className="mr-2" /> Remove
                 </Button>
                 {isEditing ? (
                     <div className="flex gap-2">
-                         <Button type="button" variant="ghost" onClick={cancelEditing}>
+                         <Button type="button" variant="ghost" size="sm" onClick={cancelEditing}>
                              <X className="mr-2" /> Cancel
                         </Button>
-                        <Button type="submit">
-                            <Save className="mr-2" /> Save Method
+                        <Button type="button" size="sm" onClick={saveChanges}>
+                            <Save className="mr-2" /> Save
                         </Button>
                     </div>
                 ) : (
-                    <Button type="button" variant="outline" onClick={startEditing}>
+                    <Button type="button" variant="outline" size="sm" onClick={startEditing}>
                         <Edit className="mr-2" /> Edit
                     </Button>
                 )}
@@ -115,7 +120,7 @@ const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }
 };
 
 const AddNewMethodCard = () => {
-    const { control, setValue, getValues } = useFormContext<FormValues>();
+    const { control } = useFormContext<FormValues>();
     const { append } = useFieldArray({ control, name: 'methods' });
     const [newMethodName, setNewMethodName] = useState('');
 
@@ -125,7 +130,7 @@ const AddNewMethodCard = () => {
             methodName: newMethodName,
             httpMethod: 'GET',
             path: '',
-            headers: '{}'
+            headers: '{}' as any
         });
         setNewMethodName('');
     };
@@ -139,19 +144,19 @@ const AddNewMethodCard = () => {
             <CardContent>
                  <div className="space-y-2">
                     <Label htmlFor="new-method-name">New Method Name</Label>
-                    <Input
-                        id="new-method-name"
-                        value={newMethodName}
-                        onChange={(e) => setNewMethodName(e.target.value)}
-                        placeholder="e.g., getUserProfile"
-                    />
+                    <div className="flex gap-2">
+                        <Input
+                            id="new-method-name"
+                            value={newMethodName}
+                            onChange={(e) => setNewMethodName(e.target.value)}
+                            placeholder="e.g., getUserProfile"
+                        />
+                        <Button type="button" onClick={handleAdd} disabled={!newMethodName}>
+                            <Plus className="mr-2"/> Add Method
+                        </Button>
+                    </div>
                 </div>
             </CardContent>
-            <CardFooter>
-                <Button type="button" onClick={handleAdd} disabled={!newMethodName}>
-                    <Plus className="mr-2"/> Add Method
-                </Button>
-            </CardFooter>
         </Card>
     )
 }
@@ -214,7 +219,6 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
 
     if (result.success) {
       toast({ title: 'Methods Updated!', description: `Successfully updated methods for ${sourceName}.` });
-      // We don't need to redirect, just show success. The form is now the source of truth.
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -258,12 +262,24 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
         </div>
         
         {fields.map((field, index) => (
-            <MethodCard key={field.id} index={index} onRemove={() => remove(index)} />
+            <MethodCard 
+                key={field.id} 
+                index={index} 
+                onRemove={() => remove(index)}
+                defaultEditing={!field.methodName}
+            />
         ))}
 
         <AddNewMethodCard />
-
+        
+        <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm mt-6">
+            <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                Save All Changes
+            </Button>
+        </div>
       </form>
     </FormProvider>
   );
 }
+
