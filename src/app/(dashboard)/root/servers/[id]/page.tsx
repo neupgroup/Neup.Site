@@ -1,9 +1,8 @@
 
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { getServer, deleteServer, type Server } from '@/actions/servers';
-import { getServerLogs, type ServerLog } from '@/actions/server-logs';
 import { runCommand } from '@/actions/runner';
 import { logErrorToFirestore } from '@/lib/logging';
 import {
@@ -25,32 +24,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, CheckCircle, XCircle, Loader2, Send, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { formatDistanceToNow } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-export default function ServerDetailPage({ params }: { params: { id: string } }) {
+export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [server, setServer] = useState<Server | null>(null);
-  const [logs, setLogs] = useState<ServerLog[]>([]);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const logsPage = Number(searchParams.get('page')) || 1;
-  const [hasMoreLogs, setHasMoreLogs] = useState(false);
+  
   const [loading, setLoading] = useState(true);
-  const [loadingLogs, setLoadingLogs] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [logsError, setLogsError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [swapSize, setSwapSize] = useState('3072');
   const [customCommand, setCustomCommand] = useState('');
@@ -58,26 +47,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const [isPending, startTransition] = useTransition();
 
   const { toast } = useToast();
-
-  const fetchLogs = async (page = 1) => {
-    setLoadingLogs(true);
-    setLogsError(null);
-    const result = await getServerLogs({ serverId: id, page });
-
-    if (result.success && result.logs) {
-        setLogs(result.logs!);
-        setHasMoreLogs(result.hasMore || false);
-    } else {
-        const errorMessage = result.error || 'Failed to load logs.';
-        setLogsError(errorMessage);
-        logErrorToFirestore({
-            message: `Client-side error in fetchLogs for serverId: ${id}. Error: ${errorMessage}`,
-            stack: new Error().stack,
-            source: 'ServerDetailPage.fetchLogs',
-        });
-    }
-    setLoadingLogs(false);
-  }
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -99,31 +68,14 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
     fetchInitialData();
   }, [id]);
-  
-   useEffect(() => {
-    fetchLogs(logsPage);
-  }, [id, logsPage]);
-  
-  useEffect(() => {
-    const hasOngoingLog = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
-    let interval: NodeJS.Timeout | null = null;
-    if (hasOngoingLog) {
-      interval = setInterval(() => {
-        fetchLogs(logsPage);
-      }, 3000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [logs, id, logsPage]);
-
 
   const handleRunCommand = (command: string, commandName?: string) => {
       if (!command) return;
       startTransition(async () => {
           await runCommand(id, command);
           toast({ title: "Command Sent", description: `The command "${commandName || command}" has been sent to the server.`});
-          fetchLogs(1);
+          // Logs are on a different page now, so no need to refetch here.
+          // The user can navigate to the logs page to see the result.
       });
   };
 
@@ -143,10 +95,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
         });
     }
   }
-
-  const handlePageChange = (newPage: number) => {
-    router.push(`/root/servers/${id}?page=${newPage}`);
-  };
   
   if (loading) {
     return (
@@ -186,8 +134,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     );
   }
 
-  const hasOngoingCommand = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
-
   return (
     <div className="w-full space-y-6">
         <div className="mb-4">
@@ -205,6 +151,11 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                         <CardTitle>{server.name}</CardTitle>
                         <CardDescription>ID: {server.id}</CardDescription>
                     </div>
+                    <Button asChild variant="outline" size="sm">
+                        <Link href={`/root/servers/${server.id}/logs`}>
+                            <Eye className="mr-2 h-4 w-4" /> View Logs
+                        </Link>
+                    </Button>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -253,9 +204,8 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                     <h4 className="font-medium">Update &amp; Upgrade Server</h4>
                     <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
                 </div>
-                <Button onClick={() => handleRunCommand('sudo apt-get update && sudo apt-get upgrade -y', 'Update & Upgrade')} disabled={isPending || hasOngoingCommand}>
-                    {isPending || hasOngoingCommand ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GitCommit className="mr-2 h-4 w-4" />}
-                    {isPending || hasOngoingCommand ? 'Running...' : 'Run Update'}
+                <Button onClick={() => handleRunCommand('sudo apt-get update && sudo apt-get upgrade -y', 'Update & Upgrade')} disabled={isPending}>
+                    <GitCommit className="mr-2 h-4 w-4" /> Run Update
                 </Button>
             </div>
             <div className="flex items-center justify-between rounded-lg border p-4">
@@ -263,9 +213,8 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                 <h4 className="font-medium">Install npm</h4>
                 <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
                 </div>
-                <Button onClick={() => handleRunCommand('sudo apt-get install -y nodejs npm', 'Install npm')} disabled={isPending || hasOngoingCommand}>
-                    {isPending || hasOngoingCommand ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Package className="mr-2 h-4 w-4" />}
-                    {isPending || hasOngoingCommand ? 'Installing...' : 'Install npm'}
+                <Button onClick={() => handleRunCommand('sudo apt-get install -y nodejs npm', 'Install npm')} disabled={isPending}>
+                    <Package className="mr-2 h-4 w-4" /> Install npm
                 </Button>
             </div>
             <div className="rounded-lg border p-4">
@@ -279,9 +228,8 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                         className="max-w-[120px]"
                     />
                         <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                    <Button onClick={() => handleRunCommand(`sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`, 'Create Swap')} className="ml-auto" disabled={isPending || hasOngoingCommand}>
-                        {isPending || hasOngoingCommand ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Disc className="mr-2 h-4 w-4" />}
-                        {isPending || hasOngoingCommand ? 'Creating...' : 'Create Swap'}
+                    <Button onClick={() => handleRunCommand(`sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`, 'Create Swap')} className="ml-auto" disabled={isPending}>
+                        <Disc className="mr-2 h-4 w-4" /> Create Swap
                     </Button>
                 </div>
             </div>
@@ -302,90 +250,13 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                         rows={4}
                         className="font-mono"
                     />
-                    <Button onClick={() => handleRunCommand(customCommand)} disabled={isPending || hasOngoingCommand || !customCommand}>
+                    <Button onClick={() => handleRunCommand(customCommand)} disabled={isPending || !customCommand}>
                         <Send className="mr-2 h-4 w-4" /> Run Command
                     </Button>
                 </div>
             </CardContent>
         </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Server Logs</CardTitle>
-                <CardDescription>History of all commands run on this server.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {loadingLogs && logs.length === 0 ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-12 w-full" />
-                    </div>
-                ) : logsError ? (
-                     <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Error Loading Logs</AlertTitle>
-                        <AlertDescription className="break-all">{logsError}</AlertDescription>
-                    </Alert>
-                ) : logs.length === 0 ? (
-                    <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-                        <Terminal className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold">No Logs Found</h3>
-                        <p>Run a command from the Server Management section to see logs here.</p>
-                    </div>
-                ) : (
-                    <Accordion type="single" collapsible className="w-full space-y-2">
-                        {logs.map(log => (
-                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4">
-                                <AccordionTrigger>
-                                    <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center gap-4">
-                                            <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>
-                                                {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
-                                                {log.status}
-                                            </Badge>
-                                            <p className="font-mono text-sm truncate">{log.command}</p>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                             <span>{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
-                                        </div>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">{log.output}</pre>
-                                     {log.completedAt && (
-                                        <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
-                                    )}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                )}
-            </CardContent>
-             {(logsPage > 1 || hasMoreLogs) && (
-                <CardFooter className="flex items-center justify-between">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handlePageChange(logsPage - 1)}
-                        disabled={logsPage <= 1 || loadingLogs}
-                    >
-                        <ChevronLeft className="mr-2 h-4 w-4" />
-                        Previous
-                    </Button>
-                    <span className="text-sm text-muted-foreground">Page {logsPage}</span>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handlePageChange(logsPage + 1)}
-                        disabled={!hasMoreLogs || loadingLogs}
-                    >
-                        Next
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                </CardFooter>
-            )}
-        </Card>
-
+        
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
           <AlertDialogContent>
             <AlertDialogHeader>
