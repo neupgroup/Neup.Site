@@ -1,12 +1,11 @@
 
-
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, writeBatch, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
 
-export type SourceType = 'api' | 'database' | 'static';
+export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 
 export interface SourceMethod {
     methodName: string;
@@ -39,7 +38,13 @@ export interface StaticSource extends BaseSource {
   data: Record<string, any>;
 }
 
-export type Source = ApiSource | DatabaseSource | StaticSource;
+export interface DatalistSource extends BaseSource {
+    type: 'datalist';
+    datalistId: string;
+}
+
+
+export type Source = ApiSource | DatabaseSource | StaticSource | DatalistSource;
 
 
 /**

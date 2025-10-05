@@ -1,5 +1,4 @@
 
-
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -42,6 +41,8 @@ export default function CreateSourcePage() {
       sourceData.connection = '';
     } else if (type === 'static') {
       sourceData.data = {};
+    } else if (type === 'datalist') {
+        sourceData.datalistId = '';
     }
 
     const result = await createSource(sourceData);
@@ -85,6 +86,7 @@ export default function CreateSourcePage() {
                     <SelectItem value="api">API</SelectItem>
                     <SelectItem value="database">Database</SelectItem>
                     <SelectItem value="static">Static</SelectItem>
+                    <SelectItem value="datalist">Datalist</SelectItem>
                 </SelectContent>
             </Select>
           </div>

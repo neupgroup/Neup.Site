@@ -1,5 +1,4 @@
 
-
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -19,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Save, ArrowLeft, Loader2, Plus, Trash2, Code } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getSource, updateSource, type Source, type SourceType } from '@/actions/editor/sources';
+import { getDatalists, type Datalist } from '@/actions/datalists';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -57,6 +57,41 @@ const StaticFields = ({ control }: { control: any }) => {
       </div>
     )
 }
+
+const DatalistFields = ({ control }: { control: any }) => {
+    const [datalists, setDatalists] = useState<Datalist[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDatalists = async () => {
+            setLoading(true);
+            const result = await getDatalists();
+            if (result.success && result.datalists) {
+                setDatalists(result.datalists);
+            }
+            setLoading(false);
+        }
+        fetchDatalists();
+    }, []);
+
+    if (loading) return <Skeleton className="h-10 w-full" />;
+
+    return (
+        <div className="space-y-2">
+            <Label>Datalist</Label>
+            <Controller name="datalistId" control={control} render={({ field }) => (
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger><SelectValue placeholder="Select a datalist" /></SelectTrigger>
+                    <SelectContent>
+                        {datalists.map(list => (
+                            <SelectItem key={list.id} value={list.id}>{list.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )} />
+        </div>
+    )
+};
 
 
 export default function EditSourcePage({ params }: { params: Promise<{ id: string }> }) {
@@ -168,6 +203,7 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
                             <SelectItem value="api">API</SelectItem>
                             <SelectItem value="database">Database</SelectItem>
                             <SelectItem value="static">Static</SelectItem>
+                            <SelectItem value="datalist">Datalist</SelectItem>
                         </SelectContent>
                     </Select>
                 )} />
@@ -184,6 +220,7 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
                 {sourceType === 'api' && <ApiFields control={methods.control} />}
                 {sourceType === 'database' && <DatabaseFields control={methods.control} />}
                 {sourceType === 'static' && <StaticFields control={methods.control} />}
+                {sourceType === 'datalist' && <DatalistFields control={methods.control} />}
             </CardContent>
         </Card>
 

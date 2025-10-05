@@ -1,9 +1,8 @@
 
-
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSource, deleteSource, type Source, ApiSource, DatabaseSource, StaticSource } from '@/actions/editor/sources';
+import { getSource, deleteSource, type Source, ApiSource, DatabaseSource, StaticSource, DatalistSource } from '@/actions/editor/sources';
 import {
   Card,
   CardContent,
@@ -152,6 +151,11 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                        <pre className="text-xs bg-muted p-4 rounded-md overflow-x-auto">
                            <code>{JSON.stringify((source as StaticSource).data, null, 2)}</code>
                        </pre>
+                    </div>
+                )}
+                {source.type === 'datalist' && (
+                    <div className="space-y-4">
+                        <DetailItem label="Datalist ID" value={(source as DatalistSource).datalistId} />
                     </div>
                 )}
             </CardContent>
