@@ -93,7 +93,7 @@ function NavLink({ href, children, currentPath }: { href: string; children: Reac
 export function Dashboard({ children, theme }: { children: React.ReactNode; theme?: Site['theme'] }) {
   const pathname = usePathname();
   const generatedTheme = theme?.generated;
-  const renderThemeStyles = !!generatedTheme;
+  const renderThemeStyles = !!(generatedTheme && generatedTheme.light && generatedTheme.dark && generatedTheme.black);
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
