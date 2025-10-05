@@ -104,7 +104,7 @@ const TestMethodDialog = ({ sourceId, method, children }: { sourceId: string, me
 };
 
 
-const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }) => {
+const MethodCard = ({ index, onRemove, sourceId }: { index: number, onRemove: () => void, sourceId: string }) => {
     const { control, getValues, register, formState: { errors } } = useFormContext<FormValues>();
     const [isEditing, setIsEditing] = useState(false);
     const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
@@ -129,7 +129,7 @@ const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }
                 <CardTitle className="truncate flex items-center gap-2">
                     {getValues(`methods.${index}.methodName`) || `New Method`}
                      {!isEditing && (
-                        <TestMethodDialog sourceId={use(params).id} method={methodData}>
+                        <TestMethodDialog sourceId={sourceId} method={methodData}>
                             <Button variant="ghost" size="icon" className="h-7 w-7">
                                 <Play className="h-4 w-4" />
                             </Button>
@@ -361,6 +361,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                 key={field.id} 
                 index={index} 
                 onRemove={() => remove(index)}
+                sourceId={id}
             />
         ))}
 
@@ -376,4 +377,3 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
     </FormProvider>
   );
 }
-
