@@ -2,10 +2,17 @@
 import { Rocket, BarChart, Brush, Server, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { getSite } from '@/actions/editor/site';
+import { cn } from '@/lib/utils';
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { site } = await getSite();
+  const radius = site?.theme?.radius;
+  const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
+  const themeMode = site?.theme?.mode || 'light';
+
   return (
-    <div className="bg-background text-foreground">
+    <div className={cn("bg-background text-foreground", themeMode, radiusClass)}>
       <header className="py-4 px-6 md:px-10 flex justify-between items-center border-b border-border">
         <div className="flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
@@ -126,5 +133,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
