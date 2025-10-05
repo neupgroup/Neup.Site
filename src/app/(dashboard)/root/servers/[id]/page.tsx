@@ -94,7 +94,7 @@ const handleNginxConfig = () => {
             return;
         }
 
-        const listenPort = proxyPort ? parseInt(proxyPort) - 1 : 80;
+        const listenPort = 80;
 
         const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
         const primaryDomain = firstUrl.hostname.replace(/\./g, '_');
