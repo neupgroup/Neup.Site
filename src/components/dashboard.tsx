@@ -87,13 +87,8 @@ function NavLink({ href, children, currentPath }: { href: string; children: Reac
 
 export function Dashboard({ children, theme }: { children: React.ReactNode; theme?: Site['theme'] }) {
   const pathname = usePathname();
-  const isRootPage = pathname.startsWith('/root');
-  
   const generatedTheme = theme?.generated;
-
-  // For root pages, we don't pass a theme, so we can avoid rendering the style tag.
-  // For site pages, the theme prop will be provided.
-  const renderThemeStyles = !isRootPage && generatedTheme;
+  const renderThemeStyles = !!generatedTheme;
 
 
   return (
