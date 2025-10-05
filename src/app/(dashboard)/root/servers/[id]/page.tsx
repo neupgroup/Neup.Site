@@ -1,5 +1,4 @@
 
-
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -80,7 +79,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
       });
   };
 
-  const handleNginxConfig = () => {
+const handleNginxConfig = () => {
     const urls = nginxDomains.split('\n').map(u => u.trim()).filter(Boolean);
     if (urls.length === 0) {
         toast({ variant: 'destructive', title: 'Error', description: 'At least one domain or path is required.' });
@@ -94,6 +93,12 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
             return;
         }
 
+        const listenPort = parseInt(proxyPort, 10) - 1;
+        if (isNaN(listenPort) || listenPort < 1) {
+            toast({ variant: 'destructive', title: 'Invalid Port', description: `Could not determine a valid listen port from proxy URL.`});
+            return;
+        }
+
         const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
         const primaryDomain = firstUrl.hostname;
         const primaryPath = firstUrl.pathname.replace(/\//g, '_').replace(/^_/, '');
@@ -102,7 +107,8 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         if (primaryPath) {
             safeDomain = `${safeDomain}_${primaryPath}`;
         }
-
+        
+        const configFileName = `${safeDomain}.conf`;
 
         const allDomains = new Set<string>();
         const locations = new Map<string, string>();
@@ -132,7 +138,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         const locationBlocks = Array.from(locations.values()).join('\n');
 
         const config = `server {
-    listen 80;
+    listen ${listenPort};
     server_name ${serverName};
     ${locationBlocks}
 }`;
@@ -141,12 +147,12 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
 
         const command = `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
-if [ -f /etc/nginx/sites-available/${safeDomain} ]; then
-    sudo rm -f /etc/nginx/sites-enabled/${safeDomain};
-    sudo rm -f /etc/nginx/sites-available/${safeDomain};
+if [ -f /etc/nginx/sites-available/${configFileName} ]; then
+    sudo rm -f /etc/nginx/sites-enabled/${configFileName};
+    sudo rm -f /etc/nginx/sites-available/${configFileName};
 fi &&
-sudo bash -c "echo \\"${escapedConfig}\\" > /etc/nginx/sites-available/${safeDomain}" &&
-sudo ln -s -f /etc/nginx/sites-available/${safeDomain} /etc/nginx/sites-enabled/ &&
+sudo bash -c "echo \\"${escapedConfig}\\" > /etc/nginx/sites-available/${configFileName}" &&
+sudo ln -s -f /etc/nginx/sites-available/${configFileName} /etc/nginx/sites-enabled/ &&
 sudo systemctl restart nginx
 `.trim();
         
@@ -402,3 +408,4 @@ www.example.com/subpath"
   );
 }
 
+    
