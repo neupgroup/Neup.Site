@@ -5,9 +5,11 @@ import type { Path } from '@/actions/paths';
 export interface GeneratedTheme {
     light: Record<string, string>;
     dark: Record<string, string>;
+    black: Record<string, string>;
 }
 
 export interface SiteTheme {
+    mode?: 'light' | 'dark' | 'black';
     colors: string[];
     radius?: 'none' | 'low' | 'medium' | 'high';
     generated?: GeneratedTheme;

@@ -99,17 +99,26 @@ function renderElementToHtml(element: CanvasElementData): string {
     }
 }
 
-const generateThemeStyles = (theme: GeneratedTheme) => {
+const generateThemeStyles = (theme: GeneratedTheme, mode: SiteTheme['mode']) => {
+    const selectedTheme = mode === 'dark' ? theme.dark : mode === 'black' ? theme.black : theme.light;
     let styles = ':root {\n';
-    for (const [key, value] of Object.entries(theme.light)) {
+    for (const [key, value] of Object.entries(selectedTheme)) {
         styles += `  --${key}: ${value};\n`;
     }
     styles += '}\n';
+
     styles += '.dark {\n';
     for (const [key, value] of Object.entries(theme.dark)) {
         styles += `  --${key}: ${value};\n`;
     }
-    styles += '}';
+    styles += '}\n';
+
+    styles += '.black {\n';
+    for (const [key, value] of Object.entries(theme.black)) {
+        styles += `  --${key}: ${value};\n`;
+    }
+    styles += '}\n';
+
     return styles;
 };
 
@@ -117,7 +126,7 @@ const generateThemeStyles = (theme: GeneratedTheme) => {
 export function convertJsonToHtml(elements: CanvasElementData[], theme?: SiteTheme): string {
   const bodyContent = elements.map(renderElementToHtml).join('');
   
-  const themeStyles = theme?.generated ? generateThemeStyles(theme.generated) : `
+  const themeStyles = theme?.generated ? generateThemeStyles(theme.generated, theme.mode) : `
     :root {
       --primary: 186 51% 60%;
       --accent: 173 58% 39%;
@@ -125,9 +134,11 @@ export function convertJsonToHtml(elements: CanvasElementData[], theme?: SiteThe
     }
   `;
 
+  const themeMode = theme?.mode || 'light';
+
   return `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="en" class="${themeMode}">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">

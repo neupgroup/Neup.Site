@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sun, Moon, Loader2, Save, Plus, Trash2 } from 'lucide-react';
+import { Sun, Moon, Loader2, Save, Plus, Trash2, Contrast } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { saveSite, SiteTheme } from '@/actions/editor/site';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,7 +17,7 @@ const colorLabels = ['Primary', 'Accent', 'Tertiary'];
 
 export default function ThemePage() {
   const { site, setSite, loading } = useProfile();
-  const [themeMode, setThemeMode] = useState('light');
+  const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'black'>('light');
   const [colors, setColors] = useState<string[]>(['#64C5CF']);
   const [radius, setRadius] = useState<'none' | 'low' | 'medium' | 'high'>('medium');
   
@@ -26,29 +26,31 @@ export default function ThemePage() {
 
   useEffect(() => {
     if (!loading && site?.theme) {
+        setThemeMode(site.theme.mode || 'light');
         if (site.theme.colors && site.theme.colors.length > 0) {
             setColors(site.theme.colors);
         }
         if (site.theme.radius) {
             setRadius(site.theme.radius);
         }
+    } else if (!loading) {
+        // Set default if no theme is loaded
+        const storedTheme = document.documentElement.classList.contains('dark') ? 'dark' : (document.documentElement.classList.contains('black') ? 'black' : 'light');
+        setThemeMode(storedTheme);
     }
   }, [loading, site]);
 
-  const handleThemeModeChange = (newTheme: string) => {
+  const handleThemeModeChange = (newTheme: 'light' | 'dark' | 'black') => {
     setThemeMode(newTheme);
-    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.remove('light', 'dark', 'black');
     document.documentElement.classList.add(newTheme);
-    toast({
-        title: 'Theme Changed',
-        description: `Switched to ${newTheme} mode.`
-    })
   }
 
   const handleSaveTheme = async () => {
       setIsSaving(true);
       const newTheme: SiteTheme = { 
         ...site?.theme,
+        mode: themeMode,
         colors, 
         radius 
       };
@@ -182,14 +184,13 @@ export default function ThemePage() {
           <CardDescription>Choose the look and feel of your dashboard.</CardDescription>
         </CardHeader>
         <CardContent>
-          <RadioGroup value={themeMode} onValueChange={handleThemeModeChange}>
-            <div className="flex items-center space-x-4">
+          <RadioGroup value={themeMode} onValueChange={(v) => handleThemeModeChange(v as any)}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Label htmlFor="light-theme" className="flex-1 p-4 border rounded-md cursor-pointer hover:border-primary has-[input:checked]:border-primary">
                 <div className="flex items-center gap-4">
                     <Sun className="h-6 w-6" />
                     <div>
                         <p className="font-semibold">Light Mode</p>
-                        <p className="text-sm text-muted-foreground">For a bright and clean interface.</p>
                     </div>
                 </div>
                 <RadioGroupItem value="light" id="light-theme" className="sr-only" />
@@ -199,10 +200,18 @@ export default function ThemePage() {
                     <Moon className="h-6 w-6" />
                     <div>
                         <p className="font-semibold">Dark Mode</p>
-                        <p className="text-sm text-muted-foreground">For a focused, low-light experience.</p>
                     </div>
                 </div>
                  <RadioGroupItem value="dark" id="dark-theme" className="sr-only" />
+              </Label>
+              <Label htmlFor="black-theme" className="flex-1 p-4 border rounded-md cursor-pointer hover:border-primary has-[input:checked]:border-primary">
+                <div className="flex items-center gap-4">
+                    <Contrast className="h-6 w-6" />
+                    <div>
+                        <p className="font-semibold">Black Mode</p>
+                    </div>
+                </div>
+                 <RadioGroupItem value="black" id="black-theme" className="sr-only" />
               </Label>
             </div>
           </RadioGroup>

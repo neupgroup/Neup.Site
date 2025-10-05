@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
@@ -21,9 +22,10 @@ export default async function RootLayout({
   const { site } = await getSite();
   const radius = site?.theme?.radius;
   const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
+  const themeMode = site?.theme?.mode || 'light';
   
   return (
-    <html lang="en" suppressHydrationWarning className={cn(radiusClass)}>
+    <html lang="en" suppressHydrationWarning className={cn(radiusClass, themeMode)}>
       <head />
       <body className={cn("font-body antialiased")}>
         <Suspense fallback={null}>

@@ -32,7 +32,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Site } from '@/schemas/site';
+import type { Site, SiteTheme } from '@/schemas/site';
 import { saveSite } from '@/actions/editor/site';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from './ui/button';
@@ -95,7 +95,6 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
   const generatedTheme = theme?.generated;
   const renderThemeStyles = !!generatedTheme;
 
-
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
       {renderThemeStyles && (
@@ -145,6 +144,29 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
               --ring: ${generatedTheme.dark.ring};
               --sidebar-accent: ${generatedTheme.dark.sidebarAccent};
               --sidebar-accent-foreground: ${generatedTheme.dark.sidebarAccentForeground};
+          }
+          .black {
+              --background: ${generatedTheme.black.background};
+              --foreground: ${generatedTheme.black.foreground};
+              --card: ${generatedTheme.black.card};
+              --card-foreground: ${generatedTheme.black.cardForeground};
+              --popover: ${generatedTheme.black.popover};
+              --popover-foreground: ${generatedTheme.black.popoverForeground};
+              --primary: ${generatedTheme.black.primary};
+              --primary-foreground: ${generatedTheme.black.primaryForeground};
+              --secondary: ${generatedTheme.black.secondary};
+              --secondary-foreground: ${generatedTheme.black.secondaryForeground};
+              --muted: ${generatedTheme.black.muted};
+              --muted-foreground: ${generatedTheme.black.mutedForeground};
+              --accent: ${generatedTheme.black.accent};
+              --accent-foreground: ${generatedTheme.black.accentForeground};
+              --destructive: ${generatedTheme.black.destructive};
+              --destructive-foreground: ${generatedTheme.black.destructiveForeground};
+              --border: ${generatedTheme.black.border};
+              --input: ${generatedTheme.black.input};
+              --ring: ${generatedTheme.black.ring};
+              --sidebar-accent: ${generatedTheme.black.sidebarAccent};
+              --sidebar-accent-foreground: ${generatedTheme.black.sidebarAccentForeground};
           }
       `}</style>
       )}

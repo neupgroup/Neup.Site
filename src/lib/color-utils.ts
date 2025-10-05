@@ -1,5 +1,4 @@
 
-
 type HSL = { h: number; s: number; l: number };
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
@@ -44,7 +43,7 @@ function rgbToHsl({ r, g, b }: { r: number; g: number; b: number }): HSL {
 
 function getContrastColor(hsl: HSL): HSL {
   // Using a simple lightness threshold to determine contrast
-  return hsl.l > 60 ? { h: 0, s: 0, l: 0 } : { h: 0, s: 0, l: 100 };
+  return hsl.l > 60 ? { h: 0, s: 0, l: 10 } : { h: 0, s: 0, l: 98 };
 }
 
 function hslToString(hsl: HSL): string {
@@ -95,6 +94,30 @@ export function generateThemeFromColor(hexColors: string[]) {
     };
 
     const darkTheme = {
+        background: '240 5% 15%',
+        foreground: '0 0% 98%',
+        card: '240 5% 17%',
+        cardForeground: '0 0% 98%',
+        popover: '240 5% 17%',
+        popoverForeground: '0 0% 98%',
+        primary: hslToString(primaryHsl),
+        primaryForeground: hslToString(getContrastColor(primaryHsl)),
+        secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 30)}% ${Math.max(0, primaryHsl.l - 40)}%`,
+        secondaryForeground: hslToString(getContrastColor({ h: primaryHsl.h, s: Math.max(0, primaryHsl.s - 30), l: Math.max(0, primaryHsl.l - 40) })),
+        muted: `${primaryHsl.h} 10% 25%`,
+        mutedForeground: '240 5% 64.9%',
+        accent: hslToString(accentHsl),
+        accentForeground: hslToString(getContrastColor(accentHsl)),
+        destructive: '0 62.8% 30.6%',
+        destructiveForeground: '0 0% 98%',
+        border: '240 4% 25%',
+        input: '240 4% 25%',
+        ring: hslToString(accentHsl),
+        sidebarAccent: hslToString({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 40)}),
+        sidebarAccentForeground: hslToString(getContrastColor({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 40)})),
+    };
+    
+    const blackTheme = {
         background: '240 10% 3.9%',
         foreground: '0 0% 98%',
         card: '240 10% 3.9%',
@@ -103,9 +126,9 @@ export function generateThemeFromColor(hexColors: string[]) {
         popoverForeground: '0 0% 98%',
         primary: hslToString(primaryHsl),
         primaryForeground: hslToString(getContrastColor(primaryHsl)),
-        secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 30)}% ${Math.max(0, primaryHsl.l - 40)}%`,
-        secondaryForeground: hslToString(getContrastColor({ h: primaryHsl.h, s: Math.max(0, primaryHsl.s - 30), l: Math.max(0, primaryHsl.l - 40) })),
-        muted: `${primaryHsl.h} 10% 15%`,
+        secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 30)}% 15.9%`,
+        secondaryForeground: '0 0% 98%',
+        muted: '240 3.7% 15.9%',
         mutedForeground: '240 5% 64.9%',
         accent: hslToString(accentHsl),
         accentForeground: hslToString(getContrastColor(accentHsl)),
@@ -118,5 +141,5 @@ export function generateThemeFromColor(hexColors: string[]) {
         sidebarAccentForeground: hslToString(getContrastColor({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 50)})),
     };
 
-    return { light: lightTheme, dark: darkTheme };
+    return { light: lightTheme, dark: darkTheme, black: blackTheme };
 }
