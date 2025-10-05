@@ -109,9 +109,9 @@ export default function ServersPage() {
                         </Link>
                     </TableCell>
                     <TableCell>
-                        <Link href={`/root/servers/${server.id}`} className="hover:underline">
+                        <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                             {server.publicIp}
-                        </Link>
+                        </a>
                     </TableCell>
                     <TableCell>{server.createdAt ? new Date(server.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                   </TableRow>

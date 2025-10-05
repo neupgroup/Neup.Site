@@ -118,7 +118,9 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
             <CardContent className="space-y-6">
                 <div>
                     <h4 className="font-semibold text-sm text-muted-foreground">Public IP</h4>
-                    <p className="font-mono text-sm">{server.publicIp}</p>
+                    <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline">
+                        {server.publicIp}
+                    </a>
                 </div>
                  <div>
                     <h4 className="font-semibold text-sm text-muted-foreground">Created At</h4>
