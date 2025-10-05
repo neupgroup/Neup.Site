@@ -44,6 +44,7 @@ import { getInstallNpmCommand } from '@/actions/server/management/install-npm';
 import { getBuildNpmWithMemoryCommand } from '@/actions/server/management/build-npm-with-memory';
 import { getInstallPm2Command } from '@/actions/server/management/install-pm2';
 import { getStartNextWithPm2Command } from '@/actions/server/management/start-next-with-pm2';
+import { getRebootServerCommand } from '@/actions/server/management/reboot-server';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -269,7 +270,7 @@ const handleStartNextWithPm2 = async () => {
           <CardContent>
              <Accordion type="single" collapsible className="w-full space-y-2">
                 <AccordionItem value="update-upgrade" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Update & Upgrade Server</h4>
                             <p className="text-sm text-muted-foreground text-left">Run apt-get update && apt-get upgrade.</p>
@@ -283,7 +284,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
 
                 <AccordionItem value="free-port" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Free Up Port 80</h4>
                             <p className="text-sm text-muted-foreground text-left">Stop any process using port 80 (e.g., Apache).</p>
@@ -297,7 +298,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
 
                  <AccordionItem value="install-nginx" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Install Nginx</h4>
                             <p className="text-sm text-muted-foreground text-left">Install and start the Nginx web server.</p>
@@ -311,7 +312,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
                 
                  <AccordionItem value="install-npm" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Install npm</h4>
                             <p className="text-sm text-muted-foreground text-left">Install Node.js and the Node Package Manager.</p>
@@ -325,7 +326,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
                 
                  <AccordionItem value="install-pm2" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Install PM2</h4>
                             <p className="text-sm text-muted-foreground text-left">Install PM2, a production process manager for Node.js.</p>
@@ -339,7 +340,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
 
                  <AccordionItem value="create-swap" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Create Swap Space</h4>
                             <p className="text-sm text-muted-foreground text-left">Create a swap file to use as virtual RAM.</p>
@@ -362,7 +363,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
                 
                  <AccordionItem value="build-npm" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Build NPM with Memory Limit</h4>
                             <p className="text-sm text-muted-foreground text-left">Run `npm install && npm run build` with a specific memory cap.</p>
@@ -384,7 +385,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
                 
                  <AccordionItem value="start-pm2" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Start Next.js App with PM2</h4>
                             <p className="text-sm text-muted-foreground text-left">Start the Next.js app in the deployment path using PM2.</p>
@@ -412,7 +413,7 @@ const handleStartNextWithPm2 = async () => {
                 </AccordionItem>
 
                  <AccordionItem value="config-nginx" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Configure Nginx Reverse Proxy</h4>
                             <p className="text-sm text-muted-foreground text-left">Point one or more domains/paths to an application running on this server.</p>
@@ -443,7 +444,7 @@ www.example.com/subpath"
                 </AccordionItem>
 
                 <AccordionItem value="custom-command" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
                             <h4 className="font-medium text-left">Run Custom Command</h4>
                             <p className="text-sm text-muted-foreground text-left">Execute any shell command on the server.</p>
@@ -467,8 +468,22 @@ www.example.com/subpath"
                     </AccordionContent>
                 </AccordionItem>
                 
+                 <AccordionItem value="reboot-server" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border border-destructive/50 p-4 hover:bg-destructive/10 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
+                        <div className="text-destructive">
+                            <h4 className="font-medium text-left">Reboot Server</h4>
+                            <p className="text-sm text-destructive/80 text-left">Gracefully restarts the server.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border border-t-0 rounded-b-lg p-4">
+                        <Button variant="destructive" onClick={async () => handleRunCommand(await getRebootServerCommand(), 'Reboot Server')} disabled={isPending}>
+                            <ShieldAlert className="mr-2 h-4 w-4" /> Reboot Server
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
                  <AccordionItem value="reset-nginx" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border border-destructive/50 p-4 hover:bg-destructive/10 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border border-destructive/50 p-4 hover:bg-destructive/10 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div className="text-destructive">
                             <h4 className="font-medium text-left">Reset Nginx Configurations</h4>
                             <p className="text-sm text-destructive/80 text-left">Deletes all Nginx site configurations and symlinks.</p>
