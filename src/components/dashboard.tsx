@@ -65,7 +65,6 @@ function Header() {
             )}
           </Link>
         </div>
-        <div className="text-lg font-semibold">Dashboard</div>
       </div>
     </header>
   );
@@ -77,8 +76,8 @@ function NavLink({ href, children, currentPath }: { href: string; children: Reac
         <Link
             href={href}
             className={cn(
-                'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-muted',
-                isActive && 'bg-muted'
+                'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                isActive && 'bg-sidebar-accent text-sidebar-accent-foreground'
             )}
         >
             {children}
@@ -121,6 +120,8 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
               --border: ${generatedTheme.light.border};
               --input: ${generatedTheme.light.input};
               --ring: ${generatedTheme.light.ring};
+              --sidebar-accent: ${generatedTheme.light.sidebarAccent};
+              --sidebar-accent-foreground: ${generatedTheme.light.sidebarAccentForeground};
           }
           .dark {
               --background: ${generatedTheme.dark.background};
@@ -142,6 +143,8 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
               --border: ${generatedTheme.dark.border};
               --input: ${generatedTheme.dark.input};
               --ring: ${generatedTheme.dark.ring};
+              --sidebar-accent: ${generatedTheme.dark.sidebarAccent};
+              --sidebar-accent-foreground: ${generatedTheme.dark.sidebarAccentForeground};
           }
       `}</style>
       )}

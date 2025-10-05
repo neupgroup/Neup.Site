@@ -81,7 +81,7 @@ export function generateThemeFromColor(hexColors: string[]) {
         primaryForeground: hslToString(getContrastColor(primaryHsl)),
         secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 20)}% ${Math.min(100, primaryHsl.l + 35)}%`,
         secondaryForeground: hslToString(getContrastColor({ h: primaryHsl.h, s: Math.max(0, primaryHsl.s - 20), l: Math.min(100, primaryHsl.l + 35) })),
-        muted: '240 5.9% 90%',
+        muted: `${primaryHsl.h} 30% 95%`,
         mutedForeground: '240 3.8% 46.1%',
         accent: hslToString(accentHsl),
         accentForeground: hslToString(getContrastColor(accentHsl)),
@@ -90,6 +90,8 @@ export function generateThemeFromColor(hexColors: string[]) {
         border: '240 5.9% 90%',
         input: '240 5.9% 90%',
         ring: hslToString(accentHsl),
+        sidebarAccent: hslToString({h: primaryHsl.h, s: primaryHsl.s, l: Math.min(100, primaryHsl.l + 10)}),
+        sidebarAccentForeground: hslToString(getContrastColor({h: primaryHsl.h, s: primaryHsl.s, l: Math.min(100, primaryHsl.l + 10)})),
     };
 
     const darkTheme = {
@@ -103,7 +105,7 @@ export function generateThemeFromColor(hexColors: string[]) {
         primaryForeground: hslToString(getContrastColor(primaryHsl)),
         secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 30)}% ${Math.max(0, primaryHsl.l - 40)}%`,
         secondaryForeground: hslToString(getContrastColor({ h: primaryHsl.h, s: Math.max(0, primaryHsl.s - 30), l: Math.max(0, primaryHsl.l - 40) })),
-        muted: '240 3.7% 15.9%',
+        muted: `${primaryHsl.h} 10% 15%`,
         mutedForeground: '240 5% 64.9%',
         accent: hslToString(accentHsl),
         accentForeground: hslToString(getContrastColor(accentHsl)),
@@ -112,6 +114,8 @@ export function generateThemeFromColor(hexColors: string[]) {
         border: '240 3.7% 15.9%',
         input: '240 3.7% 15.9%',
         ring: hslToString(accentHsl),
+        sidebarAccent: hslToString({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 50)}),
+        sidebarAccentForeground: hslToString(getContrastColor({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 50)})),
     };
 
     return { light: lightTheme, dark: darkTheme };
