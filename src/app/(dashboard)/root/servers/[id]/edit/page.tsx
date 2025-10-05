@@ -151,34 +151,32 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
         </CardContent>
       </Card>
       
-      {serverType === 'shared' && (
-        <Card>
-            <CardHeader>
-                <CardTitle>Site Allocations</CardTitle>
-                <CardDescription>Assign specific Site IDs to ports on this shared server.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {fields.map((field, index) => (
-                    <div key={field.id} className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
-                        <div className="space-y-1">
-                            {index === 0 && <Label>Site ID</Label>}
-                            <Input {...register(`allocations.${index}.siteId`)} placeholder="e.g., my-awesome-site" />
-                        </div>
-                        <div className="space-y-1">
-                           {index === 0 && <Label>Port</Label>}
-                            <Input type="number" {...register(`allocations.${index}.port`, { valueAsNumber: true })} placeholder="e.g., 3001" />
-                        </div>
-                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ))}
-                 <Button type="button" variant="outline" className="w-full" onClick={() => append({ siteId: '', port: 0 })}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Allocation
-                </Button>
-            </CardContent>
-        </Card>
-      )}
+      <Card>
+          <CardHeader>
+              <CardTitle>Site Allocations</CardTitle>
+              <CardDescription>Assign sites to this server. A port is required for 'shared' servers to avoid conflicts.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+              {fields.map((field, index) => (
+                  <div key={field.id} className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
+                      <div className="space-y-1">
+                          {index === 0 && <Label>Site ID</Label>}
+                          <Input {...register(`allocations.${index}.siteId`)} placeholder="e.g., my-awesome-site" />
+                      </div>
+                      <div className="space-y-1">
+                         {index === 0 && <Label>Port <span className="text-xs text-muted-foreground">(for shared)</span></Label>}
+                          <Input type="number" {...register(`allocations.${index}.port`, { valueAsNumber: true })} placeholder="e.g., 3001" />
+                      </div>
+                      <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                          <Trash2 className="h-4 w-4" />
+                      </Button>
+                  </div>
+              ))}
+               <Button type="button" variant="outline" className="w-full" onClick={() => append({ siteId: '', port: 0 })}>
+                  <Plus className="mr-2 h-4 w-4" /> Add Allocation
+              </Button>
+          </CardContent>
+      </Card>
 
       <Card className="mt-6 border-amber-500/50">
         <CardHeader>
