@@ -10,6 +10,7 @@ export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 export interface SourceMethod {
     methodName: string;
     path: string;
+    httpMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE';
     // We can add more method-specific details here later
 }
 
