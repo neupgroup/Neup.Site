@@ -8,11 +8,12 @@ import { initializeFirebase } from '@/lib/firebase';
 /**
  * Creates a new server.
  */
-export async function createServer(serverData: Omit<Server, 'id' | 'createdAt'>) {
+export async function createServer(serverData: Omit<Server, 'id' | 'createdAt' | 'publicKey'>) {
   try {
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'servers'), {
       ...serverData,
+      publicKey: '', // Public key will be derived on the server or is not needed client-side
       createdAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
@@ -79,7 +80,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
 /**
  * Updates a server. Allows overriding privateKey and privateIp without fetching them.
  */
-export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt'>>) {
+export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdAt' | 'publicKey'>>) {
   try {
     const { firestore } = initializeFirebase();
     const serverRef = doc(firestore, 'servers', id);
@@ -87,7 +88,6 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     const dataToUpdate: Record<string, any> = {
         name: serverData.name,
         publicIp: serverData.publicIp,
-        publicKey: serverData.publicKey
     };
 
     // Only include private fields if they are explicitly provided and not empty
@@ -97,6 +97,9 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     if (serverData.privateKey) {
         dataToUpdate.privateKey = serverData.privateKey;
     }
+    
+    // If private key is updated, we might need to update public key on the backend
+    // For now, we'll just update the provided fields.
 
     await setDoc(serverRef, dataToUpdate, { merge: true });
     return { success: true, id };

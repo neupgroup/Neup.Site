@@ -23,7 +23,6 @@ export default function CreateServerPage() {
   const [name, setName] = useState('');
   const [publicIp, setPublicIp] = useState('');
   const [privateIp, setPrivateIp] = useState('');
-  const [publicKey, setPublicKey] = useState('');
   const [privateKey, setPrivateKey] = useState('');
 
   const [isSaving, setIsSaving] = useState(false);
@@ -31,8 +30,8 @@ export default function CreateServerPage() {
   const router = useRouter();
 
   const handleCreateServer = async () => {
-    if (!name || !publicIp || !publicKey || !privateKey) {
-      toast({ variant: 'destructive', title: 'Missing fields', description: 'Name, Public IP, Public Key, and Private Key are required.' });
+    if (!name || !publicIp || !privateKey) {
+      toast({ variant: 'destructive', title: 'Missing fields', description: 'Name, Public IP, and Private Key are required.' });
       return;
     }
     setIsSaving(true);
@@ -41,7 +40,6 @@ export default function CreateServerPage() {
         name,
         publicIp,
         privateIp,
-        publicKey,
         privateKey
     });
 
@@ -83,10 +81,6 @@ export default function CreateServerPage() {
                     <Label htmlFor="private-ip">Private IP (Optional)</Label>
                     <Input id="private-ip" value={privateIp} onChange={e => setPrivateIp(e.target.value)} placeholder="e.g., 10.0.0.1" />
                 </div>
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="public-key">Public Key</Label>
-                <Textarea id="public-key" value={publicKey} onChange={e => setPublicKey(e.target.value)} placeholder="Begins with ssh-rsa..." rows={4} />
             </div>
             <div className="space-y-2">
                 <Label htmlFor="private-key">Private Key</Label>

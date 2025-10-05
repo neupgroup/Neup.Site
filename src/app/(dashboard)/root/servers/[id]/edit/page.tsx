@@ -29,7 +29,6 @@ export default function EditServerPage({ params }: { params: Promise<{ id: strin
   
   const [name, setName] = useState('');
   const [publicIp, setPublicIp] = useState('');
-  const [publicKey, setPublicKey] = useState('');
   // These are write-only for override
   const [newPrivateIp, setNewPrivateIp] = useState('');
   const [newPrivateKey, setNewPrivateKey] = useState('');
@@ -44,7 +43,6 @@ export default function EditServerPage({ params }: { params: Promise<{ id: strin
       if (result.success && result.server) {
         setName(result.server.name);
         setPublicIp(result.server.publicIp);
-        setPublicKey(result.server.publicKey);
       } else {
         setError(result.error || 'Failed to fetch server details.');
       }
@@ -55,15 +53,14 @@ export default function EditServerPage({ params }: { params: Promise<{ id: strin
   }, [id]);
 
   const handleUpdateServer = async () => {
-     if (!name || !publicIp || !publicKey) {
-      toast({ variant: 'destructive', title: 'Missing fields', description: 'Name, Public IP, and Public Key are required.' });
+     if (!name || !publicIp) {
+      toast({ variant: 'destructive', title: 'Missing fields', description: 'Name and Public IP are required.' });
       return;
     }
     setIsSaving(true);
-    const dataToUpdate: Partial<Server> = {
+    const dataToUpdate: Partial<Omit<Server, 'id' | 'createdAt' | 'publicKey'>> = {
         name,
         publicIp,
-        publicKey,
     };
     if (newPrivateIp) {
         dataToUpdate.privateIp = newPrivateIp;
@@ -130,10 +127,6 @@ export default function EditServerPage({ params }: { params: Promise<{ id: strin
             <div className="space-y-2">
                 <Label htmlFor="public-ip">Public IP</Label>
                 <Input id="public-ip" value={publicIp} onChange={e => setPublicIp(e.target.value)} />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="public-key">Public Key</Label>
-                <Textarea id="public-key" value={publicKey} onChange={e => setPublicKey(e.target.value)} rows={4} />
             </div>
         </CardContent>
       </Card>
