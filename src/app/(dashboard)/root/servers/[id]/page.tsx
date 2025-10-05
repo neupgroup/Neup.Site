@@ -45,6 +45,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [customCommand, setCustomCommand] = useState('');
   const [nginxDomain, setNginxDomain] = useState('');
   const [proxyUrl, setProxyUrl] = useState('http://localhost:3000');
+  const [nginxPath, setNginxPath] = useState('/');
   
   const [isPending, startTransition] = useTransition();
 
@@ -85,23 +86,33 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
       return;
     }
     const safeDomain = nginxDomain.replace(/[^a-zA-Z0-9.-]/g, '');
+    const locationPath = nginxPath.startsWith('/') ? nginxPath : `/${nginxPath}`;
+    
+    // If proxying a subpath, we need to handle rewrites correctly.
+    const proxyPassStatement = locationPath === '/' 
+      ? `proxy_pass ${proxyUrl};`
+      : `proxy_pass ${proxyUrl}${locationPath};`;
+
     const config = `
 server {
     listen 80;
     server_name ${nginxDomain};
 
-    location / {
-        proxy_pass ${proxyUrl};
+    location ${locationPath} {
+        ${proxyPassStatement}
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
     `.trim();
 
-    const command = `echo "${config}" | sudo tee /etc/nginx/sites-available/${safeDomain} && sudo ln -s /etc/nginx/sites-available/${safeDomain} /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
+    const command = `echo "${config}" | sudo tee /etc/nginx/sites-available/${safeDomain} && sudo ln -s -f /etc/nginx/sites-available/${safeDomain} /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
     handleRunCommand(command, `Configure Nginx for ${nginxDomain}`);
   };
 
@@ -274,6 +285,10 @@ server {
                         <Label htmlFor="proxy-url">Proxy Pass URL</Label>
                         <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
                     </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="nginx-path">Path (optional)</Label>
+                    <Input id="nginx-path" value={nginxPath} onChange={e => setNginxPath(e.target.value)} placeholder="/ or /subpath" />
                 </div>
                  <Button onClick={handleNginxConfig} disabled={isPending}>
                     <Globe className="mr-2 h-4 w-4" /> Configure Nginx
