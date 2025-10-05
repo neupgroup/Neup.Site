@@ -40,6 +40,7 @@ import { getCreateSwapCommand } from '@/actions/server/management/create-swap';
 import { getConfigureNginxCommand } from '@/actions/server/management/configure-nginx';
 import { getResetNginxCommand } from '@/actions/server/management/reset-nginx';
 import { getInstallNpmCommand } from '@/actions/server/management/install-npm';
+import { getBuildNpmWithMemoryCommand } from '@/actions/server/management/build-npm-with-memory';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -53,6 +54,8 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [customCommand, setCustomCommand] = useState('');
   const [nginxDomains, setNginxDomains] = useState('');
   const [proxyUrl, setProxyUrl] = useState('http://localhost:3000');
+  const [buildMemory, setBuildMemory] = useState('1024');
+  const [deploymentPath, setDeploymentPath] = useState('/home/ubuntu/app');
   
   const [isPending, startTransition] = useTransition();
 
@@ -117,6 +120,15 @@ const handleNginxConfig = async () => {
         } else {
              toast({ variant: 'destructive', title: 'Configuration Error', description: e.message || 'An unexpected error occurred.'});
         }
+    }
+};
+
+const handleBuildNpm = async () => {
+    try {
+        const command = await getBuildNpmWithMemoryCommand({ memory: buildMemory, path: deploymentPath });
+        handleRunCommand(command, `Build NPM Project`);
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: 'Build Error', description: e.message });
     }
 };
 
@@ -292,6 +304,23 @@ const handleNginxConfig = async () => {
                         <Disc className="mr-2 h-4 w-4" /> Create Swap
                     </Button>
                 </div>
+            </div>
+            <div className="rounded-lg border p-4 space-y-4">
+                <div>
+                    <h4 className="font-medium">Build NPM with Memory Limit</h4>
+                    <p className="text-sm text-muted-foreground">Run `npm install && npm run build` with a specific memory cap.</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="deployment-path">Deployment Path</Label>
+                    <Input id="deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="build-memory">Memory Limit (MB)</Label>
+                    <Input id="build-memory" value={buildMemory} onChange={e => setBuildMemory(e.target.value)} placeholder="e.g., 1024" />
+                </div>
+                <Button onClick={handleBuildNpm} disabled={isPending}>
+                    <Package className="mr-2 h-4 w-4" /> Run Build
+                </Button>
             </div>
             <div className="rounded-lg border p-4 space-y-4">
                 <div>
