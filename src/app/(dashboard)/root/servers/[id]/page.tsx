@@ -97,7 +97,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         urls.forEach(urlStr => {
             const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
             allDomains.add(url.hostname);
-            const path = url.pathname || '/';
+            const path = url.pathname === '/' && urlStr.endsWith('/') ? '/' : (url.pathname || '/');
             if (!locations.has(path)) {
                 locations.set(path, `
         location ${path} {
@@ -126,7 +126,11 @@ server {
 }
         `.trim();
 
-        const command = `echo "${config}" | sudo tee /etc/nginx/sites-available/${safeDomain}.conf && sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
+        // Escape for shell command
+        const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\$');
+        
+        const command = `echo "${escapedConfig}" | sudo tee /etc/nginx/sites-available/${safeDomain}.conf > /dev/null && sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
+        
         handleRunCommand(command, `Configure Nginx for ${primaryDomain}`);
 
     } catch (e) {
