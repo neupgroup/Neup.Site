@@ -7,14 +7,13 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, ArrowLeft, Loader2, Plus, Trash2, Code, Edit, X } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getSource, updateSource, type Source, type SourceMethod } from '@/actions/editor/sources';
 import Link from 'next/link';
@@ -28,28 +27,8 @@ type FormValues = {
     methods: SourceMethod[];
 };
 
-const MethodCard = ({ index, onRemove, defaultEditing = false }: { index: number, onRemove: () => void, defaultEditing?: boolean }) => {
-    const { control, getValues, setValue, register, formState: { errors } } = useFormContext<FormValues>();
-    const [isEditing, setIsEditing] = useState(defaultEditing);
-    const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
-
-    const startEditing = () => {
-        setOriginalState(getValues(`methods.${index}`));
-        setIsEditing(true);
-    };
-    
-    const cancelEditing = () => {
-        if(originalState) {
-            setValue(`methods.${index}`, originalState);
-        }
-        setIsEditing(false);
-        setOriginalState(null);
-    };
-    
-    const saveChanges = () => {
-        setIsEditing(false);
-        setOriginalState(null);
-    }
+const MethodCard = ({ index, onRemove, isEditing, onEdit, onSave, onCancel }: { index: number, onRemove: () => void, isEditing: boolean, onEdit: () => void, onSave: () => void, onCancel: () => void }) => {
+    const { control, getValues, register } = useFormContext<FormValues>();
 
     return (
         <Card>
@@ -96,42 +75,35 @@ const MethodCard = ({ index, onRemove, defaultEditing = false }: { index: number
                     <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
                 </div>
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardContent className="flex justify-between">
                 <Button type="button" variant="destructive" size="sm" onClick={onRemove}>
                     <Trash2 className="mr-2" /> Remove
                 </Button>
                 {isEditing ? (
                     <div className="flex gap-2">
-                         <Button type="button" variant="ghost" size="sm" onClick={cancelEditing}>
+                         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
                              <X className="mr-2" /> Cancel
                         </Button>
-                        <Button type="button" size="sm" onClick={saveChanges}>
+                        <Button type="button" size="sm" onClick={onSave}>
                             <Save className="mr-2" /> Save
                         </Button>
                     </div>
                 ) : (
-                    <Button type="button" variant="outline" size="sm" onClick={startEditing}>
+                    <Button type="button" variant="outline" size="sm" onClick={onEdit}>
                         <Edit className="mr-2" /> Edit
                     </Button>
                 )}
-            </CardFooter>
+            </CardContent>
         </Card>
     );
 };
 
-const AddNewMethodCard = () => {
-    const { control } = useFormContext<FormValues>();
-    const { append } = useFieldArray({ control, name: 'methods' });
+const AddNewMethodCard = ({ onAdd }: { onAdd: (name: string) => void }) => {
     const [newMethodName, setNewMethodName] = useState('');
 
-    const handleAdd = () => {
+    const handleAddClick = () => {
         if (!newMethodName) return;
-        append({
-            methodName: newMethodName,
-            httpMethod: 'GET',
-            path: '',
-            headers: '{}' as any
-        });
+        onAdd(newMethodName);
         setNewMethodName('');
     };
 
@@ -151,7 +123,7 @@ const AddNewMethodCard = () => {
                             onChange={(e) => setNewMethodName(e.target.value)}
                             placeholder="e.g., getUserProfile"
                         />
-                        <Button type="button" onClick={handleAdd} disabled={!newMethodName}>
+                        <Button type="button" onClick={handleAddClick} disabled={!newMethodName}>
                             <Plus className="mr-2"/> Add Method
                         </Button>
                     </div>
@@ -166,6 +138,8 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sourceName, setSourceName] = useState('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [originalState, setOriginalState] = useState<FormValues | null>(null);
   
   const { toast } = useToast();
   const router = useRouter();
@@ -202,6 +176,34 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
 
     fetchSource();
   }, [id, formMethods]);
+  
+  const handleAddNewMethod = (name: string) => {
+      append({
+          methodName: name,
+          httpMethod: 'GET',
+          path: '',
+          headers: '{}' as any
+      });
+      setEditingIndex(fields.length); // Edit the newly added item
+  };
+
+  const startEditing = (index: number) => {
+      setOriginalState(formMethods.getValues());
+      setEditingIndex(index);
+  };
+  
+  const cancelEditing = (index: number) => {
+      if (originalState) {
+          formMethods.reset(originalState);
+      }
+      setEditingIndex(null);
+      setOriginalState(null);
+  };
+  
+  const saveEditing = (index: number) => {
+      setEditingIndex(null);
+      setOriginalState(null);
+  }
 
   const handleUpdateMethods = async (data: FormValues) => {
     let methodsToSave;
@@ -266,11 +268,14 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                 key={field.id} 
                 index={index} 
                 onRemove={() => remove(index)}
-                defaultEditing={!field.methodName}
+                isEditing={editingIndex === index}
+                onEdit={() => startEditing(index)}
+                onSave={() => saveEditing(index)}
+                onCancel={() => cancelEditing(index)}
             />
         ))}
 
-        <AddNewMethodCard />
+        <AddNewMethodCard onAdd={handleAddNewMethod} />
         
         <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm mt-6">
             <Button type="submit" disabled={isSubmitting}>
@@ -282,4 +287,3 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
     </FormProvider>
   );
 }
-
