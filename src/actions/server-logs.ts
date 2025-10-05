@@ -57,7 +57,7 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
 /**
  * Fetches server logs with pagination.
  */
-export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { serverId: string, page?: number, pageSize?: number }): Promise<{ logs?: ServerLog[], error?: string, hasMore?: boolean }> {
+export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { serverId: string, page?: number, pageSize?: number }): Promise<{ logs?: ServerLog[], error?: string, hasMore?: boolean, success: boolean }> {
     try {
         const { firestore } = initializeFirebase();
         const logsRef = collection(firestore, 'serverLogs');

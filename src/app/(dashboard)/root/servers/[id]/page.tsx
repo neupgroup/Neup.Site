@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getServer, deleteServer, type Server } from '@/actions/servers';
 import { getServerLogs, type ServerLog } from '@/actions/server-logs';
 import { runCommand } from '@/actions/runner';
@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, CheckCircle, XCircle, Loader2, Send } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, CheckCircle, XCircle, Loader2, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -38,11 +38,13 @@ import { Input } from '@/components/ui/input';
 import { formatDistanceToNow } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
 
-export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ServerDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [server, setServer] = useState<Server | null>(null);
   const [logs, setLogs] = useState<ServerLog[]>([]);
-  const [logsPage, setLogsPage] = useState(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const logsPage = Number(searchParams.get('page')) || 1;
   const [hasMoreLogs, setHasMoreLogs] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingLogs, setLoadingLogs] = useState(true);
@@ -55,7 +57,6 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [isPending, startTransition] = useTransition();
 
   const { toast } = useToast();
-  const router = useRouter();
 
   const fetchLogs = async (page = 1) => {
     setLoadingLogs(true);
@@ -63,18 +64,16 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     const result = await getServerLogs({ serverId: id, page });
 
     if (result.success && result.logs) {
-        setLogs(prev => (page === 1 ? result.logs! : [...prev, ...result.logs!]));
+        setLogs(result.logs!);
         setHasMoreLogs(result.hasMore || false);
     } else {
         const errorMessage = result.error || 'Failed to load logs.';
         setLogsError(errorMessage);
-        if (errorMessage !== result.error) {
-            logErrorToFirestore({
-                message: `Client-side error in fetchLogs for serverId: ${id}. Error: ${errorMessage}`,
-                stack: new Error().stack,
-                source: 'ServerDetailPage.fetchLogs',
-            });
-        }
+        logErrorToFirestore({
+            message: `Client-side error in fetchLogs for serverId: ${id}. Error: ${errorMessage}`,
+            stack: new Error().stack,
+            source: 'ServerDetailPage.fetchLogs',
+        });
     }
     setLoadingLogs(false);
   }
@@ -98,21 +97,24 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     };
 
     fetchInitialData();
-    fetchLogs(1);
   }, [id]);
+  
+   useEffect(() => {
+    fetchLogs(logsPage);
+  }, [id, logsPage]);
   
   useEffect(() => {
     const hasOngoingLog = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
     let interval: NodeJS.Timeout | null = null;
     if (hasOngoingLog) {
       interval = setInterval(() => {
-        fetchLogs(1);
+        fetchLogs(logsPage);
       }, 3000);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [logs]);
+  }, [logs, id, logsPage]);
 
 
   const handleRunCommand = (command: string, commandName?: string) => {
@@ -140,6 +142,10 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         });
     }
   }
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`/root/servers/${id}?page=${newPage}`);
+  };
   
   if (loading) {
     return (
@@ -349,11 +355,26 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                 )}
             </CardContent>
-            {hasMoreLogs && (
-                <CardFooter>
-                    <Button variant="outline" className="w-full" onClick={() => fetchLogs(logsPage + 1)} disabled={loadingLogs}>
-                        {loadingLogs ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                        Show More
+             {(logsPage > 1 || hasMoreLogs) && (
+                <CardFooter className="flex items-center justify-between">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(logsPage - 1)}
+                        disabled={logsPage <= 1 || loadingLogs}
+                    >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground">Page {logsPage}</span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(logsPage + 1)}
+                        disabled={!hasMoreLogs || loadingLogs}
+                    >
+                        Next
+                        <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                 </CardFooter>
             )}
