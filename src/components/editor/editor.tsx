@@ -767,6 +767,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             updateElementId={updateElementId}
             onUpdateAllElements={handleUpdateAllElements}
             pageId={pageId}
+            onSave={handleSaveFlow}
         />
       </div>
     </div>
@@ -774,5 +775,3 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 };
 
 export default Editor;
-
-    

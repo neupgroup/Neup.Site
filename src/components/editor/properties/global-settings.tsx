@@ -28,9 +28,11 @@ const breakpoints = [
 
 interface PageDataSourceProps {
     pageId?: string;
+    onSave?: () => Promise<string | undefined>;
 }
 
-const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId }) => {
+const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId: initialPageId, onSave }) => {
+    const [pageId, setPageId] = useState(initialPageId);
     const [sources, setSources] = useState<Source[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -40,48 +42,61 @@ const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId }) => {
     const { toast } = useToast();
 
     useEffect(() => {
-        if (!pageId) {
-            setLoading(false);
-            return;
+        setPageId(initialPageId);
+        if (initialPageId) {
+            fetchData(initialPageId);
+        } else {
+            // Still fetch sources even if pageId is not there yet.
+            fetchData();
         }
+    }, [initialPageId]);
 
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const [sourcesResult, currentBindingResult] = await Promise.all([
-                    getSources(),
-                    getPageDataSource(pageId)
-                ]);
-
-                if (sourcesResult.success && sourcesResult.sources) {
-                    setSources(sourcesResult.sources);
-                } else {
-                    setError(sourcesResult.error || 'Failed to load data sources.');
-                }
-                
+    const fetchData = async (pId?: string) => {
+        setLoading(true);
+        try {
+            const sourcesResult = await getSources();
+            if (sourcesResult.success && sourcesResult.sources) {
+                setSources(sourcesResult.sources);
+            } else {
+                setError(sourcesResult.error || 'Failed to load data sources.');
+            }
+            
+            if (pId) {
+                const currentBindingResult = await getPageDataSource(pId);
                 if (currentBindingResult.success && currentBindingResult.binding) {
                     setSelectedSourceId(currentBindingResult.binding.sourceId);
                     setSelectedMethodName(currentBindingResult.binding.methodName);
                 }
-
-            } catch (e: any) {
-                setError('An unexpected error occurred.');
-            } finally {
-                setLoading(false);
             }
-        };
-
-        fetchData();
-    }, [pageId]);
+        } catch (e: any) {
+            setError('An unexpected error occurred.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSave = async () => {
-        if (!pageId) return;
+        let currentPageId = pageId;
+
+        if (!currentPageId && onSave) {
+            currentPageId = await onSave();
+            if (currentPageId) {
+                setPageId(currentPageId);
+            }
+        }
+
+        if (!currentPageId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save the page to link the data source.' });
+            return;
+        }
+
         if (!selectedSourceId || !selectedMethodName) {
             toast({ variant: 'destructive', title: 'Missing selection', description: 'Please select both a source and a method.'});
             return;
         }
+        
         setIsSaving(true);
-        const result = await setPageDataSource(pageId, selectedSourceId, selectedMethodName);
+        const result = await setPageDataSource(currentPageId, selectedSourceId, selectedMethodName);
         if (result.success) {
             toast({ title: 'Data Source Linked!', description: 'The page is now connected to the selected data source method.' });
         } else {
@@ -91,18 +106,6 @@ const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId }) => {
     };
 
     const selectedSource = sources.find(s => s.id === selectedSourceId);
-    
-    if (!pageId) {
-        return (
-             <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Page Not Saved</AlertTitle>
-                <AlertDescription>
-                    You must save the page at least once before linking a data source.
-                </AlertDescription>
-            </Alert>
-        );
-    }
     
     if (loading) {
         return (
@@ -178,9 +181,10 @@ interface GlobalSettingsProps {
     elements: CanvasElementData[];
     onUpdateAllElements: (elements: CanvasElementData[]) => void;
     pageId?: string;
+    onSave?: () => Promise<string | undefined>;
 }
 
-const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements, pageId }) => {
+const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements, pageId, onSave }) => {
     const [jsonString, setJsonString] = useState('');
     const { toast } = useToast();
 
@@ -219,7 +223,7 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
-                            <PageDataSourceSection pageId={pageId} />
+                            <PageDataSourceSection pageId={pageId} onSave={onSave} />
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="css-framework">

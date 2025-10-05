@@ -31,6 +31,7 @@ interface RightSidebarProps {
   updateElementId: (oldId: string, newId: string) => void;
   onUpdateAllElements: (elements: CanvasElementData[]) => void;
   pageId?: string;
+  onSave?: () => Promise<string | undefined>;
 }
 
 const propertyComponents: Record<string, React.FC<any>> = {
@@ -46,7 +47,7 @@ const propertyComponents: Record<string, React.FC<any>> = {
   databinding: DataBindingProperties,
 };
 
-const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, pageId }) => {
+const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, updateElement, deleteElement, updateElementId, onUpdateAllElements, pageId, onSave }) => {
   const findElementRecursive = (id: string, els: CanvasElementData[]): CanvasElementData | undefined => {
     for (const el of els) {
       if (el.id === id) return el;
@@ -121,6 +122,7 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             elements={elements} 
             onUpdateAllElements={onUpdateAllElements} 
             pageId={pageId}
+            onSave={onSave}
         />
       </aside>
     );
