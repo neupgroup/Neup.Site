@@ -5,29 +5,6 @@ import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { getPrivateServerDetails } from '@/actions/servers';
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
-import { initializeFirebase } from '@/lib/firebase';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
-
-
-async function getAllocationUsername(serverId: string): Promise<string> {
-    try {
-        const { firestore } = initializeFirebase();
-        const q = query(
-            collection(firestore, 'serverAllocations'),
-            where('serverId', '==', serverId),
-            limit(1)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-            const allocationData = querySnapshot.docs[0].data();
-            return allocationData.username || 'root';
-        }
-        return 'root';
-    } catch (error) {
-        console.error(`Failed to fetch allocation for server ${serverId}:`, error);
-        throw new Error(`Failed to determine server allocation username: ${error instanceof Error ? error.message : String(error)}`);
-    }
-}
 
 export async function runCommand(serverId: string, command: string) {
     if (!command) {
@@ -67,10 +44,14 @@ export async function runCommand(serverId: string, command: string) {
             return;
         }
 
+        // Use the server's own username, not an allocation's.
+        const username = server.username;
+        if (!username) {
+            throw new Error('Server username is not defined. Please edit the server to set a username.');
+        }
+
         await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
         revalidatePath(`/root/servers/${serverId}`);
-
-        const username = await getAllocationUsername(serverId); 
 
         await ssh.connect({
             host: server.publicIp,
@@ -107,10 +88,8 @@ ${result.stderr}
 
     } catch (error: any) {
         finalOutput = `An unexpected error occurred: ${error.message || String(error)}`; 
-        if (error.message.includes('Failed to determine server allocation username')) {
-            finalOutput = `Failed to get allocation username: ${error.message}`;
-        } else if (error.message.includes('All configured authentication methods failed')) {
-            finalOutput = `SSH Authentication Failed. Please check server credentials. Error: ${error.message}`;
+        if (error.message.includes('All configured authentication methods failed')) {
+            finalOutput = `SSH Authentication Failed. Please check server credentials and username. Error: ${error.message}`;
         } else if (error.message.includes('Connection timed out')) {
             finalOutput = `SSH Connection Timed Out. Server might be unreachable or IP is incorrect. Error: ${error.message}`;
         } else if (error.message.includes('Failed to retrieve server credentials')) {
