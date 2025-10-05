@@ -1,3 +1,4 @@
+
 import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
 import { initializeFirebase } from '@/lib/firebase';
@@ -5,10 +6,17 @@ import { use } from 'react';
 
 async function getPageForPath(slug: string[]): Promise<{html: string | null, theme?: {primary?: string, accent?: string}}> {
     const path = `/${slug.join('/')}`;
+    // This is a simplified check. A real implementation would need to match
+    // dynamic routes like /authors/[authorName] to a path definition.
+    // For now, we'll assume direct matches or a lookup that resolves the dynamic part.
+    const pathForQuery = `/${slug[0]}`; // Example: query for /authors, not /authors/john-doe
+
     const { firestore } = initializeFirebase();
     
     try {
         const pathsRef = collection(firestore, 'paths');
+        // This query is too simple for dynamic routes, but it's the foundation.
+        // A real system would need a more complex matching logic.
         const qPath = query(pathsRef, where('path', '==', path), limit(1));
         const pathSnapshot = await getDocs(qPath);
 
@@ -32,6 +40,15 @@ async function getPageForPath(slug: string[]): Promise<{html: string | null, the
 
         const pageData = pageSnap.data();
         const elements = pageData.elements;
+        
+        // Here's where we would fetch the actual data using the slug
+        // For example:
+        // const dataSourceBinding = await getPageDataSource(pageId);
+        // if (dataSourceBinding) {
+        //   const dynamicValue = slug.length > 1 ? slug[1] : null;
+        //   const apiData = await fetchDataFromSource(dataSourceBinding, { authorName: dynamicValue });
+        //   // This data would then need to be passed to the rendering engine.
+        // }
         
         const siteData = siteSnap.exists() ? siteSnap.data() : null;
 
