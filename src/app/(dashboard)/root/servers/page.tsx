@@ -70,22 +70,20 @@ export default function ServersPage() {
 
   return (
     <div className="w-full">
-      <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Servers</h1>
+      <header className="flex items-center justify-between mb-4">
+        <div>
+            <h1 className="font-headline text-2xl font-semibold tracking-tight">Your Servers</h1>
+            <p className="text-muted-foreground">A list of servers you have created to deploy sites.</p>
+        </div>
         <Button asChild>
           <Link href="/root/servers/create">
             <Plus className="mr-2 h-4 w-4" /> Create Server
           </Link>
         </Button>
       </header>
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Servers</CardTitle>
-          <CardDescription>A list of servers you have created to deploy sites.</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <div className="border rounded-lg">
           {servers.length === 0 ? (
-            <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+            <div className="text-center text-muted-foreground p-12">
                 <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold">No Servers Created</h3>
                 <p>Click "Create Server" to get started.</p>
@@ -118,8 +116,7 @@ export default function ServersPage() {
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+        </div>
     </div>
   );
 }
