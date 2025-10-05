@@ -25,6 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe, Zap, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -265,143 +266,196 @@ const handleStartNextWithPm2 = async () => {
             <CardTitle>Server Management</CardTitle>
             <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                    <h4 className="font-medium">Update &amp; Upgrade Server</h4>
-                    <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
-                </div>
-                <Button onClick={async () => handleRunCommand(await getUpdateAndUpgradeCommand(), 'Update & Upgrade')} disabled={isPending}>
-                    <GitCommit className="mr-2 h-4 w-4" /> Run Update
-                </Button>
-            </div>
-             <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                    <h4 className="font-medium">Free Up Port 80</h4>
-                    <p className="text-sm text-muted-foreground">Stop any process using port 80 (e.g., Apache).</p>
-                </div>
-                <Button variant="outline" onClick={async () => handleRunCommand(await getFreePort80Command(), 'Free Up Port 80')} disabled={isPending}>
-                    <Zap className="mr-2 h-4 w-4" /> Stop Process
-                </Button>
-            </div>
-             <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                <h4 className="font-medium">Install Nginx</h4>
-                <p className="text-sm text-muted-foreground">Install and start the Nginx web server.</p>
-                </div>
-                <Button onClick={async () => handleRunCommand(await getInstallNginxCommand(), 'Install Nginx')} disabled={isPending}>
-                    <Globe className="mr-2 h-4 w-4" /> Install Nginx
-                </Button>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                <h4 className="font-medium">Install npm</h4>
-                <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
-                </div>
-                <Button onClick={async () => handleRunCommand(await getInstallNpmCommand(), 'Install npm')} disabled={isPending}>
-                    <Package className="mr-2 h-4 w-4" /> Install npm
-                </Button>
-            </div>
-             <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                <h4 className="font-medium">Install PM2</h4>
-                <p className="text-sm text-muted-foreground">Install PM2, a production process manager for Node.js.</p>
-                </div>
-                <Button onClick={async () => handleRunCommand(await getInstallPm2Command(), 'Install PM2')} disabled={isPending}>
-                    <Package className="mr-2 h-4 w-4" /> Install PM2
-                </Button>
-            </div>
-            <div className="rounded-lg border p-4">
-                <h4 className="font-medium">Create Swap Space</h4>
-                <p className="text-sm text-muted-foreground">Create a swap file to use as virtual RAM.</p>
-                <div className="flex items-center gap-2 mt-3">
-                    <Input 
-                        id="swap-size"
-                        value={swapSize}
-                        onChange={(e) => setSwapSize(e.target.value)}
-                        className="max-w-[120px]"
-                    />
-                        <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                    <Button onClick={async () => handleRunCommand(await getCreateSwapCommand(swapSize), 'Create Swap')} className="ml-auto" disabled={isPending}>
-                        <Disc className="mr-2 h-4 w-4" /> Create Swap
-                    </Button>
-                </div>
-            </div>
-            <div className="rounded-lg border p-4 space-y-4">
-                <div>
-                    <h4 className="font-medium">Build NPM with Memory Limit</h4>
-                    <p className="text-sm text-muted-foreground">Run `npm install && npm run build` with a specific memory cap.</p>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="deployment-path">Deployment Path</Label>
-                    <Input id="deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
-                </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="build-memory">Memory Limit (MB)</Label>
-                    <Input id="build-memory" value={buildMemory} onChange={e => setBuildMemory(e.target.value)} placeholder="e.g., 1024" />
-                </div>
-                <Button onClick={handleBuildNpm} disabled={isPending}>
-                    <Package className="mr-2 h-4 w-4" /> Run Build
-                </Button>
-            </div>
-             <div className="rounded-lg border p-4 space-y-4">
-                <div>
-                    <h4 className="font-medium">Start Next.js App with PM2</h4>
-                    <p className="text-sm text-muted-foreground">Start the Next.js app in the deployment path using PM2.</p>
-                </div>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="pm2-app-name">PM2 App Name</Label>
-                        <Input id="pm2-app-name" value={pm2AppName} onChange={e => setPm2AppName(e.target.value)} placeholder="my-next-app" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="pm2-app-port">Port</Label>
-                        <Input id="pm2-app-port" type="number" value={pm2AppPort} onChange={e => setPm2AppPort(Number(e.target.value))} placeholder="3000" />
-                    </div>
-                </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="pm2-deployment-path">Deployment Path</Label>
-                    <Input id="pm2-deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
-                </div>
-                <Button onClick={handleStartNextWithPm2} disabled={isPending}>
-                    <Package className="mr-2 h-4 w-4" /> Start with PM2
-                </Button>
-            </div>
-            <div className="rounded-lg border p-4 space-y-4">
-                <div>
-                    <h4 className="font-medium">Configure Nginx Reverse Proxy</h4>
-                    <p className="text-sm text-muted-foreground">Point one or more domains/paths to an application running on this server.</p>
-                </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="nginx-domains">Domains / Paths</Label>
-                    <Textarea 
-                        id="nginx-domains"
-                        value={nginxDomains} 
-                        onChange={e => setNginxDomains(e.target.value)} 
-                        placeholder="example.com
+          <CardContent>
+             <Accordion type="single" collapsible className="w-full space-y-2">
+                <AccordionItem value="update-upgrade" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Update & Upgrade Server</h4>
+                            <p className="text-sm text-muted-foreground text-left">Run apt-get update && apt-get upgrade.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4">
+                        <Button onClick={async () => handleRunCommand(await getUpdateAndUpgradeCommand(), 'Update & Upgrade')} disabled={isPending}>
+                            <GitCommit className="mr-2 h-4 w-4" /> Run Update
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="free-port" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Free Up Port 80</h4>
+                            <p className="text-sm text-muted-foreground text-left">Stop any process using port 80 (e.g., Apache).</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4">
+                        <Button variant="outline" onClick={async () => handleRunCommand(await getFreePort80Command(), 'Free Up Port 80')} disabled={isPending}>
+                            <Zap className="mr-2 h-4 w-4" /> Stop Process
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+
+                 <AccordionItem value="install-nginx" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Install Nginx</h4>
+                            <p className="text-sm text-muted-foreground text-left">Install and start the Nginx web server.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4">
+                        <Button onClick={async () => handleRunCommand(await getInstallNginxCommand(), 'Install Nginx')} disabled={isPending}>
+                            <Globe className="mr-2 h-4 w-4" /> Install Nginx
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
+                 <AccordionItem value="install-npm" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Install npm</h4>
+                            <p className="text-sm text-muted-foreground text-left">Install Node.js and the Node Package Manager.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4">
+                         <Button onClick={async () => handleRunCommand(await getInstallNpmCommand(), 'Install npm')} disabled={isPending}>
+                            <Package className="mr-2 h-4 w-4" /> Install npm
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
+                 <AccordionItem value="install-pm2" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Install PM2</h4>
+                            <p className="text-sm text-muted-foreground text-left">Install PM2, a production process manager for Node.js.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4">
+                        <Button onClick={async () => handleRunCommand(await getInstallPm2Command(), 'Install PM2')} disabled={isPending}>
+                            <Package className="mr-2 h-4 w-4" /> Install PM2
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+
+                 <AccordionItem value="create-swap" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Create Swap Space</h4>
+                            <p className="text-sm text-muted-foreground text-left">Create a swap file to use as virtual RAM.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4 space-y-3">
+                         <div className="flex items-center gap-2">
+                            <Input 
+                                id="swap-size"
+                                value={swapSize}
+                                onChange={(e) => setSwapSize(e.target.value)}
+                                className="max-w-[120px]"
+                            />
+                            <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
+                        </div>
+                        <Button onClick={async () => handleRunCommand(await getCreateSwapCommand(swapSize), 'Create Swap')} disabled={isPending}>
+                            <Disc className="mr-2 h-4 w-4" /> Create Swap
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
+                 <AccordionItem value="build-npm" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Build NPM with Memory Limit</h4>
+                            <p className="text-sm text-muted-foreground text-left">Run `npm install && npm run build` with a specific memory cap.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="deployment-path">Deployment Path</Label>
+                            <Input id="deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="build-memory">Memory Limit (MB)</Label>
+                            <Input id="build-memory" value={buildMemory} onChange={e => setBuildMemory(e.target.value)} placeholder="e.g., 1024" />
+                        </div>
+                        <Button onClick={handleBuildNpm} disabled={isPending}>
+                            <Package className="mr-2 h-4 w-4" /> Run Build
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
+                 <AccordionItem value="start-pm2" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Start Next.js App with PM2</h4>
+                            <p className="text-sm text-muted-foreground text-left">Start the Next.js app in the deployment path using PM2.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="pm2-app-name">PM2 App Name</Label>
+                                <Input id="pm2-app-name" value={pm2AppName} onChange={e => setPm2AppName(e.target.value)} placeholder="my-next-app" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="pm2-app-port">Port</Label>
+                                <Input id="pm2-app-port" type="number" value={pm2AppPort} onChange={e => setPm2AppPort(Number(e.target.value))} placeholder="3000" />
+                            </div>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="pm2-deployment-path">Deployment Path</Label>
+                            <Input id="pm2-deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
+                        </div>
+                        <Button onClick={handleStartNextWithPm2} disabled={isPending}>
+                            <Package className="mr-2 h-4 w-4" /> Start with PM2
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+
+                 <AccordionItem value="config-nginx" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div>
+                            <h4 className="font-medium text-left">Configure Nginx Reverse Proxy</h4>
+                            <p className="text-sm text-muted-foreground text-left">Point one or more domains/paths to an application running on this server.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
+                         <div className="space-y-2">
+                            <Label htmlFor="nginx-domains">Domains / Paths</Label>
+                            <Textarea 
+                                id="nginx-domains"
+                                value={nginxDomains} 
+                                onChange={e => setNginxDomains(e.target.value)} 
+                                placeholder="example.com
 www.example.com/subpath"
-                        rows={3}
-                    />
-                    <p className="text-xs text-muted-foreground">Enter one URL per line.</p>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="proxy-url">Proxy Pass URL</Label>
-                    <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
-                    <p className="text-xs text-muted-foreground">The internal URL of your application (e.g., http://localhost:3000).</p>
-                </div>
-                 <Button onClick={handleNginxConfig} disabled={isPending}>
-                    <Globe className="mr-2 h-4 w-4" /> Configure Nginx
-                </Button>
-            </div>
-             <div className="flex items-center justify-between rounded-lg border border-destructive/50 p-4">
-                <div>
-                    <h4 className="font-medium text-destructive">Reset Nginx Configurations</h4>
-                    <p className="text-sm text-muted-foreground">Deletes all Nginx site configurations and symlinks.</p>
-                </div>
-                <Button variant="destructive" onClick={async () => handleRunCommand(await getResetNginxCommand(), 'Reset Nginx')} disabled={isPending}>
-                    <ShieldAlert className="mr-2 h-4 w-4" /> Reset Nginx
-                </Button>
-            </div>
+                                rows={3}
+                            />
+                            <p className="text-xs text-muted-foreground">Enter one URL per line.</p>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="proxy-url">Proxy Pass URL</Label>
+                            <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
+                            <p className="text-xs text-muted-foreground">The internal URL of your application (e.g., http://localhost:3000).</p>
+                        </div>
+                         <Button onClick={handleNginxConfig} disabled={isPending}>
+                            <Globe className="mr-2 h-4 w-4" /> Configure Nginx
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
+                 <AccordionItem value="reset-nginx" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border border-destructive/50 p-4 hover:bg-destructive/10 data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
+                        <div className="text-destructive">
+                            <h4 className="font-medium text-left">Reset Nginx Configurations</h4>
+                            <p className="text-sm text-destructive/80 text-left">Deletes all Nginx site configurations and symlinks.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border border-t-0 rounded-b-lg p-4">
+                        <Button variant="destructive" onClick={async () => handleRunCommand(await getResetNginxCommand(), 'Reset Nginx')} disabled={isPending}>
+                            <ShieldAlert className="mr-2 h-4 w-4" /> Reset Nginx
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
         
