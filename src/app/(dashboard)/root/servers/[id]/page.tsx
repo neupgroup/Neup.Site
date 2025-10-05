@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -136,17 +137,16 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     ${locationBlocks}
 }`;
 
-        // Escape the config string for safe inclusion in the shell command
         const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\$');
 
         const command = `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
-if [ -f /etc/nginx/sites-available/${safeDomain}.conf ]; then
-    sudo rm -f /etc/nginx/sites-enabled/${safeDomain}.conf;
-    sudo rm -f /etc/nginx/sites-available/${safeDomain}.conf;
+if [ -f /etc/nginx/sites-available/${safeDomain} ]; then
+    sudo rm -f /etc/nginx/sites-enabled/${safeDomain};
+    sudo rm -f /etc/nginx/sites-available/${safeDomain};
 fi &&
-sudo bash -c 'echo "${escapedConfig}" > /etc/nginx/sites-available/${safeDomain}.conf' &&
-sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ &&
+sudo bash -c "echo \\"${escapedConfig}\\" > /etc/nginx/sites-available/${safeDomain}" &&
+sudo ln -s -f /etc/nginx/sites-available/${safeDomain} /etc/nginx/sites-enabled/ &&
 sudo systemctl restart nginx
 `.trim();
         
@@ -293,6 +293,15 @@ sudo systemctl restart nginx
             </div>
              <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
+                    <h4 className="font-medium">Free Up Port 80</h4>
+                    <p className="text-sm text-muted-foreground">Stop any process using port 80 (e.g., Apache).</p>
+                </div>
+                <Button variant="outline" onClick={() => handleRunCommand('sudo lsof -t -i:80 | xargs -r sudo kill -9', 'Free Up Port 80')} disabled={isPending}>
+                    <Zap className="mr-2 h-4 w-4" /> Stop Process
+                </Button>
+            </div>
+             <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
                 <h4 className="font-medium">Install Nginx</h4>
                 <p className="text-sm text-muted-foreground">Install and start the Nginx web server.</p>
                 </div>
@@ -392,3 +401,4 @@ www.example.com/subpath"
     </div>
   );
 }
+
