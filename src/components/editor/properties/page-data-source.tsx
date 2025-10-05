@@ -1,4 +1,5 @@
 
+
 'use client';
 import { FC, useState, useEffect } from 'react';
 import { Database, LinkIcon, AlertCircle } from 'lucide-react';
@@ -116,9 +117,9 @@ const PageDataSource: FC<PageDataSourceProps> = ({ pageId }) => {
                                         <SelectValue placeholder="Select a method..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {selectedSource.methods.map(method => (
+                                        {(selectedSource as any).methods?.map((method: any) => (
                                             <SelectItem key={method.methodName} value={method.methodName}>{method.methodName}</SelectItem>
-                                        ))}
+                                        )) || []}
                                     </SelectContent>
                                 </Select>
                             </div>

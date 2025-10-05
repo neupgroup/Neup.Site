@@ -2,7 +2,7 @@
 
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
 import { Settings, Database } from 'lucide-react';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { elementDefinitions } from '@/elements';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -180,15 +180,6 @@ const RightSidebar: FC<RightSidebarProps> = ({ selectedElementId, elements, upda
             })}
              {selectedElement.properties?.display === 'flex' && (
                 <FlexboxProperties element={selectedElement} onUpdate={handleUpdate} />
-            )}
-             {isContainer && (
-                <RepeaterProperties
-                    element={selectedElement}
-                    onUpdate={(key: string, value: any) => {
-                        const newProperties = { ...selectedElement.properties, [key]: value };
-                        updateElement(selectedElementId, newProperties);
-                    }}
-                />
             )}
         </Accordion>
       </ScrollArea>

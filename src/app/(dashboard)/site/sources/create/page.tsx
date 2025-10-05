@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -33,13 +34,12 @@ export default function CreateSourcePage() {
     }
     setIsSaving(true);
     
-    let sourceData: any = { name, type };
+    let sourceData: any = { name, type, methods: [] };
     if (type === 'api') {
       sourceData.url = '';
-      sourceData.method = 'GET';
+      sourceData.headers = {};
     } else if (type === 'database') {
       sourceData.connection = '';
-      sourceData.query = '';
     } else if (type === 'static') {
       sourceData.data = {};
     }

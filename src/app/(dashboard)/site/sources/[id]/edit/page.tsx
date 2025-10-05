@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -33,18 +34,6 @@ const ApiFields = ({ control }: { control: any }) => {
         <Label>URL</Label>
         <Controller name="url" control={control} render={({ field }) => <Input {...field} placeholder="https://api.example.com/data" />} />
       </div>
-      <div className="space-y-2">
-        <Label>Method</Label>
-        <Controller name="method" control={control} render={({ field }) => (
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <SelectTrigger><SelectValue placeholder="Select method" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="GET">GET</SelectItem>
-              <SelectItem value="POST">POST</SelectItem>
-            </SelectContent>
-          </Select>
-        )} />
-      </div>
     </div>
   );
 };
@@ -55,10 +44,6 @@ const DatabaseFields = ({ control }: { control: any }) => {
         <div className="space-y-2">
             <Label>Connection String</Label>
             <Controller name="connection" control={control} render={({ field }) => <Input {...field} placeholder="your-db-connection-string" />} />
-        </div>
-         <div className="space-y-2">
-            <Label>Query</Label>
-            <Controller name="query" control={control} render={({ field }) => <Textarea {...field} placeholder="SELECT * FROM users" />} />
         </div>
       </div>
     )
@@ -86,10 +71,15 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
       defaultValues: {
           name: '',
           type: 'api',
+          methods: [],
       }
   });
   
   const sourceType = methods.watch('type');
+  const { fields, append, remove } = useFieldArray({
+      control: methods.control,
+      name: 'methods'
+  });
 
   useEffect(() => {
     const fetchSource = async () => {
@@ -196,6 +186,36 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
                 {sourceType === 'static' && <StaticFields control={methods.control} />}
             </CardContent>
         </Card>
+
+        <Card>
+             <CardHeader>
+                 <CardTitle>Methods</CardTitle>
+                 <CardDescription>Define the available functions for this data source.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {fields.map((field, index) => (
+                    <div key={field.id} className="flex gap-2 items-end p-4 border rounded-lg">
+                        <div className="grid grid-cols-2 gap-4 flex-1">
+                            <div className="space-y-2">
+                                <Label>Method Name</Label>
+                                <Input {...methods.register(`methods.${index}.methodName`)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Path/Query</Label>
+                                <Input {...methods.register(`methods.${index}.path`)} />
+                            </div>
+                        </div>
+                        <Button variant="destructive" size="icon" onClick={() => remove(index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                ))}
+                <Button type="button" variant="outline" onClick={() => append({ methodName: '', path: '' })}>
+                    <Plus className="mr-2" /> Add Method
+                </Button>
+            </CardContent>
+        </Card>
+
 
         <div className="flex justify-between sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
           <Button variant="ghost" asChild>

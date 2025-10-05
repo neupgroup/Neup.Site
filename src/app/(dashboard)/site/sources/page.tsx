@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ import { AlertCircle, Plus, Database, ArrowRight } from 'lucide-react';
 import { getSources, type Source } from '@/actions/editor/sources';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 
 export default function SourcesPage() {
   const [sources, setSources] = useState<Source[]>([]);
@@ -84,7 +86,8 @@ export default function SourcesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Base Path</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead className="text-right">View</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -97,14 +100,16 @@ export default function SourcesPage() {
                   </TableRow>
                 )}
                 {sources.map(source => (
-                  <TableRow key={source.id} className="group">
-                     <TableCell className="font-medium">
-                        <Link href={`/site/sources/${source.id}`} className="flex items-center justify-between hover:underline">
-                            {source.name}
-                            <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </Link>
+                  <TableRow key={source.id}>
+                     <TableCell className="font-medium">{source.name}</TableCell>
+                    <TableCell><Badge variant="outline">{source.type}</Badge></TableCell>
+                    <TableCell className="text-right">
+                        <Button asChild variant="ghost" size="icon">
+                            <Link href={`/site/sources/${source.id}`}>
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        </Button>
                     </TableCell>
-                    <TableCell>{source.basePath}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

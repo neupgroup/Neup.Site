@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, writeBatch, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
@@ -7,29 +8,30 @@ import { initializeFirebase } from '@/lib/firebase';
 
 export type SourceType = 'api' | 'database' | 'static';
 
+export interface SourceMethod {
+    methodName: string;
+    path: string;
+    // We can add more method-specific details here later
+}
+
 export interface BaseSource {
   id: string;
   siteId: string;
   name: string;
   type: SourceType;
   createdAt?: string | null;
+  methods: SourceMethod[];
 }
 
 export interface ApiSource extends BaseSource {
   type: 'api';
   url: string;
-  method: 'GET' | 'POST';
   headers?: Record<string, string>;
-  query?: Record<string, string>;
-  body?: Record<string, any>;
-  fallback?: Record<string, any>;
 }
 
 export interface DatabaseSource extends BaseSource {
   type: 'database';
-  connection: string; // e.g., custom-db-connection
-  query: string;
-  fallback?: Record<string, any>;
+  connection: string;
 }
 
 export interface StaticSource extends BaseSource {
@@ -79,6 +81,7 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
         return {
             id: doc.id,
             ...data,
+            methods: data.methods || [],
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as Source
     });
@@ -115,6 +118,7 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
         const source = { 
             id: docSnap.id, 
             ...data,
+            methods: data.methods || [],
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as Source;
         return { success: true, source };
@@ -165,13 +169,6 @@ export async function deleteSource(id: string) {
         return { success: false, error: 'Unauthorized' };
     }
     batch.delete(sourceRef);
-
-    // If you add credentials back, uncomment this.
-    // const credsQuery = query(collection(firestore, 'sourceCredentials'), where('sourceId', '==', id));
-    // const credsSnapshot = await getDocs(credsQuery);
-    // credsSnapshot.forEach(doc => {
-    //   batch.delete(doc.ref);
-    // });
 
     await batch.commit();
     return { success: true };

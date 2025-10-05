@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -29,6 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const DetailItem = ({ label, value }: { label: string, value: string | undefined | null }) => {
     if (!value) return null;
@@ -108,7 +110,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="w-full max-w-4xl">
+    <div className="w-full max-w-4xl space-y-6">
         <div className="mb-4">
             <Button variant="ghost" asChild>
                 <Link href="/site/sources">
@@ -137,13 +139,11 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                 {source.type === 'api' && (
                     <div className="space-y-4">
                         <DetailItem label="URL" value={(source as ApiSource).url} />
-                        <DetailItem label="Method" value={(source as ApiSource).method} />
                     </div>
                 )}
                  {source.type === 'database' && (
                     <div className="space-y-4">
                         <DetailItem label="Connection" value={(source as DatabaseSource).connection} />
-                        <DetailItem label="Query" value={(source as DatabaseSource).query} />
                     </div>
                 )}
                  {source.type === 'static' && (
@@ -154,9 +154,39 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                        </pre>
                     </div>
                 )}
-
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
+        </Card>
+
+        <Card>
+             <CardHeader>
+                <CardTitle>Methods</CardTitle>
+                <CardDescription>Available functions for this data source.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Path / Query</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {source.methods && source.methods.length > 0 ? (
+                            source.methods.map((method, index) => (
+                                <TableRow key={index}>
+                                    <TableCell className="font-mono">{method.methodName}</TableCell>
+                                    <TableCell className="font-mono">{method.path}</TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={2} className="text-center text-muted-foreground h-24">No methods defined.</TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </CardContent>
+             <CardFooter className="flex justify-end gap-2">
                 <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete
                 </Button>
@@ -167,6 +197,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                 </Button>
             </CardFooter>
         </Card>
+
 
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
           <AlertDialogContent>
