@@ -11,6 +11,7 @@ export interface SourceMethod {
     methodName: string;
     path: string;
     httpMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    headers?: Record<string, string>;
     // We can add more method-specific details here later
 }
 

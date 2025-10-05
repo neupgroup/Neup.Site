@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -22,6 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 type FormValues = {
     methods: SourceMethod[];
@@ -42,7 +42,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
       }
   });
   
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, control } = useFieldArray({
       control: methods.control,
       name: 'methods'
   });
@@ -54,7 +54,11 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
       if (result.success && result.source) {
         setSourceName(result.source.name);
         if (result.source.methods) {
-            methods.reset({ methods: result.source.methods });
+            const formattedMethods = result.source.methods.map(m => ({
+                ...m,
+                headers: m.headers ? JSON.stringify(m.headers, null, 2) : '{}'
+            }))
+            methods.reset({ methods: formattedMethods as any });
         }
       } else {
         setError(result.error || 'Failed to fetch source.');
@@ -66,7 +70,19 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   }, [id, methods]);
 
   const handleUpdateMethods = async (data: FormValues) => {
-    const result = await updateSource(id, { methods: data.methods });
+    const methodsToSave = data.methods.map(m => {
+        try {
+            return {
+                ...m,
+                headers: m.headers ? JSON.parse(m.headers as any) : undefined
+            }
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Invalid JSON in Headers', description: `Please check the headers for method: ${m.methodName}`});
+            throw new Error("Invalid JSON");
+        }
+    });
+
+    const result = await updateSource(id, { methods: methodsToSave });
 
     if (result.success) {
       toast({ title: 'Methods Updated!', description: `Successfully updated methods for ${sourceName}.` });
@@ -133,7 +149,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                                 <Label>HTTP Method</Label>
                                 <Select
                                     defaultValue={methods.getValues(`methods.${index}.httpMethod`)}
-                                    onValueChange={(value) => methods.setValue(`methods.${index}.httpMethod`, value)}
+                                    onValueChange={(value: 'GET' | 'POST' | 'PUT' | 'DELETE') => methods.setValue(`methods.${index}.httpMethod`, value)}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select method" />
@@ -151,6 +167,10 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                             <Label>Endpoint</Label>
                             <Input {...methods.register(`methods.${index}.path`)} placeholder="/products" />
                         </div>
+                        <div className="space-y-2">
+                            <Label>Headers (JSON, Optional)</Label>
+                            <Textarea {...methods.register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono"/>
+                        </div>
                         <div className="flex justify-end">
                             <Button variant="destructive" size="sm" onClick={() => remove(index)}>
                                 <Trash2 className="mr-2 h-4 w-4" /> Remove Method
@@ -158,7 +178,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                         </div>
                     </div>
                 ))}
-                <Button type="button" variant="outline" onClick={() => append({ methodName: '', path: '', httpMethod: 'GET' })}>
+                <Button type="button" variant="outline" onClick={() => append({ methodName: '', path: '', httpMethod: 'GET', headers: '{}' })}>
                     <Plus className="mr-2" /> Add Method
                 </Button>
             </CardContent>

@@ -21,6 +21,8 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 type FormValues = Partial<Source>;
 
@@ -32,8 +34,8 @@ const ApiFields = ({ control }: { control: any }) => {
         <Controller name="url" control={control} render={({ field }) => <Input {...field} placeholder="https://api.example.com/v1" />} />
       </div>
        <div className="space-y-2">
-        <Label>Headers (JSON)</Label>
-        <Controller name="headers" control={control} render={({ field }) => <Input {...field} placeholder='{ "Authorization": "Bearer ..." }' />} />
+        <Label>Global Headers (JSON)</Label>
+        <Controller name="headers" control={control} render={({ field }) => <Textarea {...field} placeholder='{ "Authorization": "Bearer ..." }' rows={5} className="font-mono"/>} />
       </div>
     </div>
   );
@@ -78,14 +80,16 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
     let dataToSave = { ...data };
     if (data.type === 'api' && typeof data.headers === 'string') {
       try {
-        dataToSave.headers = JSON.parse(data.headers);
+        dataToSave.headers = data.headers ? JSON.parse(data.headers) : {};
       } catch (e) {
         toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The headers are not valid JSON.' });
         return;
       }
     }
     
-    const result = await updateSource(id, dataToSave);
+    // We only update the basic info here, not methods.
+    const { methods: _, ...basicInfo } = dataToSave;
+    const result = await updateSource(id, basicInfo);
 
     if (result.success) {
       toast({ title: 'Source Updated!', description: 'Now you can configure the methods.' });
@@ -119,12 +123,13 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
   }
   
   const { isSubmitting } = methods.formState;
+  const sourceType = methods.watch('type');
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(handleUpdateSource)} className="w-full max-w-2xl space-y-6">
           <div className="flex justify-between items-center">
-            <h1 className="font-headline text-2xl font-semibold tracking-tight">Edit API Source</h1>
+            <h1 className="font-headline text-2xl font-semibold tracking-tight">Edit Data Source</h1>
             <Button variant="ghost" asChild>
                 <Link href={`/site/sources/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -135,14 +140,38 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Settings /> Basic Configuration</CardTitle>
-            <CardDescription>Update the name and base URL for your API source.</CardDescription>
+            <CardDescription>Update the name and connection details for your data source.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
+            <div className="space-y-2">
+                <Label>Source Type</Label>
+                <Select value={sourceType} onValueChange={() => {}} disabled>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select a type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="api">API</SelectItem>
+                        <SelectItem value="database">Database</SelectItem>
+                        <SelectItem value="static">Static</SelectItem>
+                        <SelectItem value="datalist">Datalist</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+
             <div className="space-y-2">
               <Label>Source Name</Label>
               <Controller name="name" control={methods.control} render={({ field }) => <Input {...field} placeholder="e.g., My CRM API" />} />
             </div>
-             <ApiFields control={methods.control} />
+
+             {sourceType === 'api' && <ApiFields control={methods.control} />}
+             
+             {sourceType === 'datalist' && (
+                <div className="space-y-2">
+                    <Label>Datalist ID</Label>
+                    <Controller name="datalistId" control={methods.control} render={({ field }) => <Input {...field} placeholder="Enter the Datalist ID" />} />
+                </div>
+             )}
+
           </CardContent>
         </Card>
 
