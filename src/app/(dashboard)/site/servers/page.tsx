@@ -55,13 +55,11 @@ export default function SiteServersPage() {
                 <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : servers.length === 0 ? (
-            <Card className="w-full">
-                <CardContent className="text-center text-muted-foreground p-12">
-                    <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold">No Servers Assigned</h3>
-                    <p>There are no servers currently assigned to this site.</p>
-                </CardContent>
-            </Card>
+            <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+                <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold">No Servers Assigned</h3>
+                <p>There are no servers currently assigned to this site.</p>
+            </div>
           ) : (
             <div className="space-y-6">
                 {servers.map(({ allocation, ...server }) => {
@@ -74,7 +72,7 @@ export default function SiteServersPage() {
                                 <ServerIcon className="h-5 w-5" />
                                 {server.name}
                             </h2>
-                            <div className="grid md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 gap-8">
                                 <div>
                                     <h3 className="font-semibold text-lg mb-3">Deployment Status</h3>
                                     <div className="text-sm space-y-2 text-muted-foreground">
