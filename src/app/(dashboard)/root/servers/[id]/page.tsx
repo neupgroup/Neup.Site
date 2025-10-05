@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe, Zap } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe, Zap, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -94,13 +94,13 @@ const handleNginxConfig = () => {
             return;
         }
 
-        const listenPort = 80;
+        const listenPort = proxyPort ? parseInt(proxyPort) - 1 : 80;
 
         const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
-        const primaryDomain = firstUrl.hostname;
+        const primaryDomain = firstUrl.hostname.replace(/\./g, '_');
         const primaryPath = firstUrl.pathname.replace(/\//g, '_').replace(/^_/, '');
         
-        let safeDomain = primaryDomain.replace(/[^a-zA-Z0-9.-]/g, '_');
+        let safeDomain = primaryDomain;
         if (primaryPath) {
             safeDomain = `${safeDomain}_${primaryPath}`;
         }
@@ -153,7 +153,7 @@ sudo ln -s -f /etc/nginx/sites-available/${configFileName} /etc/nginx/sites-enab
 sudo systemctl restart nginx
 `.trim();
         
-        handleRunCommand(command, `Configure Nginx for ${primaryDomain}`);
+        handleRunCommand(command, `Configure Nginx for ${Array.from(allDomains)[0]}`);
 
     } catch (e: any) {
         if (e instanceof TypeError && e.message.includes('Invalid URL')) {
@@ -361,6 +361,15 @@ www.example.com/subpath"
                 </div>
                  <Button onClick={handleNginxConfig} disabled={isPending}>
                     <Globe className="mr-2 h-4 w-4" /> Configure Nginx
+                </Button>
+            </div>
+             <div className="flex items-center justify-between rounded-lg border border-destructive/50 p-4">
+                <div>
+                    <h4 className="font-medium text-destructive">Reset Nginx Configurations</h4>
+                    <p className="text-sm text-muted-foreground">Deletes all Nginx site configurations and symlinks.</p>
+                </div>
+                <Button variant="destructive" onClick={() => handleRunCommand('sudo rm -f /etc/nginx/sites-available/*.conf && sudo rm -f /etc/nginx/sites-enabled/* && sudo systemctl restart nginx', 'Reset Nginx')} disabled={isPending}>
+                    <ShieldAlert className="mr-2 h-4 w-4" /> Reset Nginx
                 </Button>
             </div>
           </CardContent>
