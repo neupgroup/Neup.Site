@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
+import { useForm, useFieldArray, FormProvider, useFormContext, Controller } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, ArrowLeft, Loader2, Plus, Trash2, Code } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, Plus, Trash2, Code, Edit, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getSource, updateSource, type Source, type SourceMethod } from '@/actions/editor/sources';
 import Link from 'next/link';
@@ -28,6 +28,134 @@ type FormValues = {
     methods: SourceMethod[];
 };
 
+const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }) => {
+    const { control, getValues, setValue, register, formState: { errors } } = useFormContext<FormValues>();
+    const [isEditing, setIsEditing] = useState(false);
+    const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
+
+    const startEditing = () => {
+        setOriginalState(getValues(`methods.${index}`));
+        setIsEditing(true);
+    };
+    
+    const cancelEditing = () => {
+        if(originalState) {
+            setValue(`methods.${index}`, originalState);
+        }
+        setIsEditing(false);
+        setOriginalState(null);
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="truncate">{getValues(`methods.${index}.methodName`) || `Method ${index + 1}`}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label>Method Name</Label>
+                        <Input {...register(`methods.${index}.methodName`)} placeholder="e.g., getProducts" disabled={!isEditing} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>HTTP Method</Label>
+                        <Controller
+                            control={control}
+                            name={`methods.${index}.httpMethod`}
+                            render={({ field }) => (
+                                <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={!isEditing}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select method" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="GET">GET</SelectItem>
+                                        <SelectItem value="POST">POST</SelectItem>
+                                        <SelectItem value="PUT">PUT</SelectItem>
+                                        <SelectItem value="DELETE">DELETE</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>Endpoint</Label>
+                    <Input {...register(`methods.${index}.path`)} placeholder="/products" disabled={!isEditing} />
+                </div>
+                <div className="space-y-2">
+                    <Label>Headers (JSON, Optional)</Label>
+                    <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                <Button type="button" variant="destructive" onClick={onRemove}>
+                    <Trash2 className="mr-2" /> Remove
+                </Button>
+                {isEditing ? (
+                    <div className="flex gap-2">
+                         <Button type="button" variant="ghost" onClick={cancelEditing}>
+                             <X className="mr-2" /> Cancel
+                        </Button>
+                        <Button type="submit">
+                            <Save className="mr-2" /> Save Method
+                        </Button>
+                    </div>
+                ) : (
+                    <Button type="button" variant="outline" onClick={startEditing}>
+                        <Edit className="mr-2" /> Edit
+                    </Button>
+                )}
+            </CardFooter>
+        </Card>
+    );
+};
+
+const AddNewMethodCard = () => {
+    const { control, setValue, getValues } = useFormContext<FormValues>();
+    const { append } = useFieldArray({ control, name: 'methods' });
+    const [newMethodName, setNewMethodName] = useState('');
+
+    const handleAdd = () => {
+        if (!newMethodName) return;
+        append({
+            methodName: newMethodName,
+            httpMethod: 'GET',
+            path: '',
+            headers: '{}'
+        });
+        setNewMethodName('');
+    };
+
+    return (
+        <Card className="border-dashed">
+            <CardHeader>
+                <CardTitle>Add New Method</CardTitle>
+                <CardDescription>Define a new function for this data source.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <div className="space-y-2">
+                    <Label htmlFor="new-method-name">New Method Name</Label>
+                    <Input
+                        id="new-method-name"
+                        value={newMethodName}
+                        onChange={(e) => setNewMethodName(e.target.value)}
+                        placeholder="e.g., getUserProfile"
+                    />
+                </div>
+            </CardContent>
+            <CardFooter>
+                <Button type="button" onClick={handleAdd} disabled={!newMethodName}>
+                    <Plus className="mr-2"/> Add Method
+                </Button>
+            </CardFooter>
+        </Card>
+    )
+}
+
 export default function EditSourceMethodsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [loading, setLoading] = useState(true);
@@ -37,14 +165,14 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   const { toast } = useToast();
   const router = useRouter();
 
-  const methods = useForm<FormValues>({
+  const formMethods = useForm<FormValues>({
       defaultValues: {
           methods: [],
       }
   });
   
   const { fields, append, remove, control } = useFieldArray({
-      control: methods.control,
+      control: formMethods.control,
       name: 'methods'
   });
 
@@ -59,7 +187,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                 ...m,
                 headers: m.headers ? JSON.stringify(m.headers, null, 2) : '{}'
             }))
-            methods.reset({ methods: formattedMethods as any });
+            formMethods.reset({ methods: formattedMethods as any });
         }
       } else {
         setError(result.error || 'Failed to fetch source.');
@@ -68,26 +196,25 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
     };
 
     fetchSource();
-  }, [id, methods]);
+  }, [id, formMethods]);
 
   const handleUpdateMethods = async (data: FormValues) => {
-    const methodsToSave = data.methods.map(m => {
-        try {
-            return {
-                ...m,
-                headers: m.headers ? JSON.parse(m.headers as any) : undefined
-            }
-        } catch (e) {
-            toast({ variant: 'destructive', title: 'Invalid JSON in Headers', description: `Please check the headers for method: ${m.methodName}`});
-            throw new Error("Invalid JSON");
-        }
-    });
+    let methodsToSave;
+    try {
+        methodsToSave = data.methods.map(m => ({
+            ...m,
+            headers: m.headers ? JSON.parse(m.headers as any) : undefined
+        }));
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Invalid JSON in Headers', description: `Please check the headers for all methods.`});
+        return;
+    }
 
     const result = await updateSource(id, { methods: methodsToSave });
 
     if (result.success) {
       toast({ title: 'Methods Updated!', description: `Successfully updated methods for ${sourceName}.` });
-      router.push(`/site/sources/${id}`);
+      // We don't need to redirect, just show success. The form is now the source of truth.
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -95,14 +222,11 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
 
   if (loading) {
     return (
-      <Card className="w-full max-w-4xl">
-        <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-24 w-full" />
-        </CardContent>
-        <CardFooter><Skeleton className="h-10 w-28" /></CardFooter>
-      </Card>
+        <div className="w-full max-w-4xl space-y-4">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-48 w-full" />
+        </div>
     );
   }
 
@@ -116,15 +240,14 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
     );
   }
   
-  const { isSubmitting } = methods.formState;
+  const { isSubmitting } = formMethods.formState;
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(handleUpdateMethods)} className="w-full max-w-4xl space-y-6">
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(handleUpdateMethods)} className="w-full max-w-4xl space-y-6">
         <div className="flex justify-between items-center">
             <div>
-                <h1 className="font-headline text-2xl font-semibold tracking-tight">API Methods</h1>
-                <p className="text-muted-foreground">For source: <span className="font-semibold">{sourceName}</span></p>
+                <p className="text-muted-foreground">Editing methods for: <span className="font-semibold">{sourceName}</span></p>
             </div>
             <Button variant="ghost" asChild>
                 <Link href={`/site/sources/${id}/edit`}>
@@ -133,65 +256,13 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                 </Link>
             </Button>
         </div>
-        <Card>
-             <CardHeader>
-                 <CardTitle className="flex items-center gap-2"><Code />Methods</CardTitle>
-                 <CardDescription>Define the available functions for this data source.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {fields.map((field, index) => (
-                    <div key={field.id} className="flex flex-col gap-4 p-4 border rounded-lg">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>Method Name</Label>
-                                <Input {...methods.register(`methods.${index}.methodName`)} placeholder="e.g., getProducts"/>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>HTTP Method</Label>
-                                <Select
-                                    defaultValue={methods.getValues(`methods.${index}.httpMethod`)}
-                                    onValueChange={(value: 'GET' | 'POST' | 'PUT' | 'DELETE') => methods.setValue(`methods.${index}.httpMethod`, value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select method" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="GET">GET</SelectItem>
-                                        <SelectItem value="POST">POST</SelectItem>
-                                        <SelectItem value="PUT">PUT</SelectItem>
-                                        <SelectItem value="DELETE">DELETE</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Endpoint</Label>
-                            <Input {...methods.register(`methods.${index}.path`)} placeholder="/products" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Headers (JSON, Optional)</Label>
-                            <Textarea {...methods.register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono"/>
-                        </div>
-                        <div className="flex justify-end">
-                            <Button variant="destructive" size="sm" onClick={() => remove(index)}>
-                                <Trash2 className="mr-2 h-4 w-4" /> Remove Method
-                            </Button>
-                        </div>
-                    </div>
-                ))}
-                <Button type="button" variant="outline" onClick={() => append({ methodName: '', path: '', httpMethod: 'GET', headers: '{}' })}>
-                    <Plus className="mr-2" /> Add Method
-                </Button>
-            </CardContent>
-        </Card>
+        
+        {fields.map((field, index) => (
+            <MethodCard key={field.id} index={index} onRemove={() => remove(index)} />
+        ))}
 
+        <AddNewMethodCard />
 
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            {isSubmitting ? 'Saving Methods...' : 'Save Methods'}
-          </Button>
-        </div>
       </form>
     </FormProvider>
   );
