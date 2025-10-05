@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -43,6 +43,8 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [swapSize, setSwapSize] = useState('3072');
   const [customCommand, setCustomCommand] = useState('');
+  const [nginxDomain, setNginxDomain] = useState('');
+  const [proxyUrl, setProxyUrl] = useState('http://localhost:3000');
   
   const [isPending, startTransition] = useTransition();
 
@@ -74,10 +76,35 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
       startTransition(async () => {
           await runCommand(id, command);
           toast({ title: "Command Sent", description: `The command "${commandName || command}" has been sent to the server.`});
-          // Logs are on a different page now, so no need to refetch here.
-          // The user can navigate to the logs page to see the result.
       });
   };
+
+  const handleNginxConfig = () => {
+    if (!nginxDomain) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Server Name (domain) is required.' });
+      return;
+    }
+    const safeDomain = nginxDomain.replace(/[^a-zA-Z0-9.-]/g, '');
+    const config = `
+server {
+    listen 80;
+    server_name ${nginxDomain};
+
+    location / {
+        proxy_pass ${proxyUrl};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+    `.trim();
+
+    const command = `echo "${config}" | sudo tee /etc/nginx/sites-available/${safeDomain} && sudo ln -s /etc/nginx/sites-available/${safeDomain} /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
+    handleRunCommand(command, `Configure Nginx for ${nginxDomain}`);
+  };
+
 
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
@@ -232,6 +259,25 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                         <Disc className="mr-2 h-4 w-4" /> Create Swap
                     </Button>
                 </div>
+            </div>
+            <div className="rounded-lg border p-4 space-y-4">
+                <div>
+                    <h4 className="font-medium">Configure Nginx Reverse Proxy</h4>
+                    <p className="text-sm text-muted-foreground">Point a domain to an application running on this server.</p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="nginx-domain">Server Name (Domain)</Label>
+                        <Input id="nginx-domain" value={nginxDomain} onChange={e => setNginxDomain(e.target.value)} placeholder="example.com" />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="proxy-url">Proxy Pass URL</Label>
+                        <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
+                    </div>
+                </div>
+                 <Button onClick={handleNginxConfig} disabled={isPending}>
+                    <Globe className="mr-2 h-4 w-4" /> Configure Nginx
+                </Button>
             </div>
           </CardContent>
         </Card>
