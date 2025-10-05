@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe, Zap, ShieldAlert } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, CheckCircle, XCircle, Loader2 as Loader2Icon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -45,6 +45,23 @@ import { getBuildNpmWithMemoryCommand } from '@/actions/server/management/build-
 import { getInstallPm2Command } from '@/actions/server/management/install-pm2';
 import { getStartNextWithPm2Command } from '@/actions/server/management/start-next-with-pm2';
 import { getRebootServerCommand } from '@/actions/server/management/reboot-server';
+import { getServerLogs, type ServerLog } from '@/actions/server-logs';
+import { Badge } from '@/components/ui/badge';
+import { formatDistanceToNow } from 'date-fns';
+
+const FullLog = ({ log }: { log: ServerLog }) => {
+    return (
+        <div className="space-y-2">
+            <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">
+                {log.output || 'No output from this command.'}
+            </pre>
+             {log.completedAt && (
+                <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
+            )}
+        </div>
+    );
+};
+
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -67,6 +84,32 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
 
   const { toast } = useToast();
 
+  const [logs, setLogs] = useState<ServerLog[]>([]);
+  const [logsPage, setLogsPage] = useState(1);
+  const [hasMoreLogs, setHasMoreLogs] = useState(false);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+  const [logsError, setLogsError] = useState<string | null>(null);
+
+  const fetchLogs = async (page = 1) => {
+    setLoadingLogs(true);
+    setLogsError(null);
+    const result = await getServerLogs({ serverId: id, page, pageSize: 5 });
+
+    if (result.success && result.logs) {
+        setLogs(result.logs!);
+        setHasMoreLogs(result.hasMore || false);
+    } else {
+        const errorMessage = result.error || 'Failed to load logs.';
+        setLogsError(errorMessage);
+        logErrorToFirestore({
+            message: `Client-side error in fetchLogs for serverId: ${id}. Error: ${errorMessage}`,
+            stack: new Error().stack,
+            source: 'ServerDetailPage.fetchLogs',
+        });
+    }
+    setLoadingLogs(false);
+  }
+
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
@@ -86,13 +129,29 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     };
 
     fetchInitialData();
+    fetchLogs(1); // Initial log fetch
   }, [id]);
+
+  useEffect(() => {
+    const hasOngoingLog = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
+    let interval: NodeJS.Timeout | null = null;
+    if (hasOngoingLog) {
+      interval = setInterval(() => {
+        fetchLogs(logsPage);
+      }, 3000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [logs, id, logsPage]);
 
   const handleRunCommand = (command: string, commandName?: string) => {
       if (!command) return;
       startTransition(async () => {
           await runCommand(id, command);
           toast({ title: "Command Sent", description: `The command "${commandName || command}" has been sent to the server.`});
+          // Refresh logs after a short delay to allow log creation
+          setTimeout(() => fetchLogs(1), 1000);
       });
   };
 
@@ -146,7 +205,6 @@ const handleStartNextWithPm2 = async () => {
         toast({ variant: 'destructive', title: 'PM2 Start Error', description: e.message });
     }
 };
-
 
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
@@ -220,11 +278,6 @@ const handleStartNextWithPm2 = async () => {
                         <CardTitle>{server.name}</CardTitle>
                         <CardDescription>ID: {server.id}</CardDescription>
                     </div>
-                    <Button asChild variant="outline" size="sm">
-                        <Link href={`/root/servers/${server.id}/logs`}>
-                            <Eye className="mr-2 h-4 w-4" /> View Logs
-                        </Link>
-                    </Button>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -498,6 +551,79 @@ www.example.com/subpath"
             </Accordion>
           </CardContent>
         </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Logs</CardTitle>
+                <CardDescription>History of all commands run on this server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 {loadingLogs && logs.length === 0 ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                    </div>
+                ) : logsError ? (
+                        <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error Loading Logs</AlertTitle>
+                        <AlertDescription className="break-all">{logsError}</AlertDescription>
+                    </Alert>
+                ) : logs.length === 0 ? (
+                    <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+                        <Terminal className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-semibold">No Logs Found</h3>
+                        <p>Run a command from the Server Management section to see logs here.</p>
+                    </div>
+                ) : (
+                    <Accordion type="single" collapsible className="w-full space-y-2">
+                        {logs.map(log => (
+                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
+                                <AccordionTrigger className="hover:no-underline">
+                                    <div className="flex flex-col items-start text-left w-full gap-2">
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>
+                                                {log.status === 'ongoing' && <Loader2Icon className="mr-1 h-3 w-3 animate-spin" />}
+                                                {log.status}
+                                            </Badge>
+                                            <span>{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
+                                            <span>by {log.initiatedBy}</span>
+                                        </div>
+                                        <p className="font-mono text-sm break-all">{log.command}</p>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <FullLog log={log} />
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                )}
+            </CardContent>
+             {(logsPage > 1 || hasMoreLogs) && (
+                <CardFooter className="flex items-center justify-between pt-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLogsPage(prev => Math.max(1, prev - 1))}
+                        disabled={logsPage <= 1 || loadingLogs}
+                    >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground">Page {logsPage}</span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLogsPage(prev => prev + 1)}
+                        disabled={!hasMoreLogs || loadingLogs}
+                    >
+                        Next
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </CardFooter>
+            )}
+        </Card>
         
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
           <AlertDialogContent>
@@ -516,3 +642,4 @@ www.example.com/subpath"
     </div>
   );
 }
+
