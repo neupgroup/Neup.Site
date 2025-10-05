@@ -2,13 +2,15 @@
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
+import { getPrivateServerDetails } from '@/actions/servers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { NodeSSH } from 'node-ssh';
 
 async function runCommand(serverId: string, command: string) {
     const createResult = await createServerLog({
         serverId: serverId,
-        command,
+        command: command,
         output: `Initiating command...`,
         status: 'pending',
     });
@@ -18,29 +20,69 @@ async function runCommand(serverId: string, command: string) {
         return;
     }
     const logId = createResult.id;
-
+    
     revalidatePath(`/root/servers/${serverId}`);
 
-    // Simulate starting the command after a short delay
-    setTimeout(async () => {
-        await updateServerLog(logId, { status: 'ongoing', output: `Running: ${command}\n...` });
+    const ssh = new NodeSSH();
+    const { server, error: serverError } = await getPrivateServerDetails(serverId);
+
+    if (serverError || !server || !server.publicIp || !server.privateKey) {
+        await updateServerLog(logId, {
+            status: 'failed',
+            output: `Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`
+        });
         revalidatePath(`/root/servers/${serverId}`);
-    }, 1500);
+        return;
+    }
 
-    // Simulate command completion after a longer delay
-    setTimeout(async () => {
-      const isSuccess = Math.random() > 0.1; // 90% success rate
-      const finalStatus = isSuccess ? 'completed' : 'failed';
-      const finalOutput = isSuccess
-        ? `Running: ${command}\n...\nFake process output line 1...\nFake process output line 2...\nTask finished successfully.`
-        : `Running: ${command}\n...\nError: Something went wrong during execution.\nPermission denied (fake error).`;
+    try {
+        await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
+        revalidatePath(`/root/servers/${serverId}`);
 
-      await updateServerLog(logId, {
-        status: finalStatus,
-        output: finalOutput,
-      });
-      revalidatePath(`/root/servers/${serverId}`);
-    }, 5000);
+        await ssh.connect({
+            host: server.publicIp,
+            username: 'root', // This might need to be configurable
+            privateKey: server.privateKey
+        });
+
+        await updateServerLog(logId, { output: `Connection successful. Running command...\n\n$ ${command}` });
+        revalidatePath(`/root/servers/${serverId}`);
+
+        const result = await ssh.execCommand(command, {
+            onStdout: (chunk) => {
+                // This could be used for real-time streaming in the future
+            },
+            onStderr: (chunk) => {
+                 // This could be used for real-time streaming in the future
+            }
+        });
+        
+        let finalOutput = '';
+        if (result.stdout) {
+            finalOutput += `STDOUT:\n${result.stdout}\n\n`;
+        }
+        if (result.stderr) {
+            finalOutput += `STDERR:\n${result.stderr}\n\n`;
+        }
+        finalOutput += `Exited with code: ${result.code}`;
+
+
+        await updateServerLog(logId, {
+            status: result.code === 0 ? 'completed' : 'failed',
+            output: finalOutput,
+        });
+
+    } catch (error: any) {
+        await updateServerLog(logId, {
+            status: 'failed',
+            output: `SSH Connection or Command Execution Failed:\n${error.message}`
+        });
+    } finally {
+        if(ssh.isConnected()) {
+            ssh.dispose();
+        }
+        revalidatePath(`/root/servers/${serverId}`);
+    }
 }
 
 // This function will be called via a form POST

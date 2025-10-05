@@ -134,6 +134,39 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
 }
 
 /**
+ * Fetches a single server by its ID, including private fields.
+ * This should only be used in server-side actions where credentials are required.
+ */
+export async function getPrivateServerDetails(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
+    try {
+        const { firestore } = initializeFirebase();
+        const serverRef = doc(firestore, 'servers', id);
+        const docSnap = await getDoc(serverRef);
+
+        if (!docSnap.exists()) {
+            return { success: false, error: 'Server not found.' };
+        }
+        
+        const data = docSnap.data();
+        const createdOn = data.createdOn;
+        const expiresOn = data.expiresOn;
+        
+        const server: Server = { 
+            id: docSnap.id, 
+            name: data.name,
+            publicIp: data.publicIp,
+            privateIp: data.privateIp,
+            privateKey: data.privateKey,
+            createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+            expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
+        };
+        return { success: true, server };
+    } catch (error: any) {
+        return { success: false, error: 'Failed to fetch server details.' };
+    }
+}
+
+/**
  * Updates a server. Allows overriding privateKey and privateIp without fetching them.
  */
 export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdOn'>>) {
