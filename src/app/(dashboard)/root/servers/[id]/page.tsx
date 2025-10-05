@@ -59,6 +59,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [buildMemory, setBuildMemory] = useState('1024');
   const [deploymentPath, setDeploymentPath] = useState('/home/ubuntu/app');
   const [pm2AppName, setPm2AppName] = useState('next-app');
+  const [pm2AppPort, setPm2AppPort] = useState(3000);
   
   const [isPending, startTransition] = useTransition();
 
@@ -137,7 +138,7 @@ const handleBuildNpm = async () => {
 
 const handleStartNextWithPm2 = async () => {
     try {
-        const command = await getStartNextWithPm2Command({ appName: pm2AppName, path: deploymentPath });
+        const command = await getStartNextWithPm2Command({ appName: pm2AppName, path: deploymentPath, port: pm2AppPort });
         handleRunCommand(command, `Start Next.js app with PM2`);
     } catch (e: any) {
         toast({ variant: 'destructive', title: 'PM2 Start Error', description: e.message });
@@ -348,9 +349,15 @@ const handleStartNextWithPm2 = async () => {
                     <h4 className="font-medium">Start Next.js App with PM2</h4>
                     <p className="text-sm text-muted-foreground">Start the Next.js app in the deployment path using PM2.</p>
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="pm2-app-name">PM2 App Name</Label>
-                    <Input id="pm2-app-name" value={pm2AppName} onChange={e => setPm2AppName(e.target.value)} placeholder="my-next-app" />
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="pm2-app-name">PM2 App Name</Label>
+                        <Input id="pm2-app-name" value={pm2AppName} onChange={e => setPm2AppName(e.target.value)} placeholder="my-next-app" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="pm2-app-port">Port</Label>
+                        <Input id="pm2-app-port" type="number" value={pm2AppPort} onChange={e => setPm2AppPort(Number(e.target.value))} placeholder="3000" />
+                    </div>
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="pm2-deployment-path">Deployment Path</Label>
