@@ -50,8 +50,7 @@ export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: N
 ${locationBlocks}
 }`;
 
-  // ONLY escape double quotes, do NOT escape $
-  const escapedConfig = config.replace(/"/g, '\\"');
+  const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\$');
 
   return `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
