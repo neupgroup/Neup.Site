@@ -58,19 +58,15 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const router = useRouter();
 
   const fetchLogs = async (page = 1) => {
-    console.log('[Page] fetchLogs: Initiating fetch for page', page);
     setLoadingLogs(true);
     setLogsError(null);
     const result = await getServerLogs({ serverId: id, page });
-    console.log('[Page] fetchLogs: Received result from action:', result);
 
     if (result.success && result.logs) {
-        console.log(`[Page] fetchLogs: Successfully received ${result.logs.length} logs.`);
         setLogs(prev => (page === 1 ? result.logs! : [...prev, ...result.logs!]));
         setHasMoreLogs(result.hasMore || false);
     } else {
         const errorMessage = result.error || 'Failed to load logs.';
-        console.error('[Page] fetchLogs: Error processing logs:', errorMessage);
         setLogsError(errorMessage);
         if (errorMessage !== result.error) {
             logErrorToFirestore({
@@ -81,7 +77,6 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
         }
     }
     setLoadingLogs(false);
-    console.log('[Page] fetchLogs: Finished processing fetch for page', page);
   }
 
   useEffect(() => {

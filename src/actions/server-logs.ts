@@ -58,10 +58,8 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
  * Fetches server logs with pagination.
  */
 export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { serverId: string, page?: number, pageSize?: number }): Promise<{ logs?: ServerLog[], error?: string, hasMore?: boolean }> {
-    console.log('[Action:getServerLogs] Starting to fetch logs for serverId:', serverId, `Page: ${page}`);
     try {
         const { firestore } = initializeFirebase();
-        console.log('[Action:getServerLogs] Firestore initialized.');
         const logsRef = collection(firestore, 'serverLogs');
         
         let q = query(
@@ -69,26 +67,19 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
             where('serverId', '==', serverId), 
             orderBy('initiatedAt', 'desc')
         );
-        console.log(`[Action:getServerLogs] Base query created for serverId: ${serverId}`);
 
         if (page > 1) {
-            console.log(`[Action:getServerLogs] Paginating to page ${page}.`);
             const prevPageQuery = query(q, limit((page - 1) * pageSize));
             const prevPageSnapshot = await getDocs(prevPageQuery);
             if (!prevPageSnapshot.empty) {
                 const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
                 q = query(q, startAfter(lastVisible));
-                console.log('[Action:getServerLogs] Query updated with startAfter cursor.');
-            } else {
-                 console.log('[Action:getServerLogs] Previous page snapshot was empty, cannot paginate further.');
             }
         }
         
         q = query(q, limit(pageSize + 1)); // Fetch one extra to check if there's a next page
-        console.log('[Action:getServerLogs] Final query limit set. Executing getDocs...');
 
         const querySnapshot = await getDocs(q);
-        console.log(`[Action:getServerLogs] getDocs executed. Found ${querySnapshot.docs.length} documents.`);
         
         const logs = querySnapshot.docs.slice(0, pageSize).map(doc => {
             const data = doc.data();
@@ -105,23 +96,15 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
         });
 
         const hasMore = querySnapshot.docs.length > pageSize;
-        console.log(`[Action:getServerLogs] Processed ${logs.length} logs. Has more pages: ${hasMore}`);
         
-        const result = { logs, hasMore, success: true };
-        console.log('[Action:getServerLogs] Returning successful result:', result);
-        return result;
+        return { logs, hasMore, success: true };
 
     } catch (e: any) {
-        console.error('[Action:getServerLogs] An error occurred:', e);
-        // Log the entire error object for better debugging
         logErrorToFirestore({
             message: `Failed to fetch server logs for serverId: ${serverId}. Error: ${JSON.stringify(e)}`,
             stack: e.stack,
             source: 'getServerLogs',
         });
-        // Return a more user-friendly error message, as the detailed error is logged to Firestore
-        const errorResult = { error: 'Failed to load logs. Please check the error logs for more details.', success: false };
-        console.log('[Action:getServerLogs] Returning error result:', errorResult);
-        return errorResult;
+        return { error: 'Failed to load logs. Please check the error logs for more details.', success: false };
     }
 }
