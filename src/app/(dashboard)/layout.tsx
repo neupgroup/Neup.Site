@@ -1,20 +1,26 @@
 
-import { ProfileProvider } from '@/context/ProfileContext';
+'use client';
+
+import { ProfileProvider, useProfile } from '@/context/ProfileContext';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Dashboard } from '@/components/dashboard';
-import { getSite } from '@/actions/editor/site';
 import { cn } from '@/lib/utils';
+import type { Site } from '@/schemas/site';
 
-export default async function DashboardLayout({
+function ThemedDashboard({ children }: { children: React.ReactNode }) {
+  const { theme } = useProfile();
+  return <Dashboard theme={theme}>{children}</Dashboard>;
+}
+
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { site } = await getSite();
 
   return (
     <ProfileProvider>
-        <Dashboard theme={site?.theme}>{children}</Dashboard>
+      <ThemedDashboard>{children}</ThemedDashboard>
     </ProfileProvider>
   );
 }
