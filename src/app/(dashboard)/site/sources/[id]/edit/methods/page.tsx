@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -178,6 +179,16 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   }, [id, formMethods]);
   
   const handleAddNewMethod = (name: string) => {
+      const existingMethods = formMethods.getValues('methods');
+      if (existingMethods.some(method => method.methodName.toLowerCase() === name.toLowerCase())) {
+          toast({
+              variant: 'destructive',
+              title: 'Duplicate Method Name',
+              description: `A method named "${name}" already exists for this source.`
+          });
+          return;
+      }
+
       append({
           methodName: name,
           httpMethod: 'GET',
