@@ -30,6 +30,7 @@ export const ProfileFormSchema = z.object({
   name: z.string().min(1, 'Profile Name is required'),
   hideSitename: z.boolean().default(false),
   logoUrl: z.string().optional(),
+  hideLogo: z.boolean().default(false),
   description: z.string().optional(),
   socialProfiles: z.array(SocialProfileSchema).max(9, 'You can add a maximum of 9 social profiles.'),
   contactEmail: z.array(z.object({ value: z.string().email() })).max(9, 'You can add a maximum of 9 emails.'),
@@ -39,7 +40,7 @@ export const ProfileFormSchema = z.object({
 export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 
 export default function ProfilePage() {
-    const { setProfileName, setLogoUrl, setHideSitename } = useProfile();
+    const { setProfileName, setLogoUrl, setHideSitename, setHideLogo } = useProfile();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
 
@@ -49,6 +50,7 @@ export default function ProfilePage() {
             name: '',
             hideSitename: false,
             logoUrl: '',
+            hideLogo: false,
             description: '',
             socialProfiles: [],
             contactEmail: [],
@@ -88,6 +90,7 @@ export default function ProfilePage() {
                     name: site.name,
                     hideSitename: site.hideSitename || false,
                     logoUrl: removeUrlPrefix(site.logoUrl),
+                    hideLogo: site.hideLogo || false,
                     description: site.description || '',
                     socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
                     contactEmail: site.contactEmail || [],
@@ -99,6 +102,7 @@ export default function ProfilePage() {
                  form.reset({
                     name: 'My New Site',
                     hideSitename: false,
+                    hideLogo: false,
                     description: 'A brief description of my new site.',
                     socialProfiles: [],
                     contactEmail: [],
@@ -115,6 +119,7 @@ export default function ProfilePage() {
             name: data.name,
             hideSitename: data.hideSitename,
             logoUrl: data.logoUrl,
+            hideLogo: data.hideLogo,
             description: data.description,
             socialProfiles: data.socialProfiles,
             contactEmail: data.contactEmail,
@@ -126,6 +131,7 @@ export default function ProfilePage() {
             setProfileName(data.name);
             setLogoUrl(data.logoUrl ? (data.logoUrl.startsWith('http') ? data.logoUrl : `https://${data.logoUrl}`) : null);
             setHideSitename(data.hideSitename);
+            setHideLogo(data.hideLogo);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }
@@ -189,6 +195,26 @@ export default function ProfilePage() {
                     <FormField control={form.control} name="logoUrl" render={({ field }) => (
                         <FormItem><FormLabel>Logo URL</FormLabel><FormControl><Input {...field} placeholder="example.com/logo.png" /></FormControl><FormMessage /></FormItem>
                     )} />
+                     <FormField
+                        control={form.control}
+                        name="hideLogo"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                <div className="space-y-0.5">
+                                    <FormLabel>Hide Logo</FormLabel>
+                                    <FormDescription>
+                                        Enable this to hide the logo from the site header.
+                                    </FormDescription>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                        />
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Short Description</FormLabel>

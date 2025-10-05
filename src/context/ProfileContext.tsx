@@ -7,6 +7,7 @@ import { getSite } from '@/actions/editor/site';
 const SESSION_STORAGE_KEY_NAME = 'profileName';
 const SESSION_STORAGE_KEY_LOGO = 'logoUrl';
 const SESSION_STORAGE_KEY_HIDE_SITENAME = 'hideSitename';
+const SESSION_STORAGE_KEY_HIDE_LOGO = 'hideLogo';
 
 
 interface ProfileContextType {
@@ -16,7 +17,9 @@ interface ProfileContextType {
   setLogoUrl: Dispatch<SetStateAction<string | null>>;
   hideSitename: boolean | null;
   setHideSitename: Dispatch<SetStateAction<boolean | null>>;
-  loading: { name: boolean, logo: boolean, hideSitename: boolean };
+  hideLogo: boolean | null;
+  setHideLogo: Dispatch<SetStateAction<boolean | null>>;
+  loading: { name: boolean, logo: boolean, hideSitename: boolean, hideLogo: boolean };
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -25,15 +28,17 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profileName, setProfileName] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [hideSitename, setHideSitename] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState({ name: true, logo: true, hideSitename: true });
+  const [hideLogo, setHideLogo] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState({ name: true, logo: true, hideSitename: true, hideLogo: true });
 
   useEffect(() => {
     async function initializeProfile() {
-      setLoading({ name: true, logo: true, hideSitename: true });
+      setLoading({ name: true, logo: true, hideSitename: true, hideLogo: true });
       
       const cachedName = sessionStorage.getItem(SESSION_STORAGE_KEY_NAME);
       const cachedLogo = sessionStorage.getItem(SESSION_STORAGE_KEY_LOGO);
       const cachedHideSitename = sessionStorage.getItem(SESSION_STORAGE_KEY_HIDE_SITENAME);
+      const cachedHideLogo = sessionStorage.getItem(SESSION_STORAGE_KEY_HIDE_LOGO);
       
       let needsFetch = false;
 
@@ -51,6 +56,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
       if (cachedHideSitename) {
           setHideSitename(cachedHideSitename === 'true');
+      } else {
+          needsFetch = true;
+      }
+
+      if (cachedHideLogo) {
+        setHideLogo(cachedHideLogo === 'true');
       } else {
           needsFetch = true;
       }
@@ -76,9 +87,14 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
                 setHideSitename(finalHideSitename);
                 sessionStorage.setItem(SESSION_STORAGE_KEY_HIDE_SITENAME, String(finalHideSitename));
             }
+            if (!cachedHideLogo) {
+                const finalHideLogo = site.hideLogo || false;
+                setHideLogo(finalHideLogo);
+                sessionStorage.setItem(SESSION_STORAGE_KEY_HIDE_LOGO, String(finalHideLogo));
+            }
         }
       }
-      setLoading({ name: false, logo: false, hideSitename: false });
+      setLoading({ name: false, logo: false, hideSitename: false, hideLogo: false });
     }
     initializeProfile();
   }, []);
@@ -108,8 +124,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     }
   }, [hideSitename]);
 
+  // Effect to update sessionStorage whenever hideLogo changes
+  useEffect(() => {
+    if (hideLogo !== null) {
+      sessionStorage.setItem(SESSION_STORAGE_KEY_HIDE_LOGO, String(hideLogo));
+    }
+  }, [hideLogo]);
+
   return (
-    <ProfileContext.Provider value={{ profileName, setProfileName, logoUrl, setLogoUrl, hideSitename, setHideSitename, loading }}>
+    <ProfileContext.Provider value={{ profileName, setProfileName, logoUrl, setLogoUrl, hideSitename, setHideSitename, hideLogo, setHideLogo, loading }}>
       {children}
     </ProfileContext.Provider>
   );

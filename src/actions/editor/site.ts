@@ -48,6 +48,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
           tier: data.tier,
           logoUrl: data.logoUrl,
           hideSitename: data.hideSitename || false,
+          hideLogo: data.hideLogo || false,
           description: data.description,
           socialProfiles: data.socialProfiles || [],
           contactEmail: data.contactEmail || [],

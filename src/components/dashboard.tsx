@@ -40,37 +40,14 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
 function Header() {
-  const { profileName, logoUrl, hideSitename, setHideSitename, loading } = useProfile();
-  const [isToggling, setIsToggling] = useState(false);
-  const { toast } = useToast();
-
-  const handleToggleSitename = async () => {
-      if (hideSitename === null) return;
-      setIsToggling(true);
-      const newHideSitename = !hideSitename;
-      const result = await saveSite({ hideSitename: newHideSitename });
-      if (result.success) {
-          setHideSitename(newHideSitename);
-          toast({
-              title: `Site name ${newHideSitename ? 'hidden' : 'shown'}`,
-              description: 'Your preference has been saved.',
-          });
-      } else {
-          toast({
-              variant: 'destructive',
-              title: 'Error',
-              description: 'Could not save your preference.',
-          });
-      }
-      setIsToggling(false);
-  }
+  const { profileName, logoUrl, hideSitename, hideLogo, loading } = useProfile();
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
           <Link href="/" className="flex items-center gap-4">
-            {loading.logo || logoUrl === null ? (
+            {!hideLogo && (loading.logo || logoUrl === null ? (
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
                <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
@@ -78,7 +55,7 @@ function Header() {
                </div>
             ) : (
               <Rocket className="h-6 w-6 text-primary" />
-            )}
+            ))}
 
             {(!hideSitename && hideSitename !== null) && (
               <h1 className="font-headline text-xl font-semibold tracking-tight">
@@ -86,16 +63,6 @@ function Header() {
               </h1>
             )}
           </Link>
-           <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto px-1 py-0 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={handleToggleSitename}
-                disabled={isToggling}
-            >
-                {isToggling ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : (hideSitename ? <Eye className="mr-1 h-3 w-3" /> : <EyeOff className="mr-1 h-3 w-3" />)}
-                {hideSitename ? 'Show' : 'Hide'} name
-            </Button>
         </div>
         <div className="text-lg font-semibold">Dashboard</div>
       </div>
@@ -237,5 +204,3 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
     </div>
   );
 }
-
-    
