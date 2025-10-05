@@ -33,6 +33,13 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { getInstallNginxCommand } from '@/actions/server/management/install-nginx';
+import { getFreePort80Command } from '@/actions/server/management/free-port-80';
+import { getUpdateAndUpgradeCommand } from '@/actions/server/management/update-and-upgrade';
+import { getCreateSwapCommand } from '@/actions/server/management/create-swap';
+import { getConfigureNginxCommand } from '@/actions/server/management/configure-nginx';
+import { getResetNginxCommand } from '@/actions/server/management/reset-nginx';
+import { getInstallNpmCommand } from '@/actions/server/management/install-npm';
 
 export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -94,66 +101,19 @@ const handleNginxConfig = () => {
             return;
         }
 
-        const listenPort = 80;
-
-        const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
-        const primaryDomain = firstUrl.hostname.replace(/\./g, '_');
-        const primaryPath = firstUrl.pathname.replace(/\//g, '_').replace(/^_/, '');
-        
-        let safeDomain = primaryDomain;
-        if (primaryPath) {
-            safeDomain = `${safeDomain}_${primaryPath}`;
+        const listenPort = parseInt(proxyPort) - 1;
+        if (isNaN(listenPort) || listenPort < 1) {
+            toast({ variant: 'destructive', title: 'Invalid Port', description: `Could not determine a valid port to listen on.`});
+            return;
         }
-        
-        const configFileName = `${safeDomain}.conf`;
 
-        const allDomains = new Set<string>();
-        const locations = new Map<string, string>();
-
-        urls.forEach(urlStr => {
-            const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
-            allDomains.add(url.hostname);
-            const path = url.pathname === '/' && urlStr.endsWith('/') ? '/' : (url.pathname || '/');
-            if (!locations.has(path)) {
-                locations.set(path, `
-        location ${path} {
-            proxy_pass ${proxyUrl};
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-    `);
-            }
+        const command = getConfigureNginxCommand({
+            urls,
+            proxyUrl,
+            listenPort,
         });
-
-        const serverName = Array.from(allDomains).join(' ');
-        const locationBlocks = Array.from(locations.values()).join('\n');
-
-        const config = `server {
-    listen ${listenPort};
-    server_name ${serverName};
-    ${locationBlocks}
-}`;
-
-        const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\$');
-
-        const command = `
-sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
-if [ -f /etc/nginx/sites-available/${configFileName} ]; then
-    sudo rm -f /etc/nginx/sites-enabled/${configFileName};
-    sudo rm -f /etc/nginx/sites-available/${configFileName};
-fi &&
-sudo bash -c "echo \\"${escapedConfig}\\" > /etc/nginx/sites-available/${configFileName}" &&
-sudo ln -s -f /etc/nginx/sites-available/${configFileName} /etc/nginx/sites-enabled/ &&
-sudo systemctl restart nginx
-`.trim();
         
-        handleRunCommand(command, `Configure Nginx for ${Array.from(allDomains)[0]}`);
+        handleRunCommand(command, `Configure Nginx for ${urls[0]}`);
 
     } catch (e: any) {
         if (e instanceof TypeError && e.message.includes('Invalid URL')) {
@@ -290,7 +250,7 @@ sudo systemctl restart nginx
                     <h4 className="font-medium">Update &amp; Upgrade Server</h4>
                     <p className="text-sm text-muted-foreground">Run apt-get update &amp;&amp; apt-get upgrade.</p>
                 </div>
-                <Button onClick={() => handleRunCommand('sudo apt-get update && sudo apt-get upgrade -y', 'Update & Upgrade')} disabled={isPending}>
+                <Button onClick={() => handleRunCommand(getUpdateAndUpgradeCommand(), 'Update & Upgrade')} disabled={isPending}>
                     <GitCommit className="mr-2 h-4 w-4" /> Run Update
                 </Button>
             </div>
@@ -299,7 +259,7 @@ sudo systemctl restart nginx
                     <h4 className="font-medium">Free Up Port 80</h4>
                     <p className="text-sm text-muted-foreground">Stop any process using port 80 (e.g., Apache).</p>
                 </div>
-                <Button variant="outline" onClick={() => handleRunCommand('sudo lsof -t -i:80 | xargs -r sudo kill -9', 'Free Up Port 80')} disabled={isPending}>
+                <Button variant="outline" onClick={() => handleRunCommand(getFreePort80Command(), 'Free Up Port 80')} disabled={isPending}>
                     <Zap className="mr-2 h-4 w-4" /> Stop Process
                 </Button>
             </div>
@@ -308,7 +268,7 @@ sudo systemctl restart nginx
                 <h4 className="font-medium">Install Nginx</h4>
                 <p className="text-sm text-muted-foreground">Install and start the Nginx web server.</p>
                 </div>
-                <Button onClick={() => handleRunCommand('sudo apt-get install -y nginx && sudo systemctl start nginx && sudo systemctl enable nginx', 'Install Nginx')} disabled={isPending}>
+                <Button onClick={() => handleRunCommand(getInstallNginxCommand(), 'Install Nginx')} disabled={isPending}>
                     <Globe className="mr-2 h-4 w-4" /> Install Nginx
                 </Button>
             </div>
@@ -317,7 +277,7 @@ sudo systemctl restart nginx
                 <h4 className="font-medium">Install npm</h4>
                 <p className="text-sm text-muted-foreground">Install Node.js and the Node Package Manager.</p>
                 </div>
-                <Button onClick={() => handleRunCommand('sudo apt-get install -y nodejs npm', 'Install npm')} disabled={isPending}>
+                <Button onClick={() => handleRunCommand(getInstallNpmCommand(), 'Install npm')} disabled={isPending}>
                     <Package className="mr-2 h-4 w-4" /> Install npm
                 </Button>
             </div>
@@ -332,7 +292,7 @@ sudo systemctl restart nginx
                         className="max-w-[120px]"
                     />
                         <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
-                    <Button onClick={() => handleRunCommand(`sudo fallocate -l ${swapSize}M /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`, 'Create Swap')} className="ml-auto" disabled={isPending}>
+                    <Button onClick={() => handleRunCommand(getCreateSwapCommand(swapSize), 'Create Swap')} className="ml-auto" disabled={isPending}>
                         <Disc className="mr-2 h-4 w-4" /> Create Swap
                     </Button>
                 </div>
@@ -368,7 +328,7 @@ www.example.com/subpath"
                     <h4 className="font-medium text-destructive">Reset Nginx Configurations</h4>
                     <p className="text-sm text-muted-foreground">Deletes all Nginx site configurations and symlinks.</p>
                 </div>
-                <Button variant="destructive" onClick={() => handleRunCommand('sudo rm -f /etc/nginx/sites-available/*.conf && sudo rm -f /etc/nginx/sites-enabled/* && sudo systemctl restart nginx', 'Reset Nginx')} disabled={isPending}>
+                <Button variant="destructive" onClick={() => handleRunCommand(getResetNginxCommand(), 'Reset Nginx')} disabled={isPending}>
                     <ShieldAlert className="mr-2 h-4 w-4" /> Reset Nginx
                 </Button>
             </div>
@@ -413,5 +373,3 @@ www.example.com/subpath"
     </div>
   );
 }
-
-    
