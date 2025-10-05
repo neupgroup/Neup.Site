@@ -163,7 +163,7 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
                 </div>
                 <div className="space-y-2">
                     <Label>Endpoint</Label>
-                    <Input {...register(`methods.${index}.path`)} placeholder="/products" disabled={!isEditing} />
+                    <Input {...register(`methods.${index}.path`)} placeholder="/products/[productId]" disabled={!isEditing} />
                 </div>
                 {showHeaders && (
                     <div className="space-y-2">
@@ -175,7 +175,6 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
 
                 {(isTesting || testResult) && (
                     <div className="space-y-2 pt-4 border-t mt-4">
-                        <Label>Response</Label>
                         {isTesting && !testResult && (
                              <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <Loader2 className="animate-spin h-4 w-4" />
