@@ -47,7 +47,11 @@ export default function ThemePage() {
 
   const handleSaveTheme = async () => {
       setIsSaving(true);
-      const newTheme: SiteTheme = { colors, radius };
+      const newTheme: SiteTheme = { 
+        ...site?.theme,
+        colors, 
+        radius 
+      };
       const result = await saveSite({ theme: newTheme });
 
       if (result.success) {
