@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -57,7 +56,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     setShowDeleteConfirm(false);
     const result = await deleteServer(id);
     if(result.success) {
-        toast({ title: 'Server Disconnected', description: 'The server connection has been removed.'});
+        toast({ title: 'Server Deleted', description: 'The server has been removed.'});
         router.push('/root/servers');
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
@@ -129,7 +128,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
                 <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
-                    <Trash2 className="mr-2 h-4 w-4"/> Disconnect
+                    <Trash2 className="mr-2 h-4 w-4"/> Delete
                 </Button>
                 <Button asChild>
                     <Link href={`/root/servers/${id}/edit`}>
@@ -144,12 +143,12 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will permanently disconnect the server "{server.name}".
+                This action cannot be undone. This will permanently delete the server "{server.name}".
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete}>Disconnect</AlertDialogAction>
+              <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

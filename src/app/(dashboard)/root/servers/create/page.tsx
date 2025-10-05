@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -44,7 +43,7 @@ export default function CreateServerPage() {
     });
 
     if (result.success) {
-      toast({ title: 'Server Connected!', description: `Successfully connected to ${name}.` });
+      toast({ title: 'Server Created!', description: `Successfully created ${name}.` });
       router.push('/root/servers');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
@@ -64,8 +63,8 @@ export default function CreateServerPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Connect New Server</CardTitle>
-          <CardDescription>Enter the details for the server you want to connect.</CardDescription>
+          <CardTitle>Create New Server</CardTitle>
+          <CardDescription>Enter the details for the new server.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -90,7 +89,7 @@ export default function CreateServerPage() {
         <CardFooter>
           <Button onClick={handleCreateServer} disabled={isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            {isSaving ? 'Connecting...' : 'Connect Server'}
+            {isSaving ? 'Creating...' : 'Create Server'}
           </Button>
         </CardFooter>
       </Card>

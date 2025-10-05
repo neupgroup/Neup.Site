@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -58,7 +57,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id: strin
       return;
     }
     setIsSaving(true);
-    const dataToUpdate: Partial<Omit<Server, 'id' | 'createdAt' | 'publicKey'>> = {
+    const dataToUpdate: Partial<Omit<Server, 'id' | 'createdAt'>> = {
         name,
         publicIp,
     };
@@ -117,7 +116,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id: strin
       <Card>
         <CardHeader>
           <CardTitle>Edit Server</CardTitle>
-          <CardDescription>Update the connection details for this server.</CardDescription>
+          <CardDescription>Update the details for this server.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="space-y-2">

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -75,21 +74,21 @@ export default function ServersPage() {
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Servers</h1>
         <Button asChild>
           <Link href="/root/servers/create">
-            <Plus className="mr-2 h-4 w-4" /> Connect Server
+            <Plus className="mr-2 h-4 w-4" /> Create Server
           </Link>
         </Button>
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Connected Servers</CardTitle>
-          <CardDescription>A list of servers you have connected to deploy sites.</CardDescription>
+          <CardTitle>Your Servers</CardTitle>
+          <CardDescription>A list of servers you have created to deploy sites.</CardDescription>
         </CardHeader>
         <CardContent>
           {servers.length === 0 ? (
             <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
                 <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold">No Servers Connected</h3>
-                <p>Click "Connect Server" to get started.</p>
+                <h3 className="text-lg font-semibold">No Servers Created</h3>
+                <p>Click "Create Server" to get started.</p>
             </div>
           ) : (
              <Table>
