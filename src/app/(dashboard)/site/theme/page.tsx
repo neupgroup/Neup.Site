@@ -7,15 +7,16 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sun, Moon, Loader2, Save } from 'lucide-react';
+import { Sun, Moon, Loader2, Save, Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getSite, saveSite, type Site } from '@/actions/editor/site';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const colorLabels = ['Primary', 'Accent', 'Tertiary'];
+
 export default function ThemePage() {
   const [themeMode, setThemeMode] = useState('light');
-  const [primaryColor, setPrimaryColor] = useState('#64C5CF');
-  const [accentColor, setAccentColor] = useState('#2A9D8F');
+  const [colors, setColors] = useState(['#64C5CF']);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -24,9 +25,11 @@ export default function ThemePage() {
     const fetchTheme = async () => {
         setLoading(true);
         const { site } = await getSite();
-        if (site?.theme) {
-            setPrimaryColor(site.theme.primary || '#64C5CF');
-            setAccentColor(site.theme.accent || '#2A9D8F');
+        if (site?.theme?.colors && site.theme.colors.length > 0) {
+            setColors(site.theme.colors);
+        } else {
+            // Set a default if no colors are defined
+            setColors(['#64C5CF']);
         }
         setLoading(false);
     };
@@ -47,8 +50,7 @@ export default function ThemePage() {
       setIsSaving(true);
       const result = await saveSite({
           theme: {
-              primary: primaryColor,
-              accent: accentColor,
+              colors: colors,
           }
       });
 
@@ -62,6 +64,23 @@ export default function ThemePage() {
       setIsSaving(false);
   }
 
+  const handleColorChange = (index: number, value: string) => {
+    const newColors = [...colors];
+    newColors[index] = value;
+    setColors(newColors);
+  };
+
+  const addColor = () => {
+    if (colors.length < 3) {
+      setColors([...colors, '#2A9D8F']);
+    }
+  };
+
+  const removeColor = (index: number) => {
+    const newColors = colors.filter((_, i) => i !== index);
+    setColors(newColors);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header>
@@ -72,7 +91,7 @@ export default function ThemePage() {
       <Card>
         <CardHeader>
           <CardTitle>Color Scheme</CardTitle>
-          <CardDescription>Choose the primary and accent colors for your site.</CardDescription>
+          <CardDescription>Choose the colors for your site. The first is primary, the second is accent, etc.</CardDescription>
         </CardHeader>
         <CardContent>
              {loading ? (
@@ -82,36 +101,42 @@ export default function ThemePage() {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="primary-color">Primary Color</Label>
-                            <div className="flex items-center gap-2">
-                                <Input 
-                                    id="primary-color" 
-                                    value={primaryColor}
-                                    onChange={(e) => setPrimaryColor(e.target.value)}
-                                />
-                                <Input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="w-12 p-1" />
+                    {colors.map((color, index) => (
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                            <div className="space-y-2">
+                                <Label htmlFor={`color-${index}`}>{colorLabels[index]} Color</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input 
+                                        id={`color-${index}`} 
+                                        value={color}
+                                        onChange={(e) => handleColorChange(index, e.target.value)}
+                                    />
+                                    <Input type="color" value={color} onChange={(e) => handleColorChange(index, e.target.value)} className="w-12 p-1" />
+                                </div>
                             </div>
-                            <p className="text-xs text-muted-foreground">Used for main interactive elements like buttons.</p>
+                            {colors.length > 0 && (
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => removeColor(index)}
+                                    className="w-fit"
+                                >
+                                    <Trash2 className="mr-2" /> Remove
+                                </Button>
+                            )}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="accent-color">Accent Color</Label>
-                            <div className="flex items-center gap-2">
-                                <Input 
-                                    id="accent-color" 
-                                    value={accentColor}
-                                    onChange={(e) => setAccentColor(e.target.value)}
-                                />
-                                <Input type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="w-12 p-1" />
-                            </div>
-                             <p className="text-xs text-muted-foreground">Used for highlights and calls to action.</p>
-                        </div>
+                    ))}
+                    {colors.length < 3 && (
+                        <Button variant="outline" onClick={addColor}>
+                            <Plus className="mr-2" /> Add Color
+                        </Button>
+                    )}
+                    <div className="pt-4">
+                        <Button onClick={handleSaveTheme} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                            Save Colors
+                        </Button>
                     </div>
-                     <Button onClick={handleSaveTheme} disabled={isSaving}>
-                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                        Save Colors
-                    </Button>
                 </div>
             )}
         </CardContent>

@@ -8,8 +8,7 @@ export interface GeneratedTheme {
 }
 
 export interface SiteTheme {
-    primary: string;
-    accent: string;
+    colors: string[];
     generated?: GeneratedTheme;
 }
 

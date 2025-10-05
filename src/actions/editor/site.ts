@@ -100,10 +100,10 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
       }));
     }
 
-    if (data.theme?.primary && data.theme?.accent) {
+    if (data.theme?.colors && data.theme.colors.length > 0) {
         dataToSave.theme = {
             ...data.theme, // Keep the user selected colors
-            generated: generateThemeFromColor(data.theme.primary, data.theme.accent)
+            generated: generateThemeFromColor(data.theme.colors)
         }
     }
     

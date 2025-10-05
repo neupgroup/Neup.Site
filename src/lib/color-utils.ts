@@ -51,7 +51,15 @@ function hslToString(hsl: HSL): string {
     return `${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%`;
 }
 
-export function generateThemeFromColor(primaryHex: string, accentHex: string) {
+export function generateThemeFromColor(hexColors: string[]) {
+    if (!hexColors || hexColors.length === 0) {
+        // Return a default theme if no colors are provided
+        hexColors = ['#64C5CF', '#2A9D8F'];
+    }
+
+    const primaryHex = hexColors[0];
+    const accentHex = hexColors[1] || primaryHex; // Fallback for accent
+
     const primaryRgb = hexToRgb(primaryHex);
     const accentRgb = hexToRgb(accentHex);
     
