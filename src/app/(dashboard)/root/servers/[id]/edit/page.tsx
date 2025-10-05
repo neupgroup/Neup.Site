@@ -42,7 +42,6 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
       publicIp: '',
       privateIp: '',
       privateKey: '', // This will not be populated from the server
-      username: 'root', // Default to 'root' if not set
       expiresOn: null,
     }
   });
@@ -59,7 +58,6 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
           publicIp: result.server.publicIp,
           privateIp: result.server.privateIp || '',
           privateKey: '', // Keep private key field blank for security
-          username: result.server.username || 'root',
           expiresOn: result.server.expiresOn || null,
         });
       } else {
@@ -162,14 +160,10 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
                 Override Private Credentials
             </CardTitle>
             <CardDescription>
-                These fields are write-only. Fill them in only if you need to update the private IP, private key, or username.
+                These fields are write-only. Fill them in only if you need to update the private IP or private key.
             </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-             <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" {...register('username')} placeholder="Leave blank to keep existing" defaultValue="root" />
-            </div>
             <div className="space-y-2">
                 <Label htmlFor="private-ip">New Private IP (Optional)</Label>
                 <Input id="private-ip" {...register('privateIp')} placeholder="Leave blank to keep existing" />

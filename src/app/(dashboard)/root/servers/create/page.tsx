@@ -33,13 +33,12 @@ export default function CreateServerPage() {
       publicIp: '',
       privateIp: '',
       privateKey: '',
-      username: 'root', // Default to 'root'
     }
   });
 
   const handleCreateServer = async (data: FormValues) => {
-    if (!data.name || !data.publicIp || !data.privateKey || !data.username) {
-      toast({ variant: 'destructive', title: 'Missing fields', description: 'Name, Public IP, Private Key, and Username are required.' });
+    if (!data.name || !data.publicIp || !data.privateKey) {
+      toast({ variant: 'destructive', title: 'Missing fields', description: 'Name, Public IP, and Private Key are required.' });
       return;
     }
     
@@ -82,10 +81,6 @@ export default function CreateServerPage() {
                     <Label htmlFor="private-ip">Private IP (Optional)</Label>
                     <Input id="private-ip" {...register('privateIp')} placeholder="e.g., 10.0.0.1" />
                 </div>
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" {...register('username')} placeholder="e.g., admin" defaultValue="root" />
             </div>
             <div className="space-y-2">
                 <Label htmlFor="private-key">Private Key</Label>

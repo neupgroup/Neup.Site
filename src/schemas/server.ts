@@ -1,5 +1,4 @@
 
-
 export interface ServerAllocation {
   id: string;
   siteId: string;

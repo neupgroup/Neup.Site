@@ -5,6 +5,25 @@ import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { getPrivateServerDetails } from '@/actions/servers';
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
+import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { initializeFirebase } from '@/lib/firebase';
+import { logErrorToFirestore } from '@/lib/logging';
+
+
+async function getAllocationUsername(serverId: string): Promise<string | null> {
+    const { firestore } = initializeFirebase();
+    const allocationsQuery = query(
+        collection(firestore, 'serverAllocations'), 
+        where('serverId', '==', serverId),
+        limit(1)
+    );
+    const snapshot = await getDocs(allocationsQuery);
+    if (snapshot.empty) {
+        return null;
+    }
+    return snapshot.docs[0].data().username || null;
+}
+
 
 export async function runCommand(serverId: string, command: string) {
     if (!command) {
@@ -44,10 +63,15 @@ export async function runCommand(serverId: string, command: string) {
             return;
         }
 
-        // Use the server's own username, not an allocation's.
-        const username = server.username;
+        // For root commands, we need a username. We will try to get it from an allocation.
+        // This logic assumes one allocation per server for simplicity.
+        const username = await getAllocationUsername(serverId);
         if (!username) {
-            throw new Error('Server username is not defined. Please edit the server to set a username.');
+            logErrorToFirestore({
+                message: `Could not find an allocation username for server ${serverId}. Defaulting to 'root'.`,
+                source: 'runCommand',
+                details: 'This is a fallback. A username should be specified in the server allocation.'
+            });
         }
 
         await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
@@ -55,11 +79,11 @@ export async function runCommand(serverId: string, command: string) {
 
         await ssh.connect({
             host: server.publicIp,
-            username: username,
+            username: username || 'root', // Fallback to root, with an error logged.
             privateKey: server.privateKey
         });
 
-        await updateServerLog(logId, { output: `Connection successful as '${username}'. Running command...
+        await updateServerLog(logId, { output: `Connection successful as '${username || 'root'}'. Running command...
 
 $ ${command}` });
         revalidatePath(`/root/servers/${serverId}`);
@@ -92,8 +116,6 @@ ${result.stderr}
             finalOutput = `SSH Authentication Failed. Please check server credentials and username. Error: ${error.message}`;
         } else if (error.message.includes('Connection timed out')) {
             finalOutput = `SSH Connection Timed Out. Server might be unreachable or IP is incorrect. Error: ${error.message}`;
-        } else if (error.message.includes('Server username is not defined')) {
-             finalOutput = `Execution failed: ${error.message}`;
         }
 
         await updateServerLog(logId, {
