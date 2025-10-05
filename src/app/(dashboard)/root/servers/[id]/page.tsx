@@ -458,9 +458,11 @@ www.example.com/subpath"
                                 rows={4}
                                 className="font-mono"
                             />
-                            <Button onClick={() => handleRunCommand(customCommand)} disabled={isPending || !customCommand}>
-                                <Send className="mr-2 h-4 w-4" /> Run Command
-                            </Button>
+                            <div className="flex justify-start">
+                                <Button size="sm" onClick={() => handleRunCommand(customCommand)} disabled={isPending || !customCommand}>
+                                    <Send className="mr-2 h-4 w-4" /> Run Command
+                                </Button>
+                            </div>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
