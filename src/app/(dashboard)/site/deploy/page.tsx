@@ -72,6 +72,7 @@ export default function DeployPage() {
     }
 
     const hasPendingChanges = structure?.status === 'pendingDeployment' || structure?.structure.some(s => s.changesMade);
+    const isNeverDeployed = !lastDeployment;
 
     return (
         <div className="w-full">
@@ -99,7 +100,7 @@ export default function DeployPage() {
                                 )}
                             </div>
                              {loading ? <Loader2 className="animate-spin" /> :
-                             hasPendingChanges ? (
+                             hasPendingChanges || isNeverDeployed ? (
                                  <Badge variant="outline" className="text-amber-600 border-amber-500">
                                     <Clock className="mr-2 h-4 w-4" />
                                     Pending Deployment
@@ -148,7 +149,7 @@ export default function DeployPage() {
                         {isBuilding ? <Loader2 className="animate-spin mr-2" /> : <GitBranch className="mr-2 h-4 w-4" />}
                         {isBuilding ? 'Building...' : 'Build Structure'}
                     </Button>
-                    {hasPendingChanges && (
+                    {(hasPendingChanges || isNeverDeployed) && (
                         <Button onClick={handleDeploy} disabled={isDeploying || isBuilding}>
                             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : null}
                             Deploy to Server(s)
