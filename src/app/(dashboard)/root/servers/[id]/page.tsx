@@ -3,7 +3,7 @@
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServer, deleteServer, type Server } from '@/actions/servers';
+import { getServer, type Server } from '@/actions/servers';
 import { runCommand } from '@/actions/runner';
 import { logErrorToFirestore } from '@/lib/logging';
 import {
@@ -210,23 +210,6 @@ const handleStartNextWithPm2 = async () => {
         toast({ variant: 'destructive', title: 'PM2 Start Error', description: e.message });
     }
 };
-
-  const handleDelete = async () => {
-    setShowDeleteConfirm(false);
-    const result = await deleteServer(id);
-    if(result.success) {
-        toast({ title: 'Server Deleted', description: 'The server has been removed.'});
-        router.push('/root/servers');
-    } else {
-        const errorMessage = result.error || 'Failed to delete server.';
-        toast({ variant: 'destructive', title: 'Error', description: errorMessage });
-        logErrorToFirestore({
-            message: `Client-side error deleting server for serverId: ${id}. Error: ${errorMessage}`,
-            stack: new Error().stack,
-            source: 'ServerDetailPage.handleDelete',
-        });
-    }
-  }
   
   if (loading) {
     return (
@@ -239,7 +222,7 @@ const handleStartNextWithPm2 = async () => {
                 <Skeleton className="h-6 w-full" />
                 <Skeleton className="h-20 w-full" />
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
+            <CardFooter className="flex justify-start gap-2">
                 <Skeleton className="h-10 w-24" />
                 <Skeleton className="h-10 w-24" />
             </CardFooter>
@@ -303,10 +286,7 @@ const handleStartNextWithPm2 = async () => {
                     </div>
                  )}
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-                <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
-                    <Trash2 className="mr-2 h-4 w-4"/> Delete
-                </Button>
+            <CardFooter className="flex justify-start gap-2">
                  <Button asChild variant="outline">
                     <Link href={`/root/servers/allocations/create?serverId=${id}`}>
                         <Share2 className="mr-2 h-4 w-4"/> Allocate Server
@@ -609,44 +589,32 @@ www.example.com/subpath"
             </CardContent>
              {(logsPage > 1 || hasMoreLogs) && (
                 <CardFooter className="flex items-center justify-between pt-4">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setLogsPage(prev => Math.max(1, prev - 1))}
-                        disabled={logsPage <= 1 || loadingLogs}
-                    >
-                        <ChevronLeft className="mr-2 h-4 w-4" />
-                        Previous
-                    </Button>
-                    <span className="text-sm text-muted-foreground">Page {logsPage}</span>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setLogsPage(prev => prev + 1)}
-                        disabled={!hasMoreLogs || loadingLogs}
-                    >
-                        Next
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setLogsPage(prev => Math.max(1, prev - 1))}
+                            disabled={logsPage <= 1 || loadingLogs}
+                        >
+                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setLogsPage(prev => prev + 1)}
+                            disabled={!hasMoreLogs || loadingLogs}
+                        >
+                            Next
+                            <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                        Page {logsPage}
+                    </div>
                 </CardFooter>
             )}
         </Card>
-        
-        <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the server "{server.name}".
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
     </div>
   );
 }
-
