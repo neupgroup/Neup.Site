@@ -9,6 +9,7 @@ export interface GeneratedTheme {
 
 export interface SiteTheme {
     colors: string[];
+    radius?: 'low' | 'medium' | 'high';
     generated?: GeneratedTheme;
 }
 

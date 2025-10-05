@@ -102,8 +102,12 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
 
     if (data.theme?.colors && data.theme.colors.length > 0) {
         dataToSave.theme = {
-            ...data.theme, // Keep the user selected colors
+            ...data.theme, // Keep user-selected colors and radius
             generated: generateThemeFromColor(data.theme.colors)
+        }
+    } else if (data.theme) {
+        dataToSave.theme = {
+            ...data.theme,
         }
     }
     

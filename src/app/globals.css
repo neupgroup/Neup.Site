@@ -39,7 +39,22 @@
     --sidebar-accent-foreground: hsl(var(--accent-foreground));
     --sidebar-border: 210 10% 85%;
     --sidebar-ring: 173 58% 39%;
+    --radius: 0.5rem; /* Default medium radius */
+    --radius-low: 0.25rem;
+    --radius-medium: 0.5rem;
+    --radius-high: 1rem;
   }
+
+  .radius-low {
+      --radius: var(--radius-low);
+  }
+  .radius-medium {
+      --radius: var(--radius-medium);
+  }
+  .radius-high {
+      --radius: var(--radius-high);
+  }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
