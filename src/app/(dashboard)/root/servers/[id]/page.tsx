@@ -66,7 +66,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   
   if (loading) {
     return (
-        <Card className="w-full max-w-2xl">
+        <Card className="w-full">
             <CardHeader>
                 <Skeleton className="h-8 w-1/2" />
                 <Skeleton className="h-4 w-3/4" />
@@ -101,7 +101,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full">
         <div className="mb-4">
             <Button variant="ghost" asChild>
                 <Link href="/root/servers">
