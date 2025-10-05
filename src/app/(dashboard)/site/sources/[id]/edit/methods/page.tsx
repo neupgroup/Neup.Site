@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X, Play, Eraser } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getSource, updateSource, testApiMethod, type Source, type SourceMethod } from '@/actions/editor/sources';
+import { getSource, updateSource, testApiMethod, type Source, type SourceMethod, ApiSource } from '@/actions/editor/sources';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -68,7 +68,7 @@ const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourc
 };
 
 
-const MethodCard = ({ method, sourceId, onUpdate, onRemove }: { method: SourceMethod, sourceId: string, onUpdate: (methodName: string, newMethodData: SourceMethod) => Promise<void>, onRemove: (methodName: string) => Promise<void> }) => {
+const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMethod, source: Source, onUpdate: (methodName: string, newMethodData: SourceMethod) => Promise<void>, onRemove: (methodName: string) => Promise<void> }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedMethod, setEditedMethod] = useState<SourceMethod>(method);
     const [showTester, setShowTester] = useState(false);
@@ -137,6 +137,7 @@ const MethodCard = ({ method, sourceId, onUpdate, onRemove }: { method: SourceMe
         : currentMethodData.headers || '{}';
 
     const showHeaders = isEditing || (headersString && headersString.trim() !== '{}' && headersString.trim() !== '');
+    const baseUrl = source.type === 'api' ? (source as ApiSource).url : '';
 
     return (
         <Card>
@@ -179,7 +180,16 @@ const MethodCard = ({ method, sourceId, onUpdate, onRemove }: { method: SourceMe
                 </div>
                 <div className="space-y-2">
                     <Label>Endpoint</Label>
-                    <Input value={currentMethodData.path} onChange={(e) => handleFieldChange('path', e.target.value)} placeholder="/products/[productId]" disabled={!isEditing} />
+                    <div className="flex items-center rounded-md border border-input bg-background has-[:disabled]:opacity-70">
+                        {baseUrl && <span className="text-sm text-muted-foreground px-3 font-mono">{baseUrl}</span>}
+                        <Input 
+                            value={currentMethodData.path} 
+                            onChange={(e) => handleFieldChange('path', e.target.value)} 
+                            placeholder="/products/[productId]" 
+                            disabled={!isEditing} 
+                            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        />
+                    </div>
                 </div>
                 {showHeaders && (
                     <div className="space-y-2">
@@ -194,11 +204,10 @@ const MethodCard = ({ method, sourceId, onUpdate, onRemove }: { method: SourceMe
                         />
                     </div>
                 )}
-                {showTester && <MethodTester sourceId={sourceId} method={currentMethodData} onResult={setTestResult} onIsLoadingChange={setIsTesting} />}
+                {showTester && <MethodTester sourceId={source.id} method={currentMethodData} onResult={setTestResult} onIsLoadingChange={setIsTesting} />}
 
                 {(isTesting || testResult) && (
                     <div className="space-y-2 pt-4 border-t mt-4">
-                        <Label>Response</Label>
                         {isTesting && !testResult && (
                              <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <Loader2 className="animate-spin h-4 w-4" />
@@ -383,7 +392,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
     );
   }
 
-  if (error) {
+  if (error || !source) {
     return (
       <Alert variant="destructive" className="max-w-2xl">
         <AlertCircle className="h-4 w-4" />
@@ -411,7 +420,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
             <MethodCard 
                 key={method.methodName} 
                 method={method} 
-                sourceId={id}
+                source={source}
                 onUpdate={handleUpdateMethod}
                 onRemove={handleRemoveMethod}
             />
@@ -424,3 +433,5 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
       </div>
   );
 }
+
+    
