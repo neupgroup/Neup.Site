@@ -4,6 +4,7 @@
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, writeBatch, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
+import { logErrorToFirestore } from '@/lib/logging';
 
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 
@@ -182,4 +183,54 @@ export async function deleteSource(id: string) {
   } catch (error: any) {
     return { success: false, error: error.message || 'Failed to delete source.' };
   }
+}
+
+/**
+ * Tests an API method by executing a request.
+ */
+export async function testApiMethod(sourceId: string, method: SourceMethod, params: Record<string, string>): Promise<{ success: boolean; data?: any; error?: string }> {
+    const { success, source, error } = await getSource(sourceId);
+
+    if (!success || !source) {
+        return { success: false, error: `Failed to find source: ${error}` };
+    }
+
+    if (source.type !== 'api') {
+        return { success: false, error: 'This action is only valid for API sources.' };
+    }
+
+    let endpoint = method.path;
+    for (const key in params) {
+        endpoint = endpoint.replace(`[${key}]`, encodeURIComponent(params[key]));
+    }
+
+    const fullUrl = `${source.url}${endpoint}`;
+
+    const headers = {
+        ...(source.headers || {}),
+        ...(method.headers || {}),
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await fetch(fullUrl, {
+            method: method.httpMethod || 'GET',
+            headers: headers,
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API returned status ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        return { success: true, data };
+    } catch (e: any) {
+        await logErrorToFirestore({
+            message: `API Test Failed for ${fullUrl}: ${e.message}`,
+            source: 'testApiMethod',
+            details: JSON.stringify({ sourceId, method, params }),
+        });
+        return { success: false, error: e.message };
+    }
 }

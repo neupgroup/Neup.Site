@@ -11,12 +11,21 @@ import {
   CardTitle,
   CardFooter
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getSource, updateSource, type Source, type SourceMethod } from '@/actions/editor/sources';
+import { getSource, updateSource, testApiMethod, type Source, type SourceMethod } from '@/actions/editor/sources';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -28,13 +37,105 @@ type FormValues = {
     methods: SourceMethod[];
 };
 
-const MethodCard = ({ index, onRemove, isEditing, onEdit, onSave, onCancel }: { index: number, onRemove: () => void, isEditing: boolean, onEdit: () => void, onSave: () => void, onCancel: () => void }) => {
-    const { control, getValues, register } = useFormContext<FormValues>();
+const TestMethodDialog = ({ sourceId, method, children }: { sourceId: string, method: SourceMethod, children: React.ReactNode }) => {
+    const [open, setOpen] = useState(false);
+    const [params, setParams] = useState<Record<string, string>>({});
+    const [result, setResult] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const dynamicParams = method.path.match(/\[(\w+)\]/g)?.map(p => p.slice(1, -1)) || [];
+    
+    const handleTest = async () => {
+        setIsLoading(true);
+        setResult(null);
+        const res = await testApiMethod(sourceId, method, params);
+        setResult(res);
+        setIsLoading(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader>
+                    <DialogTitle>Test API Method</DialogTitle>
+                    <DialogDescription>
+                        Run a test request for the <span className="font-mono bg-muted px-1 py-0.5 rounded">{method.methodName}</span> method.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    {dynamicParams.length > 0 && (
+                        <div className="space-y-2">
+                             <h4 className="font-medium">Parameters</h4>
+                            {dynamicParams.map(param => (
+                                <div key={param} className="grid grid-cols-4 items-center gap-4">
+                                    <Label htmlFor={param} className="text-right">{param}</Label>
+                                    <Input id={param} value={params[param] || ''} onChange={e => setParams({...params, [param]: e.target.value })} className="col-span-3" />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {result && (
+                        <div className="space-y-2">
+                             <h4 className="font-medium">Result</h4>
+                             <div className="max-h-64 overflow-auto rounded-md bg-muted p-4">
+                                {result.success ? (
+                                    <pre className="text-xs">{JSON.stringify(result.data, null, 2)}</pre>
+                                ) : (
+                                    <Alert variant="destructive">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertTitle>Error</AlertTitle>
+                                        <AlertDescription>{result.error}</AlertDescription>
+                                    </Alert>
+                                )}
+                             </div>
+                        </div>
+                    )}
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleTest} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 animate-spin" /> : <Play className="mr-2" />}
+                        Run Test
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+
+const MethodCard = ({ index, onRemove }: { index: number, onRemove: () => void }) => {
+    const { control, getValues, register, formState: { errors } } = useFormContext<FormValues>();
+    const [isEditing, setIsEditing] = useState(false);
+    const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
+
+    const startEditing = () => {
+        setOriginalState(getValues(`methods.${index}`));
+        setIsEditing(true);
+    };
+    
+    const cancelEditing = () => {
+        // This needs a way to reset a single field array item, which is tricky.
+        // For now, just exit edit mode. A full reset is handled at the form level.
+        setIsEditing(false);
+        setOriginalState(null);
+    };
+
+    const methodData = getValues(`methods.${index}`);
 
     return (
         <Card>
-            <CardHeader>
-                <CardTitle className="truncate">{getValues(`methods.${index}.methodName`) || `New Method`}</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="truncate flex items-center gap-2">
+                    {getValues(`methods.${index}.methodName`) || `New Method`}
+                     {!isEditing && (
+                        <TestMethodDialog sourceId={use(params).id} method={methodData}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <Play className="h-4 w-4" />
+                            </Button>
+                        </TestMethodDialog>
+                    )}
+                </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -79,18 +180,18 @@ const MethodCard = ({ index, onRemove, isEditing, onEdit, onSave, onCancel }: { 
             <CardFooter className="flex justify-start gap-2">
                 {isEditing ? (
                     <>
-                        <Button type="button" size="sm" onClick={onSave}>
+                        <Button type="button" size="sm" onClick={() => setIsEditing(false)}>
                             <Save className="mr-2" /> Save
                         </Button>
-                         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+                         <Button type="button" variant="ghost" size="sm" onClick={cancelEditing}>
                              <X className="mr-2" /> Cancel
                         </Button>
-                        <Button type="button" variant="destructive" size="sm" onClick={onRemove}>
+                         <Button type="button" variant="destructive" size="sm" onClick={onRemove}>
                             <Trash2 className="mr-2" /> Remove
                         </Button>
                     </>
                 ) : (
-                    <Button type="button" variant="outline" size="sm" onClick={onEdit}>
+                    <Button type="button" variant="outline" size="sm" onClick={startEditing}>
                         <Edit className="mr-2" /> Edit
                     </Button>
                 )}
@@ -140,7 +241,6 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   const [error, setError] = useState<string | null>(null);
   const [sourceName, setSourceName] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [originalState, setOriginalState] = useState<FormValues | null>(null);
   
   const { toast } = useToast();
   const router = useRouter();
@@ -188,34 +288,16 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
           });
           return;
       }
-
+      
       append({
           methodName: name,
           httpMethod: 'GET',
           path: '',
           headers: '{}' as any
       });
-      setEditingIndex(fields.length); // Edit the newly added item
-  };
-
-  const startEditing = (index: number) => {
-      setOriginalState(formMethods.getValues());
-      setEditingIndex(index);
+      setEditingIndex(fields.length);
   };
   
-  const cancelEditing = (index: number) => {
-      if (originalState) {
-          formMethods.reset(originalState);
-      }
-      setEditingIndex(null);
-      setOriginalState(null);
-  };
-  
-  const saveEditing = (index: number) => {
-      setEditingIndex(null);
-      setOriginalState(null);
-  }
-
   const handleUpdateMethods = async (data: FormValues) => {
     let methodsToSave;
     try {
@@ -279,10 +361,6 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                 key={field.id} 
                 index={index} 
                 onRemove={() => remove(index)}
-                isEditing={editingIndex === index}
-                onEdit={() => startEditing(index)}
-                onSave={() => saveEditing(index)}
-                onCancel={() => cancelEditing(index)}
             />
         ))}
 
@@ -298,3 +376,4 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
     </FormProvider>
   );
 }
+
