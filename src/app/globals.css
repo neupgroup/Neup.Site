@@ -103,6 +103,25 @@
     @apply bg-background text-foreground font-body;
     font-weight: 400;
     overflow-y: scroll;
+    transition: background-color 300ms ease, color 300ms ease;
+  }
+   /* Apply smooth transitions to common elements */
+  div,
+  header,
+  aside,
+  main,
+  section,
+  button,
+  input,
+  textarea,
+  a {
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+  }
+
+  /* Exclude specific interactive elements from having a transition on their own properties to avoid conflicts */
+  button:not(:hover),
+  a:not(:hover) {
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
   }
 }
 
