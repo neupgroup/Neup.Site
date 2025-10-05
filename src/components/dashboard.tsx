@@ -174,7 +174,6 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 <NavLink href="/site/modules" currentPath={pathname}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
                  <NavLink href="/analytics" currentPath={pathname}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
                 <NavLink href="/site/theme" currentPath={pathname}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
-                 <NavLink href="/site/storage" currentPath={pathname}><HardDrive className="h-4 w-4" /><span>Storage</span></NavLink>
                  <NavLink href="/site/billing" currentPath={pathname}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
                 <NavLink href="/site/editor/dragger" currentPath={pathname}><LayoutTemplate className="h-4 w-4" /><span>Editor</span></NavLink>
                 <NavLink href="/site/sections" currentPath={pathname}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
