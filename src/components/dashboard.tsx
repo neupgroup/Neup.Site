@@ -23,38 +23,80 @@ import {
   Plus,
   Tag,
   Star,
+  Eye,
+  EyeOff,
+  Loader2,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Site } from '@/actions/editor/site';
+import { saveSite } from '@/actions/editor/site';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from './ui/button';
 import { ChevronRight } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 function Header() {
-  const { profileName, logoUrl, hideSitename, loading } = useProfile();
+  const { profileName, logoUrl, hideSitename, setHideSitename, loading } = useProfile();
+  const [isToggling, setIsToggling] = useState(false);
+  const { toast } = useToast();
+
+  const handleToggleSitename = async () => {
+      if (hideSitename === null) return;
+      setIsToggling(true);
+      const newHideSitename = !hideSitename;
+      const result = await saveSite({ hideSitename: newHideSitename });
+      if (result.success) {
+          setHideSitename(newHideSitename);
+          toast({
+              title: `Site name ${newHideSitename ? 'hidden' : 'shown'}`,
+              description: 'Your preference has been saved.',
+          });
+      } else {
+          toast({
+              variant: 'destructive',
+              title: 'Error',
+              description: 'Could not save your preference.',
+          });
+      }
+      setIsToggling(false);
+  }
+
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
-        <Link href="/" className="flex items-center gap-4">
-          {loading.logo || logoUrl === null ? (
-            <Skeleton className="h-6 w-6" />
-          ) : logoUrl ? (
-             <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
-             </div>
-          ) : (
-            <Rocket className="h-6 w-6 text-primary" />
-          )}
+        <div className="flex flex-col items-start group">
+          <Link href="/" className="flex items-center gap-4">
+            {loading.logo || logoUrl === null ? (
+              <Skeleton className="h-6 w-6" />
+            ) : logoUrl ? (
+               <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
+                  <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
+               </div>
+            ) : (
+              <Rocket className="h-6 w-6 text-primary" />
+            )}
 
-          {(!hideSitename && hideSitename !== null) && (
-            <h1 className="font-headline text-xl font-semibold tracking-tight">
-              {loading.name || profileName === null ? <Skeleton className="h-6 w-32" /> : (profileName?.trim() ? profileName : 'Neup.Sites')}
-            </h1>
-          )}
-        </Link>
+            {(!hideSitename && hideSitename !== null) && (
+              <h1 className="font-headline text-xl font-semibold tracking-tight">
+                {loading.name || profileName === null ? <Skeleton className="h-6 w-32" /> : (profileName?.trim() ? profileName : 'Neup.Sites')}
+              </h1>
+            )}
+          </Link>
+           <Button
+                variant="ghost"
+                size="sm"
+                className="h-auto px-1 py-0 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={handleToggleSitename}
+                disabled={isToggling}
+            >
+                {isToggling ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : (hideSitename ? <Eye className="mr-1 h-3 w-3" /> : <EyeOff className="mr-1 h-3 w-3" />)}
+                {hideSitename ? 'Show' : 'Hide'} name
+            </Button>
+        </div>
         <div className="text-lg font-semibold">Dashboard</div>
       </div>
     </header>
@@ -195,3 +237,5 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
     </div>
   );
 }
+
+    
