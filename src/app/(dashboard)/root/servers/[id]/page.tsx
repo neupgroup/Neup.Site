@@ -441,6 +441,29 @@ www.example.com/subpath"
                         </Button>
                     </AccordionContent>
                 </AccordionItem>
+
+                <AccordionItem value="custom-command" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
+                        <div>
+                            <h4 className="font-medium text-left">Run Custom Command</h4>
+                            <p className="text-sm text-muted-foreground text-left">Execute any shell command on the server.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4">
+                        <div className="grid w-full gap-2">
+                            <Textarea 
+                                value={customCommand}
+                                onChange={(e) => setCustomCommand(e.target.value)}
+                                placeholder="e.g., ls -la" 
+                                rows={4}
+                                className="font-mono"
+                            />
+                            <Button onClick={() => handleRunCommand(customCommand)} disabled={isPending || !customCommand}>
+                                <Send className="mr-2 h-4 w-4" /> Run Command
+                            </Button>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
                 
                  <AccordionItem value="reset-nginx" className="border-0">
                     <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border border-destructive/50 p-4 hover:bg-destructive/10 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline">
@@ -457,27 +480,6 @@ www.example.com/subpath"
                 </AccordionItem>
             </Accordion>
           </CardContent>
-        </Card>
-        
-        <Card>
-            <CardHeader>
-                <CardTitle>Run Custom Command</CardTitle>
-                <CardDescription>Execute any shell command on the server.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="grid w-full gap-2">
-                    <Textarea 
-                        value={customCommand}
-                        onChange={(e) => setCustomCommand(e.target.value)}
-                        placeholder="e.g., ls -la" 
-                        rows={4}
-                        className="font-mono"
-                    />
-                    <Button onClick={() => handleRunCommand(customCommand)} disabled={isPending || !customCommand}>
-                        <Send className="mr-2 h-4 w-4" /> Run Command
-                    </Button>
-                </div>
-            </CardContent>
         </Card>
         
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
