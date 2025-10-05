@@ -94,6 +94,23 @@
     .is-dragging-section > section[draggable="true"] {
         @apply my-8;
     }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 4px;
+        transition: background 300ms ease-in-out;
+    }
+    .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+        background: hsl(var(--muted));
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground) / 0.7);
+    }
 }
 
 /* NProgress styles */

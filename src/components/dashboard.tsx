@@ -149,7 +149,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
       <div className="mx-auto grid w-full max-w-[1440px] lg:grid-cols-[280px_1fr]">
         {/* Sidebar */}
         <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-card lg:sticky lg:top-16 lg:flex">
-          <div className="flex flex-1 flex-col overflow-y-auto p-4">
+          <div className="flex flex-1 flex-col overflow-y-auto p-4 custom-scrollbar">
             <nav className="flex flex-col gap-2">
               <NavLink href="/" currentPath={pathname}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
               <NavLink href="/profile" currentPath={pathname}><Settings className="h-4 w-4" /><span>Profile</span></NavLink>
@@ -177,6 +177,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode; them
                 <NavLink href="/site/theme" currentPath={pathname}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
                  <NavLink href="/site/billing" currentPath={pathname}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
                 <NavLink href="/site/sections" currentPath={pathname}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
+                <NavLink href="/site/deploy" currentPath={pathname}><Rocket className="h-4 w-4" /><span>Deploy</span></NavLink>
               </div>
 
               {/* Root Section */}
