@@ -1,4 +1,3 @@
-
 type HSL = { h: number; s: number; l: number };
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
@@ -42,104 +41,122 @@ function rgbToHsl({ r, g, b }: { r: number; g: number; b: number }): HSL {
 }
 
 function getContrastColor(hsl: HSL): HSL {
-  // Using a simple lightness threshold to determine contrast
+  // Simple contrast based on lightness threshold
   return hsl.l > 60 ? { h: 0, s: 0, l: 10 } : { h: 0, s: 0, l: 98 };
 }
 
 function hslToString(hsl: HSL): string {
-    return `${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%`;
+  return `${Math.round(hsl.h)} ${Math.round(hsl.s)}% ${Math.round(hsl.l)}%`;
+}
+
+function adjustForDarkMode(hsl: HSL): HSL {
+  return {
+    h: hsl.h,
+    s: Math.min(100, hsl.s * 1.2), // boost saturation
+    l: Math.max(20, hsl.l * 0.6),  // lower lightness but not too much
+  };
+}
+
+function generateSecondaryColor(hsl: HSL): HSL {
+  // Slight hue shift for a natural secondary tone
+  return {
+    h: (hsl.h + 20) % 360,
+    s: Math.min(100, hsl.s * 0.8),
+    l: Math.min(70, hsl.l + 10),
+  };
 }
 
 export function generateThemeFromColor(hexColors: string[]) {
-    if (!hexColors || hexColors.length === 0) {
-        // Return a default theme if no colors are provided
-        hexColors = ['#64C5CF', '#2A9D8F'];
-    }
+  if (!hexColors || hexColors.length === 0) {
+    hexColors = ['#64C5CF', '#2A9D8F'];
+  }
 
-    const primaryHex = hexColors[0];
-    const accentHex = hexColors[1] || primaryHex; // Fallback for accent
+  const primaryRgb = hexToRgb(hexColors[0]);
+  const accentRgb = hexToRgb(hexColors[1] || hexColors[0]);
 
-    const primaryRgb = hexToRgb(primaryHex);
-    const accentRgb = hexToRgb(accentHex);
-    
-    if (!primaryRgb || !accentRgb) {
-        throw new Error('Invalid HEX color format');
-    }
+  if (!primaryRgb || !accentRgb) {
+    throw new Error('Invalid HEX color format');
+  }
 
-    const primaryHsl = rgbToHsl(primaryRgb);
-    const accentHsl = rgbToHsl(accentRgb);
+  const primaryHsl = rgbToHsl(primaryRgb);
+  const accentHsl = rgbToHsl(accentRgb);
 
-    const lightTheme = {
-        background: '210 20% 98%',
-        foreground: '240 10% 3.9%',
-        card: '0 0% 100%',
-        cardForeground: '240 10% 3.9%',
-        popover: '0 0% 100%',
-        popoverForeground: '240 10% 3.9%',
-        primary: hslToString(primaryHsl),
-        primaryForeground: hslToString(getContrastColor(primaryHsl)),
-        secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 20)}% ${Math.min(100, primaryHsl.l + 35)}%`,
-        secondaryForeground: hslToString(getContrastColor({ h: primaryHsl.h, s: Math.max(0, primaryHsl.s - 20), l: Math.min(100, primaryHsl.l + 35) })),
-        muted: `${primaryHsl.h} 30% 95%`,
-        mutedForeground: '240 3.8% 46.1%',
-        accent: hslToString(accentHsl),
-        accentForeground: hslToString(getContrastColor(accentHsl)),
-        destructive: '0 84.2% 60.2%',
-        destructiveForeground: '0 0% 98%',
-        border: '240 5.9% 90%',
-        input: '240 5.9% 90%',
-        ring: hslToString(accentHsl),
-        sidebarAccent: hslToString({h: primaryHsl.h, s: primaryHsl.s, l: Math.min(100, primaryHsl.l + 10)}),
-        sidebarAccentForeground: hslToString(getContrastColor({h: primaryHsl.h, s: primaryHsl.s, l: Math.min(100, primaryHsl.l + 10)})),
-    };
+  // Dark mode adjusted tones
+  const primaryDark = adjustForDarkMode(primaryHsl);
+  const accentDark = adjustForDarkMode(accentHsl);
+  const secondaryDark = adjustForDarkMode(generateSecondaryColor(primaryHsl));
 
-    const darkTheme = {
-        background: '240 5% 15%',
-        foreground: '0 0% 98%',
-        card: '240 5% 17%',
-        cardForeground: '0 0% 98%',
-        popover: '240 5% 17%',
-        popoverForeground: '0 0% 98%',
-        primary: hslToString(primaryHsl),
-        primaryForeground: hslToString(getContrastColor(primaryHsl)),
-        secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 30)}% ${Math.max(0, primaryHsl.l - 40)}%`,
-        secondaryForeground: hslToString(getContrastColor({ h: primaryHsl.h, s: Math.max(0, primaryHsl.s - 30), l: Math.max(0, primaryHsl.l - 40) })),
-        muted: `${primaryHsl.h} 10% 25%`,
-        mutedForeground: '240 5% 64.9%',
-        accent: hslToString(accentHsl),
-        accentForeground: hslToString(getContrastColor(accentHsl)),
-        destructive: '0 62.8% 30.6%',
-        destructiveForeground: '0 0% 98%',
-        border: '240 4% 25%',
-        input: '240 4% 25%',
-        ring: hslToString(accentHsl),
-        sidebarAccent: hslToString({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 40)}),
-        sidebarAccentForeground: hslToString(getContrastColor({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 40)})),
-    };
-    
-    const blackTheme = {
-        background: '240 10% 3.9%',
-        foreground: '0 0% 98%',
-        card: '240 10% 3.9%',
-        cardForeground: '0 0% 98%',
-        popover: '240 10% 3.9%',
-        popoverForeground: '0 0% 98%',
-        primary: hslToString(primaryHsl),
-        primaryForeground: hslToString(getContrastColor(primaryHsl)),
-        secondary: `${primaryHsl.h} ${Math.max(0, primaryHsl.s - 30)}% 15.9%`,
-        secondaryForeground: '0 0% 98%',
-        muted: '240 3.7% 15.9%',
-        mutedForeground: '240 5% 64.9%',
-        accent: hslToString(accentHsl),
-        accentForeground: hslToString(getContrastColor(accentHsl)),
-        destructive: '0 62.8% 30.6%',
-        destructiveForeground: '0 0% 98%',
-        border: '240 3.7% 15.9%',
-        input: '240 3.7% 15.9%',
-        ring: hslToString(accentHsl),
-        sidebarAccent: hslToString({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 50)}),
-        sidebarAccentForeground: hslToString(getContrastColor({h: primaryHsl.h, s: primaryHsl.s, l: Math.max(0, primaryHsl.l - 50)})),
-    };
+  const lightTheme = {
+    background: '210 20% 98%',
+    foreground: '240 10% 3.9%',
+    card: '0 0% 100%',
+    cardForeground: '240 10% 3.9%',
+    popover: '0 0% 100%',
+    popoverForeground: '240 10% 3.9%',
+    primary: hslToString(primaryHsl),
+    primaryForeground: hslToString(getContrastColor(primaryHsl)),
+    secondary: hslToString(generateSecondaryColor(primaryHsl)),
+    secondaryForeground: hslToString(getContrastColor(generateSecondaryColor(primaryHsl))),
+    muted: `${primaryHsl.h} 15% 92%`,
+    mutedForeground: '240 3.8% 46.1%',
+    accent: hslToString(accentHsl),
+    accentForeground: hslToString(getContrastColor(accentHsl)),
+    destructive: '0 84.2% 60.2%',
+    destructiveForeground: '0 0% 98%',
+    border: '240 5.9% 90%',
+    input: '240 5.9% 90%',
+    ring: hslToString(accentHsl),
+    sidebarAccent: hslToString(primaryHsl),
+    sidebarAccentForeground: hslToString(getContrastColor(primaryHsl)),
+  };
 
-    return { light: lightTheme, dark: darkTheme, black: blackTheme };
+  const darkTheme = {
+    background: '240 5% 12%',
+    foreground: '0 0% 98%',
+    card: '240 5% 15%',
+    cardForeground: '0 0% 98%',
+    popover: '240 5% 17%',
+    popoverForeground: '0 0% 98%',
+    primary: hslToString(primaryDark),
+    primaryForeground: hslToString(getContrastColor(primaryDark)),
+    secondary: hslToString(secondaryDark),
+    secondaryForeground: hslToString(getContrastColor(secondaryDark)),
+    muted: `${primaryHsl.h} 15% 20%`,
+    mutedForeground: '240 5% 70%',
+    accent: hslToString(accentDark),
+    accentForeground: hslToString(getContrastColor(accentDark)),
+    destructive: '0 62.8% 40%',
+    destructiveForeground: '0 0% 98%',
+    border: '240 4% 25%',
+    input: '240 4% 25%',
+    ring: hslToString(accentDark),
+    sidebarAccent: hslToString(primaryDark),
+    sidebarAccentForeground: hslToString(getContrastColor(primaryDark)),
+  };
+
+  const blackTheme = {
+    background: '240 10% 4%',
+    foreground: '0 0% 98%',
+    card: '240 10% 5%',
+    cardForeground: '0 0% 98%',
+    popover: '240 10% 5%',
+    popoverForeground: '0 0% 98%',
+    primary: hslToString(primaryDark),
+    primaryForeground: hslToString(getContrastColor(primaryDark)),
+    secondary: hslToString(secondaryDark),
+    secondaryForeground: hslToString(getContrastColor(secondaryDark)),
+    muted: '240 5% 12%',
+    mutedForeground: '240 5% 70%',
+    accent: hslToString(accentDark),
+    accentForeground: hslToString(getContrastColor(accentDark)),
+    destructive: '0 62.8% 35%',
+    destructiveForeground: '0 0% 98%',
+    border: '240 3.7% 12%',
+    input: '240 3.7% 12%',
+    ring: hslToString(accentDark),
+    sidebarAccent: hslToString(primaryDark),
+    sidebarAccentForeground: hslToString(getContrastColor(primaryDark)),
+  };
+
+  return { light: lightTheme, dark: darkTheme, black: blackTheme };
 }
