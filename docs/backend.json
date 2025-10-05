@@ -183,6 +183,21 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "title", "content", "author", "publishedAt"]
+    },
+     "ServerLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Server Log",
+      "type": "object",
+      "description": "Represents a log entry for a command executed on a server.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the log." },
+        "serverId": { "type": "string", "description": "The ID of the server where the command was run." },
+        "command": { "type": "string", "description": "The command that was executed." },
+        "output": { "type": "string", "description": "The output or result of the command." },
+        "status": { "type": "string", "enum": ["running", "success", "error"], "description": "The status of the command execution." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the command was logged." }
+      },
+      "required": ["serverId", "command", "output", "status", "timestamp"]
     }
   },
   "auth": {
@@ -257,6 +272,22 @@
             {
               "name": "pathId",
               "description": "The unique identifier for the path mapping."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/serverLogs/{logId}",
+        "definition": {
+          "entityName": "ServerLog",
+          "schema": {
+            "$ref": "#/backend/entities/ServerLog"
+          },
+          "description": "Stores logs of commands executed on servers.",
+          "params": [
+            {
+              "name": "logId",
+              "description": "The unique identifier for the server log entry."
             }
           ]
         }

@@ -1,5 +1,6 @@
 
 
+
 export interface ServerAllocation {
   id: string;
   siteId: string;
@@ -19,4 +20,13 @@ export interface Server {
   privateKey?: string;
   createdOn?: string | null;
   expiresOn?: string | null;
+}
+
+export interface ServerLog {
+  id: string;
+  serverId: string;
+  command: string;
+  output: string;
+  status: 'running' | 'success' | 'error';
+  timestamp: string | null;
 }
