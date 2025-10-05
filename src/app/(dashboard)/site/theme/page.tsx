@@ -17,6 +17,7 @@ const colorLabels = ['Primary', 'Accent', 'Tertiary'];
 export default function ThemePage() {
   const [themeMode, setThemeMode] = useState('light');
   const [colors, setColors] = useState(['#64C5CF']);
+  const [radius, setRadius] = useState<'low' | 'medium' | 'high'>('medium');
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -25,11 +26,13 @@ export default function ThemePage() {
     const fetchTheme = async () => {
         setLoading(true);
         const { site } = await getSite();
-        if (site?.theme?.colors && site.theme.colors.length > 0) {
-            setColors(site.theme.colors);
-        } else {
-            // Set a default if no colors are defined
-            setColors(['#64C5CF']);
+        if (site?.theme) {
+            if (site.theme.colors && site.theme.colors.length > 0) {
+                setColors(site.theme.colors);
+            }
+            if (site.theme.radius) {
+                setRadius(site.theme.radius);
+            }
         }
         setLoading(false);
     };
@@ -51,11 +54,12 @@ export default function ThemePage() {
       const result = await saveSite({
           theme: {
               colors: colors,
+              radius: radius,
           }
       });
 
       if (result.success) {
-          toast({ title: 'Theme Saved', description: 'Your new colors have been applied.' });
+          toast({ title: 'Theme Saved', description: 'Your new theme settings have been applied.' });
           // Force a reload to apply the new CSS variables from the server
           window.location.reload();
       } else {
@@ -114,7 +118,7 @@ export default function ThemePage() {
                                     <Input type="color" value={color} onChange={(e) => handleColorChange(index, e.target.value)} className="w-12 p-1" />
                                 </div>
                             </div>
-                            {colors.length > 0 && (
+                            {colors.length > 1 && (
                                 <Button
                                     variant="destructive"
                                     size="sm"
@@ -131,17 +135,43 @@ export default function ThemePage() {
                             <Plus className="mr-2" /> Add Color
                         </Button>
                     )}
-                    <div className="pt-4">
-                        <Button onClick={handleSaveTheme} disabled={isSaving}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                            Save Colors
-                        </Button>
-                    </div>
                 </div>
             )}
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+            <CardTitle>Border Radius</CardTitle>
+            <CardDescription>Adjust the roundness of components like buttons and cards.</CardDescription>
+        </CardHeader>
+        <CardContent>
+             {loading ? (
+                <Skeleton className="h-24 w-full" />
+            ) : (
+            <RadioGroup value={radius} onValueChange={(value) => setRadius(value as any)}>
+                <div className="grid grid-cols-3 gap-4">
+                <Label htmlFor="radius-low" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                    <div className="w-12 h-8 bg-muted rounded-sm mx-auto mb-2"></div>
+                    Low
+                    <RadioGroupItem value="low" id="radius-low" className="sr-only" />
+                </Label>
+                <Label htmlFor="radius-medium" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                    <div className="w-12 h-8 bg-muted rounded-md mx-auto mb-2"></div>
+                    Medium
+                    <RadioGroupItem value="medium" id="radius-medium" className="sr-only" />
+                </Label>
+                <Label htmlFor="radius-high" className="p-4 border rounded-md cursor-pointer has-[input:checked]:border-primary text-center">
+                    <div className="w-12 h-8 bg-muted rounded-full mx-auto mb-2"></div>
+                    High
+                    <RadioGroupItem value="high" id="radius-high" className="sr-only" />
+                </Label>
+                </div>
+            </RadioGroup>
+            )}
+        </CardContent>
+      </Card>
+      
       <Card>
         <CardHeader>
           <CardTitle>Appearance Mode</CardTitle>
@@ -174,6 +204,13 @@ export default function ThemePage() {
           </RadioGroup>
         </CardContent>
       </Card>
+      
+      <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
+        <Button onClick={handleSaveTheme} disabled={isSaving || loading}>
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            Save Theme
+        </Button>
+      </div>
     </div>
   );
 }
