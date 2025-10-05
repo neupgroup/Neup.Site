@@ -11,15 +11,6 @@ import {
   CardTitle,
   CardFooter
 } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,13 +23,13 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 type FormValues = {
     methods: SourceMethod[];
 };
 
-const TestMethodDialog = ({ sourceId, method, children }: { sourceId: string, method: SourceMethod, children: React.ReactNode }) => {
-    const [open, setOpen] = useState(false);
+const MethodTester = ({ sourceId, method }: { sourceId: string; method: SourceMethod }) => {
     const [params, setParams] = useState<Record<string, string>>({});
     const [result, setResult] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -52,54 +43,65 @@ const TestMethodDialog = ({ sourceId, method, children }: { sourceId: string, me
         setResult(res);
         setIsLoading(false);
     };
+    
+    useEffect(() => {
+        // If there are no dynamic parameters, run the test immediately
+        if (dynamicParams.length === 0) {
+            handleTest();
+        }
+    }, []);
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="sm:max-w-[625px]">
-                <DialogHeader>
-                    <DialogTitle>Test API Method</DialogTitle>
-                    <DialogDescription>
-                        Run a test request for the <span className="font-mono bg-muted px-1 py-0.5 rounded">{method.methodName}</span> method.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    {dynamicParams.length > 0 && (
-                        <div className="space-y-2">
-                             <h4 className="font-medium">Parameters</h4>
-                            {dynamicParams.map(param => (
-                                <div key={param} className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor={param} className="text-right">{param}</Label>
-                                    <Input id={param} value={params[param] || ''} onChange={e => setParams({...params, [param]: e.target.value })} className="col-span-3" />
-                                </div>
-                            ))}
+         <div className="space-y-4 pt-4 border-t mt-4">
+            <h4 className="font-medium text-sm">Test Method</h4>
+            {dynamicParams.length > 0 && (
+                <div className="space-y-2">
+                    <Label>Parameters</Label>
+                    {dynamicParams.map(param => (
+                        <div key={param} className="flex items-center gap-2">
+                            <span className="text-sm font-mono text-muted-foreground w-24 truncate">{param}:</span>
+                            <Input 
+                                value={params[param] || ''} 
+                                onChange={e => setParams({...params, [param]: e.target.value })} 
+                                className="h-8"
+                            />
                         </div>
-                    )}
-                    {result && (
-                        <div className="space-y-2">
-                             <h4 className="font-medium">Result</h4>
-                             <div className="max-h-64 overflow-auto rounded-md bg-muted p-4">
+                    ))}
+                     <Button size="sm" onClick={handleTest} disabled={isLoading} className="mt-2">
+                        {isLoading ? <Loader2 className="mr-2 animate-spin" /> : <Play className="mr-2" />} Run Test
+                    </Button>
+                </div>
+            )}
+           
+            {result && (
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="result">
+                        <AccordionTrigger>
+                            <span className="text-sm font-medium">View Response</span>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                             <div className="max-h-64 overflow-auto rounded-md bg-muted p-2 mt-2">
                                 {result.success ? (
                                     <pre className="text-xs">{JSON.stringify(result.data, null, 2)}</pre>
                                 ) : (
-                                    <Alert variant="destructive">
+                                    <Alert variant="destructive" className="text-xs">
                                         <AlertCircle className="h-4 w-4" />
                                         <AlertTitle>Error</AlertTitle>
                                         <AlertDescription>{result.error}</AlertDescription>
                                     </Alert>
                                 )}
                              </div>
-                        </div>
-                    )}
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            )}
+             {isLoading && dynamicParams.length > 0 && (
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                    <Loader2 className="animate-spin h-4 w-4" />
+                    <span>Loading...</span>
                 </div>
-                <DialogFooter>
-                    <Button onClick={handleTest} disabled={isLoading}>
-                        {isLoading ? <Loader2 className="mr-2 animate-spin" /> : <Play className="mr-2" />}
-                        Run Test
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+            )}
+        </div>
     );
 };
 
@@ -107,9 +109,11 @@ const TestMethodDialog = ({ sourceId, method, children }: { sourceId: string, me
 const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: { index: number, onRemove: () => void, sourceId: string, isEditing: boolean, setEditingIndex: (index: number | null) => void }) => {
     const { control, getValues, register, formState: { errors }, resetField } = useFormContext<FormValues>();
     const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
+    const [showTester, setShowTester] = useState(false);
 
     const startEditing = () => {
         setOriginalState(getValues(`methods.${index}`));
+        setShowTester(false); // Hide tester when editing
         setEditingIndex(index);
     };
     
@@ -125,6 +129,11 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
         setEditingIndex(null);
         setOriginalState(null);
     }
+    
+    const toggleTester = () => {
+        if (isEditing) return;
+        setShowTester(prev => !prev);
+    }
 
     const methodData = getValues(`methods.${index}`);
     const headersValue = getValues(`methods.${index}.headers` as any) as string;
@@ -133,16 +142,14 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="truncate flex items-center gap-2">
-                    {getValues(`methods.${index}.methodName`) || `New Method`}
-                     {!isEditing && (
-                        <TestMethodDialog sourceId={sourceId} method={methodData}>
-                            <Button variant="ghost" size="icon" className="h-7 w-7">
-                                <Play className="h-4 w-4" />
-                            </Button>
-                        </TestMethodDialog>
-                    )}
-                </CardTitle>
+                <div className="flex items-center gap-2">
+                    <CardTitle className="truncate">
+                        {getValues(`methods.${index}.methodName`) || `New Method`}
+                    </CardTitle>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleTester} disabled={isEditing}>
+                        <Play className="h-4 w-4" />
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -185,6 +192,7 @@ const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: {
                         <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
                     </div>
                 )}
+                {showTester && <MethodTester sourceId={sourceId} method={methodData} />}
             </CardContent>
             <CardFooter className="flex justify-start gap-2">
                 {isEditing ? (
@@ -260,7 +268,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
       }
   });
   
-  const { fields, append, remove, control } = useFieldArray({
+  const { fields, append, remove, control, getValues } = useFieldArray({
       control: formMethods.control,
       name: 'methods'
   });
@@ -288,7 +296,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   }, [id, formMethods]);
   
   const handleAddNewMethod = (name: string) => {
-      const existingMethods = formMethods.getValues('methods');
+      const existingMethods = getValues('methods');
       if (existingMethods.some(method => method.methodName.toLowerCase() === name.toLowerCase())) {
           toast({
               variant: 'destructive',
