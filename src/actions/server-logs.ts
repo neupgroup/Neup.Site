@@ -64,6 +64,6 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
         return { logs, hasMore };
     } catch (e: any) {
         console.error('Failed to fetch server logs:', e);
-        return { error: e.message || 'Unknown error occurred while fetching logs.' };
+        return { error: e.message || 'Unknown error occurred while fetching logs. This might be due to a missing Firestore index.' };
     }
 }

@@ -44,6 +44,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [loading, setLoading] = useState(true);
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [logsError, setLogsError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [swapSize, setSwapSize] = useState('3072');
   const [runningCommand, setRunningCommand] = useState<string | null>(null);
@@ -52,12 +53,13 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
 
   const fetchLogs = async (page = 1) => {
     setLoadingLogs(true);
+    setLogsError(null);
     const result = await getServerLogs({ serverId: id, page });
     if (result.success && result.logs) {
         setLogs(prev => (page === 1 ? result.logs! : [...prev, ...result.logs!]));
         setHasMoreLogs(result.hasMore || false);
     } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
+        setLogsError(result.error || 'Failed to load logs.');
     }
     setLoadingLogs(false);
   }
@@ -263,6 +265,12 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
                         <Skeleton className="h-12 w-full" />
                         <Skeleton className="h-12 w-full" />
                     </div>
+                ) : logsError ? (
+                     <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error Loading Logs</AlertTitle>
+                        <AlertDescription>{logsError}</AlertDescription>
+                    </Alert>
                 ) : logs.length === 0 ? (
                     <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
                         <Terminal className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
