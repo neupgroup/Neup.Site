@@ -58,3 +58,12 @@ export interface Structure {
     status: 'deployed' | 'pendingDeployment';
     updatedAt?: string | null;
 }
+
+export interface Deployment {
+    id: string;
+    siteId: string;
+    structure: PathStructure[];
+    status: 'deployed' | 'cancelled';
+    theme: SiteTheme;
+    attemptedOn: string | null;
+}

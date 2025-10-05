@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle } from 'lucide-react';
-import { getStructure, buildStructure, deployStructure, type Structure } from '@/actions/structure';
+import { getStructure, buildStructure, createDeployment, getLastDeployment, type Structure, type Deployment } from '@/actions/structure';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -13,25 +13,38 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function DeployPage() {
     const [structure, setStructure] = useState<Structure | null>(null);
+    const [lastDeployment, setLastDeployment] = useState<Deployment | null>(null);
     const [loading, setLoading] = useState(true);
     const [isBuilding, setIsBuilding] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
 
-    const fetchStructure = async () => {
+    const fetchDeploymentData = async () => {
         setLoading(true);
-        const result = await getStructure();
-        if (result.success) {
-            setStructure(result.structure || null);
+        const [structureResult, deploymentResult] = await Promise.all([
+            getStructure(),
+            getLastDeployment()
+        ]);
+
+        if (structureResult.success) {
+            setStructure(structureResult.structure || null);
         } else {
-            setError(result.error || 'Failed to fetch deployment status.');
+            setError(structureResult.error || 'Failed to fetch deployment status.');
         }
+
+        if (deploymentResult.success) {
+            setLastDeployment(deploymentResult.deployment || null);
+        } else {
+            // Non-critical error, just log it.
+            console.error("Could not fetch last deployment:", deploymentResult.error);
+        }
+
         setLoading(false);
     };
 
     useEffect(() => {
-        fetchStructure();
+        fetchDeploymentData();
     }, []);
 
     const handleBuild = async () => {
@@ -39,7 +52,7 @@ export default function DeployPage() {
         const result = await buildStructure();
         if (result.success) {
             toast({ title: "Build Complete", description: "The site structure has been built."});
-            await fetchStructure(); // Refresh the data
+            await fetchDeploymentData(); // Refresh the data
         } else {
             toast({ variant: "destructive", title: "Build Failed", description: result.error });
         }
@@ -48,10 +61,10 @@ export default function DeployPage() {
     
     const handleDeploy = async () => {
         setIsDeploying(true);
-        const result = await deployStructure();
+        const result = await createDeployment();
         if (result.success) {
-            toast({ title: "Deployment Started", description: "Your changes are being deployed."});
-            await fetchStructure(); // Refresh the data
+            toast({ title: "Deployment Successful", description: "Your changes have been deployed."});
+            await fetchDeploymentData(); // Refresh the data
         } else {
             toast({ variant: "destructive", title: "Deployment Failed", description: result.error });
         }
@@ -82,7 +95,7 @@ export default function DeployPage() {
                                 ) : error ? (
                                     <p className="text-sm text-destructive">Error loading status</p>
                                 ) : (
-                                    <p className="text-sm text-muted-foreground">Last updated: {structure?.updatedAt ? new Date(structure.updatedAt).toLocaleString() : 'Never'}</p>
+                                    <p className="text-sm text-muted-foreground">Last deployed: {lastDeployment?.attemptedOn ? new Date(lastDeployment.attemptedOn).toLocaleString() : 'Never'}</p>
                                 )}
                             </div>
                              {loading ? <Loader2 className="animate-spin" /> :

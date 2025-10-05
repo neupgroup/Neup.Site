@@ -1,12 +1,14 @@
 
 'use server';
 
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
-import type { Structure, PathStructure, Page } from '@/schemas/site';
+import type { Structure, PathStructure, Deployment, Site } from '@/schemas/site';
 import { logErrorToFirestore } from '@/lib/logging';
 import { getPages } from './editor/pages';
+import { getSite } from './editor/site';
+
 
 /**
  * Gets the deployment structure for the current site.
@@ -37,6 +39,48 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
   } catch (error: any) {
     await logErrorToFirestore({ message: `Failed to get structure: ${error.message}`, stack: error.stack, source: 'getStructure' });
     return { success: false, error: 'Failed to get structure.' };
+  }
+}
+
+/**
+ * Gets the last successful deployment record for the current site.
+ */
+export async function getLastDeployment(): Promise<{ success: boolean; deployment?: Deployment; error?: string }> {
+  const cookieStore = cookies();
+  const siteId = cookieStore.get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
+
+  try {
+    const { firestore } = initializeFirebase();
+    const deploymentsRef = collection(firestore, 'deployments');
+    const q = query(
+      deploymentsRef,
+      where('siteId', '==', siteId),
+      where('status', '==', 'deployed'),
+      orderBy('attemptedOn', 'desc'),
+      limit(1)
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return { success: true, deployment: undefined };
+    }
+    
+    const docSnap = querySnapshot.docs[0];
+    const data = docSnap.data();
+    const deployment: Deployment = {
+        id: docSnap.id,
+        siteId: data.siteId,
+        structure: data.structure || [],
+        status: data.status,
+        theme: data.theme,
+        attemptedOn: data.attemptedOn instanceof Timestamp ? data.attemptedOn.toDate().toISOString() : null,
+    };
+    return { success: true, deployment };
+
+  } catch (error: any) {
+    await logErrorToFirestore({ message: `Failed to get last deployment: ${error.message}`, stack: error.stack, source: 'getLastDeployment' });
+    return { success: false, error: 'Failed to get last deployment.' };
   }
 }
 
@@ -90,9 +134,9 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
 
 
 /**
- * Marks the structure as deployed.
+ * Creates a new deployment record and marks the structure as deployed.
  */
-export async function deployStructure(): Promise<{ success: boolean; error?: string }> {
+export async function createDeployment(): Promise<{ success: boolean; error?: string }> {
   const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
@@ -106,9 +150,20 @@ export async function deployStructure(): Promise<{ success: boolean; error?: str
         return { success: false, error: 'No structure found to deploy. Please build first.'};
     }
 
+    const { site } = await getSite();
     const currentStructure = structureSnap.data() as Structure;
-    const updatedPaths = currentStructure.structure.map(p => ({...p, changesMade: false}));
 
+    // Create a new document in the 'deployments' collection
+    await addDoc(collection(firestore, 'deployments'), {
+      siteId,
+      structure: currentStructure.structure,
+      status: 'deployed',
+      theme: site?.theme || {},
+      attemptedOn: serverTimestamp(),
+    });
+
+    // Reset the staging structure
+    const updatedPaths = currentStructure.structure.map(p => ({...p, changesMade: false}));
     await setDoc(structureRef, {
         status: 'deployed',
         structure: updatedPaths,
@@ -117,8 +172,8 @@ export async function deployStructure(): Promise<{ success: boolean; error?: str
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to deploy structure: ${error.message}`, stack: error.stack, source: 'deployStructure' });
-    return { success: false, error: 'Failed to deploy site structure.' };
+    await logErrorToFirestore({ message: `Failed to create deployment: ${error.message}`, stack: error.stack, source: 'createDeployment' });
+    return { success: false, error: 'Failed to create deployment record.' };
   }
 }
 
