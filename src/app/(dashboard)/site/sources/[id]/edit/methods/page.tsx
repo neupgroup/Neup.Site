@@ -104,24 +104,31 @@ const TestMethodDialog = ({ sourceId, method, children }: { sourceId: string, me
 };
 
 
-const MethodCard = ({ index, onRemove, sourceId }: { index: number, onRemove: () => void, sourceId: string }) => {
-    const { control, getValues, register, formState: { errors } } = useFormContext<FormValues>();
-    const [isEditing, setIsEditing] = useState(false);
+const MethodCard = ({ index, onRemove, sourceId, isEditing, setEditingIndex }: { index: number, onRemove: () => void, sourceId: string, isEditing: boolean, setEditingIndex: (index: number | null) => void }) => {
+    const { control, getValues, register, formState: { errors }, resetField } = useFormContext<FormValues>();
     const [originalState, setOriginalState] = useState<SourceMethod | null>(null);
 
     const startEditing = () => {
         setOriginalState(getValues(`methods.${index}`));
-        setIsEditing(true);
+        setEditingIndex(index);
     };
     
     const cancelEditing = () => {
-        // This needs a way to reset a single field array item, which is tricky.
-        // For now, just exit edit mode. A full reset is handled at the form level.
-        setIsEditing(false);
+        if (originalState) {
+             resetField(`methods.${index}`, { defaultValue: originalState });
+        }
+        setEditingIndex(null);
         setOriginalState(null);
     };
+    
+    const saveEditing = () => {
+        setEditingIndex(null);
+        setOriginalState(null);
+    }
 
     const methodData = getValues(`methods.${index}`);
+    const headersValue = getValues(`methods.${index}.headers` as any) as string;
+    const showHeaders = isEditing || (headersValue && headersValue.trim() !== '{}' && headersValue.trim() !== '');
 
     return (
         <Card>
@@ -172,15 +179,17 @@ const MethodCard = ({ index, onRemove, sourceId }: { index: number, onRemove: ()
                     <Label>Endpoint</Label>
                     <Input {...register(`methods.${index}.path`)} placeholder="/products" disabled={!isEditing} />
                 </div>
-                <div className="space-y-2">
-                    <Label>Headers (JSON, Optional)</Label>
-                    <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
-                </div>
+                {showHeaders && (
+                    <div className="space-y-2">
+                        <Label>Headers (JSON, Optional)</Label>
+                        <Textarea {...register(`methods.${index}.headers` as any)} placeholder='{ "X-Custom-Header": "value" }' rows={3} className="font-mono" disabled={!isEditing} />
+                    </div>
+                )}
             </CardContent>
             <CardFooter className="flex justify-start gap-2">
                 {isEditing ? (
                     <>
-                        <Button type="button" size="sm" onClick={() => setIsEditing(false)}>
+                        <Button type="button" size="sm" onClick={saveEditing}>
                             <Save className="mr-2" /> Save
                         </Button>
                          <Button type="button" variant="ghost" size="sm" onClick={cancelEditing}>
@@ -362,6 +371,8 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
                 index={index} 
                 onRemove={() => remove(index)}
                 sourceId={id}
+                isEditing={editingIndex === index}
+                setEditingIndex={setEditingIndex}
             />
         ))}
 
