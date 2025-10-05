@@ -21,22 +21,12 @@ import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-const LogPreview = ({ log }: { log: ServerLog }) => {
-    const outputLines = log.output.split('\n');
-    const hasMore = outputLines.length > 10;
-    const preview = hasMore ? outputLines.slice(0, 10).join('\n') : log.output;
-
+const FullLog = ({ log }: { log: ServerLog }) => {
     return (
         <div className="space-y-2">
-            <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">
-                {preview}
-                {hasMore && '...'}
+            <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono max-h-[60vh]">
+                {log.output || 'No output from this command.'}
             </pre>
-            {hasMore && (
-                <Button asChild variant="link" size="sm" className="p-0 h-auto">
-                    <Link href={`/root/servers/${log.serverId}/logs/${log.id}`}>View full log</Link>
-                </Button>
-            )}
              {log.completedAt && (
                 <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
             )}
@@ -147,7 +137,7 @@ export default function ServerLogsPage({ params }: { params: Promise<{ id: strin
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent>
-                                    <LogPreview log={log} />
+                                    <FullLog log={log} />
                                 </AccordionContent>
                             </AccordionItem>
                         ))}

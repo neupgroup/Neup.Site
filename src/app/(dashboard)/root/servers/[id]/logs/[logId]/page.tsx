@@ -1,154 +1,172 @@
-
 'use client';
-
-import { useState, useEffect, use } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useEffect, useTransition, use } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { getServerLogs, type ServerLog } from '@/actions/server-logs';
+import { logErrorToFirestore } from '@/lib/logging';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AlertCircle, ArrowLeft, Terminal, CheckCircle, XCircle, Loader2, Send, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { getFirestore, doc, getDoc, Timestamp } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
-import type { ServerLog } from '@/schemas/server';
+import { formatDistanceToNow } from 'date-fns';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-
-async function getLogById(logId: string): Promise<{ log?: ServerLog, error?: string }> {
-    try {
-        const { firestore } = initializeFirebase();
-        const docRef = doc(firestore, 'serverLogs', logId);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
-            return { error: 'Log not found.' };
-        }
-
-        const data = docSnap.data();
-        const log: ServerLog = {
-            id: docSnap.id,
-            serverId: data.serverId,
-            command: data.command,
-            output: data.output,
-            status: data.status,
-            initiatedBy: data.initiatedBy,
-            initiatedAt: data.initiatedAt instanceof Timestamp ? data.initiatedAt.toDate().toISOString() : null,
-            completedAt: data.completedAt instanceof Timestamp ? data.completedAt.toDate().toISOString() : null,
-        };
-
-        return { log };
-    } catch (e: any) {
-        console.error(`Failed to fetch log with ID ${logId}:`, e);
-        return { error: e.message || `Unknown error occurred while fetching log ${logId}.` };
-    }
-}
-
-
-export default function FullLogPage({ params }: { params: Promise<{ id: string, logId: string }> }) {
-  const { id: serverId, logId } = use(params);
-  const [log, setLog] = useState<ServerLog | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchError = async () => {
-      setLoading(true);
-      const { log, error } = await getLogById(logId);
-      if (log) {
-        setLog(log);
-      } else {
-        setError(error || 'Unknown error occurred.');
-      }
-      setLoading(false);
-    };
-
-    fetchError();
-  }, [logId]);
-
-  if (loading) {
+const FullLog = ({ log }: { log: ServerLog }) => {
     return (
-        <Card className="w-full max-w-4xl mx-auto">
-            <CardHeader className="space-y-2">
-                <Skeleton className="h-8 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-96 w-full" />
-            </CardContent>
-        </Card>
-    );
-  }
-
-  if (error || !log) {
-    return (
-        <div className="w-full max-w-4xl mx-auto space-y-4">
-             <Button asChild variant="ghost" className="mb-4">
-                <Link href={`/root/servers/${serverId}/logs`}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Logs
-                </Link>
-            </Button>
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error Fetching Log</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
+        <div className="space-y-2">
+            <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono max-h-[60vh]">
+                {log.output || 'No output from this command.'}
+            </pre>
+             {log.completedAt && (
+                <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
+            )}
         </div>
     );
+};
+
+export default function ServerLogsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const [logs, setLogs] = useState<ServerLog[]>([]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const logsPage = Number(searchParams.get('page')) || 1;
+  const [hasMoreLogs, setHasMoreLogs] = useState(false);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+  const [logsError, setLogsError] = useState<string | null>(null);
+
+  const fetchLogs = async (page = 1) => {
+    setLoadingLogs(true);
+    setLogsError(null);
+    const result = await getServerLogs({ serverId: id, page });
+
+    if (result.success && result.logs) {
+        setLogs(result.logs!);
+        setHasMoreLogs(result.hasMore || false);
+    } else {
+        const errorMessage = result.error || 'Failed to load logs.';
+        setLogsError(errorMessage);
+        logErrorToFirestore({
+            message: `Client-side error in fetchLogs for serverId: ${id}. Error: ${errorMessage}`,
+            stack: new Error().stack,
+            source: 'ServerLogsPage.fetchLogs',
+        });
+    }
+    setLoadingLogs(false);
   }
+  
+   useEffect(() => {
+    fetchLogs(logsPage);
+  }, [id, logsPage]);
+  
+  useEffect(() => {
+    const hasOngoingLog = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
+    let interval: NodeJS.Timeout | null = null;
+    if (hasOngoingLog) {
+      interval = setInterval(() => {
+        fetchLogs(logsPage);
+      }, 3000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [logs, id, logsPage]);
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`/root/servers/${id}/logs?page=${newPage}`);
+  };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-4">
-        <Button asChild variant="ghost">
-            <Link href={`/root/servers/${log.serverId}/logs`}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Logs
-            </Link>
-        </Button>
-      <Card>
-        <CardHeader>
-          <CardTitle>Full Log Details</CardTitle>
-          <CardDescription>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                <span><strong>Log ID:</strong> {log.id}</span>
-                <span><strong>Server ID:</strong> {log.serverId}</span>
-            </div>
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-            <div className="space-y-2">
-                <h3 className="font-semibold text-lg">Command</h3>
-                <p className="font-mono bg-muted p-3 rounded-md text-sm whitespace-pre-wrap break-words">{log.command}</p>
-            </div>
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                    <h4 className="font-semibold text-muted-foreground text-sm">Status</h4>
-                    <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>{log.status}</Badge>
-                </div>
-                 <div>
-                    <h4 className="font-semibold text-muted-foreground text-sm">Initiated By</h4>
-                    <p>{log.initiatedBy}</p>
-                </div>
-                 <div>
-                    <h4 className="font-semibold text-muted-foreground text-sm">Initiated At</h4>
-                    <p>{log.initiatedAt ? new Date(log.initiatedAt).toLocaleString() : 'N/A'}</p>
-                </div>
-                <div>
-                    <h4 className="font-semibold text-muted-foreground text-sm">Completed At</h4>
-                    <p>{log.completedAt ? new Date(log.completedAt).toLocaleString() : 'N/A'}</p>
-                </div>
-             </div>
-            <Separator />
-            <div className="space-y-2">
-                <h3 className="font-semibold text-lg">Full Output</h3>
-                <pre className="bg-black text-white p-4 rounded-md text-xs whitespace-pre-wrap break-all font-mono overflow-auto max-h-[70vh]">
-                    {log.output || 'No output from this command.'}
-                </pre>
-            </div>
-        </CardContent>
-      </Card>
+    <div className="w-full space-y-6">
+        <div className="mb-4">
+            <Button variant="ghost" asChild>
+                <Link href={`/root/servers/${id}`}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Server
+                </Link>
+            </Button>
+        </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Logs</CardTitle>
+                <CardDescription>History of all commands run on this server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {loadingLogs && logs.length === 0 ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                    </div>
+                ) : logsError ? (
+                     <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error Loading Logs</AlertTitle>
+                        <AlertDescription className="break-all">{logsError}</AlertDescription>
+                    </Alert>
+                ) : logs.length === 0 ? (
+                    <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+                        <Terminal className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-semibold">No Logs Found</h3>
+                        <p>Run a command from the Server Management section to see logs here.</p>
+                    </div>
+                ) : (
+                    <Accordion type="single" collapsible className="w-full space-y-2">
+                        {logs.map(log => (
+                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
+                                <AccordionTrigger>
+                                    <div className="flex flex-col items-start text-left w-full gap-2">
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>
+                                                {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                                                {log.status}
+                                            </Badge>
+                                            <span>{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
+                                            <span>by {log.initiatedBy}</span>
+                                        </div>
+                                        <p className="font-mono text-sm break-all">{log.command}</p>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <FullLog log={log} />
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                )}
+            </CardContent>
+             {(logsPage > 1 || hasMoreLogs) && (
+                <CardFooter className="flex items-center justify-between">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(logsPage - 1)}
+                        disabled={logsPage <= 1 || loadingLogs}
+                    >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground">Page {logsPage}</span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(logsPage + 1)}
+                        disabled={!hasMoreLogs || loadingLogs}
+                    >
+                        Next
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </CardFooter>
+            )}
+        </Card>
     </div>
   );
-};
+}
