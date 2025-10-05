@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, CheckCircle, XCircle, Loader2, Send, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, CheckCircle, XCircle, Loader2, Send, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,9 +37,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { formatDistanceToNow } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = use(params);
   const [server, setServer] = useState<Server | null>(null);
   const [logs, setLogs] = useState<ServerLog[]>([]);
   const router = useRouter();
@@ -332,27 +333,32 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                         <p>Run a command from the Server Management section to see logs here.</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <Accordion type="single" collapsible className="w-full space-y-2">
                         {logs.map(log => (
-                             <div key={log.id} className="border p-3 rounded-md">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>
-                                            {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
-                                            {log.status}
-                                        </Badge>
-                                        <p className="text-xs text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</p>
+                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4">
+                                <AccordionTrigger>
+                                    <div className="flex items-center justify-between w-full">
+                                        <div className="flex items-center gap-4">
+                                            <Badge variant={log.status === 'completed' ? 'default' : log.status === 'failed' ? 'destructive' : 'secondary'}>
+                                                {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                                                {log.status}
+                                            </Badge>
+                                            <p className="font-mono text-sm truncate">{log.command}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                             <span>{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">by {log.initiatedBy}</p>
-                                </div>
-                                <p className="font-mono text-sm mt-2 bg-muted p-2 rounded-md overflow-x-auto">{log.command}</p>
-                                <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">{log.output}</pre>
-                                {log.completedAt && (
-                                    <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
-                                )}
-                            </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">{log.output}</pre>
+                                     {log.completedAt && (
+                                        <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
+                                    )}
+                                </AccordionContent>
+                            </AccordionItem>
                         ))}
-                    </div>
+                    </Accordion>
                 )}
             </CardContent>
              {(logsPage > 1 || hasMoreLogs) && (
