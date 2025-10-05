@@ -24,6 +24,7 @@ import { cookies } from 'next/headers';
 import { Page } from '@/schemas/site';
 import { initializeFirebase } from '@/lib/firebase';
 import { getPathsForPage } from '../paths';
+import { markStructureAsPending } from '../structure';
 
 export async function createPage(type: Page['type'] = 'editor') {
   const cookieStore = cookies();
@@ -71,6 +72,14 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
     }
     
     await setDoc(pageRef, dataToSave, { merge: true });
+
+    // After saving, check if this page has paths and mark structure for deployment
+    const { paths } = await getPathsForPage(id);
+    if (paths && paths.length > 0) {
+        const pathStrings = paths.map(p => p.path);
+        await markStructureAsPending(siteId, pathStrings);
+    }
+
     return { success: true, id };
   } catch (error: any) {
     await logErrorToFirestore({
@@ -193,6 +202,11 @@ export async function deletePage(id: string) {
     if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
         return { success: false, error: 'Unauthorized.' };
     }
+    
+    // Get paths before deleting them to mark structure for deployment
+    const { paths } = await getPathsForPage(id);
+    const pathStrings = paths ? paths.map(p => p.path) : [];
+
     batch.delete(pageRef);
     
     // Also delete all paths associated with this page
@@ -203,6 +217,10 @@ export async function deletePage(id: string) {
     });
 
     await batch.commit();
+
+    if (pathStrings.length > 0) {
+        await markStructureAsPending(siteId, pathStrings, true);
+    }
 
     return { success: true };
   } catch (error: any) {

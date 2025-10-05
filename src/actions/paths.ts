@@ -1,10 +1,11 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, where, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, where, serverTimestamp, Timestamp, getDoc } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
 import { logErrorToFirestore } from '@/lib/logging';
+import { markStructureAsPending } from './structure';
 
 export interface Path {
   id: string;
@@ -42,6 +43,9 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
       path,
       createdAt: serverTimestamp(),
     });
+
+    await markStructureAsPending(siteId, [path]);
+
     return { success: true, id: docRef.id };
   } catch (error: any) {
     await logErrorToFirestore({
@@ -97,10 +101,16 @@ export async function deletePath(id: string): Promise<{ success: boolean; error?
 
   try {
     const { firestore } = initializeFirebase();
-    // In a real app, you'd want to verify the user has permission to delete this path
-    // by checking if the path's siteId matches the user's siteId.
-    // For simplicity, we'll skip that check here but it's crucial for security.
-    await deleteDoc(doc(firestore, 'paths', id));
+    const pathRef = doc(firestore, 'paths', id);
+    const pathSnap = await getDoc(pathRef);
+    if (!pathSnap.exists() || pathSnap.data().siteId !== siteId) {
+        return { success: false, error: 'Path not found or unauthorized.' };
+    }
+    const pathData = pathSnap.data();
+    await deleteDoc(pathRef);
+
+    await markStructureAsPending(siteId, [pathData.path], true);
+
     return { success: true };
   } catch (error: any) {
     await logErrorToFirestore({

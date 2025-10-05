@@ -42,3 +42,19 @@ export interface Page {
   updatedAt?: string | null;
   paths?: Path[];
 }
+
+export interface PathStructure {
+  path: string;
+  pageId: string;
+  sections: string[];
+  theme: any; // Allow for theme overrides
+  changesMade: boolean;
+}
+
+export interface Structure {
+    id: string;
+    siteId: string;
+    structure: PathStructure[];
+    status: 'deployed' | 'pendingDeployment';
+    updatedAt?: string | null;
+}
