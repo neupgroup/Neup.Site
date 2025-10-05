@@ -1,4 +1,5 @@
 
+
 "use server";
 
 interface NginxConfigParams {
@@ -71,12 +72,8 @@ ${locationBlocks}
   // Final bash command to write, enable, test, and reload Nginx
   const command = `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
-if [ -f /etc/nginx/sites-available/${configFileName} ]; then
-    sudo rm -f /etc/nginx/sites-enabled/${configFileName};
-    sudo rm -f /etc/nginx/sites-available/${configFileName};
-fi &&
 sudo bash -c "echo \\"${escapedConfig}\\" > /etc/nginx/sites-available/${configFileName}" &&
-sudo ln -s -f /etc/nginx/sites-available/${configFileName} /etc/nginx/sites-enabled/ &&
+sudo ln -s -f /etc/nginx/sites-available/${configFileName} /etc/nginx/sites-enabled/${configFileName} &&
 sudo nginx -t &&
 sudo systemctl reload nginx
 `.trim();
