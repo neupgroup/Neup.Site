@@ -43,9 +43,8 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [swapSize, setSwapSize] = useState('3072');
   const [customCommand, setCustomCommand] = useState('');
-  const [nginxDomain, setNginxDomain] = useState('');
+  const [nginxDomains, setNginxDomains] = useState('');
   const [proxyUrl, setProxyUrl] = useState('http://localhost:3000');
-  const [nginxPath, setNginxPath] = useState('/');
   
   const [isPending, startTransition] = useTransition();
 
@@ -81,40 +80,59 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   };
 
   const handleNginxConfig = () => {
-    if (!nginxDomain) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Server Name (domain) is required.' });
-      return;
+    const urls = nginxDomains.split('\n').map(u => u.trim()).filter(Boolean);
+    if (urls.length === 0) {
+        toast({ variant: 'destructive', title: 'Error', description: 'At least one domain or path is required.' });
+        return;
     }
-    const safeDomain = nginxDomain.replace(/[^a-zA-Z0-9.-]/g, '');
-    const locationPath = nginxPath.startsWith('/') ? nginxPath : `/${nginxPath}`;
-    
-    // If proxying a subpath, we need to handle rewrites correctly.
-    const proxyPassStatement = locationPath === '/' 
-      ? `proxy_pass ${proxyUrl};`
-      : `proxy_pass ${proxyUrl}${locationPath};`;
 
-    const config = `
+    try {
+        const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
+        const primaryDomain = firstUrl.hostname;
+        const safeDomain = primaryDomain.replace(/[^a-zA-Z0-9.-]/g, '');
+
+        const allDomains = new Set<string>();
+        const locations = new Map<string, string>();
+
+        urls.forEach(urlStr => {
+            const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
+            allDomains.add(url.hostname);
+            const path = url.pathname || '/';
+            if (!locations.has(path)) {
+                locations.set(path, `
+        location ${path} {
+            proxy_pass ${proxyUrl};
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    `);
+            }
+        });
+
+        const serverName = Array.from(allDomains).join(' ');
+        const locationBlocks = Array.from(locations.values()).join('\n');
+
+        const config = `
 server {
     listen 80;
-    server_name ${nginxDomain};
-
-    location ${locationPath} {
-        ${proxyPassStatement}
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+    server_name ${serverName};
+    ${locationBlocks}
 }
-    `.trim();
+        `.trim();
 
-    const command = `echo "${config}" | sudo tee /etc/nginx/sites-available/${safeDomain} && sudo ln -s -f /etc/nginx/sites-available/${safeDomain} /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
-    handleRunCommand(command, `Configure Nginx for ${nginxDomain}`);
-  };
+        const command = `echo "${config}" | sudo tee /etc/nginx/sites-available/${safeDomain}.conf && sudo ln -s -f /etc/nginx/sites-available/${safeDomain}.conf /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`;
+        handleRunCommand(command, `Configure Nginx for ${primaryDomain}`);
+
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Invalid URL', description: 'One of the provided URLs is not valid.'});
+    }
+};
 
 
   const handleDelete = async () => {
@@ -274,21 +292,22 @@ server {
             <div className="rounded-lg border p-4 space-y-4">
                 <div>
                     <h4 className="font-medium">Configure Nginx Reverse Proxy</h4>
-                    <p className="text-sm text-muted-foreground">Point a domain to an application running on this server.</p>
+                    <p className="text-sm text-muted-foreground">Point one or more domains/paths to an application running on this server.</p>
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="nginx-domain">Server Name (Domain)</Label>
-                        <Input id="nginx-domain" value={nginxDomain} onChange={e => setNginxDomain(e.target.value)} placeholder="example.com" />
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="proxy-url">Proxy Pass URL</Label>
-                        <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
-                    </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="nginx-domains">Domains / Paths</Label>
+                    <Textarea 
+                        id="nginx-domains"
+                        value={nginxDomains} 
+                        onChange={e => setNginxDomains(e.target.value)} 
+                        placeholder="example.com&#x0a;www.example.com/subpath"
+                        rows={3}
+                    />
+                    <p className="text-xs text-muted-foreground">Enter one URL per line.</p>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="nginx-path">Path (optional)</Label>
-                    <Input id="nginx-path" value={nginxPath} onChange={e => setNginxPath(e.target.value)} placeholder="/ or /subpath" />
+                    <Label htmlFor="proxy-url">Proxy Pass URL</Label>
+                    <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
                 </div>
                  <Button onClick={handleNginxConfig} disabled={isPending}>
                     <Globe className="mr-2 h-4 w-4" /> Configure Nginx
