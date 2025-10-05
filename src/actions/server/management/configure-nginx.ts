@@ -1,4 +1,3 @@
-
 "use server";
 
 interface NginxConfigParams {
@@ -50,7 +49,8 @@ export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: N
 ${locationBlocks}
 }`;
 
-  const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\$');
+  // FIX: Increased escaping for the dollar sign
+  const escapedConfig = config.replace(/"/g, '\\"').replace(/\$/g, '\\\\$');
 
   return `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
