@@ -4,6 +4,7 @@
 import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, setDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import type { ServerLog } from '@/schemas/server';
+import { logErrorToFirestore } from '@/lib/logging';
 
 /**
  * Creates a new server log entry.
@@ -87,7 +88,12 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
 
         return { logs, hasMore };
     } catch (e: any) {
-        console.error('Failed to fetch server logs:', e);
-        return { error: e.message || 'Unknown error occurred while fetching logs. This might be due to a missing Firestore index.' };
+        const errorMessage = e.message || 'Unknown error occurred while fetching logs. This might be due to a missing Firestore index.';
+        await logErrorToFirestore({
+            message: `Failed to fetch server logs for serverId: ${serverId}. Error: ${errorMessage}`,
+            stack: e.stack,
+            source: 'getServerLogs',
+        });
+        return { error: errorMessage };
     }
 }
