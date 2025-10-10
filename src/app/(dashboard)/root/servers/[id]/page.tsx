@@ -134,8 +134,11 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     };
 
     fetchInitialData();
-    fetchLogs(1); // Initial log fetch
   }, [id]);
+
+   useEffect(() => {
+    fetchLogs(logsPage);
+  }, [id, logsPage]);
 
   useEffect(() => {
     const hasOngoingLog = logs.some(log => log.status === 'ongoing' || log.status === 'pending');
