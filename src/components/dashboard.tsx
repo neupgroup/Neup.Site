@@ -28,6 +28,8 @@ import {
   Loader2,
   Share2,
   List,
+  Wrench,
+  UploadCloud,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -130,6 +132,8 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
                  <NavLink href="/site/billing" currentPath={pathname}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
                 <NavLink href="/site/sections" currentPath={pathname}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
                 <NavLink href="/site/deploy" currentPath={pathname}><Rocket className="h-4 w-4" /><span>Deploy</span></NavLink>
+                <NavLink href="/site/advanced" currentPath={pathname}><Wrench className="h-4 w-4" /><span>Advanced</span></NavLink>
+                <NavLink href="/site/codebase" currentPath={pathname}><UploadCloud className="h-4 w-4" /><span>Codebase</span></NavLink>
               </div>
 
               {/* Root Section */}
