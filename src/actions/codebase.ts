@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, Timestamp, orderBy } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, Timestamp, orderBy, limit, getCountFromServer, startAfter } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
 import { logErrorToFirestore } from '@/lib/logging';
@@ -30,17 +30,34 @@ export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt'
 }
 
 /**
- * Fetches all code files for the current site.
+ * Fetches code files for the current site with pagination.
  */
-export async function getCodeFiles(): Promise<{ success: boolean; files?: CodeFile[]; error?: string }> {
+export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number, pageSize?: number }): Promise<{ success: boolean; files?: CodeFile[]; error?: string; totalCount?: number }> {
   const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
     const { firestore } = initializeFirebase();
-    const q = query(collection(firestore, 'codeFiles'), where('siteId', '==', siteId), orderBy('filePath', 'asc'));
-    const querySnapshot = await getDocs(q);
+    const filesRef = collection(firestore, 'codeFiles');
+    const siteQuery = query(filesRef, where('siteId', '==', siteId));
+    
+    const countSnapshot = await getCountFromServer(siteQuery);
+    const totalCount = countSnapshot.data().count;
+
+    const baseQuery = query(siteQuery, orderBy('createdAt', 'desc'));
+
+    let finalQuery;
+    if (page > 1) {
+        const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
+        const prevPageSnapshot = await getDocs(prevPageQuery);
+        const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
+        finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
+    } else {
+        finalQuery = query(baseQuery, limit(pageSize));
+    }
+
+    const querySnapshot = await getDocs(finalQuery);
     const files = querySnapshot.docs.map(doc => {
         const data = doc.data();
         return {
@@ -49,12 +66,14 @@ export async function getCodeFiles(): Promise<{ success: boolean; files?: CodeFi
             createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null,
         } as CodeFile;
     });
-    return { success: true, files };
+
+    return { success: true, files, totalCount };
   } catch (error: any) {
     await logErrorToFirestore({ message: `Failed to get code files: ${error.message}`, source: 'getCodeFiles' });
     return { success: false, error: error.message || 'Failed to fetch files.' };
   }
 }
+
 
 /**
  * Deletes a code file from Firestore.

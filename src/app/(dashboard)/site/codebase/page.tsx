@@ -3,17 +3,18 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { UploadCloud, FileText, Trash2, AlertCircle, Loader2 } from 'lucide-react';
+import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/actions/codebase';
 import type { CodeFile } from '@/schemas/codebase';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 interface UploadingFile {
@@ -28,18 +29,26 @@ export default function CodebasePage() {
   const [uploadedFiles, setUploadedFiles] = useState<CodeFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
   const { toast } = useToast();
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const pageSize = 10;
 
   const fetchFiles = useCallback(async () => {
     setLoading(true);
-    const result = await getCodeFiles();
+    const result = await getCodeFiles({ page: currentPage, pageSize });
     if (result.success && result.files) {
       setUploadedFiles(result.files);
+      setTotalCount(result.totalCount || 0);
     } else {
       setError(result.error || 'Failed to fetch files.');
     }
     setLoading(false);
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     fetchFiles();
@@ -103,14 +112,26 @@ export default function CodebasePage() {
         setUploadedFiles(originalFiles); // Revert on failure
     } else {
         toast({ title: 'File Deleted' });
+        // Refetch to ensure count and page is correct
+        fetchFiles();
     }
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const totalSize = useMemo(() => {
+    // This only calculates size for the current page. A full calculation would require fetching all files.
+    // For now, let's keep it simple or indicate it's for the current view.
     return uploadedFiles.reduce((acc, file) => acc + file.size, 0);
   }, [uploadedFiles]);
+
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  const handlePageChange = (newPage: number) => {
+      const params = new URLSearchParams(searchParams);
+      params.set('page', newPage.toString());
+      router.push(`${pathname}?${params.toString()}`);
+  }
 
   return (
     <div className="w-full space-y-6">
@@ -156,7 +177,7 @@ export default function CodebasePage() {
             <CardHeader>
                 <CardTitle>Uploaded Files</CardTitle>
                 <CardDescription>
-                    {uploadedFiles.length} files uploaded, totaling {(totalSize / 1024 / 1024).toFixed(2)} MB. Showing last 10.
+                    {totalCount} files uploaded in total.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -179,7 +200,7 @@ export default function CodebasePage() {
                                 {uploadedFiles.length === 0 ? (
                                     <TableRow><TableCell colSpan={4} className="h-24 text-center">No files uploaded yet.</TableCell></TableRow>
                                 ) : (
-                                    uploadedFiles.slice(0, 10).map(file => (
+                                    uploadedFiles.map(file => (
                                         <TableRow key={file.id}>
                                             <TableCell className="font-mono text-xs max-w-sm whitespace-pre-wrap break-all">{file.filePath}</TableCell>
                                             <TableCell>{(file.size / 1024).toFixed(2)}</TableCell>
@@ -197,6 +218,33 @@ export default function CodebasePage() {
                     </div>
                 )}
             </CardContent>
+            {totalPages > 1 && (
+                <CardFooter className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage <= 1}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage >= totalPages}
+                        >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </CardFooter>
+            )}
         </Card>
     </div>
   );
