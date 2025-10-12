@@ -76,6 +76,8 @@ export default function ServersPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Public IP</TableHead>
+                  <TableHead>Provider</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Created On</TableHead>
                 </TableRow>
               </TableHeader>
@@ -86,12 +88,15 @@ export default function ServersPage() {
                         <Link href={`/root/servers/${server.id}`} className="hover:underline">
                             {server.name}
                         </Link>
+                         {server.isPrivate && <Badge variant="secondary" className="ml-2">Private</Badge>}
                     </TableCell>
                     <TableCell>
                         <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                             {server.publicIp}
                         </a>
                     </TableCell>
+                     <TableCell>{server.provider || 'N/A'}</TableCell>
+                    <TableCell className="capitalize">{server.serverType || 'N/A'}</TableCell>
                     <TableCell>{server.createdOn ? new Date(server.createdOn).toLocaleDateString() : 'N/A'}</TableCell>
                   </TableRow>
                 ))}

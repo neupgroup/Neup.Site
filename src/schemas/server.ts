@@ -16,6 +16,10 @@ export interface Server {
   publicIp: string;
   privateIp?: string;
   privateKey?: string;
+  serverType?: 'vps' | 'dedicated' | 'cloud';
+  provider?: string;
+  portsOpen?: number[];
+  isPrivate?: boolean;
   createdOn?: string | null;
   expiresOn?: string | null;
 }

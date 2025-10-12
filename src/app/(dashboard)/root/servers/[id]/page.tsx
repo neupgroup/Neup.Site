@@ -1,5 +1,4 @@
 
-
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,18 +14,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Share2, Package, GitCommit, Disc, Terminal, Send, Eye, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, CheckCircle, XCircle, Loader2 as Loader2Icon } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Share2, Package, GitCommit, Disc, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -75,7 +64,6 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [swapSize, setSwapSize] = useState('3072');
   const [customCommand, setCustomCommand] = useState('');
   const [nginxDomains, setNginxDomains] = useState('');
@@ -269,19 +257,39 @@ const handleStartNextWithPm2 = async () => {
                         <CardTitle>{server.name}</CardTitle>
                         <CardDescription>ID: {server.id}</CardDescription>
                     </div>
+                     <div className="flex items-center gap-2">
+                        {server.isPrivate && <Badge variant="secondary">Private</Badge>}
+                        {server.serverType && <Badge variant="outline" className="capitalize">{server.serverType}</Badge>}
+                     </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground">Public IP</h4>
-                    <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline">
-                        {server.publicIp}
-                    </a>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Globe className="h-4 w-4" />Public IP</h4>
+                        <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline">
+                            {server.publicIp}
+                        </a>
+                    </div>
+                     <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Warehouse className="h-4 w-4" />Provider</h4>
+                        <p className="text-sm">{server.provider || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Created On</h4>
+                        <p className="text-sm">{server.createdOn ? new Date(server.createdOn).toLocaleString() : 'N/A'}</p>
+                    </div>
                 </div>
-                 <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground">Created On</h4>
-                    <p className="text-sm">{server.createdOn ? new Date(server.createdOn).toLocaleString() : 'N/A'}</p>
-                </div>
+                
+                 {server.portsOpen && server.portsOpen.length > 0 && (
+                     <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Open Ports</h4>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                            {server.portsOpen.map(port => <Badge key={port} variant="secondary">{port}</Badge>)}
+                        </div>
+                    </div>
+                 )}
+
                  {server.expiresOn && (
                      <div>
                         <h4 className="font-semibold text-sm text-muted-foreground">Expires On</h4>

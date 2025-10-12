@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, ArrowLeft, Loader2, AlertCircle, KeyRound, Calendar as CalendarIcon, Trash2 } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, AlertCircle, KeyRound, Calendar as CalendarIcon, Trash2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getServer, updateServer, deleteServer, type Server } from '@/actions/servers';
 import Link from 'next/link';
@@ -26,6 +26,9 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+
 
 type FormValues = Omit<Server, 'id' | 'createdOn'>;
 
@@ -45,8 +48,17 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
       publicIp: '',
       privateIp: '',
       privateKey: '', // This will not be populated from the server
+      serverType: 'vps',
+      provider: '',
+      portsOpen: [],
+      isPrivate: false,
       expiresOn: null,
     }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'portsOpen',
   });
 
   const expiresOn = watch('expiresOn');
@@ -62,6 +74,10 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
           publicIp: result.server.publicIp,
           privateIp: result.server.privateIp || '',
           privateKey: '', // Keep private key field blank for security
+          serverType: result.server.serverType || 'vps',
+          provider: result.server.provider || '',
+          portsOpen: result.server.portsOpen?.map(p => ({ value: p })) as any || [],
+          isPrivate: result.server.isPrivate || false,
           expiresOn: result.server.expiresOn || null,
         });
       } else {
@@ -74,7 +90,12 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
   }, [id, reset]);
 
   const handleUpdateServer = async (data: FormValues) => {
-    const result = await updateServer(id, data);
+    const ports = (data.portsOpen as any[])
+        .map(p => p.value)
+        .filter(p => p !== '' && !isNaN(p))
+        .map(p => Number(p));
+    
+    const result = await updateServer(id, {...data, portsOpen: ports});
 
     if (result.success) {
       toast({ title: 'Server Updated!', description: `Successfully updated ${data.name}.` });
@@ -143,6 +164,43 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
                 <div className="space-y-2">
                     <Label htmlFor="public-ip">Public IP</Label>
                     <Input id="public-ip" {...register('publicIp')} />
+                </div>
+                 <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="server-type">Server Type</Label>
+                        <Select onValueChange={(value) => setValue('serverType', value as any)} defaultValue={watch('serverType')}>
+                            <SelectTrigger id="server-type">
+                                <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="vps">VPS</SelectItem>
+                                <SelectItem value="dedicated">Dedicated</SelectItem>
+                                <SelectItem value="cloud">Cloud</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="provider">Provider</Label>
+                        <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
+                    </div>
+                </div>
+                 <div className="space-y-2">
+                    <Label>Open Ports</Label>
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="flex items-center gap-2">
+                            <Input type="number" {...register(`portsOpen.${index}.value` as any)} placeholder="e.g., 80" />
+                            <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                    <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' } as any)}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Port
+                    </Button>
+                </div>
+                 <div className="flex items-center space-x-2">
+                    <Switch id="is-private" checked={watch('isPrivate')} onCheckedChange={(checked) => setValue('isPrivate', checked)} />
+                    <Label htmlFor="is-private">This is a private server</Label>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="expires-on">Expires On</Label>

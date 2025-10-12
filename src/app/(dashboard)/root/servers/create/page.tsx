@@ -2,7 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -15,11 +15,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, ArrowLeft, Loader2 } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createServer } from '@/actions/servers';
 import Link from 'next/link';
 import { Server } from '@/schemas/server';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 type FormValues = Omit<Server, 'id' | 'createdOn' | 'expiresOn'>;
 
@@ -27,13 +29,22 @@ export default function CreateServerPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm<FormValues>({
     defaultValues: {
       name: '',
       publicIp: '',
       privateIp: '',
       privateKey: '',
+      serverType: 'vps',
+      provider: '',
+      portsOpen: [],
+      isPrivate: false,
     }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "portsOpen"
   });
 
   const handleCreateServer = async (data: FormValues) => {
@@ -42,7 +53,12 @@ export default function CreateServerPage() {
       return;
     }
     
-    const result = await createServer(data);
+    const ports = (data.portsOpen as any[])
+        .map(p => p.value)
+        .filter(p => p !== '' && !isNaN(p))
+        .map(p => Number(p));
+
+    const result = await createServer({...data, portsOpen: ports});
 
     if (result.success) {
       toast({ title: 'Server Created!', description: `Successfully created ${data.name}.` });
@@ -81,6 +97,43 @@ export default function CreateServerPage() {
                     <Label htmlFor="private-ip">Private IP (Optional)</Label>
                     <Input id="private-ip" {...register('privateIp')} placeholder="e.g., 10.0.0.1" />
                 </div>
+            </div>
+             <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="server-type">Server Type</Label>
+                    <Select onValueChange={(value) => register('serverType').onChange({ target: { value } })} defaultValue="vps">
+                        <SelectTrigger id="server-type">
+                            <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="vps">VPS</SelectItem>
+                            <SelectItem value="dedicated">Dedicated</SelectItem>
+                            <SelectItem value="cloud">Cloud</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="provider">Provider</Label>
+                    <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
+                </div>
+            </div>
+             <div className="space-y-2">
+                <Label>Open Ports</Label>
+                {fields.map((field, index) => (
+                    <div key={field.id} className="flex items-center gap-2">
+                        <Input type="number" {...register(`portsOpen.${index}.value` as any)} placeholder="e.g., 80" />
+                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                ))}
+                <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' } as any)}>
+                    <Plus className="mr-2 h-4 w-4" /> Add Port
+                </Button>
+            </div>
+             <div className="flex items-center space-x-2">
+                <Switch id="is-private" {...register('isPrivate')} />
+                <Label htmlFor="is-private">This is a private server</Label>
             </div>
             <div className="space-y-2">
                 <Label htmlFor="private-key">Private Key</Label>

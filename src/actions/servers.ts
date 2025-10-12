@@ -40,6 +40,10 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
             id: doc.id,
             name: data.name,
             publicIp: data.publicIp,
+            serverType: data.serverType,
+            provider: data.provider,
+            portsOpen: data.portsOpen,
+            isPrivate: data.isPrivate,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         } as Server
@@ -124,6 +128,11 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             id: docSnap.id, 
             name: data.name,
             publicIp: data.publicIp,
+            privateIp: data.privateIp,
+            serverType: data.serverType,
+            provider: data.provider,
+            portsOpen: data.portsOpen,
+            isPrivate: data.isPrivate,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
@@ -157,6 +166,10 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
             publicIp: data.publicIp,
             privateIp: data.privateIp,
             privateKey: data.privateKey,
+            serverType: data.serverType,
+            provider: data.provider,
+            portsOpen: data.portsOpen,
+            isPrivate: data.isPrivate,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
@@ -177,6 +190,10 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     const dataToUpdate: Record<string, any> = {
         name: serverData.name,
         publicIp: serverData.publicIp,
+        serverType: serverData.serverType,
+        provider: serverData.provider,
+        portsOpen: serverData.portsOpen,
+        isPrivate: serverData.isPrivate,
         expiresOn: serverData.expiresOn ? new Date(serverData.expiresOn) : null,
     };
 
