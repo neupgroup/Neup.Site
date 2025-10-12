@@ -20,6 +20,8 @@ export interface Server {
   provider?: string;
   portsOpen?: number[];
   isPrivate?: boolean;
+  username?: string;
+  basePath?: string;
   createdOn?: string | null;
   expiresOn?: string | null;
 }

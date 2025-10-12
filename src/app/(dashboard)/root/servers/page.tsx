@@ -78,6 +78,7 @@ export default function ServersPage() {
                   <TableHead>Public IP</TableHead>
                   <TableHead>Provider</TableHead>
                   <TableHead>Type</TableHead>
+                  <TableHead>Username</TableHead>
                   <TableHead>Created On</TableHead>
                 </TableRow>
               </TableHeader>
@@ -97,6 +98,7 @@ export default function ServersPage() {
                     </TableCell>
                      <TableCell>{server.provider || 'N/A'}</TableCell>
                     <TableCell className="capitalize">{server.serverType || 'N/A'}</TableCell>
+                    <TableCell>{server.username || 'N/A'}</TableCell>
                     <TableCell>{server.createdOn ? new Date(server.createdOn).toLocaleDateString() : 'N/A'}</TableCell>
                   </TableRow>
                 ))}

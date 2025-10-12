@@ -199,6 +199,8 @@
         "provider": { "type": "string", "description": "The hosting provider (e.g., AWS, DigitalOcean)." },
         "portsOpen": { "type": "array", "items": { "type": "number" }, "description": "A list of open ports." },
         "isPrivate": { "type": "boolean", "description": "Indicates if the server is on a private network." },
+        "username": { "type": "string", "description": "The default SSH username for the server." },
+        "basePath": { "type": "string", "description": "The default base path for deployments on the server." },
         "createdOn": { "type": "string", "format": "date-time" },
         "expiresOn": { "type": "string", "format": "date-time" }
       },

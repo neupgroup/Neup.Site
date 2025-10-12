@@ -39,6 +39,8 @@ export default function CreateServerPage() {
       provider: '',
       portsOpen: [],
       isPrivate: false,
+      username: 'root',
+      basePath: '/var/www'
     }
   });
 
@@ -115,6 +117,16 @@ export default function CreateServerPage() {
                 <div className="space-y-2">
                     <Label htmlFor="provider">Provider</Label>
                     <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
+                </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="username">Default Username</Label>
+                    <Input id="username" {...register('username')} placeholder="e.g., root" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="basePath">Default Base Path</Label>
+                    <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www" />
                 </div>
             </div>
              <div className="space-y-2">

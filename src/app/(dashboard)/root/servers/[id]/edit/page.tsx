@@ -52,6 +52,8 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
       provider: '',
       portsOpen: [],
       isPrivate: false,
+      username: '',
+      basePath: '',
       expiresOn: null,
     }
   });
@@ -78,6 +80,8 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
           provider: result.server.provider || '',
           portsOpen: result.server.portsOpen?.map(p => ({ value: p })) as any || [],
           isPrivate: result.server.isPrivate || false,
+          username: result.server.username || '',
+          basePath: result.server.basePath || '',
           expiresOn: result.server.expiresOn || null,
         });
       } else {
@@ -182,6 +186,16 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
                     <div className="space-y-2">
                         <Label htmlFor="provider">Provider</Label>
                         <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
+                    </div>
+                </div>
+                 <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="username">Default Username</Label>
+                        <Input id="username" {...register('username')} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="basePath">Default Base Path</Label>
+                        <Input id="basePath" {...register('basePath')} />
                     </div>
                 </div>
                  <div className="space-y-2">

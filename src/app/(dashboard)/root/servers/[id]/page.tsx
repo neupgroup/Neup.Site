@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, ArrowLeft, Pencil, Share2, Package, GitCommit, Disc, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Share2, Package, GitCommit, Disc, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -278,6 +278,14 @@ const handleStartNextWithPm2 = async () => {
                     <div>
                         <h4 className="font-semibold text-sm text-muted-foreground">Created On</h4>
                         <p className="text-sm">{server.createdOn ? new Date(server.createdOn).toLocaleString() : 'N/A'}</p>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><User className="h-4 w-4" />Default Username</h4>
+                        <p className="font-mono text-sm">{server.username || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Folder className="h-4 w-4" />Default Base Path</h4>
+                        <p className="font-mono text-sm">{server.basePath || 'N/A'}</p>
                     </div>
                 </div>
                 
