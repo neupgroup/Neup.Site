@@ -163,7 +163,7 @@ export default function CodebasePage() {
                 {loading ? (
                     <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
                 ) : error ? (
-                    <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
+                    <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription className="break-all">{error}</AlertDescription></Alert>
                 ) : (
                     <div className="border rounded-lg">
                         <Table>
