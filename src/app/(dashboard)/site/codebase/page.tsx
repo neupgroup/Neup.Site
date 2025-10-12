@@ -181,7 +181,7 @@ export default function CodebasePage() {
                                 ) : (
                                     uploadedFiles.map(file => (
                                         <TableRow key={file.id}>
-                                            <TableCell className="font-mono text-xs">{file.filePath}</TableCell>
+                                            <TableCell className="font-mono text-xs max-w-sm whitespace-pre-wrap break-all">{file.filePath}</TableCell>
                                             <TableCell>{(file.size / 1024).toFixed(2)}</TableCell>
                                             <TableCell>{file.createdAt ? format(new Date(file.createdAt), 'PPpp') : 'N/A'}</TableCell>
                                             <TableCell className="text-right">
