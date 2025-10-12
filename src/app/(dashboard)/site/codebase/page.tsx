@@ -156,7 +156,7 @@ export default function CodebasePage() {
             <CardHeader>
                 <CardTitle>Uploaded Files</CardTitle>
                 <CardDescription>
-                    Total size: {(totalSize / 1024 / 1024).toFixed(2)} MB
+                    {uploadedFiles.length} files uploaded, totaling {(totalSize / 1024 / 1024).toFixed(2)} MB. Showing last 10.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -179,7 +179,7 @@ export default function CodebasePage() {
                                 {uploadedFiles.length === 0 ? (
                                     <TableRow><TableCell colSpan={4} className="h-24 text-center">No files uploaded yet.</TableCell></TableRow>
                                 ) : (
-                                    uploadedFiles.map(file => (
+                                    uploadedFiles.slice(0, 10).map(file => (
                                         <TableRow key={file.id}>
                                             <TableCell className="font-mono text-xs max-w-sm whitespace-pre-wrap break-all">{file.filePath}</TableCell>
                                             <TableCell>{(file.size / 1024).toFixed(2)}</TableCell>
