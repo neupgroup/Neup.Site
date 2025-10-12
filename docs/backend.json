@@ -222,6 +222,21 @@
         "completedAt": { "type": "string", "format": "date-time", "description": "When the command finished execution." }
       },
       "required": ["serverId", "command", "output", "status", "initiatedBy", "initiatedAt"]
+    },
+    "CodeFile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Code File",
+      "type": "object",
+      "description": "Represents a single file in the user's codebase.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the file." },
+        "siteId": { "type": "string", "description": "The ID of the site this file belongs to." },
+        "fileName": { "type": "string", "description": "The name of the file (e.g., 'index.js')." },
+        "filePath": { "type": "string", "description": "The full path of the file within the project structure (e.g., 'src/components/Button.tsx')." },
+        "content": { "type": "string", "description": "The base64 encoded content of the file." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["siteId", "fileName", "filePath", "content"]
     }
   },
   "auth": {
@@ -328,6 +343,22 @@
             {
               "name": "logId",
               "description": "The unique identifier for the server log entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/codeFiles/{codeFileId}",
+        "definition": {
+          "entityName": "CodeFile",
+          "schema": {
+            "$ref": "#/backend/entities/CodeFile"
+          },
+          "description": "Stores user-uploaded code files for custom hosting.",
+          "params": [
+            {
+              "name": "codeFileId",
+              "description": "The unique identifier for the code file."
             }
           ]
         }
