@@ -9,8 +9,9 @@ import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
 import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/actions/codebase';
+import { deployCodebase } from '@/actions/deploy';
 import type { CodeFile } from '@/schemas/codebase';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -28,6 +29,7 @@ export default function CodebasePage() {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<CodeFile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeploying, setIsDeploying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const { toast } = useToast();
@@ -117,6 +119,18 @@ export default function CodebasePage() {
     }
   }
 
+  const handleDeploy = async () => {
+    setIsDeploying(true);
+    const result = await deployCodebase();
+    if (result.success && result.logId) {
+        toast({ title: 'Deployment Started', description: 'Check server logs for progress.'});
+        router.push(`/root/servers/${result.serverId}`);
+    } else {
+        toast({ variant: 'destructive', title: 'Deployment Failed', description: result.error });
+        setIsDeploying(false);
+    }
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const totalSize = useMemo(() => {
@@ -140,6 +154,10 @@ export default function CodebasePage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Codebase</h1>
             <p className="text-muted-foreground">Upload your codebase files and manage deployments to your custom host.</p>
         </div>
+         <Button onClick={handleDeploy} disabled={isDeploying || totalCount === 0}>
+            {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2" />}
+            {isDeploying ? 'Deploying...' : 'Deploy Codebase'}
+        </Button>
       </header>
       <Card>
         <CardHeader>
@@ -177,7 +195,7 @@ export default function CodebasePage() {
             <CardHeader>
                 <CardTitle>Uploaded Files</CardTitle>
                 <CardDescription>
-                    {totalCount} files uploaded in total.
+                    {totalCount} files uploaded, totaling {(totalSize / (1024 * 1024)).toFixed(2)} MB on this page.
                 </CardDescription>
             </CardHeader>
             <CardContent>
