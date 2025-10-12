@@ -100,7 +100,10 @@ async function runDeploymentInBackground(logId: string, serverId: string, siteId
                 await ssh.execCommand(`mkdir -p ${remoteDir}`);
             }
 
-            await ssh.putFile(Buffer.from(file.content, 'base64'), remotePath);
+            // The content is already base64 encoded in the database
+            const fileContent = Buffer.from(file.content, 'base64');
+            await ssh.putFile(fileContent, remotePath);
+
             const progress = `(${(i + 1)}/${files.length}) Uploaded: ${file.filePath}\n`;
             finalOutput += progress;
             
