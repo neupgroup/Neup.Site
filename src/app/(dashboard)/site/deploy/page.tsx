@@ -4,8 +4,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle } from 'lucide-react';
+import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket } from 'lucide-react';
 import { getStructure, buildStructure, createDeployment, getLastDeployment, type Structure, type Deployment } from '@/actions/structure';
+import { deployCodebase } from '@/actions/deploy';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -17,8 +19,10 @@ export default function DeployPage() {
     const [loading, setLoading] = useState(true);
     const [isBuilding, setIsBuilding] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
+    const [isDeployingCodebase, setIsDeployingCodebase] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
+    const router = useRouter();
 
     const fetchDeploymentData = async () => {
         setLoading(true);
@@ -71,6 +75,19 @@ export default function DeployPage() {
         setIsDeploying(false);
     }
 
+    const handleDeployCodebase = async () => {
+        setIsDeployingCodebase(true);
+        const result = await deployCodebase();
+        if (result.success && result.logId) {
+            toast({ title: 'Deployment Started', description: 'Check server logs for progress.'});
+            router.push(`/root/servers/${result.serverId}`);
+        } else {
+            toast({ variant: 'destructive', title: 'Codebase Deployment Failed', description: result.error });
+            setIsDeployingCodebase(false);
+        }
+    };
+
+
     const hasPendingChanges = structure?.status === 'pendingDeployment' || structure?.structure.some(s => s.changesMade);
     const isNeverDeployed = !lastDeployment;
 
@@ -90,7 +107,7 @@ export default function DeployPage() {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle className="text-lg">Current Status</CardTitle>
+                                <CardTitle className="text-lg">Structure Status</CardTitle>
                                 {loading ? (
                                     <p className="text-sm text-muted-foreground">Loading...</p>
                                 ) : error ? (
@@ -152,9 +169,33 @@ export default function DeployPage() {
                     {(hasPendingChanges || isNeverDeployed) && (
                         <Button onClick={handleDeploy} disabled={isDeploying || isBuilding}>
                             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : null}
-                            Deploy to Server(s)
+                            Deploy Structure
                         </Button>
                     )}
+                </CardFooter>
+            </Card>
+
+             <Card className="mt-6">
+                <CardHeader>
+                    <CardTitle>Codebase Deployment</CardTitle>
+                    <CardDescription>
+                        Deploy your manually uploaded codebase to the allocated server.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Alert>
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Heads Up!</AlertTitle>
+                        <AlertDescription>
+                            This will overwrite existing files on the server with the files from your codebase.
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={handleDeployCodebase} disabled={isDeployingCodebase || isDeploying || isBuilding}>
+                        {isDeployingCodebase ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2" />}
+                        {isDeployingCodebase ? 'Deploying Codebase...' : 'Deploy Codebase'}
+                    </Button>
                 </CardFooter>
             </Card>
         </div>
