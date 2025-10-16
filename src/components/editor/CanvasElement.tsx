@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import React, { type FC, DragEvent } from 'react';
 import Image from 'next/image';
@@ -9,7 +8,6 @@ import { EditableText } from './editable-text';
 import ResizeHandle from './resize-handle';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
-import CanvasWrapper from './CanvasWrapper';
 
 interface CanvasElementProps {
   element: CanvasElementData;
@@ -23,6 +21,8 @@ interface CanvasElementProps {
   onResizeStart: (e: React.MouseEvent, handle: any) => void;
   parentId?: string | null;
   draggedId: string | null;
+  hoveredElementId: string | null;
+  setHoveredElementId: (id: string | null) => void;
 }
 
 const CanvasElement: FC<CanvasElementProps> = (props) => {
@@ -37,7 +37,9 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     resizingState,
     onResizeStart,
     parentId = null,
-    draggedId
+    draggedId,
+    hoveredElementId,
+    setHoveredElementId,
   } = props;
   const { id, type, children } = element;
   const properties = element.properties || {};
@@ -48,19 +50,11 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     updateElement(id, { ...properties, 'text': newContent });
   };
   
-  const wrapperProps = {
-    id,
-    className: properties['className'],
-    selectedElement,
-    onSelectElement,
-    style: properties as React.CSSProperties,
-    onDragStart: (e: React.DragEvent) => onDragStart(e, id),
-    isContainer,
-    customCss: properties['customCss']
-  };
-
   const renderResizeHandles = () => {
-    if (!isSelected || properties.display === 'inline') return null;
+    // Render resize handles only if the element is selected AND it is currently hovered
+    // AND it's not an inline element.
+    if (!isSelected || properties.display === 'inline' || hoveredElementId !== id) return null;
+    
     const handles: ('top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right')[] = [
         'top-left', 'top', 'top-right', 'left', 'right', 'bottom-left', 'bottom', 'bottom-right'
     ];
@@ -69,77 +63,108 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     ));
   };
   
-  let elementComponent: React.ReactNode;
-
-  const dragHandlers = {
-      onDragOver: (e: DragEvent) => onDragOver(e, parentId, id),
-      onDrop: (e: DragEvent) => onDrop(e, parentId, id),
+  const commonProps: any = {
+    id,
+    style: properties as React.CSSProperties,
+    draggable: true,
+    onDragStart: (e: React.DragEvent) => onDragStart(e, id),
+    onDragOver: (e: DragEvent) => onDragOver(e, parentId, id),
+    onDrop: (e: DragEvent) => onDrop(e, parentId, id),
+    onClick: (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onSelectElement(id);
+    },
+    onMouseEnter: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setHoveredElementId(id);
+    },
+    onMouseLeave: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setHoveredElementId(null);
+    },
+    className: cn(
+      'relative cursor-pointer group',
+      {'min-h-[20px] w-full': isContainer},
+      properties['className']
+    ),
   };
 
   if (id === 'temp_element' || id === draggedId) {
       if (id === 'temp_element') {
         return (
             <div 
-                className="w-full h-16 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all"
+                style={properties as React.CSSProperties}
+                className="w-full h-2 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all"
             >
-                Drop here
+                {/* Removed text content */}
             </div>
         );
       }
-      return null; // Hide dragged element from its original position
+      return null;
   }
 
-
   switch (type) {
-    case 'heading':
-    case 'text': {
-        const isHeading = type === 'heading';
-        const HeadingTag = isHeading ? `h${properties['level'] || 1}` as keyof JSX.IntrinsicElements : 'div';
-        const content = properties['text'] || (isHeading ? 'New Heading' : 'New Text');
-
-        const textContent = isSelected ? (
-            <EditableText id={id} initialValue={content} onSave={handleSaveText} className={isHeading ? "font-headline tracking-tight" : ""} />
-        ) : (
-            <HeadingTag dangerouslySetInnerHTML={{ __html: content }} />
-        );
-
+    case 'heading': {
+        const HeadingTag = `h${properties['level'] || 1}` as keyof JSX.IntrinsicElements;
+        const content = properties['text'] || 'New Heading';
         return (
-            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <div style={isSelected ? { display: 'inline-block'} : {}}>
-                    {textContent}
-                </div>
+            <HeadingTag {...commonProps}>
+                <EditableText id={id} initialValue={content} onSave={handleSaveText} className="font-headline tracking-tight" />
                 {renderResizeHandles()}
-            </CanvasWrapper>
+            </HeadingTag>
+        );
+    }
+    case 'text': {
+        const content = properties['text'] || 'New Text Block. Double click to edit.';
+        return (
+            <div {...commonProps}>
+                <EditableText id={id} initialValue={content} onSave={handleSaveText} />
+                {renderResizeHandles()}
+            </div>
         );
     }
     case 'button':
-        elementComponent = (
-            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <div style={{display: 'inline-block'}} >
-                    <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
-                </div>
+        return (
+            <button {...commonProps}>
+                <EditableText id={id} initialValue={properties['text'] || 'New Button'} onSave={handleSaveText} />
                 {renderResizeHandles()}
-            </CanvasWrapper>
+            </button>
         );
-        break;
     case 'image':
-         elementComponent = (
-            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <div style={{width: '100%', height: '100%'}} className="overflow-hidden">
-                    {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(properties.width)) || 200} height={parseInt(String(properties.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
-                </div>
+         return (
+            <div {...commonProps}>
+                {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(properties.width)) || 200} height={parseInt(String(properties.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
                 {renderResizeHandles()}
-            </CanvasWrapper>
+            </div>
          );
-         break;
     case 'video':
-         elementComponent = (
-            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
+         return (
+            <div {...commonProps}>
                 <video controls src={properties['src']} className="w-full h-full" />
                 {renderResizeHandles()}
-            </CanvasWrapper>
+            </div>
          );
-         break;
+    case 'input':
+        return (
+            <div {...commonProps}>
+               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} className="w-full h-full bg-background" />
+               {renderResizeHandles()}
+            </div>
+        );
+    case 'textarea':
+        return (
+            <div {...commonProps}>
+               <Textarea value={properties['value']} placeholder={properties['placeholder']} className="w-full h-full bg-background" />
+               {renderResizeHandles()}
+            </div>
+        );
+    case 'label':
+        return (
+            <label {...commonProps}>
+                <EditableText id={id} initialValue={properties['text'] || 'Label'} onSave={handleSaveText}/>
+                {renderResizeHandles()}
+            </label>
+        );
     case 'section':
     case 'div':
     case 'container':
@@ -150,89 +175,46 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       if (type === 'form') Tag = 'form';
       if (type === 'list') Tag = 'ul';
 
-      elementComponent = (
-        <CanvasWrapper {...wrapperProps} className={cn({'container mx-auto': type === 'container'}, wrapperProps.className)} {...dragHandlers} isFlex={properties?.display === 'flex'}>
-          <Tag 
+      const containerStyle = properties?.display === 'flex' ? {
+        display: 'flex',
+        flexDirection: properties.flexDirection,
+        justifyContent: properties.justifyContent,
+        alignItems: properties.alignItems,
+        flexWrap: properties.flexWrap,
+        gap: properties.gap,
+      } : {};
+
+      return (
+        <Tag 
+            {...commonProps} 
+            style={{...commonProps.style, ...containerStyle}}
+            className={cn(commonProps.className, {'container mx-auto': type === 'container'})}
             onDrop={(e) => onDrop(e, id)} 
             onDragOver={(e) => onDragOver(e, id, null)} 
-            className="h-full w-full"
-             style={properties?.display === 'flex' ? {
-                display: 'flex',
-                flexDirection: properties.flexDirection,
-                justifyContent: properties.justifyContent,
-                alignItems: properties.alignItems,
-                flexWrap: properties.flexWrap,
-                gap: properties.gap,
-            } : {}}
-          >
+        >
             {children && children.length > 0 
                 ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
                 : <div className="min-h-[20px]" onDragOver={(e) => onDragOver(e, id, null)}></div>
             }
-          </Tag>
-          {renderResizeHandles()}
-        </CanvasWrapper>
+            {renderResizeHandles()}
+        </Tag>
       );
-      break;
     case 'list-item':
-      elementComponent = (
-        <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-          <li>
-            <EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText} />
-          </li>
-          {renderResizeHandles()}
-        </CanvasWrapper>
+      return (
+        <li {...commonProps}>
+            <EditableText id={id} initialValue={properties['text'] || 'List Item'} onSave={handleSaveText} />
+            {renderResizeHandles()}
+        </li>
       );
-      break;
-    case 'input':
-        elementComponent = (
-            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} className="w-full h-full bg-background" />
-               {renderResizeHandles()}
-            </CanvasWrapper>
-        );
-        break;
-    case 'textarea':
-        elementComponent = (
-            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-               <Textarea value={properties['value']} placeholder={properties['placeholder']} className="w-full h-full bg-background" />
-               {renderResizeHandles()}
-            </CanvasWrapper>
-        );
-        break;
-    case 'label':
-        elementComponent = (
-            <CanvasWrapper {...wrapperProps} {...dragHandlers}>
-                <label><EditableText id={id} initialValue={properties['text'] || ''} onSave={handleSaveText}/></label>
-                {renderResizeHandles()}
-            </CanvasWrapper>
-        );
-        break;
     case 'html':
-         elementComponent = (
-            <CanvasWrapper {...wrapperProps} dangerouslySetInnerHTML={{ __html: properties['htmlContent'] || '' }} {...dragHandlers}>
-                {/* No children allowed with dangerouslySetInnerHTML */}
-            </CanvasWrapper>
+         return (
+            <div {...commonProps} dangerouslySetInnerHTML={{ __html: properties['htmlContent'] || '' }}>
+                {renderResizeHandles()}
+            </div>
          );
-         if (isSelected) {
-            // Re-wrap to add resize handles outside
-             return (
-                 <div key={id}>
-                    {elementComponent}
-                    {renderResizeHandles()}
-                 </div>
-             );
-         }
-        break;
     default:
         return null;
   }
-  
-  return (
-    <div key={id}>
-        {elementComponent}
-    </div>
-  );
 };
 
 export default CanvasElement;

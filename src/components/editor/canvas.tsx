@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { type FC, useRef, DragEvent, Fragment } from 'react';
@@ -9,6 +8,7 @@ import { useElementResizing } from '@/hooks/useElementResizing';
 
 import CanvasElement from './CanvasElement';
 import SectionDropZone from './SectionDropZone';
+// Removed HighlightBox import
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -19,6 +19,8 @@ interface CanvasProps {
   onDragOver: (e: DragEvent, parentId?: string | null, elementId?: string | null) => void;
   onDrop: (e: DragEvent, parentId?: string, elementId?: string) => void;
   draggedId: string | null;
+  hoveredElementId: string | null;
+  setHoveredElementId: (id: string | null) => void;
 }
 
 const Canvas: FC<CanvasProps> = ({ 
@@ -29,7 +31,9 @@ const Canvas: FC<CanvasProps> = ({
     onDragStart,
     onDragOver,
     onDrop,
-    draggedId
+    draggedId,
+    hoveredElementId,
+    setHoveredElementId,
 }) => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const isDraggingSection = !!(draggedId && elements.find(el => el.id === draggedId && el.type === 'section'));
@@ -44,14 +48,15 @@ const Canvas: FC<CanvasProps> = ({
   return (
     <div 
         className="mx-auto h-full w-full max-w-screen-xl py-10 px-4 md:px-8" 
-        onClick={() => onSelectElement(null)}
+        onClick={() => onSelectElement(null)} // Clear selection when clicking canvas background
         onDragOver={(e) => onDragOver(e, null, null)}
         onDrop={(e) => onDrop(e)}
+        onMouseLeave={() => setHoveredElementId(null)}
     >
       <div 
         ref={canvasRef}
         className={cn(
-            "rounded-lg bg-card relative mb-48 border-2 border-border",
+            "rounded-lg bg-card relative mb-48 border-2 border-border min-h-[150vh]",
              {'is-dragging': !!draggedId, 'is-dragging-section': isDraggingSection}
         )}
       >
@@ -74,6 +79,7 @@ const Canvas: FC<CanvasProps> = ({
                     resizingState={resizingState}
                     onResizeStart={handleResizeStart}
                     draggedId={draggedId}
+                    setHoveredElementId={setHoveredElementId}
                 />
             </Fragment>
         ))}
@@ -91,8 +97,8 @@ const Canvas: FC<CanvasProps> = ({
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onDragOver(e) }}
             >
               {draggedId ? (
-                 <div className="w-full h-16 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all p-4 mx-4">
-                    Drop here
+                 <div className="w-full h-2 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all p-4 mx-4">
+                    {/* Removed text content */}
                 </div>
               ) : (
                 <div className="w-full h-full border-2 border-dashed border-muted rounded-lg flex items-center justify-center p-4">
@@ -101,6 +107,7 @@ const Canvas: FC<CanvasProps> = ({
               )}
             </div>
         )}
+        {/* HighlightBox is now rendered in editor.tsx */}
       </div>
     </div>
   );

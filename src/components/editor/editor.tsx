@@ -1,7 +1,6 @@
-
 'use client';
 import type { FC } from 'react';
-import { useState, useEffect, useCallback, DragEvent } from 'react';
+import { useState, useEffect, useCallback, DragEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
@@ -13,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { elementDefinitions } from '@/elements';
 import { temp_element } from '@/elements/html';
+import HighlightBox from './HighlightBox'; // Import HighlightBox
 
 interface EditorProps {
     initialElements: CanvasElementData[];
@@ -30,6 +30,8 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
+  const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null); // Ref for the canvas container
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -47,7 +49,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
     } catch(e: any) {
         console.error("Error updating elements:", e);
         logErrorToFirestore({ message: e.message, stack: e.stack });
-        throw e; // Re-throw to be caught by a higher-level boundary if needed
+        throw e;
     }
   };
 
@@ -64,7 +66,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
   const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(prev => prev + 1);
+      setHistoryIndex(prev => prev + 1); // Corrected: should be prev + 1
     }
   }, [historyIndex, history.length]);
 
@@ -150,8 +152,8 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       e.preventDefault();
       e.stopPropagation();
        // Only remove if leaving the canvas entirely
-      const canvas = (e.currentTarget as HTMLElement).closest('.h-screen.w-full');
-      if (canvas && !canvas.contains(e.relatedTarget as Node)) {
+      const editorContainer = (e.currentTarget as HTMLElement).closest('.h-screen.w-full');
+      if (editorContainer && !editorContainer.contains(e.relatedTarget as Node)) {
           setElements(prev => removeElementRecursive(prev, 'temp_element')[0], false);
           console.log('Drag state exited.');
       }
@@ -350,8 +352,9 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             if (dropZoneId) {
                 const dropIndex = clonedPrev.findIndex((el: CanvasElementData) => el.id === dropZoneId);
                 if (dropIndex !== -1) {
-                    clonedPrev.splice(dropIndex, 0, newElement);
-                    return clonedPrev;
+                    const newElements = [...clonedPrev];
+                    newElements.splice(dropIndex, 0, newElement);
+                    return newElements;
                 }
             }
             return [...clonedPrev, newElement];
@@ -747,7 +750,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             moveElement={moveElement}
             addGeneratedElement={addGeneratedElement}
         />
-        <main className="flex-1 overflow-y-auto bg-background">
+        <main ref={canvasRef} className="flex-1 overflow-y-auto bg-background custom-scrollbar relative"> {/* Added relative positioning */}
           <Canvas 
             elements={elements} 
             selectedElement={selectedElement} 
@@ -757,6 +760,14 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             draggedId={draggedId}
+            hoveredElementId={hoveredElementId}
+            setHoveredElementId={setHoveredElementId}
+            />
+            <HighlightBox 
+                hoveredElementId={hoveredElementId} 
+                selectedElementId={selectedElement} // Pass selectedElementId
+                elements={elements} 
+                canvasRef={canvasRef} 
             />
         </main>
         <RightSidebar 
@@ -768,6 +779,10 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             onUpdateAllElements={handleUpdateAllElements}
             pageId={pageId}
             onSave={handleSaveFlow}
+            onCopyElement={copyElement}
+            onPasteElement={pasteElement}
+            onCutElement={cutElement}
+            onSelectElement={setSelectedElement}
         />
       </div>
     </div>

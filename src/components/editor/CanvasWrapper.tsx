@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { type FC, DragEvent } from 'react';
@@ -18,6 +17,7 @@ interface CanvasWrapperProps {
   dangerouslySetInnerHTML?: { __html: string };
   customCss?: string;
   isFlex?: boolean;
+  setHoveredElementId: (id: string | null) => void; // New prop
 }
 
 const CanvasWrapper: FC<CanvasWrapperProps> = ({ 
@@ -34,6 +34,7 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
     dangerouslySetInnerHTML, 
     customCss,
     isFlex,
+    setHoveredElementId, // Destructure new prop
 }) => {
   const isSelected = selectedElement === id;
   const customCssId = `custom-css-${id}`;
@@ -64,13 +65,26 @@ const CanvasWrapper: FC<CanvasWrapperProps> = ({
     onDrop: onDrop,
     className: cn(
       'relative cursor-pointer transition-all group',
-      isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:ring-1 hover:ring-primary/50',
+      // Default hover effect for unselected elements
+      !isSelected && 'hover:ring-1 hover:ring-accent/50',
+      // Selection ring
+      isSelected && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+      // Additional hover effect specifically for selected elements
+      isSelected && 'hover:ring-4 hover:ring-accent hover:ring-offset-4',
       {'min-h-[20px] w-full': isContainer},
       className
     ),
     onClick: (e: React.MouseEvent) => {
       e.stopPropagation();
       onSelectElement(id);
+    },
+    onMouseEnter: (e: React.MouseEvent) => { // New hover handler
+        e.stopPropagation();
+        setHoveredElementId(id);
+    },
+    onMouseLeave: (e: React.MouseEvent) => { // New hover handler
+        e.stopPropagation();
+        setHoveredElementId(null);
     },
   };
 
