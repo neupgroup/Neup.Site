@@ -101,7 +101,7 @@ const Canvas: FC<CanvasProps> = ({
                     {/* Removed text content */}
                 </div>
               ) : (
-                <div className="w-full h-full border-2 border-dashed border-muted rounded-lg flex items-center justify-center p-4">
+                <div className="w-full h-full flex items-center justify-center p-4">
                     <p className="text-muted-foreground text-center">Drag elements here to start building your page.</p>
                 </div>
               )}

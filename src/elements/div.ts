@@ -7,7 +7,7 @@ export const div: CanvasElementData = {
     properties: {
         'padding': '10px',
         'display': 'block',
-        'border': '1px dashed hsl(var(--border))',
+        'border': 'none',
         'flexDirection': 'row',
         'justifyContent': 'flex-start',
         'alignItems': 'stretch',

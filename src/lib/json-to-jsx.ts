@@ -1,4 +1,3 @@
-
 import { logErrorToFirestore } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 
@@ -9,7 +8,8 @@ function propertiesToStyleObject(properties: Record<string, any>): React.CSSProp
         'color', 'fontSize', 'fontWeight', 'textAlign', 'backgroundColor', 
         'backgroundImage', 'backgroundRepeat', 'border', 'borderRadius', 
         'boxShadow', 'flexDirection', 'justifyContent', 'alignItems', 
-        'flexWrap', 'gap', 'borderTop', 'paddingTop', 'marginLeft', 'marginRight', 'marginBottom'
+        'flexWrap', 'gap', 'borderTop', 'paddingTop', 'marginLeft', 'marginRight', 'marginBottom',
+        'minWidth' // Added minWidth
     ];
 
     for (const key of directProperties) {

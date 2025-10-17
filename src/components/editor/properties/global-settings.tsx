@@ -1,4 +1,3 @@
-
 import { FC, useState, useEffect } from 'react';
 import { Settings, RefreshCw, Database } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -215,7 +214,7 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
         </header>
         <ScrollArea className="flex-1">
             <div className="p-4 space-y-6">
-                <Accordion type="multiple" className="w-full" defaultValue={['data-source']}>
+                <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="data-source">
                         <AccordionTrigger className="text-sm font-medium">
                             <div className="flex items-center gap-2">

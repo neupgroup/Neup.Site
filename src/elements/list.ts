@@ -7,7 +7,7 @@ export const list: CanvasElementData = {
     properties: {
         'padding': '10px',
         'display': 'block',
-        'border': '1px dashed hsl(var(--border))',
+        'border': 'none',
     },
     editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };

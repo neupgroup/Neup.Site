@@ -222,53 +222,55 @@ const RightSidebar: FC<RightSidebarProps> = ({
             <p className="text-sm text-muted-foreground">Type: {selectedElement.type}</p>
         </div>
 
-        <Accordion type="multiple" className="w-full" defaultValue={['attributes', 'content', 'image', 'repeater', 'databinding']}>
-            <AccordionItem value="attributes">
-                <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
-                <AccordionContent className="px-4 space-y-4">
-                    <div className="space-y-2">
-                        <Label>ID</Label>
-                        <Input value={elementId || ''} onChange={e => handleIdChange(e.target.value)} onBlur={handleIdBlur} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Class Name</Label>
-                        <Input 
-                            value={selectedElement.properties?.['className'] || ''}
-                            onChange={(e) => handleUpdate('className', e.target.value)} 
-                            placeholder="e.g. text-center my-4"
-                        />
-                    </div>
-                </AccordionContent>
-            </AccordionItem>
-            
-            {editorProperties.map(groupKey => {
-                const PropertyComponent = propertyComponents[groupKey];
+        <div className="p-4"> {/* Added padding here */}
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="attributes">
+                    <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
+                    <AccordionContent className="px-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>ID</Label>
+                            <Input value={elementId || ''} onChange={e => handleIdChange(e.target.value)} onBlur={handleIdBlur} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Class Name</Label>
+                            <Input 
+                                value={selectedElement.properties?.['className'] || ''}
+                                onChange={(e) => handleUpdate('className', e.target.value)} 
+                                placeholder="e.g. text-center my-4"
+                            />
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
                 
-                if (!PropertyComponent) {
-                    console.warn(`No property component found for group: ${groupKey}`);
-                    return null;
-                }
+                {editorProperties.map(groupKey => {
+                    const PropertyComponent = propertyComponents[groupKey];
+                    
+                    if (!PropertyComponent) {
+                        console.warn(`No property component found for group: ${groupKey}`);
+                        return null;
+                    }
 
-                // Pass the data binding updater to relevant components
-                if (groupKey === 'content' || groupKey === 'image' || groupKey === 'repeater' || groupKey === 'databinding') {
-                     return (
-                        <PropertyComponent 
-                            key={groupKey} 
-                            element={selectedElement} 
-                            onUpdate={handleUpdate} 
-                            onDataBindingUpdate={handleDataBindingUpdate} 
-                        />
+                    // Pass the data binding updater to relevant components
+                    if (groupKey === 'content' || groupKey === 'image' || groupKey === 'repeater' || groupKey === 'databinding') {
+                        return (
+                            <PropertyComponent 
+                                key={groupKey} 
+                                element={selectedElement} 
+                                onUpdate={handleUpdate} 
+                                onDataBindingUpdate={handleDataBindingUpdate} 
+                            />
+                        );
+                    }
+
+                    return (
+                        <PropertyComponent key={groupKey} element={selectedElement} onUpdate={handleUpdate} />
                     );
-                }
-
-                return (
-                    <PropertyComponent key={groupKey} element={selectedElement} onUpdate={handleUpdate} />
-                );
-            })}
-             {selectedElement.properties?.display === 'flex' && (
-                <FlexboxProperties element={selectedElement} onUpdate={handleUpdate} />
-            )}
-        </Accordion>
+                })}
+                {selectedElement.properties?.display === 'flex' && (
+                    <FlexboxProperties element={selectedElement} onUpdate={handleUpdate} />
+                )}
+            </Accordion>
+        </div>
       </ScrollArea>
     </aside>
   );

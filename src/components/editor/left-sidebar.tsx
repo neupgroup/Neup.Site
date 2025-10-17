@@ -1,4 +1,3 @@
-
 import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -229,7 +228,7 @@ const TemplateLibrary = ({addGeneratedElement}: {addGeneratedElement: (element: 
             onDragStart={(e) => handleDragStart(e, template)}
           >
             <Layers className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium truncate">{template.name}</span>
+            <span className="text-sm font-medium line-clamp-2">{template.name}</span>
           </div>
         ))
       ) : (

@@ -1,4 +1,3 @@
-
 import type { SiteTheme, GeneratedTheme } from '@/schemas/site';
 import type { CanvasElementData } from '@/schemas/canvas';
 
@@ -9,7 +8,8 @@ function propertiesToStyleString(properties: Record<string, any>): string {
         'color', 'fontSize', 'fontWeight', 'textAlign', 'backgroundColor', 
         'backgroundImage', 'backgroundRepeat', 'border', 'borderRadius', 
         'boxShadow', 'flexDirection', 'justifyContent', 'alignItems', 
-        'flexWrap', 'gap', 'borderTop', 'paddingTop', 'visibility'
+        'flexWrap', 'gap', 'borderTop', 'paddingTop', 'visibility',
+        'minWidth' // Added minWidth
     ];
 
     for (const key of directProperties) {

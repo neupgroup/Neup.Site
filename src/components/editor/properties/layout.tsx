@@ -49,6 +49,20 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
                         placeholder="e.g., 100px"
                         suggestions={['auto', '48px', '64px', '100px', '70vh', '100vh']}
                         />
+                        <PropertyInput
+                            label="Min-Width"
+                            value={properties['minWidth'] as string || ''}
+                            onChange={(v) => onUpdate('minWidth', v)}
+                            placeholder="e.g., 200px"
+                            suggestions={['auto', '0px', '100px']}
+                        />
+                        <PropertyInput
+                            label="Min-Height"
+                            value={properties['minHeight'] as string || ''}
+                            onChange={(v) => onUpdate('minHeight', v)}
+                            placeholder="e.g., 50px"
+                            suggestions={['auto', '0px', '50px', '100vh']}
+                        />
                     </>
                 )}
             </AccordionContent>

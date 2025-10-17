@@ -7,11 +7,11 @@ export const container: CanvasElementData = {
     properties: {
         'padding': '10px',
         'display': 'block',
-        'border': '1px dashed hsl(var(--border))',
+        'border': 'none',
         'maxWidth': '1100px',
         'marginLeft': 'auto',
         'marginRight': 'auto',
-        'height': '60px',
+        'minHeight': '60px', // Changed from height to minHeight
     },
     editorProperties: ['layout', 'spacing', 'background', 'borders', 'effects']
 };

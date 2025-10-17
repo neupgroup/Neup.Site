@@ -7,12 +7,12 @@ export const section: CanvasElementData = {
     properties: {
         'padding': '10px',
         'display': 'block',
-        'border': '1px dashed hsl(var(--border))',
+        'border': 'none',
         'flexDirection': 'row',
         'justifyContent': 'flex-start',
         'alignItems': 'stretch',
         'flexWrap': 'nowrap',
-        'height': '100px',
+        'minHeight': '100px', // Changed from height to minHeight
         'width': '100%',
     },
     editorProperties: ['layout', 'spacing', 'flexbox', 'background', 'borders', 'effects']
