@@ -1,9 +1,9 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getTemplates, type Template, deleteTemplate } from '@/actions/editor/templates';
+import { getTemplates } from '@/actions/editor/templates';
+import { Template } from '@/schemas/template'; // Corrected import
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -26,7 +26,7 @@ export default function TemplatesPage() {
     setLoading(true);
     const result = await getTemplates();
     if (result.success && result.templates) {
-      setTemplates(result.templates.sort((a, b) => (a.name > b.name ? 1 : -1)));
+      setTemplates(result.templates.sort((a: Template, b: Template) => (a.name > b.name ? 1 : -1)));
     } else {
       setError(result.error || 'Failed to fetch templates');
     }
@@ -92,7 +92,7 @@ export default function TemplatesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {templates.map((template) => (
+          {templates.map((template: Template) => (
              <Link key={template.id} href={`/root/templates/${template.id}`} className="block group">
                 <Card className="transition-all h-full group-hover:border-primary group-hover:shadow-md">
                     <CardHeader className="flex flex-row items-start justify-between">

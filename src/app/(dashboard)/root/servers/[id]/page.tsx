@@ -1,8 +1,8 @@
-
 'use client';
 import { useState, useEffect, useTransition, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServer, type Server } from '@/actions/servers';
+import { getServer } from '@/actions/servers';
+import { Server, ServerLog } from '@/schemas/server'; // Corrected import
 import { runCommand } from '@/actions/runner';
 import { logErrorToFirestore } from '@/lib/logging';
 import {
@@ -34,7 +34,7 @@ import { getBuildNpmWithMemoryCommand } from '@/actions/server/management/build-
 import { getInstallPm2Command } from '@/actions/server/management/install-pm2';
 import { getStartNextWithPm2Command } from '@/actions/server/management/start-next-with-pm2';
 import { getRebootServerCommand } from '@/actions/server/management/reboot-server';
-import { getServerLogs, type ServerLog } from '@/actions/server-logs';
+import { getServerLogs } from '@/actions/server-logs';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -293,7 +293,7 @@ const handleStartNextWithPm2 = async () => {
                      <div>
                         <h4 className="font-semibold text-sm text-muted-foreground">Open Ports</h4>
                         <div className="flex flex-wrap gap-2 mt-1">
-                            {server.portsOpen.map(port => <Badge key={port} variant="secondary">{port}</Badge>)}
+                            {server.portsOpen.map((port: number) => <Badge key={port} variant="secondary">{port}</Badge>)}
                         </div>
                     </div>
                  )}
@@ -581,7 +581,7 @@ www.example.com/subpath"
                     </div>
                 ) : (
                     <Accordion type="single" collapsible className="w-full space-y-2">
-                        {logs.map(log => (
+                        {logs.map((log: ServerLog) => (
                             <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
                                 <AccordionTrigger className="hover:no-underline">
                                     <div className="flex flex-col items-start text-left w-full gap-2">

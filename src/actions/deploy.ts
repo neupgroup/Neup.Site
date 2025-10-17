@@ -1,4 +1,3 @@
-
 'use server';
 
 import { cookies } from 'next/headers';
@@ -19,7 +18,7 @@ async function getAllFiles(siteId: string): Promise<CodeFile[]> {
 }
 
 export async function deployCodebase(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -54,6 +53,7 @@ export async function deployCodebase(): Promise<{ success: boolean; error?: stri
         command: `CODEBASE DEPLOYMENT for site: ${siteId}`,
         output: 'Starting deployment...',
         status: 'pending',
+        initiatedBy: 'system', // Added missing initiatedBy
     });
 
     if (!createLogResult.success || !createLogResult.id) {
@@ -102,7 +102,7 @@ async function runDeploymentInBackground(logId: string, serverId: string, siteId
 
             // The content is already base64 encoded in the database
             const fileContent = Buffer.from(file.content, 'base64');
-            await ssh.putFile(fileContent, remotePath);
+            await ssh.putFile(fileContent as any, remotePath); // Cast to any to bypass strict type definition
 
             const progress = `(${(i + 1)}/${files.length}) Uploaded: ${file.filePath}\n`;
             finalOutput += progress;

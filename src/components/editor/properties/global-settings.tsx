@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -104,7 +104,7 @@ const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId: initialPageId,
         setIsSaving(false);
     };
 
-    const selectedSource = sources.find(s => s.id === selectedSourceId);
+    const selectedSource = sources.find((s: Source) => s.id === selectedSourceId);
     
     if (loading) {
         return (
@@ -133,7 +133,7 @@ const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId: initialPageId,
                                 <SelectValue placeholder="Select a source..." />
                             </SelectTrigger>
                             <SelectContent>
-                                {sources.map(source => (
+                                {sources.map((source: Source) => (
                                     <SelectItem key={source.id} value={source.id}>{source.name}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -259,7 +259,7 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {breakpoints.map(bp => (
+                                    {breakpoints.map((bp: { name: string; value: string; }) => (
                                         <TableRow key={bp.name}>
                                             <TableCell className="font-mono text-xs">{bp.name}</TableCell>
                                             <TableCell>
@@ -279,7 +279,7 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
                                 <Label>Default</Label>
                                 <Input disabled value="1rem" className="h-8" />
                             </div>
-                            {breakpoints.map(bp => (
+                            {breakpoints.map((bp: { name: string; value: string; }) => (
                                 <div className="space-y-2" key={bp.name}>
                                     <Label className="font-mono text-xs">{bp.name}</Label>
                                     <Input disabled value="2rem" className="h-8" />

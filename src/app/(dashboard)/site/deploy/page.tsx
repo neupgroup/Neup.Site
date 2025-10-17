@@ -1,11 +1,11 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket } from 'lucide-react';
-import { getStructure, buildStructure, createDeployment, getLastDeployment, type Structure, type Deployment } from '@/actions/structure';
+import { getStructure, buildStructure, createDeployment, getLastDeployment } from '@/actions/structure';
+import { Structure, Deployment } from '@/schemas/site'; // Corrected import
 import { deployCodebase } from '@/actions/deploy';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -88,7 +88,7 @@ export default function DeployPage() {
     };
 
 
-    const hasPendingChanges = structure?.status === 'pendingDeployment' || structure?.structure.some(s => s.changesMade);
+    const hasPendingChanges = structure?.status === 'pendingDeployment' || structure?.structure.some((s: any) => s.changesMade);
     const isNeverDeployed = !lastDeployment;
 
     return (
@@ -140,10 +140,10 @@ export default function DeployPage() {
                              <CardContent>
                                 <ScrollArea className="h-48">
                                     <div className="space-y-2">
-                                        {structure.structure.filter(s => s.changesMade).map(s => (
+                                        {structure.structure.filter((s: any) => s.changesMade).map((s: any) => (
                                             <div key={s.path} className="font-mono text-sm p-2 bg-muted rounded-md">{s.path}</div>
                                         ))}
-                                        {!structure.structure.some(s => s.changesMade) && (
+                                        {!structure.structure.some((s: any) => s.changesMade) && (
                                             <p className="text-sm text-muted-foreground text-center py-4">No pending changes.</p>
                                         )}
                                     </div>

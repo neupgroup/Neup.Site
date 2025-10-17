@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { type FC, DragEvent } from 'react';
@@ -80,7 +79,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     const handles: ('top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right')[] = [
         'top-left', 'top', 'top-right', 'left', 'right', 'bottom-left', 'bottom', 'bottom-right'
     ];
-    return handles.map(handle => (
+    return handles.map((handle: any) => (
         <ResizeHandle key={handle} position={handle} onMouseDown={(e) => onResizeStart(e, handle)} />
     ));
   };
@@ -95,7 +94,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     draggable: true,
     onDragStart: (e: React.DragEvent) => onDragStart(e, id),
     onDragOver: (e: DragEvent) => onDragOver(e, parentId, id),
-    onDrop: (e: DragEvent) => onDrop(e, parentId, id),
+    onDrop: (e: DragEvent) => onDrop(e, parentId || undefined, id), // Pass parentId as undefined if null
     onClick: (e: React.MouseEvent) => {
       e.stopPropagation();
       onSelectElement(id);
@@ -230,12 +229,12 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
             {...commonProps} 
             style={{...commonProps.style, ...containerStyle}}
             className={cn(commonProps.className, {'container mx-auto': type === 'container'})}
-            onDrop={(e) => onDrop(e, id)} 
-            onDragOver={(e) => onDragOver(e, id, null)} 
+            onDrop={(e: DragEvent) => onDrop(e, id)} 
+            onDragOver={(e: DragEvent) => onDragOver(e, id, null)} 
         >
             {children && children.length > 0 
-                ? children.map(child => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
-                : <div className="min-h-[20px]" onDragOver={(e) => onDragOver(e, id, null)}></div>
+                ? children.map((child: CanvasElementData) => <CanvasElement key={child.id} {...{...props, element: child, parentId: id}} />) 
+                : <div className="min-h-[20px]" onDragOver={(e: DragEvent) => onDragOver(e, id, null)}></div>
             }
             {renderResizeHandles()}
         </Tag>

@@ -1,11 +1,11 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowRight, Code, Edit, MessageSquare, PlusSquare, Loader2 } from 'lucide-react';
-import { createPage, type Page } from '@/actions/editor/pages';
+import { createPage } from '@/actions/editor/pages';
+import { Page } from '@/schemas/site'; // Corrected import
 import { useToast } from '@/hooks/use-toast';
 
 type CreationType = Page['type'];

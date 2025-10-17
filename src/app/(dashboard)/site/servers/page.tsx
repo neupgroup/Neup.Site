@@ -1,14 +1,13 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getSiteServers, type Server } from '@/actions/servers';
+import { getSiteServers } from '@/actions/servers';
+import { Server, ServerAllocation } from '@/schemas/server'; // Corrected import path
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Server as ServerIcon, HardDrive, Settings, CreditCard, GitBranch } from 'lucide-react';
-import type { ServerAllocation } from '@/schemas/server';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { formatDistanceToNow } from 'date-fns';
@@ -62,7 +61,7 @@ export default function SiteServersPage() {
             </div>
           ) : (
             <div className="space-y-6">
-                {servers.map(({ allocation, ...server }) => {
+                {servers.map(({ allocation, ...server }: Server & { allocation: ServerAllocation }) => {
                     // Placeholder for storage calculation
                     const storageUsed = 20; 
                     const lastDeployed = allocation.allocatedOn ? formatDistanceToNow(new Date(allocation.allocatedOn), { addSuffix: true }) : 'N/A';

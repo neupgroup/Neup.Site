@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 import { useState, useRef, useEffect, FC } from 'react';
 import { cn } from '@/lib/utils';
 import { Bold, Italic, Strikethrough, Link as LinkIcon, ChevronDown } from 'lucide-react';
@@ -64,7 +63,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
             {isEditing && (
                  <div 
                     className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 flex items-center gap-1 bg-background p-1 rounded-md border shadow-md"
-                    onMouseDown={handleToolbarInteraction}
+                    onMouseDown={handleToolbarInteraction} // Added onMouseDown here
                 >
                      {onTagChange && currentTag && (
                         <DropdownMenu>
@@ -74,7 +73,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                                     <ChevronDown className="h-4 w-4 ml-1" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent onMouseDown={handleToolbarInteraction}>
+                            <DropdownMenuContent onMouseDown={handleToolbarInteraction}> {/* Added onMouseDown here */}
                                 {tagOptions.map(tag => (
                                     <DropdownMenuItem key={tag} onSelect={() => handleTagSelect(tag)}>
                                         {tag.toUpperCase()}

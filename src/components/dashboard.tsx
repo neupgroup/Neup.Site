@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -94,7 +93,7 @@ function NavLink({ href, children, currentPath }: { href: string; children: Reac
     );
 }
 
-export function Dashboard({ children }: { children: React.ReactNode }) {
+export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: SiteTheme }) {
   const pathname = usePathname();
 
   return (

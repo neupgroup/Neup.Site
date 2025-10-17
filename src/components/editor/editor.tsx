@@ -1,4 +1,3 @@
-
 'use client';
 import type { FC } from 'react';
 import { useState, useEffect, useCallback, DragEvent, useRef } from 'react';
@@ -97,7 +96,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
   const removeElementRecursive = (els: CanvasElementData[], id: string): [CanvasElementData[], CanvasElementData | null] => {
     let foundElement: CanvasElementData | null = null;
-    const newEls = els.reduce((acc, el) => {
+    const newEls = els.reduce((acc: CanvasElementData[], el: CanvasElementData) => {
         if (el.id === id) {
             foundElement = el;
             return acc;
@@ -126,10 +125,10 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
           const insertPlaceholder = (els: CanvasElementData[]): CanvasElementData[] => {
               if (targetParentId) {
-                  return els.map(el => {
+                  return els.map((el: CanvasElementData) => {
                       if (el.id === targetParentId) {
                           const newChildren = el.children ? [...el.children] : [];
-                          const dropIndex = targetElementId ? newChildren.findIndex(c => c.id === targetElementId) : newChildren.length;
+                          const dropIndex = targetElementId ? newChildren.findIndex((c: CanvasElementData) => c.id === targetElementId) : newChildren.length;
                           newChildren.splice(dropIndex, 0, temp_element);
                           return {...el, children: newChildren};
                       }
@@ -139,7 +138,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                       return el;
                   });
               } else {
-                  const dropIndex = targetElementId ? els.findIndex(c => c.id === targetElementId) : els.length;
+                  const dropIndex = targetElementId ? els.findIndex((c: CanvasElementData) => c.id === targetElementId) : els.length;
                   const newEls = [...els];
                   newEls.splice(dropIndex, 0, temp_element);
                   return newEls;
@@ -185,10 +184,10 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
           const insertElement = (els: CanvasElementData[]): CanvasElementData[] => {
               if (parentId) {
-                  return els.map(el => {
+                  return els.map((el: CanvasElementData) => {
                       if (el.id === parentId) {
                           const newChildren = el.children ? [...el.children] : [];
-                          const dropIndex = dropZoneId ? newChildren.findIndex(c => c.id === dropZoneId) : newChildren.length;
+                          const dropIndex = dropZoneId ? newChildren.findIndex((c: CanvasElementData) => c.id === dropZoneId) : newChildren.length;
                           newChildren.splice(dropIndex, 0, draggedElement!);
                           return {...el, children: newChildren};
                       }
@@ -199,7 +198,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                   });
               } else {
                   const newEls = [...els];
-                  const dropIndex = dropZoneId ? newEls.findIndex(c => c.id === dropZoneId) : newEls.length;
+                  const dropIndex = dropZoneId ? newEls.findIndex((c: CanvasElementData) => c.id === dropZoneId) : newEls.length;
                   newEls.splice(dropIndex, 0, draggedElement!);
                   return newEls;
               }
@@ -218,7 +217,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         const clonedElements = JSON.parse(JSON.stringify(prevElements)) as CanvasElementData[];
 
         const removeElement = (els: CanvasElementData[], id: string): CanvasElementData[] => {
-            return els.reduce((acc, el) => {
+            return els.reduce((acc: CanvasElementData[], el: CanvasElementData) => {
             if (el.id === id) {
                 draggedElement = el;
                 return acc;
@@ -238,7 +237,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         const addElementToParent = (els: CanvasElementData[], pId: string, element: CanvasElementData): boolean => {
             for (let i = 0; i < els.length; i++) {
             if (els[i].id === pId && els[i].children) {
-                const dropIndex = dropZoneId ? els[i].children!.findIndex(child => child.id === dropZoneId) : -1;
+                const dropIndex = dropZoneId ? els[i].children!.findIndex((child: CanvasElementData) => child.id === dropZoneId) : -1;
                 if (dropIndex !== -1) {
                 els[i].children!.splice(dropIndex, 0, element);
                 } else {
@@ -246,7 +245,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                 }
                 return true;
             }
-            if (els[i].children && addElementToParent(els[i].children, pId, element)) {
+            if (els[i].children && addElementToParent(els[i].children!, pId, element)) {
                 return true;
             }
             }
@@ -254,16 +253,16 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         }
         
         const insertElement = (els: CanvasElementData[], dZoneId: string, element: CanvasElementData): CanvasElementData[] => {
-            const dropIndex = els.findIndex(el => el.id === dZoneId);
+            const dropIndex = els.findIndex((el: CanvasElementData) => el.id === dZoneId);
             if (dropIndex !== -1) {
                 const newEls = [...els];
                 newEls.splice(dropIndex, 0, element);
                 return newEls;
             }
 
-            return els.map(el => {
+            return els.map((el: CanvasElementData) => {
                 if (el.children) {
-                    return { ...el, children: insertElement(el.children, dZoneId, element) };
+                    return { ...el, children: insertElement(el.children!, dZoneId, element) };
                 }
                 return el;
             });
@@ -324,9 +323,9 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             }
 
             const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-                return els.map(el => {
+                return els.map((el: CanvasElementData) => {
                     if (el.id === parentId && el.children) {
-                        const dropIndex = dropZoneId ? el.children.findIndex(child => child.id === dropZoneId) : -1;
+                        const dropIndex = dropZoneId ? el.children.findIndex((child: CanvasElementData) => child.id === dropZoneId) : -1;
                         const newChildren = [...el.children];
                         if (dropIndex !== -1) {
                             newChildren.splice(dropIndex, 0, newElement);
@@ -364,12 +363,12 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const addGeneratedElement = (element: CanvasElementData, dropZoneId?: string, parentId?: string) => {
     try {
         const deepCopyAndNewIds = (el: CanvasElementData): CanvasElementData => {
-            const newEl = {
+            const newEl: CanvasElementData = {
                 ...el,
                 id: `${el.type}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
             };
             if (el.children) {
-                newEl.children = el.children.map(deepCopyAndNewIds);
+                newEl.children = el.children.map((child: CanvasElementData) => deepCopyAndNewIds(child));
             }
             return newEl;
         };
@@ -400,9 +399,9 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
 
             const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-                return els.map(el => {
+                return els.map((el: CanvasElementData) => {
                     if (el.id === parentId && el.children) {
-                        const dropIndex = dropZoneId ? el.children.findIndex(child => child.id === dropZoneId) : -1;
+                        const dropIndex = dropZoneId ? el.children.findIndex((child: CanvasElementData) => child.id === dropZoneId) : -1;
                         const newChildren = [...el.children];
                         if (dropIndex !== -1) {
                             newChildren.splice(dropIndex, 0, newElement);
@@ -442,7 +441,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         setElements(prev => {
             const clonedPrev = JSON.parse(JSON.stringify(prev));
             const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-                return els.map(el => {
+                return els.map((el: CanvasElementData) => {
                 if (el.id === id) {
                     const updatedElement: CanvasElementData = {
                       ...el,
@@ -480,7 +479,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       setElements(prev => {
         const clonedPrev = JSON.parse(JSON.stringify(prev));
         const updateIdRecursive = (els: CanvasElementData[]): CanvasElementData[] => {
-            return els.map(el => {
+            return els.map((el: CanvasElementData) => {
             if (el.id === oldId) {
                 return { ...el, id: newId };
             }
@@ -516,12 +515,12 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         const result = findElementRecursive(elements, selectedElementId);
         if (result) {
             const deepCopy = (el: CanvasElementData): CanvasElementData => {
-                const newEl = {
+                const newEl: CanvasElementData = {
                     ...el,
                     id: `${el.type}-${Date.now()}-${Math.random()}`
                 };
                 if (el.children) {
-                    newEl.children = el.children.map(deepCopy);
+                    newEl.children = el.children.map((child: CanvasElementData) => deepCopy(child));
                 }
                 return newEl;
             };
@@ -551,7 +550,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
             if (selectedEl && ['section', 'div', 'container', 'form', 'list'].includes(selectedEl.type)) {
                 const addInside = (els: CanvasElementData[]): CanvasElementData[] => {
-                    return els.map(el => {
+                    return els.map((el: CanvasElementData) => {
                         if (el.id === selectedEl.id) {
                             return { ...el, children: [...(el.children || []), newClipboard] };
                         }
@@ -567,18 +566,18 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                     if (parentId) {
                         for (let i = 0; i < els.length; i++) {
                             if (els[i].id === parentId && els[i].children) {
-                                const targetIdx = els[i].children!.findIndex(c => c.id === targetId);
+                                const targetIdx = els[i].children!.findIndex((c: CanvasElementData) => c.id === targetId);
                                 if (targetIdx !== -1) {
                                     els[i].children!.splice(targetIdx + 1, 0, newClipboard);
                                 }
                                 return els;
                             }
                             if (els[i].children) {
-                            addSibling(els[i].children, targetId, parentId);
+                            addSibling(els[i].children!, targetId, parentId);
                             }
                         }
                     } else { 
-                        const rootIndex = els.findIndex(c => c.id === targetId);
+                        const rootIndex = els.findIndex((c: CanvasElementData) => c.id === targetId);
                         if (rootIndex !== -1) {
                         els.splice(rootIndex + 1, 0, newClipboard);
                         }
@@ -608,14 +607,14 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
   const handleMoveElement = (direction: 'up' | 'down') => {
     const result = findElementRecursive(elements, selectedElementId!);
-    if (!selectedElementId || !result || !result.parent) {
+    if (!selectedElementId || !result || !result.parent || !result.parent.children) {
       toast({ variant: 'destructive', title: 'Cannot move', description: 'Select an element within a parent container to move.' });
       return;
     }
     const { parent } = result;
 
     const newChildren = [...parent.children!];
-    const currentIndex = newChildren.findIndex(child => child.id === selectedElementId);
+    const currentIndex = newChildren.findIndex((child: CanvasElementData) => child.id === selectedElementId);
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
 
     if (newIndex >= 0 && newIndex < newChildren.length) {

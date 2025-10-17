@@ -1,4 +1,3 @@
-
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
@@ -36,6 +35,7 @@ export async function runCommand(serverId: string, command: string) {
         command: command,
         output: `Initiating command...`,
         status: 'pending',
+        initiatedBy: 'system', // Added missing initiatedBy
     });
 
     if (!createResult.success || !createResult.id) {

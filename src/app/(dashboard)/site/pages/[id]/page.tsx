@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPage, savePage, deletePage, type Page } from '@/actions/editor/pages';
+import { getPage, savePage, deletePage } from '@/actions/editor/pages';
+import { Page } from '@/schemas/site';
 import { getPathsForPage, type Path } from '@/actions/paths';
+import type { CanvasElementData } from '@/schemas/canvas'; // Added import
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -69,7 +71,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
   const handleSectionVisibilityChange = async (sectionId: string, isVisible: boolean) => {
     if (!page) return;
 
-    const updatedElements = page.elements.map(el => {
+    const updatedElements = page.elements.map((el: CanvasElementData) => { // Explicitly type el
         if (el.id === sectionId) {
             return {
                 ...el,
@@ -189,7 +191,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
                         <p className="text-muted-foreground text-center py-4">This page has no sections yet. Go to 'Edit Content' to add them.</p>
                     ) : (
                         <div className="border rounded-lg">
-                           {page.elements.map((element, index) => (
+                           {page.elements.map((element: CanvasElementData, index: number) => (
                                <div key={element.id} className={`flex items-center justify-between p-4 ${index < page.elements.length - 1 ? 'border-b' : ''}`}>
                                    <span className="font-mono text-sm">{element.id} ({element.type})</span>
                                    <div className="flex items-center gap-2">

@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getFirestore, collection, doc, setDoc, getDoc, query, where, getDocs, limit } from 'firebase/firestore';
@@ -11,7 +10,7 @@ import { initializeFirebase } from '@/lib/firebase';
  * Sets or updates the data source binding for a specific page.
  */
 export async function setPageDataSource(pageId: string, sourceId: string, methodName: string): Promise<{ success: boolean; id?: string; error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -38,7 +37,7 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
  * Fetches the data source binding for a specific page.
  */
 export async function getPageDataSource(pageId: string): Promise<{ success: boolean; binding?: PageDataSourceBinding; error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 

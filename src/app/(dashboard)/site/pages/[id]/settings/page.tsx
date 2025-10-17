@@ -1,9 +1,9 @@
-
 'use client';
 
 import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPage, savePage, deletePage, type Page } from '@/actions/editor/pages';
+import { getPage, savePage, deletePage } from '@/actions/editor/pages';
+import { Page } from '@/schemas/site'; // Corrected import
 import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/actions/paths';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

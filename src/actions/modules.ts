@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getFirestore, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
@@ -20,7 +19,7 @@ export interface SiteModules {
  * Fetches the modules for the current site.
  */
 export async function getSiteModules(): Promise<{ success: boolean; modules?: SiteModules; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -57,7 +56,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
  * Updates a specific module's status for the current site.
  */
 export async function updateSiteModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 

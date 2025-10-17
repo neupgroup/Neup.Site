@@ -1,8 +1,8 @@
-
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServerAllocation, deleteServerAllocation, type ServerAllocation } from '@/actions/allocations';
+import { getServerAllocation, deleteServerAllocation } from '@/actions/allocations';
+import { ServerAllocation } from '@/schemas/server'; // Corrected import
 import {
   Card,
   CardContent,
@@ -140,7 +140,7 @@ export default function AllocationDetailPage({ params }: { params: Promise<{ id:
                     <h4 className="font-semibold text-sm text-muted-foreground">Allocated Ports</h4>
                     <div className="flex flex-wrap gap-2 mt-1">
                         {allocation.allocatedPorts && allocation.allocatedPorts.length > 0 ? (
-                            allocation.allocatedPorts.map(port => <Badge key={port} variant="secondary">{port}</Badge>)
+                            allocation.allocatedPorts.map((port: number) => <Badge key={port} variant="secondary">{port}</Badge>)
                         ) : (
                             <p className="text-sm text-muted-foreground">No ports allocated.</p>
                         )}

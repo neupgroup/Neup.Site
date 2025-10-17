@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -166,7 +165,7 @@ export default function CodebasePage() {
         </CardHeader>
         <CardContent>
           <div {...getRootProps()} className={`p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'hover:border-primary/50'}`}>
-            <input {...getInputProps({ directory: "true", webkitdirectory: "true" })} />
+            <input {...getInputProps()} /> {/* Removed non-standard 'directory' attribute */}
             <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             {isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
           </div>
@@ -180,7 +179,7 @@ export default function CodebasePage() {
                     <Progress value={uf.status === 'success' ? 100 : uf.status === 'uploading' ? 50 : 0} className="h-2" />
                   </div>
                   {uf.status === 'uploading' && <Loader2 className="h-5 w-5 animate-spin" />}
-                  {uf.status === 'error' && <AlertCircle className="h-5 w-5 text-destructive" title={uf.error} />}
+                  {uf.status === 'error' && <AlertCircle className="h-5 w-5 text-destructive" />}
                 </div>
               ))}
               <Button onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
@@ -218,7 +217,7 @@ export default function CodebasePage() {
                                 {uploadedFiles.length === 0 ? (
                                     <TableRow><TableCell colSpan={4} className="h-24 text-center">No files uploaded yet.</TableCell></TableRow>
                                 ) : (
-                                    uploadedFiles.map(file => (
+                                    uploadedFiles.map((file: CodeFile) => (
                                         <TableRow key={file.id}>
                                             <TableCell className="font-mono text-xs max-w-sm whitespace-pre-wrap break-all">{file.filePath}</TableCell>
                                             <TableCell>{(file.size / 1024).toFixed(2)}</TableCell>

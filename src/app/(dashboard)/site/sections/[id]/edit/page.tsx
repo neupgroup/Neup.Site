@@ -1,11 +1,11 @@
-
 'use client';
 
-import { useEffect, use } from 'react';
+import { useEffect, use, useState } from 'react'; // Added useState
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getSection, saveSection, type Section } from '@/actions/editor/sections';
+import { getSection, saveSection } from '@/actions/editor/sections';
+import { Section } from '@/actions/editor/sections'; // Corrected import
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';

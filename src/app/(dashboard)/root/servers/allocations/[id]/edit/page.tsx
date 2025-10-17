@@ -1,6 +1,5 @@
-
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import {
@@ -17,8 +16,8 @@ import { Label } from '@/components/ui/label';
 import { Save, ArrowLeft, Loader2, Plus, Trash2, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getServerAllocation, updateServerAllocation } from '@/actions/allocations';
-import Link from 'next/link';
 import { ServerAllocation } from '@/schemas/server';
+import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -27,7 +26,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-type FormValues = Omit<ServerAllocation, 'id' | 'allocatedOn'>;
+type FormValues = Omit<ServerAllocation, 'id' | 'allocatedOn' | 'allocatedPorts'> & {
+    allocatedPorts: { value: number }[];
+};
 
 export default function EditAllocationPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -54,7 +55,7 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
         if (result.success && result.allocation) {
             reset({
                 ...result.allocation,
-                allocatedPorts: result.allocation.allocatedPorts?.map(p => ({ value: p })) as any,
+                allocatedPorts: result.allocation.allocatedPorts?.map(p => ({ value: p })) || [],
             });
         } else {
             setError(result.error || 'Failed to fetch allocation details.');
@@ -66,15 +67,15 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'allocatedPorts'
+    name: 'allocatedPorts',
   });
   
   const expiresOn = watch('expiresOn');
 
   const handleUpdateAllocation = async (data: FormValues) => {
-    const ports = (data.allocatedPorts as any[])
+    const ports = (data.allocatedPorts as { value: number }[])
         .map(p => p.value)
-        .filter(p => p !== '' && !isNaN(p))
+        .filter(p => p !== null && p !== undefined && !isNaN(p))
         .map(p => Number(p));
 
     const result = await updateServerAllocation(id, {...data, allocatedPorts: ports});
@@ -152,13 +153,13 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
                 <Label>Allocated Ports</Label>
                 {fields.map((field, index) => (
                   <div key={field.id} className="flex items-center gap-2">
-                      <Input type="number" {...register(`allocatedPorts.${index}.value` as any)} />
+                      <Input type="number" {...register(`allocatedPorts.${index}.value` as const, { valueAsNumber: true })} />
                       <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
                           <Trash2 className="h-4 w-4" />
                       </Button>
                   </div>
               ))}
-               <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' } as any)}>
+               <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: 0 })}>
                   <Plus className="mr-2 h-4 w-4" /> Add Port
               </Button>
             </div>

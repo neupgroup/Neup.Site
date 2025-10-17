@@ -1,5 +1,3 @@
-
-
 import type { CanvasElementData } from "@/schemas/canvas";
 
 export const text: CanvasElementData = {

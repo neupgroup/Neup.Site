@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,7 +16,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, ArrowLeft, Loader2, AlertCircle, KeyRound, Calendar as CalendarIcon, Trash2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getServer, updateServer, deleteServer, type Server } from '@/actions/servers';
+import { getServer, updateServer, deleteServer } from '@/actions/servers';
+import { Server } from '@/schemas/server';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -30,7 +30,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 
 
-type FormValues = Omit<Server, 'id' | 'createdOn'>;
+type FormValues = Omit<Server, 'id' | 'createdOn' | 'portsOpen'> & {
+    portsOpen: { value: number }[];
+};
 
 export default function EditServerPage({ params }: { params: { id:string } }) {
   const { id } = params;
@@ -78,7 +80,7 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
           privateKey: '', // Keep private key field blank for security
           serverType: result.server.serverType || 'vps',
           provider: result.server.provider || '',
-          portsOpen: result.server.portsOpen?.map(p => ({ value: p })) as any || [],
+          portsOpen: result.server.portsOpen?.map(p => ({ value: p })) || [],
           isPrivate: result.server.isPrivate || false,
           username: result.server.username || '',
           basePath: result.server.basePath || '',
@@ -94,9 +96,9 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
   }, [id, reset]);
 
   const handleUpdateServer = async (data: FormValues) => {
-    const ports = (data.portsOpen as any[])
+    const ports = (data.portsOpen as { value: number }[])
         .map(p => p.value)
-        .filter(p => p !== '' && !isNaN(p))
+        .filter(p => p !== null && p !== undefined && !isNaN(p))
         .map(p => Number(p));
     
     const result = await updateServer(id, {...data, portsOpen: ports});
@@ -202,13 +204,13 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
                     <Label>Open Ports</Label>
                     {fields.map((field, index) => (
                         <div key={field.id} className="flex items-center gap-2">
-                            <Input type="number" {...register(`portsOpen.${index}.value` as any)} placeholder="e.g., 80" />
+                            <Input type="number" {...register(`portsOpen.${index}.value` as const, { valueAsNumber: true })} />
                             <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' } as any)}>
+                    <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: 0 })}>
                         <Plus className="mr-2 h-4 w-4" /> Add Port
                     </Button>
                 </div>

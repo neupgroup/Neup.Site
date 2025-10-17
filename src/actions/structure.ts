@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from 'firebase/firestore';
@@ -14,7 +13,7 @@ import { getSite } from './editor/site';
  * Gets the deployment structure for the current site.
  */
 export async function getStructure(): Promise<{ success: boolean; structure?: Structure; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -46,7 +45,7 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
  * Gets the last successful deployment record for the current site.
  */
 export async function getLastDeployment(): Promise<{ success: boolean; deployment?: Deployment; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -88,7 +87,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
  * Compiles pages and paths into a structure document, marking it as pending deployment.
  */
 export async function buildStructure(): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -137,7 +136,7 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
  * Creates a new deployment record and marks the structure as deployed.
  */
 export async function createDeployment(): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
@@ -191,7 +190,7 @@ export async function markStructureAsPending(siteId: string, paths: string[], is
 
         if (structureSnap.exists()) {
             const currentStructure = structureSnap.data() as Omit<Structure, 'id'>;
-            finalStructure = currentStructure.structure.map(p => {
+            finalStructure = currentStructure.structure.map((p: PathStructure) => {
                 if (paths.includes(p.path)) {
                     return { ...p, changesMade: true };
                 }

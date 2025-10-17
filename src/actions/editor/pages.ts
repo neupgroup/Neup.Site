@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getFirestore } from 'firebase/firestore';
@@ -27,7 +26,7 @@ import { getPathsForPage } from '../paths';
 import { markStructureAsPending } from '../structure';
 
 export async function createPage(type: Page['type'] = 'editor') {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -53,7 +52,7 @@ export async function createPage(type: Page['type'] = 'editor') {
 }
 
 export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'siteId'>>) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   
@@ -92,7 +91,7 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
 }
 
 export async function getPage(id: string): Promise<{ success: boolean, page?: Page, error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -144,7 +143,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
  * Fetches all pages from Firestore for the current siteId, including their paths.
  */
 export async function getPages(): Promise<{ success: boolean, pages?: Page[], error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -189,7 +188,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
  * @param id The ID of the page to delete.
  */
 export async function deletePage(id: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 

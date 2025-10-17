@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getFirestore } from 'firebase/firestore';
@@ -22,7 +21,7 @@ export type { Site, SiteTheme };
  * The ID of the document is expected to be the siteId from the cookie.
  */
 export async function getSite(): Promise<{ success: boolean, site?: Site, error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     // If there's no siteId, we are likely in a root context. This is not an error.
     // Simply return successfully with no site data.
@@ -74,7 +73,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
  * The ID of the document is the siteId from the cookie.
  */
 export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   

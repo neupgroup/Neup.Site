@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -18,18 +17,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Save, ArrowLeft, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createServer } from '@/actions/servers';
-import Link from 'next/link';
 import { Server } from '@/schemas/server';
+import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
-type FormValues = Omit<Server, 'id' | 'createdOn' | 'expiresOn'>;
+type FormValues = Omit<Server, 'id' | 'createdOn' | 'expiresOn' | 'portsOpen'> & {
+    portsOpen: { value: number }[];
+};
 
 export default function CreateServerPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, control, handleSubmit, formState: { isSubmitting }, setValue, watch } = useForm<FormValues>({
     defaultValues: {
       name: '',
       publicIp: '',
@@ -55,9 +56,9 @@ export default function CreateServerPage() {
       return;
     }
     
-    const ports = (data.portsOpen as any[])
+    const ports = (data.portsOpen as { value: number }[])
         .map(p => p.value)
-        .filter(p => p !== '' && !isNaN(p))
+        .filter(p => p !== null && p !== undefined && !isNaN(p))
         .map(p => Number(p));
 
     const result = await createServer({...data, portsOpen: ports});
@@ -103,7 +104,7 @@ export default function CreateServerPage() {
              <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="server-type">Server Type</Label>
-                    <Select onValueChange={(value) => register('serverType').onChange({ target: { value } })} defaultValue="vps">
+                    <Select onValueChange={(value) => setValue('serverType', value as any)} defaultValue="vps">
                         <SelectTrigger id="server-type">
                             <SelectValue placeholder="Select type" />
                         </SelectTrigger>
@@ -133,18 +134,18 @@ export default function CreateServerPage() {
                 <Label>Open Ports</Label>
                 {fields.map((field, index) => (
                     <div key={field.id} className="flex items-center gap-2">
-                        <Input type="number" {...register(`portsOpen.${index}.value` as any)} placeholder="e.g., 80" />
+                        <Input type="number" {...register(`portsOpen.${index}.value` as const, { valueAsNumber: true })} placeholder="e.g., 80" />
                         <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
                 ))}
-                <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' } as any)}>
+                <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: 0 })}>
                     <Plus className="mr-2 h-4 w-4" /> Add Port
                 </Button>
             </div>
              <div className="flex items-center space-x-2">
-                <Switch id="is-private" {...register('isPrivate')} />
+                <Switch id="is-private" checked={watch('isPrivate')} onCheckedChange={(checked) => setValue('isPrivate', checked)} />
                 <Label htmlFor="is-private">This is a private server</Label>
             </div>
             <div className="space-y-2">

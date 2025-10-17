@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
@@ -60,7 +59,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  * Fetches servers relevant to the current siteId by checking the serverAllocations collection.
  */
 export async function getSiteServers(): Promise<{ success: boolean; servers?: (Server & { allocation: ServerAllocation })[]; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -91,8 +90,8 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
             const allocation: ServerAllocation = {
                 id: allocDoc.id,
                 ...allocationData,
-                allocatedOn: allocationData.allocatedOn instanceof Timestamp ? allocationData.allocatedOn.toDate().toISOString() : null,
-                expiresOn: allocationData.expiresOn instanceof Timestamp ? allocationData.expiresOn.toDate().toISOString() : null,
+                allocatedOn: (allocationData.allocatedOn as any) instanceof Timestamp ? (allocationData.allocatedOn as any).toDate().toISOString() : null,
+                expiresOn: (allocationData.expiresOn as any) instanceof Timestamp ? (allocationData.expiresOn as any).toDate().toISOString() : null,
             }
             
             return { ...serverInfo, allocation };
