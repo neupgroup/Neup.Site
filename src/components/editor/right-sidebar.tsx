@@ -200,7 +200,7 @@ const RightSidebar: FC<RightSidebarProps> = ({
     <aside className="w-80 border-l bg-card">
       <ScrollArea className="h-full">
         <div className="flex flex-col gap-2 p-4 border-b">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
                 <h3 className="text-lg font-semibold font-headline truncate">{selectedElement.id}</h3>
                 <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" onClick={() => onSelectElement(selectedElementParent?.id || null)} disabled={!selectedElementParent} title="Select Parent">
