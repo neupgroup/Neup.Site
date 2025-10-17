@@ -11,18 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2 } from 'lucide-react';
-import { Label } from '@/components/ui/label';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { z } from 'zod';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     description: z.string().optional(),
     type: z.enum(['section', 'page', 'element']),
-    usableOn: z.array(z.enum(['json', 'react'])).min(1, 'Select at least one usage target'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -37,7 +34,6 @@ export default function CreateTemplatePage() {
         name: '',
         description: '',
         type: 'section',
-        usableOn: ['json'],
     }
   });
   
@@ -47,6 +43,7 @@ export default function CreateTemplatePage() {
         status: 'draft', // Always start as a draft
         createdBy: 'user',
         content: {},
+        usableOn: ['json'], // Default to json only initially
     });
 
     if (result.success && result.id) {
@@ -115,75 +112,6 @@ export default function CreateTemplatePage() {
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="usableOn"
-                        render={() => (
-                            <FormItem>
-                                <div className="mb-4">
-                                    <FormLabel>Usable On</FormLabel>
-                                    <FormDescription>
-                                        Where can this template be used?
-                                    </FormDescription>
-                                </div>
-                                <div className="flex gap-8">
-                                <FormField
-                                    control={form.control}
-                                    name="usableOn"
-                                    render={({ field }) => {
-                                    return (
-                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                            <FormControl>
-                                                <Checkbox
-                                                checked={field.value?.includes("json")}
-                                                onCheckedChange={(checked) => {
-                                                    return checked
-                                                    ? field.onChange([...field.value, "json"])
-                                                    : field.onChange(
-                                                        field.value?.filter(
-                                                        (value) => value !== "json"
-                                                        )
-                                                    )
-                                                }}
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">
-                                                Editor (JSON)
-                                            </FormLabel>
-                                        </FormItem>
-                                    )}}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="usableOn"
-                                    render={({ field }) => {
-                                    return (
-                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                            <FormControl>
-                                                <Checkbox
-                                                checked={field.value?.includes("react")}
-                                                onCheckedChange={(checked) => {
-                                                    return checked
-                                                    ? field.onChange([...field.value, "react"])
-                                                    : field.onChange(
-                                                        field.value?.filter(
-                                                        (value) => value !== "react"
-                                                        )
-                                                    )
-                                                }}
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">
-                                                Codebase (React)
-                                            </FormLabel>
-                                        </FormItem>
-                                    )}}
-                                />
-                                </div>
-                                <FormMessage />
-                            </FormItem>
-                        )}
                     />
                 </CardContent>
                 <CardFooter>

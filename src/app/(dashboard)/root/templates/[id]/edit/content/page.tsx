@@ -4,7 +4,7 @@
 import { useState, useEffect, use } from 'react';
 import { getTemplate, saveTemplate, type Template } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -43,22 +43,32 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
     setIsSaving(true);
     
     let parsedJson;
+    let usableOn: ('json' | 'react')[] = [];
+
     try {
-        parsedJson = template.usableOn?.includes('json') ? JSON.parse(jsonContent) : template.content.json;
+        if (jsonContent.trim() && jsonContent.trim() !== '[]') {
+            parsedJson = JSON.parse(jsonContent);
+            usableOn.push('json');
+        }
     } catch (e) {
         toast({ variant: 'destructive', title: 'Invalid JSON', description: 'The JSON content is not correctly formatted.' });
         setIsSaving(false);
         return;
     }
 
+    if (reactContent.trim()) {
+        usableOn.push('react');
+    }
+
     const newContent = {
-        json: parsedJson,
-        react: template.usableOn?.includes('react') ? reactContent : template.content.react,
+        json: parsedJson || template.content.json,
+        react: reactContent || template.content.react,
     };
 
     const result = await saveTemplate({
       ...template,
       content: newContent,
+      usableOn: usableOn.length > 0 ? usableOn : ['json'], // Default to json if both are empty
     }, id);
 
     if (result.success) {
@@ -90,52 +100,47 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
 
   if (!template) return null;
 
-  const showJsonEditor = template.usableOn?.includes('json');
-  const showReactEditor = template.usableOn?.includes('react');
-
   return (
     <div className="space-y-6">
-        {showJsonEditor && (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Braces/> JSON Definition</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="json-content">Editor Elements (JSON Array)</Label>
-                        <Textarea
-                            id="json-content"
-                            value={jsonContent}
-                            onChange={(e) => setJsonContent(e.target.value)}
-                            rows={20}
-                            className="font-mono text-sm"
-                            placeholder='[ { "id": "el-1", ... } ]'
-                        />
-                    </div>
-                </CardContent>
-            </Card>
-        )}
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Braces/> JSON Definition</CardTitle>
+                 <CardDescription>This content is used by the visual Drag & Drop editor.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="json-content">Editor Elements (JSON Array)</Label>
+                    <Textarea
+                        id="json-content"
+                        value={jsonContent}
+                        onChange={(e) => setJsonContent(e.target.value)}
+                        rows={20}
+                        className="font-mono text-sm"
+                        placeholder='[ { "id": "el-1", ... } ]'
+                    />
+                </div>
+            </CardContent>
+        </Card>
 
-        {showReactEditor && (
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Code/> React Component Code</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="react-content">React/JSX Code</Label>
-                        <Textarea
-                            id="react-content"
-                            value={reactContent}
-                            onChange={(e) => setReactContent(e.target.value)}
-                            rows={20}
-                            className="font-mono text-sm"
-                            placeholder={`export default function MyTemplate({ item }) {\n  return <div>{item.name}</div>;\n}`}
-                        />
-                    </div>
-                </CardContent>
-            </Card>
-        )}
+         <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Code/> React Component Code</CardTitle>
+                <CardDescription>This content can be used directly in your codebase.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="react-content">React/JSX Code</Label>
+                    <Textarea
+                        id="react-content"
+                        value={reactContent}
+                        onChange={(e) => setReactContent(e.target.value)}
+                        rows={20}
+                        className="font-mono text-sm"
+                        placeholder={`export default function MyTemplate({ item }) {\n  return <div>{item.name}</div>;\n}`}
+                    />
+                </div>
+            </CardContent>
+        </Card>
 
         <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
              <Button onClick={handleSave} disabled={isSaving}>

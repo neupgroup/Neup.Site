@@ -8,11 +8,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { getTemplate, saveTemplate, type Template } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -24,7 +23,6 @@ const formSchema = z.object({
   description: z.string().optional(),
   type: z.enum(['section', 'page', 'element']),
   status: z.enum(['draft', 'published']),
-  usableOn: z.array(z.enum(['json', 'react'])).min(1, 'Select at least one usage target'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -44,7 +42,6 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
       description: '',
       type: 'section',
       status: 'draft',
-      usableOn: ['json'],
     },
   });
 
@@ -60,7 +57,6 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
           description: templateResult.template.description,
           type: templateResult.template.type,
           status: templateResult.template.status,
-          usableOn: templateResult.template.usableOn || ['json'],
         });
       } else {
         setError(templateResult.error || 'Failed to load template.');
@@ -79,8 +75,8 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
     }, id);
     
     if (result.success) {
-      toast({ title: 'Template Updated', description: 'The basic information has been saved.' });
-      router.refresh();
+      toast({ title: 'Template Updated', description: 'Redirecting to content editor...' });
+      router.push(`/root/templates/${id}/edit/content`);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -176,75 +172,6 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
                     )}
                 />
             </div>
-            <FormField
-                control={form.control}
-                name="usableOn"
-                render={() => (
-                    <FormItem>
-                        <div className="mb-4">
-                            <FormLabel>Usable On</FormLabel>
-                            <FormDescription>
-                                Where can this template be used?
-                            </FormDescription>
-                        </div>
-                        <div className="flex gap-8">
-                        <FormField
-                            control={form.control}
-                            name="usableOn"
-                            render={({ field }) => {
-                            return (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl>
-                                        <Checkbox
-                                        checked={field.value?.includes("json")}
-                                        onCheckedChange={(checked) => {
-                                            return checked
-                                            ? field.onChange([...field.value, "json"])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                (value) => value !== "json"
-                                                )
-                                            )
-                                        }}
-                                        />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                        Editor (JSON)
-                                    </FormLabel>
-                                </FormItem>
-                            )}}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="usableOn"
-                            render={({ field }) => {
-                            return (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                    <FormControl>
-                                        <Checkbox
-                                        checked={field.value?.includes("react")}
-                                        onCheckedChange={(checked) => {
-                                            return checked
-                                            ? field.onChange([...field.value, "react"])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                (value) => value !== "react"
-                                                )
-                                            )
-                                        }}
-                                        />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                        Codebase (React)
-                                    </FormLabel>
-                                </FormItem>
-                            )}}
-                        />
-                        </div>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
           </CardContent>
           <CardFooter>
             <Button type="submit" disabled={form.formState.isSubmitting}>
@@ -253,7 +180,7 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              Save Changes
+              Save and Continue
             </Button>
           </CardFooter>
         </Card>
