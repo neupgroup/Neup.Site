@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { type FC, DragEvent } from 'react';
@@ -130,13 +131,28 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
                 {renderResizeHandles()}
             </button>
         );
-    case 'image':
-         return (
-            <div {...commonProps}>
-                {properties['src'] && <Image src={properties['src']} alt={properties['alt'] || ''} width={parseInt(String(properties.width)) || 200} height={parseInt(String(properties.height)) || 100} className="w-full h-full object-cover" data-ai-hint={properties['data-ai-hint']} />}
-                {renderResizeHandles()}
-            </div>
-         );
+    case 'image': {
+      const imageStyle = { borderRadius: properties.borderRadius };
+      const wrapperStyle = { ...commonProps.style, overflow: 'hidden' };
+      delete wrapperStyle.borderRadius; // Remove radius from wrapper
+
+      return (
+        <div {...commonProps} style={wrapperStyle}>
+          {properties['src'] && (
+            <Image
+              src={properties['src']}
+              alt={properties['alt'] || ''}
+              width={parseInt(String(properties.width)) || 200}
+              height={parseInt(String(properties.height)) || 100}
+              className="w-full h-full object-cover"
+              style={imageStyle}
+              data-ai-hint={properties['data-ai-hint']}
+            />
+          )}
+          {renderResizeHandles()}
+        </div>
+      );
+    }
     case 'video':
          return (
             <div {...commonProps}>
