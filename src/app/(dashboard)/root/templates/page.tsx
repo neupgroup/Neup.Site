@@ -44,12 +44,11 @@ export default function TemplatesPage() {
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-10 w-40" />
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <Card key={i}>
               <CardHeader>
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2 mt-2" />
+                <Skeleton className="h-20 w-full" />
               </CardHeader>
             </Card>
           ))}
@@ -92,7 +91,7 @@ export default function TemplatesPage() {
             <p>Click "Create New Template" to get started.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-4">
           {templates.map((template) => (
              <Link key={template.id} href={`/root/templates/${template.id}`} className="block group">
                 <Card className="transition-all h-full group-hover:border-primary group-hover:shadow-md">
@@ -100,7 +99,10 @@ export default function TemplatesPage() {
                         <div>
                             <CardTitle className="truncate">{template.name}</CardTitle>
                             <CardDescription>
-                                {template.description?.substring(0, 50) || 'No description'}...
+                                {template.description ? 
+                                  (template.description.length > 100 ? `${template.description.substring(0, 100)}...` : template.description) 
+                                  : 'No description'
+                                }
                             </CardDescription>
                         </div>
                         <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
