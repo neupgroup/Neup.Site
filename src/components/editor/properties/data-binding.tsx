@@ -2,7 +2,7 @@
 'use client';
 import { FC, useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -56,8 +56,8 @@ const DataBindingProperties: FC<DataBindingPropertiesProps> = ({ element, onData
     
     return (
         <AccordionItem value="databinding">
-            <AccordionTrigger className="px-4 text-sm font-medium">Data Binding</AccordionTrigger>
-            <AccordionContent className="px-4 space-y-4">
+            <AccordionTrigger className="text-sm font-medium">Data Binding</AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-4">
                  <p className="text-xs text-muted-foreground">Connect element properties to dynamic data sources.</p>
                 {bindableProperties.map(prop => (
                     <div key={prop} className="space-y-2">

@@ -2,7 +2,7 @@
 'use client';
 import { FC, useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -25,8 +25,8 @@ const RepeaterProperties: FC<RepeaterPropertiesProps> = ({ element, onUpdate }) 
     
     return (
         <AccordionItem value="repeater">
-            <AccordionTrigger className="px-4 text-sm font-medium">Repeater</AccordionTrigger>
-            <AccordionContent className="px-4 space-y-4">
+            <AccordionTrigger className="text-sm font-medium">Repeater</AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-4">
                 <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
                     <div className="space-y-0.5">
                         <Label>Repeat this element</Label>

@@ -1,6 +1,6 @@
 
 import React, { FC } from 'react';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PropertyInput from './property-input';
 
@@ -26,8 +26,8 @@ const ShadowProperties: FC<ShadowPropertiesProps> = ({ element, onUpdate }) => {
     
     return (
         <AccordionItem value="shadows">
-            <AccordionTrigger className="px-4 text-sm font-medium">Shadow</AccordionTrigger>
-            <AccordionContent className="px-4 space-y-4">
+            <AccordionTrigger className="text-sm font-medium">Shadow</AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-4">
                 <PropertyInput 
                     label="Box Shadow"
                     value={properties['boxShadow'] as string || ''}

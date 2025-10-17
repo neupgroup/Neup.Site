@@ -2,7 +2,7 @@
 'use client';
 import { FC } from 'react';
 import { Label } from '@/components/ui/label';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -23,8 +23,8 @@ const ContentProperties: FC<ContentPropertiesProps> = ({ element, onUpdate }) =>
     
     return (
         <AccordionItem value="content">
-            <AccordionTrigger className="px-4 text-sm font-medium">Content</AccordionTrigger>
-            <AccordionContent className="px-4 space-y-4">
+            <AccordionTrigger className="text-sm font-medium">Content</AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-4">
                 <div className="space-y-2">
                     <Label>Text</Label>
                     <Textarea 

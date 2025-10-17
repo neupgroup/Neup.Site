@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
@@ -222,11 +223,11 @@ const RightSidebar: FC<RightSidebarProps> = ({
             <p className="text-sm text-muted-foreground">Type: {selectedElement.type}</p>
         </div>
 
-        <div className="p-4"> {/* Added padding here */}
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="attributes">
-                    <AccordionTrigger className="px-4 text-sm font-medium">Attributes</AccordionTrigger>
-                    <AccordionContent className="px-4 space-y-4">
+        <div className="p-4">
+            <Accordion type="multiple" defaultValue={['attributes', 'layout']} className="w-full">
+                 <AccordionItem value="attributes">
+                    <AccordionTrigger className="text-sm font-medium">Attributes</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4">
                         <div className="space-y-2">
                             <Label>ID</Label>
                             <Input value={elementId || ''} onChange={e => handleIdChange(e.target.value)} onBlur={handleIdBlur} />

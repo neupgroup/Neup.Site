@@ -1,7 +1,8 @@
+
 import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PropertyInput from './property-input';
 
@@ -15,8 +16,8 @@ const LayoutProperties: FC<LayoutPropertiesProps> = ({ element, onUpdate }) => {
     
     return (
         <AccordionItem value="layout">
-            <AccordionTrigger className="px-4 text-sm font-medium">Layout</AccordionTrigger>
-            <AccordionContent className="px-4 space-y-4">
+            <AccordionTrigger className="text-sm font-medium">Layout</AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-4">
                 <div className="space-y-2">
                     <Label>Display</Label>
                     <Select value={properties['display'] as string || 'block'} onValueChange={(v) => onUpdate('display', v)}>

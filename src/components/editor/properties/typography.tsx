@@ -1,9 +1,10 @@
+
 import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
-import type { CanvasElementData } from '@/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface TypographyPropertiesProps {
@@ -17,8 +18,8 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
     
     return (
         <AccordionItem value="typography">
-            <AccordionTrigger className="px-4 text-sm font-medium">Typography</AccordionTrigger>
-            <AccordionContent className="px-4 space-y-4">
+            <AccordionTrigger className="text-sm font-medium">Typography</AccordionTrigger>
+            <AccordionContent className="space-y-4 pt-4">
                 <div className="space-y-2">
                     <Label>Color</Label>
                     <div className="flex items-center gap-2">
