@@ -224,7 +224,7 @@ const RightSidebar: FC<RightSidebarProps> = ({
         </div>
 
         <div className="p-4">
-            <Accordion type="multiple" defaultValue={['attributes', 'layout']} className="w-full">
+            <Accordion type="single" collapsible className="w-full">
                  <AccordionItem value="attributes">
                     <AccordionTrigger className="text-sm font-medium">Attributes</AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-4">
