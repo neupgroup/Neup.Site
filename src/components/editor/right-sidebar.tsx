@@ -35,10 +35,10 @@ interface RightSidebarProps {
   onUpdateAllElements: (elements: CanvasElementData[]) => void;
   pageId?: string;
   onSave?: () => Promise<string | undefined>;
-  onCopyElement: () => void; // New prop
-  onPasteElement: () => void; // New prop
-  onCutElement: () => void; // New prop
-  onSelectElement: (id: string | null) => void; // New prop
+  onCopyElement: () => void;
+  onPasteElement: () => void;
+  onCutElement: () => void;
+  onSelectElement: (id: string | null) => void;
 }
 
 const propertyComponents: Record<string, React.FC<any>> = {
@@ -63,10 +63,10 @@ const RightSidebar: FC<RightSidebarProps> = ({
     onUpdateAllElements, 
     pageId, 
     onSave,
-    onCopyElement, // Destructure new prop
-    onPasteElement, // Destructure new prop
-    onCutElement, // Destructure new prop
-    onSelectElement, // Destructure new prop
+    onCopyElement,
+    onPasteElement,
+    onCutElement,
+    onSelectElement,
 }) => {
   const findElementRecursive = (id: string, els: CanvasElementData[], parent?: CanvasElementData): {element: CanvasElementData, parent?: CanvasElementData} | undefined => {
     for (const el of els) {
@@ -138,45 +138,6 @@ const RightSidebar: FC<RightSidebarProps> = ({
       onUpdateAllElements(updater(elements));
   }
 
-  const handleMoveElement = (direction: 'up' | 'down') => {
-    if (!selectedElementId || !selectedElementParent) {
-        toast({ variant: 'destructive', title: 'Cannot move', description: 'Select an element within a parent container to move.' });
-        return;
-    }
-
-    const parentChildren = selectedElementParent.children;
-    if (!parentChildren) return;
-
-    const currentIndex = parentChildren.findIndex(child => child.id === selectedElementId);
-    if (currentIndex === -1) return;
-
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-
-    if (newIndex >= 0 && newIndex < parentChildren.length) {
-        const newChildren = [...parentChildren];
-        const [movedElement] = newChildren.splice(currentIndex, 1);
-        newChildren.splice(newIndex, 0, movedElement);
-
-        const updatedParent = { ...selectedElementParent, children: newChildren };
-        updateElement(selectedElementParent.id, updatedParent.properties, true); // Update parent properties to trigger re-render
-        onUpdateAllElements(elements.map(el => el.id === selectedElementParent.id ? updatedParent : el)); // Update global state
-        toast({ title: 'Element Moved', description: `Element moved ${direction}.` });
-    } else {
-        toast({ variant: 'destructive', title: 'Cannot move', description: `Cannot move element ${direction} further.` });
-    }
-  };
-
-  const handleCloneElement = () => {
-    if (!selectedElementId) {
-        toast({ variant: 'destructive', title: 'No element selected', description: 'Please select an element to clone.' });
-        return;
-    }
-    onCopyElement();
-    onPasteElement();
-    toast({ title: 'Element Cloned', description: 'A copy of the element has been added.' });
-  };
-
-
   if (!selectedElement || !elementDef) {
     return (
       <aside className="w-80 border-l bg-card">
@@ -192,7 +153,6 @@ const RightSidebar: FC<RightSidebarProps> = ({
 
   const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(selectedElement.type);
 
-  // Extend editorProperties with 'databinding' if it doesn't already exist
   const editorProperties = [...(elementDef.editorProperties || []), 'databinding'];
 
 
@@ -202,23 +162,6 @@ const RightSidebar: FC<RightSidebarProps> = ({
         <div className="flex flex-col gap-2 p-4 border-b">
             <div className="flex items-center justify-between flex-wrap gap-2">
                 <h3 className="text-lg font-semibold font-headline truncate">{selectedElement.id}</h3>
-                <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => onSelectElement(selectedElementParent?.id || null)} disabled={!selectedElementParent} title="Select Parent">
-                        <CornerUpLeft className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleMoveElement('up')} title="Move Up">
-                        <ArrowUp className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleMoveElement('down')} title="Move Down">
-                        <ArrowDown className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={handleCloneElement} title="Clone Element">
-                        <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => deleteElement(selectedElement.id)} title="Delete Element">
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                </div>
             </div>
             <p className="text-sm text-muted-foreground">Type: {selectedElement.type}</p>
         </div>
@@ -251,7 +194,6 @@ const RightSidebar: FC<RightSidebarProps> = ({
                         return null;
                     }
 
-                    // Pass the data binding updater to relevant components
                     if (groupKey === 'content' || groupKey === 'image' || groupKey === 'repeater' || groupKey === 'databinding') {
                         return (
                             <PropertyComponent 

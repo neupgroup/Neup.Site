@@ -1,8 +1,11 @@
+
+'use client';
+
 import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search, ArrowUp, ArrowDown, Copy, Trash2, CornerUpLeft } from 'lucide-react';
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Template } from '@/schemas/template';
 import { cn } from '@/lib/utils';
@@ -57,11 +60,16 @@ const DropIndicator: FC<{className?: string}> = ({className}) => (
 const LayerItem: FC<{ 
     element: CanvasElementData, 
     level: number, 
-    selectedElement: string | null,
-    onSelectElement: (id: string) => void,
+    selectedElementId: string | null,
+    onSelectElement: (id: string | null) => void,
     onDrop: (draggedId: string, dropZoneId: string | null, parentId?: string | null) => void;
     parentId: string | null;
-}> = ({ element, level, selectedElement, onSelectElement, onDrop, parentId }) => {
+    onMoveElement: (direction: 'up' | 'down') => void;
+    onCloneElement: () => void;
+    onDeleteElement: () => void;
+    onSelectParent: () => void;
+    hasParent: boolean;
+}> = ({ element, level, selectedElementId, onSelectElement, onDrop, parentId, onMoveElement, onCloneElement, onDeleteElement, onSelectParent, hasParent }) => {
     const [isDraggedOver, setIsDraggedOver] = useState(false);
     const [dragCounter, setDragCounter] = useState(0);
 
@@ -97,7 +105,6 @@ const LayerItem: FC<{
         e.stopPropagation();
         const data = JSON.parse(e.dataTransfer.getData('application/json'));
         if (data.type === 'canvas-element' && data.id !== element.id) {
-            // If dropping on a container, drop inside it. Otherwise, drop before it.
             if (isContainer) {
                 onDrop(data.id, null, element.id);
             } else {
@@ -109,6 +116,7 @@ const LayerItem: FC<{
     };
 
     const isContainer = ['section', 'div', 'container', 'form', 'list'].includes(element.type);
+    const isSelected = selectedElementId === element.id;
 
     return (
         <div>
@@ -119,13 +127,13 @@ const LayerItem: FC<{
                 onDragLeave={handleDragLeave}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                className="relative"
+                className="relative group"
             >
                 {isDraggedOver && !isContainer && <DropIndicator className="absolute -top-px left-0" />}
                 <div 
                     className={cn(
                         "flex items-center gap-2 py-1 px-2 rounded-md cursor-pointer hover:bg-secondary",
-                        { "bg-secondary ring-1 ring-primary": selectedElement === element.id },
+                        { "bg-secondary ring-1 ring-primary": isSelected },
                         { "ring-1 ring-primary": isDraggedOver && isContainer }
                     )}
                     style={{ paddingLeft: `${level * 1 + 0.5}rem` }}
@@ -135,7 +143,27 @@ const LayerItem: FC<{
                     }}
                 >
                     {getIconForType(element.type)}
-                    <span className="text-sm truncate">{element.id} ({element.type})</span>
+                    <span className="text-sm truncate flex-1">{element.id}</span>
+
+                    {isSelected && (
+                        <div className="flex items-center gap-0">
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onSelectParent(); }} disabled={!hasParent} title="Select Parent">
+                                <CornerUpLeft className="h-3 w-3" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onMoveElement('up'); }} title="Move Up">
+                                <ArrowUp className="h-3 w-3" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onMoveElement('down'); }} title="Move Down">
+                                <ArrowDown className="h-3 w-3" />
+                            </Button>
+                             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onCloneElement(); }} title="Clone Element">
+                                <Copy className="h-3 w-3" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onDeleteElement(); }} title="Delete Element">
+                                <Trash2 className="h-3 w-3 text-destructive" />
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
             {isContainer && element.children && (
@@ -145,10 +173,15 @@ const LayerItem: FC<{
                             key={child.id} 
                             element={child} 
                             level={level + 1}
-                            selectedElement={selectedElement}
+                            selectedElementId={selectedElementId}
                             onSelectElement={onSelectElement}
                             onDrop={onDrop}
                             parentId={element.id}
+                            onMoveElement={onMoveElement}
+                            onCloneElement={onCloneElement}
+                            onDeleteElement={onDeleteElement}
+                            onSelectParent={onSelectParent}
+                            hasParent={true}
                         />
                     ))}
                  </div>
@@ -245,9 +278,13 @@ interface LeftSidebarProps {
     onSelectElement: (id: string | null) => void;
     moveElement: (draggedId: string, dropZoneId: string | null, parentId?: string) => void;
     addGeneratedElement: (element: CanvasElementData, dropZoneId?: string, parentId?: string) => void;
+    onMoveElement: (direction: 'up' | 'down') => void;
+    onCloneElement: () => void;
+    onDeleteElement: () => void;
+    onSelectParent: () => void;
 }
 
-const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement, moveElement, addGeneratedElement }) => {
+const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelectElement, moveElement, addGeneratedElement, onMoveElement, onCloneElement, onDeleteElement, onSelectParent }) => {
   
   const handleDrop = (draggedId: string, dropZoneId: string | null, parentId?: string | null) => {
       moveElement(draggedId, dropZoneId, parentId || undefined);
@@ -324,10 +361,15 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
                         key={el.id} 
                         element={el} 
                         level={0}
-                        selectedElement={selectedElement}
-                        onSelectElement={(id) => onSelectElement(id)}
+                        selectedElementId={selectedElement}
+                        onSelectElement={onSelectElement}
                         onDrop={handleDrop}
                         parentId={null}
+                        onMoveElement={onMoveElement}
+                        onCloneElement={onCloneElement}
+                        onDeleteElement={onDeleteElement}
+                        onSelectParent={onSelectParent}
+                        hasParent={false}
                     />
                 ))}
             </div>

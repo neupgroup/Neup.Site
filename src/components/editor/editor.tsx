@@ -1,3 +1,4 @@
+
 'use client';
 import type { FC } from 'react';
 import { useState, useEffect, useCallback, DragEvent, useRef } from 'react';
@@ -31,7 +32,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const [isSaving, setIsSaving] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLDivElement>(null); // Ref for the canvas container
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -66,11 +67,11 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
 
   const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(prev => prev + 1); // Corrected: should be prev + 1
+      setHistoryIndex(prev => prev + 1);
     }
   }, [historyIndex, history.length]);
 
-  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [clipboard, setClipboard] = useState<CanvasElementData | null>(null);
 
   const findElementRecursive = (elements: CanvasElementData[], id: string): {element: CanvasElementData, parent?: CanvasElementData} | null => {
@@ -151,7 +152,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const handleDragLeave = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-       // Only remove if leaving the canvas entirely
       const editorContainer = (e.currentTarget as HTMLElement).closest('.h-screen.w-full');
       if (editorContainer && !editorContainer.contains(e.relatedTarget as Node)) {
           setElements(prev => removeElementRecursive(prev, 'temp_element')[0], false);
@@ -173,7 +173,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
           let [elementsWithoutDragged, draggedElement] = removeElementRecursive(elementsWithoutPlaceholder, data.id);
 
           if (!draggedElement) {
-              // It's a new element from the sidebar
               const definition = elementDefinitions[data.elementType as CanvasElementData['type']];
               draggedElement = {
                   ...JSON.parse(JSON.stringify(definition)),
@@ -216,7 +215,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
     try {
         setElements(prevElements => {
         let draggedElement: CanvasElementData | undefined;
-        // Deep clone to avoid mutation
         const clonedElements = JSON.parse(JSON.stringify(prevElements)) as CanvasElementData[];
 
         const removeElement = (els: CanvasElementData[], id: string): CanvasElementData[] => {
@@ -278,7 +276,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         } else if (dropZoneId) {
             return insertElement(newElements, dropZoneId, draggedElement);
         } else {
-          // If no drop zone, add to the end of the root
           newElements.push(draggedElement);
           return newElements;
         }
@@ -307,7 +304,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         setElements(prev => {
             const clonedPrev = JSON.parse(JSON.stringify(prev));
 
-            // Auto-wrap in section if dropped at root and is not a section
             if (!parentId && elementType !== 'section') {
                 const sectionDef = elementDefinitions['section'];
                 const newSection: CanvasElementData = {
@@ -383,7 +379,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         setElements(prev => {
             const clonedPrev = JSON.parse(JSON.stringify(prev));
 
-            // Auto-wrap in section if dropped at root and is not a section
             if (!parentId && newElement.type !== 'section') {
                 const sectionDef = elementDefinitions['section'];
                 const newSection: CanvasElementData = {
@@ -445,7 +440,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const updateElement = (id: string, newProperties: Record<string, any>, recordHistory = true) => {
     try {
         setElements(prev => {
-            // Deep clone to avoid mutation
             const clonedPrev = JSON.parse(JSON.stringify(prev));
             const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
                 return els.map(el => {
@@ -473,7 +467,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const updateElementId = (oldId: string, newId: string) => {
     if (!newId || oldId === newId) return;
     
-    // Check for uniqueness
     if (findElementRecursive(elements, newId)) {
         toast({
             variant: 'destructive',
@@ -499,29 +492,29 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         };
         return updateIdRecursive(clonedPrev);
       });
-      setSelectedElement(newId);
+      setSelectedElementId(newId);
     } catch (e: any) {
         console.error("Error updating element ID:", e);
         logErrorToFirestore({ message: e.message, stack: e.stack });
     }
   };
   
-  const deleteElement = useCallback((id: string) => {
+  const deleteElement = useCallback(() => {
+    if (!selectedElementId) return;
     try {
-        setElements(prev => removeElementRecursive(prev, id)[0]);
-        setSelectedElement(null);
+        setElements(prev => removeElementRecursive(prev, selectedElementId)[0]);
+        setSelectedElementId(null);
     } catch (e: any) {
         console.error("Error deleting element:", e);
         logErrorToFirestore({ message: e.message, stack: e.stack });
     }
-  }, [setElements]);
+  }, [selectedElementId, setElements]);
 
   const copyElement = useCallback(() => {
     try {
-        if (!selectedElement) return;
-        const result = findElementRecursive(elements, selectedElement);
+        if (!selectedElementId) return;
+        const result = findElementRecursive(elements, selectedElementId);
         if (result) {
-            // Deep copy and generate new IDs
             const deepCopy = (el: CanvasElementData): CanvasElementData => {
                 const newEl = {
                     ...el,
@@ -538,28 +531,25 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         console.error("Error copying element:", e);
         logErrorToFirestore({ message: e.message, stack: e.stack });
     }
-  }, [selectedElement, elements]);
+  }, [selectedElementId, elements]);
 
   const pasteElement = useCallback(() => {
     try {
         if (!clipboard) return;
         setElements(prev => {
-            // Deep clone to avoid mutation
             const clonedPrev = JSON.parse(JSON.stringify(prev));
             const newClipboard = { ...clipboard, id: `${clipboard.type}-${Date.now()}` };
 
-            if (!selectedElement) {
-                // Paste at the root level
+            if (!selectedElementId) {
                 return [...clonedPrev, newClipboard];
             }
 
-            const result = findElementRecursive(clonedPrev, selectedElement);
+            const result = findElementRecursive(clonedPrev, selectedElementId);
             if (!result) return [...clonedPrev, newClipboard];
 
             const { element: selectedEl, parent } = result;
 
             if (selectedEl && ['section', 'div', 'container', 'form', 'list'].includes(selectedEl.type)) {
-                // Paste inside container as last element
                 const addInside = (els: CanvasElementData[]): CanvasElementData[] => {
                     return els.map(el => {
                         if (el.id === selectedEl.id) {
@@ -573,7 +563,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                 };
                 return addInside(clonedPrev);
             } else {
-                // Paste after selected element
                 const addSibling = (els: CanvasElementData[], targetId: string, parentId?: string): CanvasElementData[] => {
                     if (parentId) {
                         for (let i = 0; i < els.length; i++) {
@@ -588,7 +577,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                             addSibling(els[i].children, targetId, parentId);
                             }
                         }
-                    } else { // root level
+                    } else { 
                         const rootIndex = els.findIndex(c => c.id === targetId);
                         if (rootIndex !== -1) {
                         els.splice(rootIndex + 1, 0, newClipboard);
@@ -604,18 +593,55 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         console.error("Error pasting element:", e);
         logErrorToFirestore({ message: e.message, stack: e.stack });
     }
-  }, [clipboard, selectedElement, setElements]);
+  }, [clipboard, selectedElementId, setElements]);
 
   const cutElement = useCallback(() => {
     try {
-        if (!selectedElement) return;
+        if (!selectedElementId) return;
         copyElement();
-        deleteElement(selectedElement);
+        deleteElement();
     } catch (e: any) {
         console.error("Error cutting element:", e);
         logErrorToFirestore({ message: e.message, stack: e.stack });
     }
-  }, [selectedElement, copyElement, deleteElement]);
+  }, [selectedElementId, copyElement, deleteElement]);
+
+  const handleMoveElement = (direction: 'up' | 'down') => {
+    const result = findElementRecursive(elements, selectedElementId!);
+    if (!selectedElementId || !result || !result.parent) {
+      toast({ variant: 'destructive', title: 'Cannot move', description: 'Select an element within a parent container to move.' });
+      return;
+    }
+    const { parent } = result;
+
+    const newChildren = [...parent.children!];
+    const currentIndex = newChildren.findIndex(child => child.id === selectedElementId);
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    if (newIndex >= 0 && newIndex < newChildren.length) {
+      const [movedElement] = newChildren.splice(currentIndex, 1);
+      newChildren.splice(newIndex, 0, movedElement);
+      updateElement(parent.id, { ...parent.properties, children: newChildren }, true);
+      toast({ title: 'Element Moved', description: `Element moved ${direction}.` });
+    }
+  };
+
+  const handleSelectParent = () => {
+    const result = findElementRecursive(elements, selectedElementId!);
+    if (result && result.parent) {
+      setSelectedElementId(result.parent.id);
+    }
+  };
+
+  const handleCloneElement = () => {
+    if (!selectedElementId) {
+      toast({ variant: 'destructive', title: 'No element selected', description: 'Please select an element to clone.' });
+      return;
+    }
+    copyElement();
+    pasteElement();
+    toast({ title: 'Element Cloned', description: 'A copy of the element has been added.' });
+  };
 
 
   useEffect(() => {
@@ -626,9 +652,9 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             }
 
             if (e.key === 'Delete' || e.key === 'Backspace') {
-                if (selectedElement) {
+                if (selectedElementId) {
                     e.preventDefault();
-                    deleteElement(selectedElement);
+                    deleteElement();
                 }
             } else if (e.ctrlKey || e.metaKey) {
                 switch(e.key.toLowerCase()) {
@@ -664,7 +690,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
     return () => {
         window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedElement, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
+  }, [selectedElementId, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
 
   const handleSaveFlow = async () => {
     let currentPageId = pageId;
@@ -673,7 +699,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         if (createResult.success && createResult.id) {
             currentPageId = createResult.id;
             setPageId(currentPageId);
-             // Update the URL to reflect the new ID for editing mode
             router.push(`/site/editor/dragger?id=${currentPageId}`, { scroll: false });
         } else {
             throw new Error(createResult.error || 'Failed to create a new page entry.');
@@ -745,16 +770,20 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 
             elements={elements}
-            selectedElement={selectedElement}
-            onSelectElement={setSelectedElement}
+            selectedElement={selectedElementId}
+            onSelectElement={setSelectedElementId}
             moveElement={moveElement}
             addGeneratedElement={addGeneratedElement}
+            onMoveElement={handleMoveElement}
+            onCloneElement={handleCloneElement}
+            onDeleteElement={deleteElement}
+            onSelectParent={handleSelectParent}
         />
-        <main ref={canvasRef} className="flex-1 overflow-y-auto bg-background custom-scrollbar relative"> {/* Added relative positioning */}
+        <main ref={canvasRef} className="flex-1 overflow-y-auto bg-background custom-scrollbar relative">
           <Canvas 
             elements={elements} 
-            selectedElement={selectedElement} 
-            onSelectElement={setSelectedElement}
+            selectedElement={selectedElementId} 
+            onSelectElement={setSelectedElementId}
             updateElement={updateElement}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
@@ -765,13 +794,13 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             />
             <HighlightBox 
                 hoveredElementId={hoveredElementId} 
-                selectedElementId={selectedElement} // Pass selectedElementId
+                selectedElementId={selectedElementId}
                 elements={elements} 
                 canvasRef={canvasRef} 
             />
         </main>
         <RightSidebar 
-            selectedElementId={selectedElement} 
+            selectedElementId={selectedElementId} 
             elements={elements}
             updateElement={updateElement}
             deleteElement={deleteElement}
@@ -782,7 +811,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             onCopyElement={copyElement}
             onPasteElement={pasteElement}
             onCutElement={cutElement}
-            onSelectElement={setSelectedElement}
+            onSelectElement={setSelectedElementId}
         />
       </div>
     </div>
