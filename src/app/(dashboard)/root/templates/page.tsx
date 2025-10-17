@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, LayoutTemplate, ArrowRight } from 'lucide-react';
+import { AlertCircle, Plus, LayoutTemplate, ArrowRight, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function TemplatesPage() {
@@ -72,11 +72,18 @@ export default function TemplatesPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Templates</h1>
-        <Button asChild>
-          <Link href="/root/templates/create">
-            <Plus className="mr-2 h-4 w-4" /> Create New Template
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+            <Button asChild variant="outline">
+              <Link href="/root/templates/guide">
+                <BookOpen className="mr-2 h-4 w-4" /> View Guide
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/root/templates/create">
+                <Plus className="mr-2 h-4 w-4" /> Create New Template
+              </Link>
+            </Button>
+        </div>
       </header>
       {templates.length === 0 ? (
         <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
