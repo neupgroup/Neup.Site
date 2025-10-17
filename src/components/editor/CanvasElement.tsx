@@ -64,6 +64,10 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     ));
   };
   
+  const isEditingText = () => {
+    return document.activeElement && document.activeElement.hasAttribute('contenteditable');
+  };
+
   const commonProps: any = {
     id,
     style: properties as React.CSSProperties,
@@ -76,10 +80,12 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       onSelectElement(id);
     },
     onMouseEnter: (e: React.MouseEvent) => {
+        if (isEditingText()) return;
         e.stopPropagation();
         setHoveredElementId(id);
     },
     onMouseLeave: (e: React.MouseEvent) => {
+        if (isEditingText()) return;
         e.stopPropagation();
         setHoveredElementId(null);
     },
@@ -133,10 +139,12 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         );
     case 'image': {
       const imageStyle: React.CSSProperties = { borderRadius: properties.borderRadius };
+      
       const wrapperStyle: React.CSSProperties = { ...commonProps.style, overflow: 'hidden' };
-      // Apply border to wrapper, but not other image-specific styles
+
+      // Separate border from image-specific styles
       if (wrapperStyle.border) {
-          imageStyle.border = 'none'; 
+          imageStyle.border = 'none'; // Prevent double borders
       } else {
           delete wrapperStyle.border;
       }
