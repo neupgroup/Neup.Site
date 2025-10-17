@@ -19,7 +19,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
     const [isEditing, setIsEditing] = useState(false);
     const editorRef = useRef<HTMLDivElement>(null);
 
-    // Set initial content
+    // Set initial content only when the initialValue prop changes
     useEffect(() => {
         if (editorRef.current && initialValue !== editorRef.current.innerHTML) {
             editorRef.current.innerHTML = initialValue;
@@ -37,26 +37,30 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
         }
     };
 
-    const handleInput = () => {
-        // This could be used for real-time updates if needed, but onBlur handles saving.
-    };
-
     const execCommand = (command: string, value?: string) => {
         document.execCommand(command, false, value);
         editorRef.current?.focus();
     };
 
+    const handleToolbarInteraction = (e: React.MouseEvent) => {
+        // Prevent the editor from losing focus when a button is clicked.
+        e.preventDefault();
+    };
+
     return (
         <div className="relative">
             {isEditing && (
-                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 flex items-center gap-1 bg-background p-1 rounded-md border shadow-md">
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={(e) => { e.preventDefault(); execCommand('bold'); }}>
+                 <div 
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 flex items-center gap-1 bg-background p-1 rounded-md border shadow-md"
+                    onMouseDown={handleToolbarInteraction} // Prevent blur on the entire toolbar
+                >
+                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={() => execCommand('bold')}>
                          <Bold className="h-4 w-4" />
                      </Button>
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={(e) => { e.preventDefault(); execCommand('italic'); }}>
+                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={() => execCommand('italic')}>
                          <Italic className="h-4 w-4" />
                      </Button>
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={(e) => { e.preventDefault(); execCommand('strikeThrough'); }}>
+                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={() => execCommand('strikeThrough')}>
                          <Strikethrough className="h-4 w-4" />
                      </Button>
                      <Popover>
@@ -89,7 +93,6 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                 suppressContentEditableWarning={true}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
-                onInput={handleInput}
                 className={cn(
                     "w-full whitespace-pre-wrap outline-none",
                     "focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background rounded-sm",

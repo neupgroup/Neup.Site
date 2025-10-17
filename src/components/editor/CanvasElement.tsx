@@ -134,10 +134,12 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'image': {
       const imageStyle: React.CSSProperties = { borderRadius: properties.borderRadius };
       const wrapperStyle: React.CSSProperties = { ...commonProps.style, overflow: 'hidden' };
-      // These properties are applied to the inner image, not the wrapper.
-      delete wrapperStyle.borderRadius;
-      delete wrapperStyle.border;
-
+      // Apply border to wrapper, but not other image-specific styles
+      if (wrapperStyle.border) {
+          imageStyle.border = 'none'; 
+      } else {
+          delete wrapperStyle.border;
+      }
       
       return (
         <div {...commonProps} style={wrapperStyle}>
@@ -166,7 +168,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'input':
         return (
             <div {...commonProps}>
-               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} className="h-full bg-background" />
+               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} className="h-full bg-background w-full" />
                {renderResizeHandles()}
             </div>
         );
