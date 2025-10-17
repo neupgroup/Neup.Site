@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { type FC, DragEvent } from 'react';
@@ -27,6 +26,17 @@ interface CanvasElementProps {
   setHoveredElementId: (id: string | null) => void;
 }
 
+const headingStyles: Record<string, { fontSize: string, fontWeight: string }> = {
+    'p': { fontSize: '1rem', fontWeight: 'normal' },
+    'h1': { fontSize: '2.5rem', fontWeight: 'bold' },
+    'h2': { fontSize: '2rem', fontWeight: 'bold' },
+    'h3': { fontSize: '1.75rem', fontWeight: 'bold' },
+    'h4': { fontSize: '1.5rem', fontWeight: 'bold' },
+    'h5': { fontSize: '1.25rem', fontWeight: 'bold' },
+    'h6': { fontSize: '1rem', fontWeight: 'bold' },
+};
+
+
 const CanvasElement: FC<CanvasElementProps> = (props) => {
   const {
     element,
@@ -50,6 +60,16 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
 
   const handleSaveText = (id: string, newContent: string) => {
     updateElement(id, { ...properties, 'text': newContent });
+  };
+  
+  const handleTagChange = (id: string, newTag: string) => {
+    const styles = headingStyles[newTag];
+    const newProperties = {
+        ...properties,
+        tag: newTag,
+        ...(styles && { fontSize: styles.fontSize, fontWeight: styles.fontWeight })
+    };
+    updateElement(id, newProperties);
   };
   
   const renderResizeHandles = () => {
@@ -117,7 +137,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
         const content = properties['text'] || 'New Text Block';
         return (
             <Tag {...commonProps} className={cn(commonProps.className, 'font-headline tracking-tight')}>
-                <EditableText id={id} initialValue={content} onSave={handleSaveText} />
+                <EditableText id={id} initialValue={content} onSave={handleSaveText} onTagChange={handleTagChange} currentTag={Tag}/>
                 {renderResizeHandles()}
             </Tag>
         );

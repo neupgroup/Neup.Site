@@ -2,20 +2,23 @@
 'use client';
 import { useState, useRef, useEffect, FC } from 'react';
 import { cn } from '@/lib/utils';
-import { Bold, Italic, Strikethrough, Link as LinkIcon } from 'lucide-react';
+import { Bold, Italic, Strikethrough, Link as LinkIcon, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface EditableTextProps {
     id: string;
     initialValue: string;
     onSave: (id: string, value: string) => void;
+    onTagChange?: (id: string, tag: string) => void;
+    currentTag?: string;
     className?: string;
     style?: React.CSSProperties;
 }
 
-export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, className, style }) => {
+export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, onTagChange, currentTag, className, style }) => {
     const [isEditing, setIsEditing] = useState(false);
     const editorRef = useRef<HTMLDivElement>(null);
 
@@ -42,25 +45,51 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
         editorRef.current?.focus();
     };
 
-    const handleToolbarInteraction = (e: React.MouseEvent) => {
+    const handleToolbarInteraction = (e: React.MouseEvent | React.TouchEvent) => {
         // Prevent the editor from losing focus when a button is clicked.
         e.preventDefault();
     };
+
+    const handleTagSelect = (tag: string) => {
+        if (onTagChange) {
+            onTagChange(id, tag);
+        }
+    }
+
+    const tagOptions = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+
 
     return (
         <div className="relative">
             {isEditing && (
                  <div 
                     className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 flex items-center gap-1 bg-background p-1 rounded-md border shadow-md"
-                    onMouseDown={handleToolbarInteraction} // Prevent blur on the entire toolbar
+                    onMouseDown={handleToolbarInteraction}
                 >
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={() => execCommand('bold')}>
+                     {onTagChange && currentTag && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button type="button" variant="ghost" className="h-7 w-auto px-2 text-xs font-bold">
+                                    {currentTag.toUpperCase()}
+                                    <ChevronDown className="h-4 w-4 ml-1" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent onMouseDown={handleToolbarInteraction}>
+                                {tagOptions.map(tag => (
+                                    <DropdownMenuItem key={tag} onSelect={() => handleTagSelect(tag)}>
+                                        {tag.toUpperCase()}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                     )}
+                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('bold')}>
                          <Bold className="h-4 w-4" />
                      </Button>
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={() => execCommand('italic')}>
+                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('italic')}>
                          <Italic className="h-4 w-4" />
                      </Button>
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onMouseDown={() => execCommand('strikeThrough')}>
+                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('strikeThrough')}>
                          <Strikethrough className="h-4 w-4" />
                      </Button>
                      <Popover>
@@ -69,7 +98,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                                 <LinkIcon className="h-4 w-4" />
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-80">
+                        <PopoverContent className="w-80" onMouseDown={handleToolbarInteraction}>
                             <div className="grid gap-2">
                                 <Input
                                     id={`link-url-${id}`}
