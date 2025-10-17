@@ -136,6 +136,8 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
       const wrapperStyle: React.CSSProperties = { ...commonProps.style, overflow: 'hidden' };
       // These properties are applied to the inner image, not the wrapper.
       delete wrapperStyle.borderRadius;
+      delete wrapperStyle.border;
+
       
       return (
         <div {...commonProps} style={wrapperStyle}>
@@ -164,7 +166,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     case 'input':
         return (
             <div {...commonProps}>
-               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} className="w-full h-full bg-background" />
+               <Input type={properties['type']} value={properties['value']} placeholder={properties['placeholder']} className="h-full bg-background" />
                {renderResizeHandles()}
             </div>
         );
