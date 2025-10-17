@@ -132,10 +132,11 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
             </button>
         );
     case 'image': {
-      const imageStyle = { borderRadius: properties.borderRadius };
-      const wrapperStyle = { ...commonProps.style, overflow: 'hidden' };
-      delete wrapperStyle.borderRadius; // Remove radius from wrapper
-
+      const imageStyle: React.CSSProperties = { borderRadius: properties.borderRadius };
+      const wrapperStyle: React.CSSProperties = { ...commonProps.style, overflow: 'hidden' };
+      // These properties are applied to the inner image, not the wrapper.
+      delete wrapperStyle.borderRadius;
+      
       return (
         <div {...commonProps} style={wrapperStyle}>
           {properties['src'] && (
