@@ -1,4 +1,5 @@
 
+
 import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -12,14 +13,50 @@ interface TypographyPropertiesProps {
     onUpdate: (key: string, value: any) => void;
 }
 
+const headingStyles: Record<string, { fontSize: string, fontWeight: string }> = {
+    'h1': { fontSize: '2.5rem', fontWeight: 'bold' },
+    'h2': { fontSize: '2rem', fontWeight: 'bold' },
+    'h3': { fontSize: '1.75rem', fontWeight: 'bold' },
+    'h4': { fontSize: '1.5rem', fontWeight: 'bold' },
+    'h5': { fontSize: '1.25rem', fontWeight: 'bold' },
+    'h6': { fontSize: '1rem', fontWeight: 'bold' },
+    'p': { fontSize: '1rem', fontWeight: 'normal' },
+}
+
 const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate }) => {
     const properties = element.properties || {};
     const colorInputRef = React.createRef<HTMLInputElement>();
+
+    const handleTagChange = (tag: string) => {
+        onUpdate('tag', tag);
+        const styles = headingStyles[tag];
+        if (styles) {
+            onUpdate('fontSize', styles.fontSize);
+            onUpdate('fontWeight', styles.fontWeight);
+        }
+    }
     
     return (
         <AccordionItem value="typography">
             <AccordionTrigger className="text-sm font-medium">Typography</AccordionTrigger>
             <AccordionContent className="space-y-4 pt-4">
+                {element.type === 'text' && (
+                    <div className="space-y-2">
+                        <Label>Tag</Label>
+                        <Select value={properties['tag'] as string || 'p'} onValueChange={handleTagChange}>
+                            <SelectTrigger><SelectValue placeholder="Tag" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="p">Paragraph</SelectItem>
+                                <SelectItem value="h1">Heading 1</SelectItem>
+                                <SelectItem value="h2">Heading 2</SelectItem>
+                                <SelectItem value="h3">Heading 3</SelectItem>
+                                <SelectItem value="h4">Heading 4</SelectItem>
+                                <SelectItem value="h5">Heading 5</SelectItem>
+                                <SelectItem value="h6">Heading 6</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
                 <div className="space-y-2">
                     <Label>Color</Label>
                     <div className="flex items-center gap-2">

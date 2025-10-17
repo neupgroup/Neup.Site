@@ -1,3 +1,4 @@
+
 import { logErrorToFirestore } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 
@@ -104,16 +105,12 @@ ${childrenJsx}
     }
 
     switch (type) {
-        case 'heading': {
-            const level = properties['level'] || 1;
-            const Tag = `h${level}`;
-            return `${indent}<${Tag} ${attributesString}>${textContent}</${Tag}>`;
-        }
         case 'text': {
+            const Tag = (properties['tag'] || 'p') as keyof JSX.IntrinsicElements;
             if (textContent.includes('<a')) {
-                return `${indent}<div ${attributesString} dangerouslySetInnerHTML={{ __html: \`${textContent.replace(/`/g, '\\`')}\` }} />`;
+                return `${indent}<${Tag} ${attributesString} dangerouslySetInnerHTML={{ __html: \`${textContent.replace(/`/g, '\\`')}\` }} />`;
             }
-            return `${indent}<div ${attributesString}>${textContent}</div>`;
+            return `${indent}<${Tag} ${attributesString}>${textContent}</${Tag}>`;
         }
         case 'button': {
             return `${indent}<button ${attributesString}>${textContent}</button>`;

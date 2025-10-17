@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { type FC, DragEvent } from 'react';
@@ -111,23 +112,14 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
   }
 
   switch (type) {
-    case 'heading': {
-        const HeadingTag = `h${properties['level'] || 1}` as keyof JSX.IntrinsicElements;
-        const content = properties['text'] || 'New Heading';
-        return (
-            <HeadingTag {...commonProps}>
-                <EditableText id={id} initialValue={content} onSave={handleSaveText} className="font-headline tracking-tight" />
-                {renderResizeHandles()}
-            </HeadingTag>
-        );
-    }
     case 'text': {
-        const content = properties['text'] || 'New Text Block. Double click to edit.';
+        const Tag = (properties['tag'] || 'p') as keyof JSX.IntrinsicElements;
+        const content = properties['text'] || 'New Text Block';
         return (
-            <div {...commonProps}>
+            <Tag {...commonProps} className={cn(commonProps.className, 'font-headline tracking-tight')}>
                 <EditableText id={id} initialValue={content} onSave={handleSaveText} />
                 {renderResizeHandles()}
-            </div>
+            </Tag>
         );
     }
     case 'button':

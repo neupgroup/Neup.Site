@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import { FC, useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search, ArrowUp, ArrowDown, Copy, Trash2, CornerUpLeft } from 'lucide-react';
+import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search, ArrowUp, ArrowDown, Copy, Trash2, CornerUpLeft } from 'lucide-react';
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Template } from '@/schemas/template';
 import { cn } from '@/lib/utils';
@@ -41,7 +42,6 @@ const getIconForType = (type: CanvasElementData['type']) => {
         case 'div': return <Box className="h-4 w-4" />;
         case 'container': return <Container className="h-4 w-4" />;
         case 'input': return <FormInput className="h-4 w-4" />;
-        case 'heading': return <Heading1 className="h-4 w-4" />;
         case 'video': return <Video className="h-4 w-4" />;
         case 'list': return <List className="h-4 w-4" />;
         case 'list-item': return <Pilcrow className="h-4 w-4" />;
@@ -316,12 +316,6 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
               <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Typography</p>
                    <div className="grid grid-cols-2 gap-4">
-                        <ContentBlock icon={<Heading1 className="h-6 w-6" />} label="Heading 1" type="heading" props={ { level: 1 } } />
-                        <ContentBlock icon={<Heading2 className="h-6 w-6" />} label="Heading 2" type="heading" props={ { level: 2 } } />
-                        <ContentBlock icon={<Heading3 className="h-6 w-6" />} label="Heading 3" type="heading" props={ { level: 3 } } />
-                        <ContentBlock icon={<Heading4 className="h-6 w-6" />} label="Heading 4" type="heading" props={ { level: 4 } } />
-                        <ContentBlock icon={<Heading5 className="h-6 w-6" />} label="Heading 5" type="heading" props={ { level: 5 } } />
-                        <ContentBlock icon={<Heading6 className="h-6 w-6" />} label="Heading 6" type="heading" props={ { level: 6 } } />
                         <ContentBlock icon={<Type className="h-6 w-6" />} label="Text" type="text" />
                    </div>
               </div>

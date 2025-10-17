@@ -38,14 +38,10 @@ function renderElementToHtml(element: CanvasElementData): string {
     const attributes = `id="${id}" style="${styleString}" class="${classString}"`;
 
     switch (type) {
-        case 'heading': {
-            const level = properties['level'] || 1;
-            const text = properties['text'] || '';
-            return `<h${level} ${attributes}>${text}</h${level}>`;
-        }
         case 'text': {
+            const Tag = properties['tag'] || 'p';
             const text = properties['text'] || '';
-            return `<div ${attributes}>${text}</div>`;
+            return `<${Tag} ${attributes}>${text}</${Tag}>`;
         }
         case 'button': {
             const text = properties['text'] || 'Button';
