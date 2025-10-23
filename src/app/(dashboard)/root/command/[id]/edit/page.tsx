@@ -281,7 +281,7 @@ export default function EditCommandPage({ params }: { params: { id: string } }) 
                 <Card>
                   <CardHeader>
                       <CardTitle>Parameters</CardTitle>
-                      <CardDescription>Define user-provided values for your command template or script. Parameters are auto-detected from `{{...}}` placeholders.</CardDescription>
+                      <CardDescription>Define user-provided values for your command template or script. Parameters are auto-detected from `&#123;&#123;...&#125;&#125;` placeholders.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                       {fields.map((field, index) => (
