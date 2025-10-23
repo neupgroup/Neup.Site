@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save, ArrowLeft, Loader2, Code, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getSource, updateSource, type Source, ApiSource } from '@/actions/editor/sources';
+import { getSource, updateSource, type Source } from '@/actions/editor/sources';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -23,10 +24,7 @@ import { AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
-type FormValues = Partial<Omit<Source, 'headers'>> & {
-    headers?: string | Record<string, string>;
-    datalistId?: string; // Added for datalist type
-};
+type FormValues = Partial<Source>;
 
 const ApiFields = ({ control }: { control: any }) => {
   return (
@@ -56,8 +54,6 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
       defaultValues: {
           name: '',
           type: 'api',
-          headers: {}, // Default to empty object
-          datalistId: '', // Default for datalist type
       }
   });
 
@@ -67,9 +63,8 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
       const result = await getSource(id);
       if (result.success && result.source) {
         const sourceData = result.source;
-        // Convert headers object to JSON string for textarea
-        if (sourceData.type === 'api' && typeof (sourceData as ApiSource).headers === 'object') {
-          (sourceData as FormValues).headers = JSON.stringify((sourceData as ApiSource).headers || {}, null, 2);
+        if (sourceData.type === 'api' && typeof sourceData.headers !== 'string') {
+          sourceData.headers = JSON.stringify(sourceData.headers || {}, null, 2);
         }
         methods.reset(sourceData);
       } else {
@@ -83,7 +78,6 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
 
   const handleUpdateSource = async (data: FormValues) => {
     let dataToSave = { ...data };
-    // Convert headers JSON string back to object for Firestore
     if (data.type === 'api' && typeof data.headers === 'string') {
       try {
         dataToSave.headers = data.headers ? JSON.parse(data.headers) : {};

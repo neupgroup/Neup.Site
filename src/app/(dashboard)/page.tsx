@@ -1,77 +1,94 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Users, FileText, Puzzle, Palette, Newspaper, Plus } from 'lucide-react';
+
+// Placeholder data - in a real app, this would come from an API or database
+const dashboardData = {
+  todaysVisits: 1482,
+  totalPages: 12,
+  activeModules: 5,
+};
+
+const QuickStatCard = ({ title, value, icon: Icon, description }: { title: string, value: string | number, icon: React.ElementType, description: string }) => (
+  <Card>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      <Icon className="h-4 w-4 text-muted-foreground" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{value}</div>
+      <p className="text-xs text-muted-foreground">{description}</p>
+    </CardContent>
+  </Card>
+);
+
 
 export default async function DashboardPage() {
 
   return (
-     <div className="p-8">
-      <h1 className="text-3xl font-bold font-headline mb-8">Welcome to Neup.Sites</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card>
+     <div className="w-full">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold font-headline">Dashboard</h1>
+        <p className="text-muted-foreground">Here's a quick overview of your site.</p>
+      </header>
+      
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+        <QuickStatCard 
+          title="Today's Visits"
+          value={dashboardData.todaysVisits.toLocaleString()}
+          icon={Users}
+          description="+20.1% from last month"
+        />
+        <QuickStatCard 
+          title="Total Pages"
+          value={dashboardData.totalPages}
+          icon={FileText}
+          description="Live and draft pages"
+        />
+        <QuickStatCard 
+          title="Active Modules"
+          value={dashboardData.activeModules}
+          icon={Puzzle}
+          description="Enabled site features"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+         <Card>
           <CardHeader>
-            <CardTitle>Pages</CardTitle>
+            <CardTitle>Manage Content</CardTitle>
+            <CardDescription>
+              Create, edit, and manage your site's pages and news articles.
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              View and manage all of your saved pages.
-            </p>
-            <Button asChild>
-              <Link href="/site/pages">View Pages <ArrowRight className="ml-2" /></Link>
+          <CardContent className="flex flex-col sm:flex-row gap-4">
+            <Button asChild className="w-full sm:w-auto">
+              <Link href="/site/pages/create">
+                <Plus className="mr-2" /> New Page
+              </Link>
             </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Editor</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Visually build and manage your website pages.
-            </p>
-            <Button asChild>
-              <Link href="/site/editor/dragger">Go to Editor <ArrowRight className="ml-2" /></Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Templates</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Manage reusable page and section templates.
-            </p>
-            <Button asChild>
-              <Link href="/root/templates">Manage Templates <ArrowRight className="ml-2" /></Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Errors</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              View application and server-side errors.
-            </p>
-            <Button asChild>
-              <Link href="/root/errors">View Errors <ArrowRight className="ml-2" /></Link>
+             <Button asChild variant="secondary" className="w-full sm:w-auto">
+              <Link href="/news">
+                <Newspaper className="mr-2" /> View News
+              </Link>
             </Button>
           </CardContent>
         </Card>
          <Card>
           <CardHeader>
-            <CardTitle>Landing Page</CardTitle>
+            <CardTitle>Customize Appearance</CardTitle>
+             <CardDescription>
+              Change your site's colors, fonts, and overall theme.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Preview the public-facing landing page.
-            </p>
             <Button asChild>
-              <Link href="/landing">View Landing Page <ArrowRight className="ml-2" /></Link>
+              <Link href="/site/theme">
+                <Palette className="mr-2" />
+                Edit Theme
+              </Link>
             </Button>
           </CardContent>
         </Card>

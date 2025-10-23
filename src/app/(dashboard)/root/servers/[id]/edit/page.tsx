@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -16,8 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, ArrowLeft, Loader2, AlertCircle, KeyRound, Calendar as CalendarIcon, Trash2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getServer, updateServer, deleteServer } from '@/actions/servers';
-import { Server } from '@/schemas/server';
+import { getServer, updateServer, deleteServer, type Server } from '@/actions/servers';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -30,9 +30,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 
 
-type FormValues = Omit<Server, 'id' | 'createdOn' | 'portsOpen'> & {
-    portsOpen: { value: number }[];
-};
+type FormValues = Omit<Server, 'id' | 'createdOn'>;
 
 export default function EditServerPage({ params }: { params: { id:string } }) {
   const { id } = params;
@@ -40,6 +38,8 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showPrivateKeyField, setShowPrivateKeyField] = useState(false);
+  const [showPrivateIpField, setShowPrivateIpField] = useState(false);
   
   const { toast } = useToast();
   const router = useRouter();
@@ -49,10 +49,11 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
       name: '',
       publicIp: '',
       privateIp: '',
-      privateKey: '', // This will not be populated from the server
+      privateKey: '', 
       serverType: 'vps',
       provider: '',
       portsOpen: [],
+      usedPorts: [],
       isPrivate: false,
       username: '',
       basePath: '',
@@ -60,9 +61,14 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
     }
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields: portFields, append: appendPort, remove: removePort } = useFieldArray({
     control,
     name: 'portsOpen',
+  });
+  
+  const { fields: usedPortFields, append: appendUsedPort, remove: removeUsedPort } = useFieldArray({
+    control,
+    name: 'usedPorts',
   });
 
   const expiresOn = watch('expiresOn');
@@ -76,11 +82,12 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
         reset({
           name: result.server.name,
           publicIp: result.server.publicIp,
-          privateIp: result.server.privateIp || '',
+          privateIp: '', // Leave blank for security
           privateKey: '', // Keep private key field blank for security
           serverType: result.server.serverType || 'vps',
           provider: result.server.provider || '',
-          portsOpen: result.server.portsOpen?.map(p => ({ value: p })) || [],
+          portsOpen: result.server.portsOpen?.map(p => ({ value: p })) as any || [],
+          usedPorts: result.server.usedPorts || [],
           isPrivate: result.server.isPrivate || false,
           username: result.server.username || '',
           basePath: result.server.basePath || '',
@@ -96,9 +103,9 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
   }, [id, reset]);
 
   const handleUpdateServer = async (data: FormValues) => {
-    const ports = (data.portsOpen as { value: number }[])
+    const ports = (data.portsOpen as any[])
         .map(p => p.value)
-        .filter(p => p !== null && p !== undefined && !isNaN(p))
+        .filter(p => p !== '' && !isNaN(p))
         .map(p => Number(p));
     
     const result = await updateServer(id, {...data, portsOpen: ports});
@@ -120,6 +127,20 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
+  }
+  
+  const toggleCredentialField = (field: 'privateKey' | 'privateIp') => {
+      if (field === 'privateKey') {
+          if (showPrivateKeyField) {
+              setValue('privateKey', '');
+          }
+          setShowPrivateKeyField(!showPrivateKeyField);
+      } else if (field === 'privateIp') {
+          if (showPrivateIpField) {
+              setValue('privateIp', '');
+          }
+          setShowPrivateIpField(!showPrivateIpField);
+      }
   }
 
   if (loading) {
@@ -202,16 +223,31 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
                 </div>
                  <div className="space-y-2">
                     <Label>Open Ports</Label>
-                    {fields.map((field, index) => (
+                    {portFields.map((field, index) => (
                         <div key={field.id} className="flex items-center gap-2">
-                            <Input type="number" {...register(`portsOpen.${index}.value` as const, { valueAsNumber: true })} />
-                            <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                            <Input type="number" {...register(`portsOpen.${index}.value` as any)} placeholder="e.g., 80" />
+                            <Button type="button" variant="destructive" size="icon" onClick={() => removePort(index)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: 0 })}>
+                    <Button type="button" variant="outline" className="w-full" onClick={() => appendPort({ value: '' } as any)}>
                         <Plus className="mr-2 h-4 w-4" /> Add Port
+                    </Button>
+                </div>
+                <div className="space-y-2">
+                    <Label>Used Ports</Label>
+                     {usedPortFields.map((field, index) => (
+                        <div key={field.id} className="flex items-start gap-2">
+                            <Input type="number" {...register(`usedPorts.${index}.port`)} placeholder="e.g., 8080" className="w-24" />
+                            <Input {...register(`usedPorts.${index}.description`)} placeholder="e.g., Nginx for myapp.com" />
+                            <Button type="button" variant="destructive" size="icon" onClick={() => removeUsedPort(index)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                    <Button type="button" variant="outline" className="w-full" onClick={() => appendUsedPort({ port: 0, description: '' })}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Used Port
                     </Button>
                 </div>
                  <div className="flex items-center space-x-2">
@@ -250,17 +286,31 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
                     Override Private Credentials
                 </CardTitle>
                 <CardDescription>
-                    These fields are write-only. Fill them in only if you need to update the private IP or private key.
+                    These fields are write-only. Click to reveal and update a credential.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="private-ip">New Private IP (Optional)</Label>
-                    <Input id="private-ip" {...register('privateIp')} placeholder="Leave blank to keep existing" />
+                 <div className="space-y-2">
+                    <Button type="button" variant={showPrivateIpField ? "secondary" : "outline"} onClick={() => toggleCredentialField('privateIp')}>
+                        {showPrivateIpField ? 'Cancel Update' : 'Update Private IP'}
+                    </Button>
+                    {showPrivateIpField && (
+                        <div className="space-y-2 pt-2">
+                            <Label htmlFor="private-ip">New Private IP</Label>
+                            <Input id="private-ip" {...register('privateIp')} placeholder="Enter new private IP address" />
+                        </div>
+                    )}
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="private-key">New Private Key (Optional)</Label>
-                    <Textarea id="private-key" {...register('privateKey')} placeholder="Leave blank to keep existing" rows={8} />
+                 <div className="space-y-2">
+                    <Button type="button" variant={showPrivateKeyField ? "secondary" : "outline"} onClick={() => toggleCredentialField('privateKey')}>
+                        {showPrivateKeyField ? 'Cancel Update' : 'Update Private Key'}
+                    </Button>
+                    {showPrivateKeyField && (
+                        <div className="space-y-2 pt-2">
+                            <Label htmlFor="private-key">New Private Key</Label>
+                            <Textarea id="private-key" {...register('privateKey')} placeholder="Begins with -----BEGIN RSA PRIVATE KEY-----" rows={8} />
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>

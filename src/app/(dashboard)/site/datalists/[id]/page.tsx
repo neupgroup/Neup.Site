@@ -1,10 +1,10 @@
+
 'use client';
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getDatalist, deleteDatalist } from '@/actions/datalists';
-import { Datalist } from '@/schemas/datalist'; // Corrected import
+import { getDatalist, deleteDatalist, type Datalist } from '@/actions/datalists';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

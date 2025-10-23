@@ -1,3 +1,4 @@
+
 import { logErrorToFirestore } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 
@@ -28,7 +29,7 @@ function renderElementToJsx(element: CanvasElementData, level: number, isInsideL
     if (repeater && repeater.enabled && repeater.dataPath) {
         const loopVar = 'item'; // or make this configurable
         const indexVar = 'index';
-        const childrenJsx = children ? children.map((child: CanvasElementData) => renderElementToJsx(child, level + 1, true)).join('\n') : '';
+        const childrenJsx = children ? children.map(child => renderElementToJsx(child, level + 1, true)).join('\n') : '';
 
         return `
     {items?.${repeater.dataPath}?.map((${loopVar}, ${indexVar}) => (
@@ -146,7 +147,7 @@ ${childrenJsx}
         case 'form':
         case 'list': {
             const Tag = type === 'container' ? 'div' : (type === 'list' ? 'ul' : type);
-            const childrenJsx = children ? children.map((child: CanvasElementData) => renderElementToJsx(child, level + 1, isInsideLoop)).join('\n') : '';
+            const childrenJsx = children ? children.map(child => renderElementToJsx(child, level + 1, isInsideLoop)).join('\n') : '';
             return `${indent}<${Tag} ${attributesString}>\n${childrenJsx}\n${indent}</${Tag}>`;
         }
         case 'list-item': {
@@ -174,13 +175,13 @@ export async function convertJsonToJsx(elements: CanvasElementData[]): Promise<s
         imports += `import Image from 'next/image';\n`;
     }
     
-    const componentBody = elements.map((element: CanvasElementData, index: number) => {
+    const componentBody = elements.map((element, index) => {
       // A top-level element might be a repeater itself.
       const isRepeater = element.repeater && element.repeater.enabled && element.repeater.dataPath;
       if (isRepeater) {
           const loopVar = 'item';
           const indexVar = 'index';
-          const childrenJsx = element.children ? element.children.map((child: CanvasElementData) => renderElementToJsx(child, 3, true)).join('\n') : '';
+          const childrenJsx = element.children ? element.children.map(child => renderElementToJsx(child, 3, true)).join('\n') : '';
           const rootElementAttributes = `key={${loopVar}.id || ${indexVar}}`;
 
           return `
@@ -199,11 +200,11 @@ ${childrenJsx}
     // If the top-level is not a repeater, we assume it's a single item component.
     const containsRepeater = elements.some(el => el.repeater && el.repeater.enabled);
     if (!containsRepeater) {
-      const singleItemJsx = elements.map((el: CanvasElementData) => renderElementToJsx(el, 3, true)).join('\n');
+      const singleItemJsx = elements.map(el => renderElementToJsx(el, 3, true)).join('\n');
        return `
 ${imports}
 
-export default function GeneratedComponent({ items }: { items: any[] }) {
+export default function GeneratedComponent({ items }) {
   if (!items || !Array.isArray(items)) {
     return <div>No items to display.</div>;
   }
@@ -225,7 +226,7 @@ ${singleItemJsx}
     return `
 ${imports}
 
-export default function GeneratedComponent({ items }: { items: any[] }) {
+export default function GeneratedComponent({ items }) {
   if (!items) {
     return <div>Loading...</div>;
   }

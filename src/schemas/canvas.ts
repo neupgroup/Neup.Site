@@ -1,3 +1,5 @@
+
+
 import { z } from 'zod';
 
 export const RepeaterSchema = z.object({
@@ -5,11 +7,11 @@ export const RepeaterSchema = z.object({
   dataPath: z.string(),
 });
 
-export const CanvasElementDataSchema: z.ZodObject<any> = z.object({
+export const CanvasElementDataSchema = z.object({
   id: z.string(),
   type: z.enum(['text', 'image', 'button', 'section', 'div', 'container', 'input', 'video', 'list', 'list-item', 'form', 'label', 'textarea', 'html']),
   properties: z.record(z.any()),
-  children: z.array(z.lazy(() => CanvasElementDataSchema as z.ZodSchema<CanvasElementData>)).optional(),
+  children: z.array(z.lazy(() => CanvasElementDataSchema)).optional(),
   repeater: RepeaterSchema.optional(),
   dataBindings: z.record(z.string()).optional(),
 });

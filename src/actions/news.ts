@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
+import { logErrorToFirestore } from '@/lib/logging';
 
 export interface NewsArticle {
     id: string;
@@ -58,7 +59,8 @@ export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | '
     revalidatePath('/news');
     revalidatePath(`/news/${id}`);
     return { success: true, id: id };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to create news article: ${e.message}`, stack: e.stack, source: 'createNewsArticle' });
     return { success: false, error: 'Failed to create news article.' };
   }
 }
@@ -81,7 +83,8 @@ export async function getNewsArticles(): Promise<{ success: boolean; articles?: 
             } as NewsArticle;
         });
         return { success: true, articles };
-    } catch (error: any) {
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to get news articles: ${e.message}`, stack: e.stack, source: 'getNewsArticles' });
         return { success: false, error: 'Failed to fetch news articles.' };
     }
 }
@@ -110,7 +113,8 @@ export async function getNewsArticleById(id: string): Promise<{ success: boolean
         };
         return { success: true, article };
 
-    } catch (error: any) {
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to get news article ${id}: ${e.message}`, stack: e.stack, source: 'getNewsArticleById' });
         return { success: false, error: 'Failed to fetch news article.' };
     }
 }
@@ -127,7 +131,8 @@ export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArtic
     revalidatePath(`/news/${id}`);
     
     return { success: true };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to update news article ${id}: ${e.message}`, stack: e.stack, source: 'updateNewsArticle' });
     return { success: false, error: 'Failed to update news article.' };
   }
 }
@@ -138,9 +143,8 @@ export async function deleteNewsArticle(id: string): Promise<{ success: boolean;
         await deleteDoc(doc(firestore, 'news', id));
         revalidatePath('/news');
         return { success: true };
-    } catch (error: any) {
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to delete news article ${id}: ${e.message}`, stack: e.stack, source: 'deleteNewsArticle' });
         return { success: false, error: 'Failed to delete news article.' };
     }
 }
-
-    

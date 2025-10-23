@@ -19,12 +19,9 @@ export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiated
       completedAt: null,
     });
     return { success: true, id: docRef.id };
-  } catch (error: any) {
-    logErrorToFirestore({
-        message: `Failed to create server log. Command: ${logData.command}. Error: ${JSON.stringify(error)}`,
-        stack: error.stack,
-        source: 'createServerLog',
-    });
+  } catch (e: any) {
+    // Cannot log to Firestore here as it might cause an infinite loop if logging itself fails
+    console.error("CRITICAL: Failed to create server log.", e);
     return { success: false, error: 'Failed to create server log.' };
   }
 }
@@ -43,12 +40,9 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
     }
     await setDoc(logRef, dataToUpdate, { merge: true });
     return { success: true };
-  } catch (error: any) {
-     logErrorToFirestore({
-        message: `Failed to update server log. Log ID: ${id}. Error: ${JSON.stringify(error)}`,
-        stack: error.stack,
-        source: 'updateServerLog',
-    });
+  } catch (e: any) {
+     // Cannot log to Firestore here as it might cause an infinite loop if logging itself fails
+    console.error(`CRITICAL: Failed to update server log ${id}.`, e);
     return { success: false, error: 'Failed to update server log.' };
   }
 }
@@ -100,11 +94,7 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
         return { logs, hasMore, success: true };
 
     } catch (e: any) {
-        logErrorToFirestore({
-            message: `Failed to fetch server logs for serverId: ${serverId}. Error: ${JSON.stringify(e)}`,
-            stack: e.stack,
-            source: 'getServerLogs',
-        });
+        await logErrorToFirestore({ message: `Failed to fetch server logs for serverId: ${serverId}: ${e.message}`, stack: e.stack, source: 'getServerLogs' });
         return { error: 'Failed to load logs. Please check the error logs for more details.', success: false };
     }
 }

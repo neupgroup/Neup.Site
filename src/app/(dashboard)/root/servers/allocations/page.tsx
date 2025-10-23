@@ -1,9 +1,9 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getServerAllocations } from '@/actions/allocations';
-import { ServerAllocation } from '@/schemas/server'; // Corrected import
+import { getServerAllocations, type ServerAllocation } from '@/actions/allocations';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -80,7 +80,7 @@ export default function AllocationsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {allocations.map((alloc: ServerAllocation) => (
+                {allocations.map((alloc) => (
                   <TableRow key={alloc.id}>
                     <TableCell className="font-mono">{alloc.siteId}</TableCell>
                     <TableCell className="font-mono">{alloc.serverId}</TableCell>

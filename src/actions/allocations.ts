@@ -1,8 +1,10 @@
+
 'use server';
 
 import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query, where } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import { ServerAllocation } from '@/schemas/server';
+import { logErrorToFirestore } from '@/lib/logging';
 
 /**
  * Creates a new server allocation.
@@ -13,12 +15,14 @@ export async function createServerAllocation(allocationData: Omit<ServerAllocati
     const dataToSave = {
         ...allocationData,
         allocatedPorts: allocationData.allocatedPorts || [],
+        storageAllocation: allocationData.storageAllocation,
         allocatedOn: serverTimestamp(),
         expiresOn: allocationData.expiresOn ? new Date(allocationData.expiresOn) : null,
     };
     const docRef = await addDoc(collection(firestore, 'serverAllocations'), dataToSave);
     return { success: true, id: docRef.id };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to create server allocation: ${e.message}`, stack: e.stack, source: 'createServerAllocation' });
     return { success: false, error: 'Failed to create server allocation.' };
   }
 }
@@ -43,12 +47,15 @@ export async function getServerAllocations(): Promise<{ success: boolean; alloca
         username: data.username,
         deploymentPath: data.deploymentPath,
         allocatedPorts: data.allocatedPorts || [],
+        storageAllocation: data.storageAllocation,
+        storage: data.storage,
         allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
         expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
       } as ServerAllocation;
     });
     return { success: true, allocations };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to get server allocations: ${e.message}`, stack: e.stack, source: 'getServerAllocations' });
     return { success: false, error: 'Failed to fetch server allocations.' };
   }
 }
@@ -77,11 +84,14 @@ export async function getServerAllocation(id: string): Promise<{ success: boolea
             username: data.username,
             deploymentPath: data.deploymentPath,
             allocatedPorts: data.allocatedPorts || [],
+            storageAllocation: data.storageAllocation,
+            storage: data.storage,
             allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
         return { success: true, allocation };
-    } catch (error: any) {
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to get server allocation ${id}: ${e.message}`, stack: e.stack, source: 'getServerAllocation' });
         return { success: false, error: 'Failed to fetch server allocation.' };
     }
 }
@@ -98,13 +108,14 @@ export async function updateServerAllocation(id: string, allocationData: Partial
     const dataToUpdate: Record<string, any> = { ...allocationData };
      if (allocationData.expiresOn) {
         dataToUpdate.expiresOn = new Date(allocationData.expiresOn);
-    } else {
+    } else if (allocationData.expiresOn === null) { // Explicitly handle setting it to null
         dataToUpdate.expiresOn = null;
     }
 
     await setDoc(allocationRef, dataToUpdate, { merge: true });
     return { success: true, id };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to update allocation ${id}: ${e.message}`, stack: e.stack, source: 'updateServerAllocation' });
     return { success: false, error: `Failed to update allocation ${id}.` };
   }
 }
@@ -119,7 +130,8 @@ export async function deleteServerAllocation(id: string): Promise<{ success: boo
     const allocationRef = doc(firestore, 'serverAllocations', id);
     await deleteDoc(allocationRef);
     return { success: true };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to delete allocation ${id}: ${e.message}`, stack: e.stack, source: 'deleteServerAllocation' });
     return { success: false, error: `Failed to delete allocation with ID ${id}.` };
   }
 }

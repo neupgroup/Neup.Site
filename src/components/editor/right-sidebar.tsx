@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
@@ -117,7 +118,7 @@ const RightSidebar: FC<RightSidebarProps> = ({
     setElements(prev => {
         const clonedPrev = JSON.parse(JSON.stringify(prev));
         const updateRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
-            return els.map((el: CanvasElementData) => {
+            return els.map(el => {
             if (el.id === selectedElementId) {
                 return { ...el, dataBindings: bindings };
             }
@@ -185,7 +186,7 @@ const RightSidebar: FC<RightSidebarProps> = ({
                     </AccordionContent>
                 </AccordionItem>
                 
-                {editorProperties.map((groupKey: string) => {
+                {editorProperties.map(groupKey => {
                     const PropertyComponent = propertyComponents[groupKey];
                     
                     if (!PropertyComponent) {

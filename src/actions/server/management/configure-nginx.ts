@@ -65,12 +65,12 @@ ${locationBlocks}
   // Quoting 'EOF' prevents the shell from expanding variables (like $http_upgrade) inside the block.
   // This is a much safer way to write multi-line content with special characters.
   const command = `
-sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled &&
+sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled && \\
 sudo bash -c "cat > ${configFilePath}" <<'EOF'
 ${nginxConfig}
 EOF
-sudo ln -s -f ${configFilePath} ${enabledConfigPath} &&
-sudo nginx -t &&
+sudo ln -s -f ${configFilePath} ${enabledConfigPath} && \\
+sudo nginx -t && \\
 sudo systemctl reload nginx
 `.trim();
 

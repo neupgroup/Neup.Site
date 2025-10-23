@@ -1,9 +1,9 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getServers } from '@/actions/servers';
-import { Server } from '@/schemas/server'; // Corrected import
+import { getServers, type Server } from '@/actions/servers';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -83,7 +83,7 @@ export default function ServersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {servers.map((server: Server) => (
+                {servers.map((server) => (
                   <TableRow key={server.id}>
                     <TableCell className="font-medium">
                         <Link href={`/root/servers/${server.id}`} className="hover:underline">

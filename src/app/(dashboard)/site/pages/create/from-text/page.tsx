@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -45,7 +46,7 @@ export default function CreateFromTextPage() {
                     id="page-description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="e.g., 'A landing page for a new SaaS product called SynthWave. It should have a hero section with a signup form, a features section with three columns, a pricing table, and a simple footer.'"
+                    placeholder="e.g., 'A landing page for a new SaaS product called "SynthWave". It should have a hero section with a signup form, a features section with three columns, a pricing table, and a simple footer.'"
                     rows={8}
                     className="bg-muted/50"
                  />

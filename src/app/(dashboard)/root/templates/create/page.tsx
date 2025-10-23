@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { saveTemplate } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
@@ -39,7 +40,6 @@ export default function CreateTemplatePage() {
   const handleManualSave = async (data: FormValues) => {
     const result = await saveTemplate({ 
         ...data,
-        description: data.description || '', // Ensure description is a string
         status: 'draft', // Always start as a draft
         createdBy: 'user',
         content: {},

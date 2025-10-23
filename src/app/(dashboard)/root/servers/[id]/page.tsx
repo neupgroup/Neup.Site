@@ -1,8 +1,8 @@
+
 'use client';
-import { useState, useEffect, useTransition, use } from 'react';
+import { useState, useEffect, use, useCallback, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServer } from '@/actions/servers';
-import { Server, ServerLog } from '@/schemas/server'; // Corrected import
+import { getServer, type Server } from '@/actions/servers';
 import { runCommand } from '@/actions/runner';
 import { logErrorToFirestore } from '@/lib/logging';
 import {
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, ArrowLeft, Pencil, Share2, Package, GitCommit, Disc, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Share2, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder, PlayCircle, Eye, Lock, UploadCloud, FileText, X, Search, RefreshCw, HardDrive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,20 +23,33 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { getInstallNginxCommand } from '@/actions/server/management/install-nginx';
-import { getFreePort80Command } from '@/actions/server/management/free-port-80';
-import { getUpdateAndUpgradeCommand } from '@/actions/server/management/update-and-upgrade';
-import { getCreateSwapCommand } from '@/actions/server/management/create-swap';
 import { getConfigureNginxCommand } from '@/actions/server/management/configure-nginx';
-import { getResetNginxCommand } from '@/actions/server/management/reset-nginx';
-import { getInstallNpmCommand } from '@/actions/server/management/install-npm';
-import { getBuildNpmWithMemoryCommand } from '@/actions/server/management/build-npm-with-memory';
-import { getInstallPm2Command } from '@/actions/server/management/install-pm2';
-import { getStartNextWithPm2Command } from '@/actions/server/management/start-next-with-pm2';
-import { getRebootServerCommand } from '@/actions/server/management/reboot-server';
-import { getServerLogs } from '@/actions/server-logs';
+import { getInstallCertbotNginxCommand } from '@/actions/server/management/install-certbot-nginx';
+import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
+import { getServerLogs, type ServerLog } from '@/actions/server-logs';
+import { getServerCommands, type ServerCommand } from '@/actions/commands';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
+import { useDropzone } from 'react-dropzone';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+
+type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
+interface UploadingFile {
+  file: File;
+  status: UploadStatus;
+  progress: number;
+  error?: string;
+}
 
 const FullLog = ({ log }: { log: ServerLog }) => {
     return (
@@ -57,21 +70,19 @@ const FullLog = ({ log }: { log: ServerLog }) => {
 };
 
 
-export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = use(params);
   const [server, setServer] = useState<Server | null>(null);
   const router = useRouter();
   
   const [loading, setLoading] = useState(true);
+  const [isRefreshingStorage, setIsRefreshingStorage] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [swapSize, setSwapSize] = useState('3072');
   const [customCommand, setCustomCommand] = useState('');
   const [nginxDomains, setNginxDomains] = useState('');
   const [proxyUrl, setProxyUrl] = useState('http://localhost:3000');
-  const [buildMemory, setBuildMemory] = useState('1024');
-  const [deploymentPath, setDeploymentPath] = useState('/home/ubuntu/app');
-  const [pm2AppName, setPm2AppName] = useState('next-app');
-  const [pm2AppPort, setPm2AppPort] = useState(3000);
+  const [certbotDomain, setCertbotDomain] = useState('');
+  const [certbotEmail, setCertbotEmail] = useState('');
   
   const [isPending, startTransition] = useTransition();
 
@@ -82,6 +93,60 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   const [hasMoreLogs, setHasMoreLogs] = useState(false);
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [logsError, setLogsError] = useState<string | null>(null);
+  
+  const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+  
+  const [commandSearchQuery, setCommandSearchQuery] = useState('');
+  const [searchedCommands, setSearchedCommands] = useState<ServerCommand[]>([]);
+  const [loadingCommands, setLoadingCommands] = useState(false);
+  const [commandToRun, setCommandToRun] = useState<ServerCommand | null>(null);
+  const [commandParams, setCommandParams] = useState<Record<string, string>>({});
+  const [allocatePort, setAllocatePort] = useState(false);
+  const [portToAllocate, setPortToAllocate] = useState<number | ''>('');
+  const [portDescription, setPortDescription] = useState('');
+
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+    const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
+      file,
+      status: 'pending',
+      progress: 0,
+    }));
+    setUploadingFiles(prev => [...prev, ...newFiles]);
+  }, []);
+
+  const handleFileUpload = async () => {
+    const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
+    if (filesToUpload.length === 0) return;
+
+    for (const fileToUpload of filesToUpload) {
+      setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, status: 'uploading' } : f));
+      
+      const result = await uploadFile(fileToUpload.file, fileToUpload.file.webkitRelativePath, (progress) => {
+         setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, progress } : f));
+      });
+      
+      setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, status: result.success ? 'success' : 'error', error: result.error } : f));
+    }
+  };
+  
+    const uploadFile = async (file: File, path: string, onProgress: (progress: number) => void): Promise<{success: boolean, error?: string}> => {
+        // This would be an API call to a serverless function or backend that handles the SSH connection and upload.
+        // For now, we simulate the upload.
+        console.log(`Simulating upload for ${file.name} to ${path}`);
+        
+        // Simulate progress
+        for (let i = 0; i <= 100; i+= 10) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+            onProgress(i);
+        }
+        
+        // Simulate a potential failure
+        if (file.name.includes('fail')) {
+            return { success: false, error: 'Simulated upload failure.' };
+        }
+        
+        return { success: true };
+    }
 
   const fetchLogs = async (page = 1) => {
     setLoadingLogs(true);
@@ -103,26 +168,26 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     setLoadingLogs(false);
   }
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      setLoading(true);
-      const result = await getServer(id);
-      if (result.success && result.server) {
-        setServer(result.server);
-      } else {
-        const errorMessage = result.error || 'Failed to fetch server.';
-        setError(errorMessage);
-         logErrorToFirestore({
-            message: `Client-side error fetching server details for serverId: ${id}. Error: ${errorMessage}`,
-            stack: new Error().stack,
-            source: 'ServerDetailPage.fetchInitialData',
-        });
-      }
-      setLoading(false);
-    };
-
-    fetchInitialData();
+  const fetchInitialData = useCallback(async () => {
+    setLoading(true);
+    const result = await getServer(id);
+    if (result.success && result.server) {
+      setServer(result.server);
+    } else {
+      const errorMessage = result.error || 'Failed to fetch server.';
+      setError(errorMessage);
+       logErrorToFirestore({
+          message: `Client-side error fetching server details for serverId: ${id}. Error: ${errorMessage}`,
+          stack: new Error().stack,
+          source: 'ServerDetailPage.fetchInitialData',
+      });
+    }
+    setLoading(false);
   }, [id]);
+
+  useEffect(() => {
+    fetchInitialData();
+  }, [id, fetchInitialData]);
 
    useEffect(() => {
     fetchLogs(logsPage);
@@ -141,15 +206,73 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
     };
   }, [logs, id, logsPage]);
 
-  const handleRunCommand = (command: string, commandName?: string) => {
+  useEffect(() => {
+    if (commandSearchQuery.trim().length > 2) {
+      const delayDebounceFn = setTimeout(async () => {
+        setLoadingCommands(true);
+        const result = await getServerCommands({ searchQuery: commandSearchQuery, pageSize: 5 });
+        if (result.success && result.commands) {
+          setSearchedCommands(result.commands);
+        }
+        setLoadingCommands(false);
+      }, 300);
+      return () => clearTimeout(delayDebounceFn);
+    } else {
+      setSearchedCommands([]);
+    }
+  }, [commandSearchQuery]);
+  
+   const handleRefreshStorage = async () => {
+    setIsRefreshingStorage(true);
+    const result = await getStorageUsage(id);
+    if (result.success && result.data) {
+        setServer(prev => prev ? {
+            ...prev,
+            storageUsed: result.data!.used,
+            storageTotal: result.data!.total,
+            storageUnit: result.data!.unit,
+        } : null);
+        toast({ title: "Storage Refreshed" });
+    } else {
+        toast({ variant: 'destructive', title: "Failed to Refresh Storage", description: result.error });
+    }
+    setIsRefreshingStorage(false);
+  };
+
+
+  const handleRunCommand = (command: string, commandName?: string, portAllocation?: { port: number; description: string; }) => {
       if (!command) return;
       startTransition(async () => {
-          await runCommand(id, command);
+          await runCommand(id, command, {}, '', portAllocation);
           toast({ title: "Command Sent", description: `The command "${commandName || command}" has been sent to the server.`});
-          // Refresh logs after a short delay to allow log creation
           setTimeout(() => fetchLogs(1), 1000);
       });
   };
+
+  const handleRunSavedCommand = () => {
+    if (!commandToRun) return;
+
+    let portAllocation;
+    if (allocatePort) {
+        if (!portToAllocate || !portDescription) {
+            toast({ variant: 'destructive', title: 'Missing Port Info', description: 'Port number and description are required for allocation.' });
+            return;
+        }
+        portAllocation = { port: portToAllocate, description: portDescription };
+    }
+
+    startTransition(async () => {
+        await runCommand(id, commandToRun.commandTemplate, commandParams, commandToRun.preExecutionScript, portAllocation, commandToRun.id);
+        toast({ title: "Command Sent", description: `The command "${commandToRun.name}" has been sent to the server.`});
+        setCommandToRun(null);
+        setCommandParams({});
+        setAllocatePort(false);
+        setPortToAllocate('');
+        setPortDescription('');
+        setTimeout(() => fetchLogs(1), 1000); // refetch logs after a delay
+    });
+  };
+
 
 const handleNginxConfig = async () => {
     const urls = nginxDomains.split('\n').map(u => u.trim()).filter(Boolean);
@@ -184,23 +307,16 @@ const handleNginxConfig = async () => {
     }
 };
 
-const handleBuildNpm = async () => {
+const handleInstallCertbot = async () => {
     try {
-        const command = await getBuildNpmWithMemoryCommand({ memory: buildMemory, path: deploymentPath });
-        handleRunCommand(command, `Build NPM Project`);
+        const command = await getInstallCertbotNginxCommand({ domain: certbotDomain, email: certbotEmail });
+        handleRunCommand(command, `Install SSL for ${certbotDomain}`);
     } catch (e: any) {
-        toast({ variant: 'destructive', title: 'Build Error', description: e.message });
+        toast({ variant: 'destructive', title: 'SSL Setup Error', description: e.message });
     }
 };
 
-const handleStartNextWithPm2 = async () => {
-    try {
-        const command = await getStartNextWithPm2Command({ appName: pm2AppName, path: deploymentPath, port: pm2AppPort });
-        handleRunCommand(command, `Start Next.js app with PM2`);
-    } catch (e: any) {
-        toast({ variant: 'destructive', title: 'PM2 Start Error', description: e.message });
-    }
-};
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   
   if (loading) {
     return (
@@ -287,13 +403,26 @@ const handleStartNextWithPm2 = async () => {
                         <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Folder className="h-4 w-4" />Default Base Path</h4>
                         <p className="font-mono text-sm">{server.basePath || 'N/A'}</p>
                     </div>
+                    <div>
+                        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><HardDrive className="h-4 w-4" />Storage</h4>
+                        <div className="flex items-center gap-2">
+                            <p className="font-mono text-sm">
+                                {server.storageUsed && server.storageTotal
+                                ? `${server.storageUsed}${server.storageUnit} / ${server.storageTotal}${server.storageUnit}`
+                                : 'N/A'}
+                            </p>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleRefreshStorage} disabled={isRefreshingStorage}>
+                                {isRefreshingStorage ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                    </div>
                 </div>
                 
                  {server.portsOpen && server.portsOpen.length > 0 && (
                      <div>
                         <h4 className="font-semibold text-sm text-muted-foreground">Open Ports</h4>
                         <div className="flex flex-wrap gap-2 mt-1">
-                            {server.portsOpen.map((port: number) => <Badge key={port} variant="secondary">{port}</Badge>)}
+                            {server.portsOpen.map(port => <Badge key={port} variant="secondary">{port}</Badge>)}
                         </div>
                     </div>
                  )}
@@ -326,146 +455,40 @@ const handleStartNextWithPm2 = async () => {
           </CardHeader>
           <CardContent>
              <Accordion type="single" collapsible className="w-full space-y-2">
-                <AccordionItem value="update-upgrade" className="border-0">
+                 <AccordionItem value="run-saved-command" className="border-0">
                     <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
-                            <h4 className="font-medium text-left">Update & Upgrade Server</h4>
-                            <p className="text-sm text-muted-foreground text-left">Run apt-get update && apt-get upgrade.</p>
+                            <h4 className="font-medium text-left">Run Saved Command</h4>
+                            <p className="text-sm text-muted-foreground text-left">Execute a pre-defined command template on this server.</p>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4">
-                        <Button onClick={async () => handleRunCommand(await getUpdateAndUpgradeCommand(), 'Update & Upgrade')} disabled={isPending}>
-                            <GitCommit className="mr-2 h-4 w-4" /> Run Update
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="free-port" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Free Up Port 80</h4>
-                            <p className="text-sm text-muted-foreground text-left">Stop any process using port 80 (e.g., Apache).</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4">
-                        <Button variant="outline" onClick={async () => handleRunCommand(await getFreePort80Command(), 'Free Up Port 80')} disabled={isPending}>
-                            <Zap className="mr-2 h-4 w-4" /> Stop Process
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-
-                 <AccordionItem value="install-nginx" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Install Nginx</h4>
-                            <p className="text-sm text-muted-foreground text-left">Install and start the Nginx web server.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4">
-                        <Button onClick={async () => handleRunCommand(await getInstallNginxCommand(), 'Install Nginx')} disabled={isPending}>
-                            <Globe className="mr-2 h-4 w-4" /> Install Nginx
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-                
-                 <AccordionItem value="install-npm" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Install npm</h4>
-                            <p className="text-sm text-muted-foreground text-left">Install Node.js and the Node Package Manager.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4">
-                         <Button onClick={async () => handleRunCommand(await getInstallNpmCommand(), 'Install npm')} disabled={isPending}>
-                            <Package className="mr-2 h-4 w-4" /> Install npm
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-                
-                 <AccordionItem value="install-pm2" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Install PM2</h4>
-                            <p className="text-sm text-muted-foreground text-left">Install PM2, a production process manager for Node.js.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4">
-                        <Button onClick={async () => handleRunCommand(await getInstallPm2Command(), 'Install PM2')} disabled={isPending}>
-                            <Package className="mr-2 h-4 w-4" /> Install PM2
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-
-                 <AccordionItem value="create-swap" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Create Swap Space</h4>
-                            <p className="text-sm text-muted-foreground text-left">Create a swap file to use as virtual RAM.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4 space-y-3">
-                         <div className="flex items-center gap-2">
-                            <Input 
-                                id="swap-size"
-                                value={swapSize}
-                                onChange={(e) => setSwapSize(e.target.value)}
-                                className="max-w-[120px]"
+                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
+                        <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search for a command..."
+                                className="pl-8"
+                                value={commandSearchQuery}
+                                onChange={(e) => setCommandSearchQuery(e.target.value)}
                             />
-                            <Label htmlFor="swap-size" className="text-sm text-muted-foreground">MB</Label>
                         </div>
-                        <Button onClick={async () => handleRunCommand(await getCreateSwapCommand(swapSize), 'Create Swap')} disabled={isPending}>
-                            <Disc className="mr-2 h-4 w-4" /> Create Swap
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-                
-                 <AccordionItem value="build-npm" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Build NPM with Memory Limit</h4>
-                            <p className="text-sm text-muted-foreground text-left">Run `npm install && npm run build` with a specific memory cap.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="deployment-path">Deployment Path</Label>
-                            <Input id="deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="build-memory">Memory Limit (MB)</Label>
-                            <Input id="build-memory" value={buildMemory} onChange={e => setBuildMemory(e.target.value)} placeholder="e.g., 1024" />
-                        </div>
-                        <Button onClick={handleBuildNpm} disabled={isPending}>
-                            <Package className="mr-2 h-4 w-4" /> Run Build
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-                
-                 <AccordionItem value="start-pm2" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Start Next.js App with PM2</h4>
-                            <p className="text-sm text-muted-foreground text-left">Start the Next.js app in the deployment path using PM2.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {loadingCommands ? (
+                            <div className="text-center p-4"><Loader2Icon className="h-6 w-6 animate-spin mx-auto text-muted-foreground" /></div>
+                        ) : searchedCommands.length > 0 ? (
                             <div className="space-y-2">
-                                <Label htmlFor="pm2-app-name">PM2 App Name</Label>
-                                <Input id="pm2-app-name" value={pm2AppName} onChange={e => setPm2AppName(e.target.value)} placeholder="my-next-app" />
+                                {searchedCommands.map(cmd => (
+                                    <div key={cmd.id} className="flex items-center justify-between p-2 border rounded-md">
+                                        <div className="flex-1">
+                                            <p className="font-medium">{cmd.name}</p>
+                                            <p className="text-xs text-muted-foreground">{cmd.description}</p>
+                                        </div>
+                                        <Button size="sm" onClick={() => setCommandToRun(cmd)}>Run</Button>
+                                    </div>
+                                ))}
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="pm2-app-port">Port</Label>
-                                <Input id="pm2-app-port" type="number" value={pm2AppPort} onChange={e => setPm2AppPort(Number(e.target.value))} placeholder="3000" />
-                            </div>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="pm2-deployment-path">Deployment Path</Label>
-                            <Input id="pm2-deployment-path" value={deploymentPath} onChange={e => setDeploymentPath(e.target.value)} placeholder="/home/user/my-app" />
-                        </div>
-                        <Button onClick={handleStartNextWithPm2} disabled={isPending}>
-                            <Package className="mr-2 h-4 w-4" /> Start with PM2
-                        </Button>
+                        ) : commandSearchQuery.length > 2 ? (
+                            <p className="text-sm text-muted-foreground text-center p-4">No commands found.</p>
+                        ) : null}
                     </AccordionContent>
                 </AccordionItem>
 
@@ -500,6 +523,28 @@ www.example.com/subpath"
                     </AccordionContent>
                 </AccordionItem>
 
+                <AccordionItem value="install-certbot" className="border-0">
+                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
+                        <div>
+                            <h4 className="font-medium text-left">Setup SSL with Certbot</h4>
+                            <p className="text-sm text-muted-foreground text-left">Install Certbot and get a free SSL certificate from Let's Encrypt.</p>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="certbot-domain">Domain</Label>
+                            <Input id="certbot-domain" value={certbotDomain} onChange={e => setCertbotDomain(e.target.value)} placeholder="e.g., yourdomain.com" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="certbot-email">Email</Label>
+                            <Input id="certbot-email" type="email" value={certbotEmail} onChange={e => setCertbotEmail(e.target.value)} placeholder="e.g., admin@yourdomain.com" />
+                        </div>
+                        <Button onClick={handleInstallCertbot} disabled={isPending}>
+                            <Lock className="mr-2 h-4 w-4" /> Setup SSL
+                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+
                 <AccordionItem value="custom-command" className="border-0">
                     <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
                         <div>
@@ -522,34 +567,6 @@ www.example.com/subpath"
                                 </Button>
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-                
-                 <AccordionItem value="reboot-server" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border border-destructive/50 p-4 hover:bg-destructive/10 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div className="text-destructive">
-                            <h4 className="font-medium text-left">Reboot Server</h4>
-                            <p className="text-sm text-destructive/80 text-left">Gracefully restarts the server.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border border-t-0 rounded-b-lg p-4">
-                        <Button variant="destructive" onClick={async () => handleRunCommand(await getRebootServerCommand(), 'Reboot Server')} disabled={isPending}>
-                            <ShieldAlert className="mr-2 h-4 w-4" /> Reboot Server
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-                
-                 <AccordionItem value="reset-nginx" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border border-destructive/50 p-4 hover:bg-destructive/10 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div className="text-destructive">
-                            <h4 className="font-medium text-left">Reset Nginx Configurations</h4>
-                            <p className="text-sm text-destructive/80 text-left">Deletes all Nginx site configurations and symlinks.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border border-t-0 rounded-b-lg p-4">
-                        <Button variant="destructive" onClick={async () => handleRunCommand(await getResetNginxCommand(), 'Reset Nginx')} disabled={isPending}>
-                            <ShieldAlert className="mr-2 h-4 w-4" /> Reset Nginx
-                        </Button>
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
@@ -581,7 +598,7 @@ www.example.com/subpath"
                     </div>
                 ) : (
                     <Accordion type="single" collapsible className="w-full space-y-2">
-                        {logs.map((log: ServerLog) => (
+                        {logs.map(log => (
                             <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
                                 <AccordionTrigger className="hover:no-underline">
                                     <div className="flex flex-col items-start text-left w-full gap-2">
@@ -634,6 +651,67 @@ www.example.com/subpath"
                 </CardFooter>
             )}
         </Card>
+        
+        {commandToRun && (
+            <Dialog open={!!commandToRun} onOpenChange={() => { setCommandToRun(null); setCommandParams({}); }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Run: {commandToRun.name}</DialogTitle>
+                        <DialogDescription>{commandToRun.description}</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        {(commandToRun.parameters || []).map(param => (
+                            <div key={param.key} className="space-y-2">
+                                <Label htmlFor={param.key}>{param.label}</Label>
+                                <Input
+                                    id={param.key}
+                                    value={commandParams[param.key] || ''}
+                                    onChange={e => setCommandParams(prev => ({...prev, [param.key]: e.target.value}))}
+                                    type={param.type === 'number' ? 'number' : 'text'}
+                                />
+                            </div>
+                        ))}
+                        {(!commandToRun.parameters || commandToRun.parameters.length === 0) && (
+                            <p className="text-sm text-muted-foreground">This command has no parameters.</p>
+                        )}
+                        <div className="space-y-3 pt-4 border-t">
+                            <div className="flex items-center space-x-2">
+                                <Switch id="allocate-port" checked={allocatePort} onCheckedChange={setAllocatePort} />
+                                <Label htmlFor="allocate-port">Allocate a port for this command</Label>
+                            </div>
+                            {allocatePort && (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="port-to-allocate">Port</Label>
+                                        <Input
+                                            id="port-to-allocate"
+                                            type="number"
+                                            value={portToAllocate}
+                                            onChange={(e) => setPortToAllocate(e.target.value ? parseInt(e.target.value, 10) : '')}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="port-description">Description</Label>
+                                        <Input
+                                            id="port-description"
+                                            value={portDescription}
+                                            onChange={(e) => setPortDescription(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setCommandToRun(null)}>Cancel</Button>
+                        <Button onClick={handleRunSavedCommand} disabled={isPending}>
+                            {isPending && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
+                            Run Command
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        )}
     </div>
   );
 }

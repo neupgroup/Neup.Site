@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, Timestamp, orderBy, limit, getCountFromServer, startAfter } from 'firebase/firestore';
@@ -10,7 +11,7 @@ import type { CodeFile } from '@/schemas/codebase';
  * Creates a new code file entry in Firestore.
  */
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'siteId'>) {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -32,7 +33,7 @@ export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt'
  * Fetches code files for the current site with pagination.
  */
 export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number, pageSize?: number }): Promise<{ success: boolean; files?: CodeFile[]; error?: string; totalCount?: number }> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -78,7 +79,7 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
  * Deletes a code file from Firestore.
  */
 export async function deleteCodeFile(id: string) {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
   

@@ -1,9 +1,9 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getPages, deletePage } from '@/actions/editor/pages';
-import { Page } from '@/schemas/site'; // Corrected import
+import { getPages, type Page, deletePage } from '@/actions/editor/pages';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -26,7 +26,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Globe, Trash2, Pencil, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { Path } from '@/actions/paths'; // Import Path type
 
 export default function PagesPage() {
   const [pages, setPages] = useState<Page[]>([]);
@@ -112,7 +111,7 @@ export default function PagesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {pages.map((page: Page) => (
+          {pages.map((page) => (
             <Card key={page.id}>
               <CardHeader className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex-1">
@@ -122,7 +121,7 @@ export default function PagesPage() {
                         <LinkIcon className="h-4 w-4 text-muted-foreground" />
                         {page.paths && page.paths.length > 0 ? (
                            <>
-                            {page.paths.slice(0, 3).map((path: Path) => (
+                            {page.paths.slice(0, 3).map(path => (
                                 <Badge key={path.id} variant="secondary" className="font-mono">{path.path}</Badge>
                             ))}
                             {page.paths.length > 3 && (

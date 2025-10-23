@@ -1,11 +1,11 @@
+
 'use client';
 
-import { useEffect, use, useState } from 'react'; // Added useState
+import { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getDatalist, updateDatalist } from '@/actions/datalists';
-import { Datalist } from '@/schemas/datalist'; // Corrected import
+import { getDatalist, updateDatalist, type Datalist } from '@/actions/datalists';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';

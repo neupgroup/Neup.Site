@@ -139,7 +139,7 @@
       ]
     },
     "Path": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$schema": "http://json-schema.org/draft-07_schema#",
       "title": "Path",
       "type": "object",
       "description": "Represents a URL path that maps to a page.",
@@ -198,6 +198,21 @@
         "serverType": { "type": "string", "enum": ["vps", "dedicated", "cloud"], "description": "The type of the server." },
         "provider": { "type": "string", "description": "The hosting provider (e.g., AWS, DigitalOcean)." },
         "portsOpen": { "type": "array", "items": { "type": "number" }, "description": "A list of open ports." },
+        "usedPorts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "port": { "type": "number" },
+                    "description": { "type": "string" }
+                },
+                "required": ["port", "description"]
+            },
+            "description": "A list of ports that are currently in use."
+        },
+        "storageUsed": { "type": "string", "description": "Used storage space (e.g., '5.2')." },
+        "storageTotal": { "type": "string", "description": "Total storage space (e.g., '25')." },
+        "storageUnit": { "type": "string", "description": "The unit for storage space (e.g., 'G', 'T')." },
         "isPrivate": { "type": "boolean", "description": "Indicates if the server is on a private network." },
         "username": { "type": "string", "description": "The default SSH username for the server." },
         "basePath": { "type": "string", "description": "The default base path for deployments on the server." },
@@ -223,6 +238,44 @@
       },
       "required": ["serverId", "command", "output", "status", "initiatedBy", "initiatedAt"]
     },
+    "ServerCommand": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Server Command",
+      "type": "object",
+      "description": "A template for a command that can be run on a server.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "commandTemplate": { "type": "string", "description": "The command string with placeholders like {{parameterKey}}." },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": { "type": "string" },
+              "label": { "type": "string" },
+              "type": { "type": "string", "enum": ["string", "number", "boolean"] },
+              "defaultValue": { "type": "string" }
+            },
+            "required": ["key", "label", "type"]
+          }
+        },
+        "preExecutionScript": { "type": "string", "description": "JavaScript code to run before command execution." },
+        "type": {
+          "type": "string",
+          "enum": ["creation", "destruction", "updation", "view"],
+          "description": "The type or category of the command."
+        },
+        "danger": {
+            "type": "string",
+            "enum": ["low", "mid", "high"],
+            "description": "The danger level associated with running the command."
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "commandTemplate"]
+    },
     "CodeFile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Code File",
@@ -237,6 +290,95 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["siteId", "fileName", "filePath", "content"]
+    },
+    "LinkedAccount": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Linked Account",
+      "type": "object",
+      "description": "Represents a third-party account linked to a user.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the linked account." },
+        "account_id": { "type": "string", "description": "The ID of the user this account is linked to." },
+        "platform": { "type": "string", "enum": ["github", "google"], "description": "The OAuth provider." },
+        "authorized_on": { "type": "string", "format": "date-time", "description": "Timestamp of when the authorization was granted." },
+        "authorization_info": { 
+            "type": "object", 
+            "description": "A JSON object containing all relevant tokens and user information from the provider.",
+            "properties": {
+                "access_token": { "type": "string" },
+                "refresh_token": { "type": "string" },
+                "scope": { "type": "string" },
+                "provider_user_id": { "type": "string" },
+                "provider_username": { "type": "string" }
+            },
+            "required": ["access_token", "scope", "provider_user_id"]
+        }
+      },
+      "required": ["id", "account_id", "platform", "authorized_on", "authorization_info"]
+    },
+    "Team": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Team",
+      "type": "object",
+      "description": "Represents a team or group of members.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "order": { "type": "number", "description": "Order for display purposes." }
+      },
+      "required": ["id", "name"]
+    },
+    "Member": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Member",
+      "type": "object",
+      "description": "Represents a team member.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string" },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "teamIds": { "type": "array", "items": { "type": "string" } },
+        "permissions": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id", "name", "email"]
+    },
+     "JobPosting": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Job Posting",
+      "type": "object",
+      "description": "Represents a job posting for the hiring module.",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "type": { "type": "string", "enum": ["Full-time", "Part-time", "Contract", "Internship"] },
+        "status": { "type": "string", "enum": ["Draft", "Open", "Closed"] },
+        "qualifications": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "status"]
+    },
+    "Applicant": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Applicant",
+      "type": "object",
+      "description": "Represents an applicant for a job posting.",
+      "properties": {
+        "id": { "type": "string" },
+        "jobId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "resumeUrl": { "type": "string", "format": "uri" },
+        "coverLetter": { "type": "string" },
+        "status": { "type": "string", "enum": ["New", "Reviewing", "Interview", "Offered", "Hired", "Rejected"] },
+        "appliedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "jobId", "name", "email", "status", "appliedAt"]
     }
   },
   "auth": {
@@ -348,6 +490,22 @@
         }
       },
       {
+        "path": "/serverCommands/{commandId}",
+        "definition": {
+          "entityName": "ServerCommand",
+          "schema": {
+            "$ref": "#/backend/entities/ServerCommand"
+          },
+          "description": "Stores reusable server command templates.",
+          "params": [
+            {
+              "name": "commandId",
+              "description": "The unique identifier for the command."
+            }
+          ]
+        }
+      },
+      {
         "path": "/codeFiles/{codeFileId}",
         "definition": {
           "entityName": "CodeFile",
@@ -361,6 +519,54 @@
               "description": "The unique identifier for the code file."
             }
           ]
+        }
+      },
+      {
+        "path": "/linked_accounts/{linkedAccountId}",
+        "definition": {
+          "entityName": "LinkedAccount",
+          "schema": {
+            "$ref": "#/backend/entities/LinkedAccount"
+          },
+          "description": "Stores third-party account connections for a user.",
+          "params": [
+            {
+              "name": "linkedAccountId",
+              "description": "The unique identifier for the linked account."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/teams/{teamId}",
+        "definition": {
+          "entityName": "Team",
+          "schema": { "$ref": "#/backend/entities/Team" },
+          "description": "Stores team information."
+        }
+      },
+      {
+        "path": "/members/{memberId}",
+        "definition": {
+          "entityName": "Member",
+          "schema": { "$ref": "#/backend/entities/Member" },
+          "description": "Stores information about individual team members."
+        }
+      },
+      {
+        "path": "/hiring/{jobId}",
+        "definition": {
+          "entityName": "JobPosting",
+          "schema": { "$ref": "#/backend/entities/JobPosting" },
+          "description": "Stores job postings for the hiring module."
+        }
+      },
+       {
+        "path": "/hiring/{jobId}/applicants/{applicantId}",
+        "definition": {
+          "entityName": "Applicant",
+          "schema": { "$ref": "#/backend/entities/Applicant" },
+          "description": "Stores applicants for a specific job posting."
         }
       }
     ],

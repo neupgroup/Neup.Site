@@ -1,4 +1,4 @@
-import type { CanvasElementData } from "@/schemas/canvas";
+import type { CanvasElementData } from "@/lib/schemas";
 
 export const form: CanvasElementData = {
     id: '',

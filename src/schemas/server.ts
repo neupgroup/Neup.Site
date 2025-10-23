@@ -1,4 +1,14 @@
 
+
+export interface ServerAllocationStorage {
+  totalStorage: string;
+  availableStorage: string;
+  systemStorage: string;
+  codebaseStorage: string;
+  assetsStorage: string;
+  unit: string;
+}
+
 export interface ServerAllocation {
   id: string;
   siteId: string;
@@ -6,8 +16,15 @@ export interface ServerAllocation {
   username?: string;
   deploymentPath?: string;
   allocatedPorts?: number[];
+  storageAllocation: string; // e.g., "1024" for 1024MB
   allocatedOn?: string | null;
   expiresOn?: string | null;
+  storage?: ServerAllocationStorage;
+}
+
+export interface UsedPort {
+    port: number;
+    description: string;
 }
 
 export interface Server {
@@ -19,9 +36,13 @@ export interface Server {
   serverType?: 'vps' | 'dedicated' | 'cloud';
   provider?: string;
   portsOpen?: number[];
+  usedPorts?: UsedPort[];
   isPrivate?: boolean;
   username?: string;
   basePath?: string;
+  storageUsed?: string;
+  storageTotal?: string;
+  storageUnit?: string;
   createdOn?: string | null;
   expiresOn?: string | null;
 }

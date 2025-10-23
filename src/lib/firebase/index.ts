@@ -1,16 +1,35 @@
 
-import { initializeApp, getApp, getApps } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getAuth, Auth } from 'firebase/auth';
 import { firebaseConfig } from './config';
+import { errorEmitter } from './error-emitter';
 
-function initializeFirebase() {
-  if (getApps().length === 0) {
-    initializeApp(firebaseConfig);
+interface FirebaseInstances {
+    app: FirebaseApp;
+    firestore: Firestore;
+    auth: Auth;
+}
+
+function initializeFirebase(): FirebaseInstances {
+  try {
+    if (getApps().length === 0) {
+      initializeApp(firebaseConfig);
+    }
+    const app = getApp();
+    const firestore = getFirestore(app);
+    const auth = getAuth(app);
+    
+    return { app, firestore, auth };
+  } catch (e: any) {
+    // Emit a generic error if Firebase initialization fails.
+    // This is a critical error, so it should be handled globally.
+    errorEmitter.emit('error', new Error(`Firebase initialization failed: ${e.message}`));
+    
+    // You might want to re-throw or handle this differently depending on your app's needs.
+    // For now, we'll throw to make it visible during development.
+    throw new Error(`Firebase initialization failed: ${e.message}`);
   }
-  const app = getApp();
-  const firestore = getFirestore(app);
-  
-  return { app, firestore };
 }
 
 export { initializeFirebase };

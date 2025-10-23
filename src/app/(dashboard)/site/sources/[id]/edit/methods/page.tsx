@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -69,10 +70,7 @@ const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourc
 
 const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMethod, source: Source, onUpdate: (methodName: string, newMethodData: SourceMethod) => Promise<void>, onRemove: (methodName: string) => Promise<void> }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [editedMethodData, setEditedMethodData] = useState<SourceMethod>(method);
-    const [headersInput, setHeadersInput] = useState<string>(
-        typeof method.headers === 'object' ? JSON.stringify(method.headers || {}, null, 2) : '{}'
-    );
+    const [editedMethod, setEditedMethod] = useState<SourceMethod>(method);
     const [showTester, setShowTester] = useState(false);
     const [testResult, setTestResult] = useState<any | null>(null);
     const [isTesting, setIsTesting] = useState(false);
@@ -80,8 +78,7 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
     const { toast } = useToast();
 
     useEffect(() => {
-        setEditedMethodData(method);
-        setHeadersInput(typeof method.headers === 'object' ? JSON.stringify(method.headers || {}, null, 2) : '{}');
+        setEditedMethod(method);
     }, [method]);
 
     const startEditing = () => {
@@ -91,21 +88,16 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
     };
     
     const cancelEditing = () => {
-        setEditedMethodData(method);
-        setHeadersInput(typeof method.headers === 'object' ? JSON.stringify(method.headers || {}, null, 2) : '{}');
+        setEditedMethod(method);
         setIsEditing(false);
     };
     
     const saveEditing = async () => {
         setIsSaving(true);
         try {
-            let parsedHeaders: Record<string, string> | undefined;
-            if (headersInput.trim()) {
-                parsedHeaders = JSON.parse(headersInput);
-            }
-            await onUpdate(method.methodName, { ...editedMethodData, headers: parsedHeaders });
+            await onUpdate(method.methodName, editedMethod);
             setIsEditing(false);
-            toast({ title: 'Method Saved', description: `Method "${editedMethodData.methodName}" has been updated.`});
+            toast({ title: 'Method Saved', description: `Method "${editedMethod.methodName}" has been updated.`});
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Error Saving', description: e.message });
         } finally {
@@ -136,13 +128,15 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
     }
 
     const handleFieldChange = (key: keyof SourceMethod, value: any) => {
-        setEditedMethodData(prev => ({...prev, [key]: value}));
+        setEditedMethod(prev => ({...prev, [key]: value}));
     };
     
-    const currentMethodData = isEditing ? editedMethodData : method;
-    const displayHeaders = isEditing ? headersInput : (typeof method.headers === 'object' ? JSON.stringify(method.headers || {}, null, 2) : '{}');
+    const currentMethodData = isEditing ? editedMethod : method;
+    const headersString = typeof currentMethodData.headers === 'object' 
+        ? JSON.stringify(currentMethodData.headers, null, 2)
+        : currentMethodData.headers || '{}';
 
-    const showHeaders = isEditing || (displayHeaders && displayHeaders.trim() !== '{}' && displayHeaders.trim() !== '');
+    const showHeaders = isEditing || (headersString && headersString.trim() !== '{}' && headersString.trim() !== '');
     const baseUrl = source.type === 'api' ? (source as ApiSource).url : '';
 
     return (
@@ -201,8 +195,8 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
                     <div className="space-y-2">
                         <Label>Headers (JSON, Optional)</Label>
                         <Textarea 
-                            value={displayHeaders} 
-                            onChange={(e) => setHeadersInput(e.target.value)}
+                            value={headersString} 
+                            onChange={(e) => handleFieldChange('headers', e.target.value)}
                             placeholder='{ "X-Custom-Header": "value" }' 
                             rows={3} 
                             className="font-mono" 
@@ -353,12 +347,12 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
   };
 
   const handleUpdateMethod = async (methodName: string, newMethodData: SourceMethod) => {
-    let parsedHeaders: Record<string, string> | undefined;
+    let parsedHeaders;
     try {
-        if (newMethodData.headers && typeof newMethodData.headers === 'string') {
-            parsedHeaders = newMethodData.headers ? JSON.parse(newMethodData.headers) : undefined;
+        if (typeof newMethodData.headers === 'string') {
+            parsedHeaders = newMethodData.headers ? JSON.parse(newMethodData.headers) : {};
         } else {
-            parsedHeaders = newMethodData.headers;
+            parsedHeaders = newMethodData.headers || {};
         }
     } catch (e) {
         throw new Error("Headers are not valid JSON.");
@@ -422,7 +416,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
             </Button>
         </div>
         
-        {methods.map((method: SourceMethod) => (
+        {methods.map((method) => (
             <MethodCard 
                 key={method.methodName} 
                 method={method} 
@@ -434,8 +428,10 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
 
         <AddNewMethodCard 
             onAdd={handleAddNewMethod} 
-            existingMethodNames={methods.map((m: SourceMethod) => m.methodName)} 
+            existingMethodNames={methods.map(m => m.methodName)} 
         />
       </div>
   );
 }
+
+    

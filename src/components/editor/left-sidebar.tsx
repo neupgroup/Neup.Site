@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { FC, useState, useEffect } from 'react';
@@ -166,7 +168,7 @@ const LayerItem: FC<{
             </div>
             {isContainer && element.children && (
                  <div className="relative">
-                    {element.children.map((child: CanvasElementData) => (
+                    {element.children.map(child => (
                         <LayerItem 
                             key={child.id} 
                             element={child} 
@@ -251,7 +253,7 @@ const TemplateLibrary = ({addGeneratedElement}: {addGeneratedElement: (element: 
              <p className="text-sm font-medium text-muted-foreground">Templates</p>
         </div>
       {templates.length > 0 ? (
-        templates.map((template: Template) => (
+        templates.map(template => (
           <div
             key={template.id}
             className="flex items-center gap-2 cursor-grab rounded-lg border bg-card p-2 transition-colors hover:bg-secondary hover:border-primary active:cursor-grabbing"
@@ -348,7 +350,7 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
           </TabsContent>
           <TabsContent value="layers" className="p-2">
             <div className="space-y-1">
-                {elements.map((el: CanvasElementData) => (
+                {elements.map(el => (
                     <LayerItem 
                         key={el.id} 
                         element={el} 

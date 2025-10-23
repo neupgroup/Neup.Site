@@ -1,9 +1,9 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getDatalists } from '@/actions/datalists';
-import { Datalist } from '@/schemas/datalist'; // Corrected import
+import { getDatalists, type Datalist } from '@/actions/datalists';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -74,7 +74,7 @@ export default function DatalistsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {datalists.map((datalist: Datalist) => (
+                {datalists.map((datalist) => (
                   <TableRow key={datalist.id}>
                     <TableCell className="font-medium">{datalist.name}</TableCell>
                     <TableCell>{datalist.createdAt ? new Date(datalist.createdAt).toLocaleDateString() : 'N/A'}</TableCell>

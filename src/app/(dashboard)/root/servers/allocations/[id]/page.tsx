@@ -1,8 +1,8 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServerAllocation, deleteServerAllocation } from '@/actions/allocations';
-import { ServerAllocation } from '@/schemas/server'; // Corrected import
+import { getServerAllocation, deleteServerAllocation, type ServerAllocation } from '@/actions/allocations';
 import {
   Card,
   CardContent,
@@ -29,8 +29,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
-export default function AllocationDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function AllocationDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [allocation, setAllocation] = useState<ServerAllocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -137,10 +137,14 @@ export default function AllocationDetailPage({ params }: { params: Promise<{ id:
                     </div>
                 </div>
                 <div>
+                    <h4 className="font-semibold text-sm text-muted-foreground">Storage Allocation</h4>
+                    <p className="text-sm">{allocation.storageAllocation ? `${allocation.storageAllocation} MB` : 'Not set'}</p>
+                </div>
+                <div>
                     <h4 className="font-semibold text-sm text-muted-foreground">Allocated Ports</h4>
                     <div className="flex flex-wrap gap-2 mt-1">
                         {allocation.allocatedPorts && allocation.allocatedPorts.length > 0 ? (
-                            allocation.allocatedPorts.map((port: number) => <Badge key={port} variant="secondary">{port}</Badge>)
+                            allocation.allocatedPorts.map(port => <Badge key={port} variant="secondary">{port}</Badge>)
                         ) : (
                             <p className="text-sm text-muted-foreground">No ports allocated.</p>
                         )}

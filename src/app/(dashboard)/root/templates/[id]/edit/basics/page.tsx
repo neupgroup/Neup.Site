@@ -1,11 +1,11 @@
+
 'use client';
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getTemplate, saveTemplate } from '@/actions/editor/templates';
-import { Template } from '@/schemas/template'; // Corrected import
+import { getTemplate, saveTemplate, type Template } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -55,7 +55,7 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
         form.reset({
           name: templateResult.template.name,
           description: templateResult.template.description,
-          type: templateResult.template.type as 'section' | 'page' | 'element', // Explicitly cast
+          type: templateResult.template.type,
           status: templateResult.template.status,
         });
       } else {

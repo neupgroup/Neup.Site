@@ -1,8 +1,8 @@
+
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { getTemplate, saveTemplate } from '@/actions/editor/templates';
-import { Template } from '@/schemas/template'; // Corrected import
+import { getTemplate, saveTemplate, type Template } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';

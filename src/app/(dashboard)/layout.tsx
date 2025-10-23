@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ProfileProvider, useProfile } from '@/context/ProfileContext';

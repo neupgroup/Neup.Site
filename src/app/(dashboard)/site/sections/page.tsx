@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,7 +22,7 @@ export default function SectionsPage() {
       setLoading(true);
       const result = await getSections();
       if (result.success && result.sections) {
-        setSections(result.sections.sort((a: Section, b: Section) => (a.name > b.name ? 1 : -1)));
+        setSections(result.sections.sort((a, b) => (a.name > b.name ? 1 : -1)));
       } else {
         setError(result.error || 'Failed to fetch sections');
       }
@@ -88,7 +89,7 @@ export default function SectionsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sections.map((section: Section) => (
+                {sections.map((section) => (
                   <TableRow key={section.id}>
                     <TableCell className="font-medium">{section.name}</TableCell>
                     <TableCell>{section.type}</TableCell>

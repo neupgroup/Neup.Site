@@ -1,10 +1,10 @@
+
 'use client';
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getTemplate, deleteTemplate } from '@/actions/editor/templates';
-import { Template } from '@/schemas/template'; // Corrected import
+import { getTemplate, deleteTemplate, type Template } from '@/actions/editor/templates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

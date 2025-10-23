@@ -36,7 +36,7 @@ const Canvas: FC<CanvasProps> = ({
     setHoveredElementId,
 }) => {
     const canvasRef = useRef<HTMLDivElement>(null);
-    const isDraggingSection = !!(draggedId && elements.find((el: CanvasElementData) => el.id === draggedId && el.type === 'section'));
+    const isDraggingSection = !!(draggedId && elements.find(el => el.id === draggedId && el.type === 'section'));
     
     const { resizingState, handleResizeStart } = useElementResizing({
         selectedElement,
@@ -49,8 +49,8 @@ const Canvas: FC<CanvasProps> = ({
     <div 
         className="mx-auto h-full w-full max-w-screen-xl py-10 px-4 md:px-8" 
         onClick={() => onSelectElement(null)} // Clear selection when clicking canvas background
-        onDragOver={(e: DragEvent) => onDragOver(e, null, null)}
-        onDrop={(e: DragEvent) => onDrop(e)}
+        onDragOver={(e) => onDragOver(e, null, null)}
+        onDrop={(e) => onDrop(e)}
         onMouseLeave={() => setHoveredElementId(null)}
     >
       <div 
@@ -60,11 +60,11 @@ const Canvas: FC<CanvasProps> = ({
              {'is-dragging': !!draggedId, 'is-dragging-section': isDraggingSection}
         )}
       >
-        {elements.map((el: CanvasElementData) => (
+        {elements.map(el => (
             <Fragment key={`fragment-${el.id}`}>
                 <SectionDropZone 
                     position="top" 
-                    onDrop={(e: DragEvent) => onDrop(e, undefined, el.id)} 
+                    onDrop={(e) => onDrop(e, undefined, el.id)} 
                     isDraggingSection={isDraggingSection} 
                 />
                 <CanvasElement 
@@ -79,7 +79,6 @@ const Canvas: FC<CanvasProps> = ({
                     resizingState={resizingState}
                     onResizeStart={handleResizeStart}
                     draggedId={draggedId}
-                    hoveredElementId={hoveredElementId} // Pass the prop here
                     setHoveredElementId={setHoveredElementId}
                 />
             </Fragment>
@@ -87,7 +86,7 @@ const Canvas: FC<CanvasProps> = ({
 
         <SectionDropZone 
             position="bottom" 
-            onDrop={(e: DragEvent) => onDrop(e)} 
+            onDrop={(e) => onDrop(e)} 
             isDraggingSection={isDraggingSection} 
         />
 
@@ -95,7 +94,7 @@ const Canvas: FC<CanvasProps> = ({
         {elements.length === 0 && (
              <div 
                 className="flex items-center justify-center h-48"
-                onDragOver={(e: DragEvent) => { e.preventDefault(); e.stopPropagation(); onDragOver(e) }}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onDragOver(e) }}
             >
               {draggedId ? (
                  <div className="w-full h-2 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all p-4 mx-4">

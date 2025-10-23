@@ -1,9 +1,11 @@
+
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { Server, ServerAllocation } from '@/schemas/server';
 import { initializeFirebase } from '@/lib/firebase';
 import { cookies } from 'next/headers';
+import { logErrorToFirestore } from '@/lib/logging';
 
 /**
  * Creates a new server.
@@ -17,7 +19,8 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' |
       expiresOn: null,
     });
     return { success: true, id: docRef.id };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to create server: ${e.message}`, stack: e.stack, source: 'createServer' });
     return { success: false, error: 'Failed to create server.' };
   }
 }
@@ -42,6 +45,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
             serverType: data.serverType,
             provider: data.provider,
             portsOpen: data.portsOpen,
+            usedPorts: data.usedPorts,
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
@@ -50,7 +54,8 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
         } as Server
     });
     return { success: true, servers };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to get servers: ${e.message}`, stack: e.stack, source: 'getServers' });
     return { success: false, error: 'Failed to fetch servers.' };
   }
 }
@@ -59,7 +64,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  * Fetches servers relevant to the current siteId by checking the serverAllocations collection.
  */
 export async function getSiteServers(): Promise<{ success: boolean; servers?: (Server & { allocation: ServerAllocation })[]; error?: string }> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -84,14 +89,15 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
                 id: serverDoc.id,
                 name: serverData.name,
                 publicIp: serverData.publicIp,
+                usedPorts: serverData.usedPorts,
                 createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             };
 
             const allocation: ServerAllocation = {
                 id: allocDoc.id,
                 ...allocationData,
-                allocatedOn: (allocationData.allocatedOn as any) instanceof Timestamp ? (allocationData.allocatedOn as any).toDate().toISOString() : null,
-                expiresOn: (allocationData.expiresOn as any) instanceof Timestamp ? (allocationData.expiresOn as any).toDate().toISOString() : null,
+                allocatedOn: allocationData.allocatedOn instanceof Timestamp ? allocationData.allocatedOn.toDate().toISOString() : null,
+                expiresOn: allocationData.expiresOn instanceof Timestamp ? allocationData.expiresOn.toDate().toISOString() : null,
             }
             
             return { ...serverInfo, allocation };
@@ -102,7 +108,8 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
     const servers = (await Promise.all(serverPromises)).filter(s => s !== null) as (Server & { allocation: ServerAllocation })[];
     
     return { success: true, servers };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to get site servers: ${e.message}`, stack: e.stack, source: 'getSiteServers' });
     return { success: false, error: 'Failed to fetch site-specific servers.' };
   }
 }
@@ -133,6 +140,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             serverType: data.serverType,
             provider: data.provider,
             portsOpen: data.portsOpen,
+            usedPorts: data.usedPorts,
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
@@ -140,7 +148,8 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
         return { success: true, server };
-    } catch (error: any) {
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to get server ${id}: ${e.message}`, stack: e.stack, source: 'getServer' });
         return { success: false, error: 'Failed to fetch server.' };
     }
 }
@@ -172,6 +181,7 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
             serverType: data.serverType,
             provider: data.provider,
             portsOpen: data.portsOpen,
+            usedPorts: data.usedPorts,
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
@@ -179,7 +189,8 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
         return { success: true, server };
-    } catch (error: any) {
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to get private server details for ${id}: ${e.message}`, stack: e.stack, source: 'getPrivateServerDetails' });
         return { success: false, error: 'Failed to fetch server details.' };
     }
 }
@@ -195,16 +206,17 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     const dataToUpdate: Record<string, any> = { ...serverData };
     
     // Only include private fields if they are explicitly provided and not empty
-    if (serverData.privateIp) {
-        dataToUpdate.privateIp = serverData.privateIp;
+    if (!serverData.privateIp) {
+        delete dataToUpdate.privateIp;
     }
-    if (serverData.privateKey) {
-        dataToUpdate.privateKey = serverData.privateKey;
+    if (!serverData.privateKey) {
+        delete dataToUpdate.privateKey;
     }
     
     await setDoc(serverRef, dataToUpdate, { merge: true });
     return { success: true, id };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to update server ${id}: ${e.message}`, stack: e.stack, source: 'updateServer' });
     return { success: false, error: `Failed to update server ${id}.` };
   }
 }
@@ -218,7 +230,8 @@ export async function deleteServer(id: string) {
     const serverRef = doc(firestore, 'servers', id);
     await deleteDoc(serverRef);
     return { success: true };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to delete server ${id}: ${e.message}`, stack: e.stack, source: 'deleteServer' });
     return { success: false, error: 'Failed to delete server.' };
   }
 }

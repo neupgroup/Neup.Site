@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, where, serverTimestamp, Timestamp, getDoc } from 'firebase/firestore';
@@ -18,7 +19,7 @@ export interface Path {
  * Creates a new path mapping for a page.
  */
 export async function addPath(pageId: string, path: string): Promise<{ success: boolean; id?: string; error?: string }> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -60,7 +61,7 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
  * Fetches all paths for a specific page.
  */
 export async function getPathsForPage(pageId: string): Promise<{ success: boolean; paths?: Path[]; error?: string }> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -94,7 +95,7 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
  * Deletes a path mapping.
  */
 export async function deletePath(id: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 

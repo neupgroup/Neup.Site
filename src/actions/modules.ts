@@ -1,9 +1,11 @@
+
 'use server';
 
 import { getFirestore, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import type { Site } from '@/schemas/site';
 import { initializeFirebase } from '@/lib/firebase';
+import { logErrorToFirestore } from '@/lib/logging';
 
 export interface SiteModule {
     active: boolean;
@@ -19,7 +21,7 @@ export interface SiteModules {
  * Fetches the modules for the current site.
  */
 export async function getSiteModules(): Promise<{ success: boolean; modules?: SiteModules; error?: string }> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -47,7 +49,8 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
     }
 
     return { success: true, modules };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to get site modules: ${e.message}`, stack: e.stack, source: 'getSiteModules' });
     return { success: false, error: 'Failed to fetch site modules.' };
   }
 }
@@ -56,7 +59,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
  * Updates a specific module's status for the current site.
  */
 export async function updateSiteModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -82,7 +85,8 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
     }, { merge: true });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateSiteModule' });
     return { success: false, error: 'Failed to update module.' };
   }
 }

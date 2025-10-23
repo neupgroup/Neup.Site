@@ -1,4 +1,5 @@
-import type { CanvasElementData } from "@/schemas/canvas";
+
+import type { CanvasElementData } from "@/lib/schemas";
 
 export const headerTemplate: CanvasElementData = {
   id: "header-section",
