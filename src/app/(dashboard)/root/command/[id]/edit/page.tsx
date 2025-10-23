@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,6 +37,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 
 export default function EditCommandPage({ params }: { params: { id: string } }) {
+  // SOLVED: Unwrap the params promise with the use() hook
+  const { id } = use(params);
   const router = useRouter();
   const { toast } = useToast();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -97,7 +98,8 @@ export default function EditCommandPage({ params }: { params: { id: string } }) 
   }, [commandTemplateValue, append, fields, replace]);
 
   useEffect(() => {
-    getServerCommand(params.id).then(({ command, error }) => {
+    // SOLVED: Use the resolved 'id' variable
+    getServerCommand(id).then(({ command, error }) => {
       if (command) {
         form.reset(command);
       } else {
@@ -108,13 +110,16 @@ export default function EditCommandPage({ params }: { params: { id: string } }) 
         });
       }
     });
-  }, [params.id, form, toast]);
+    // SOLVED: Use the resolved 'id' in the dependency array
+  }, [id, form, toast]);
 
   const onSubmit = async (data: ServerCommand) => {
-    const result = await updateServerCommand(params.id, data);
+    // SOLVED: Use the resolved 'id' variable
+    const result = await updateServerCommand(id, data);
     if (result.success) {
       toast({ title: 'Command Updated' });
-      router.push(`/root/command/${params.id}`);
+      // SOLVED: Use the resolved 'id' variable
+      router.push(`/root/command/${id}`);
     } else {
       toast({
         variant: 'destructive',
@@ -126,7 +131,8 @@ export default function EditCommandPage({ params }: { params: { id: string } }) 
 
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
-    const result = await deleteServerCommand(params.id);
+    // SOLVED: Use the resolved 'id' variable
+    const result = await deleteServerCommand(id);
     if (result.success) {
         toast({ title: 'Command Deleted'});
         router.push('/root/command');
@@ -140,7 +146,8 @@ export default function EditCommandPage({ params }: { params: { id: string } }) 
       <div className="w-full max-w-2xl">
         <div className="mb-4">
           <Button variant="ghost" asChild>
-            <Link href={`/root/command/${params.id}`}>
+             {/* SOLVED: Use the resolved 'id' variable */}
+            <Link href={`/root/command/${id}`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Command
             </Link>
@@ -275,7 +282,7 @@ export default function EditCommandPage({ params }: { params: { id: string } }) 
                 </Alert>
               </CardContent>
             </Card>
-            
+
             <div className="space-y-6">
               {fields.length > 0 && (
                 <Card>
