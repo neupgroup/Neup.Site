@@ -144,19 +144,15 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                        <Button asChild variant="outline">
-                            <Link href={`/root/servers/allocations/create?serverId=${server.id}`}>
-                                <Share2 className="mr-2 h-4 w-4" /> Allocate Server
-                            </Link>
-                        </Button>
-                    </div>
-                     <div className="flex gap-2">
-                        <Button variant="destructive" onClick={() => setShowRebootConfirm(true)}>
-                            <ServerCrash className="mr-2 h-4 w-4" /> Reboot Server
-                        </Button>
-                    </div>
+                <CardFooter className="flex flex-wrap gap-2">
+                    <Button asChild variant="outline">
+                        <Link href={`/root/servers/allocations/create?serverId=${server.id}`}>
+                            <Share2 className="mr-2 h-4 w-4" /> Allocate Server
+                        </Link>
+                    </Button>
+                    <Button variant="destructive" onClick={() => setShowRebootConfirm(true)}>
+                        <ServerCrash className="mr-2 h-4 w-4" /> Reboot Server
+                    </Button>
                 </CardFooter>
             </Card>
 
