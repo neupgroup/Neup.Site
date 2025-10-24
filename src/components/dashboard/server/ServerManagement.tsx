@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
@@ -18,9 +19,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 import { Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const FormContainer = ({ children }: { children: React.ReactNode }) => (
-    <div className="p-4 bg-muted/50 border-t">
+    <div className="p-4 border-t group-hover:bg-muted/50 transition-colors">
         {children}
     </div>
 );
@@ -111,6 +113,15 @@ const CustomCommandForm = ({ onRun, isPending }: { onRun: (cmd: string, desc: st
 const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerCommand, onRun: (cmdId: string, params: Record<string, any>) => void; isPending: boolean }) => {
     const [commandParams, setCommandParams] = useState<Record<string, string>>({});
     
+    if (!command.parameters || command.parameters.length === 0) {
+        return (
+            <Button onClick={() => onRun(command.id, {})} disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Run Command
+            </Button>
+        )
+    }
+
     return (
         <div className="space-y-4">
             {(command.parameters || []).map(param => (
@@ -231,9 +242,9 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                 </div>
                 <Accordion type="single" collapsible className="w-full space-y-2">
                     {paginatedItems.map(({id, title, description, form}) => (
-                        <AccordionItem value={id!} key={id} className="border rounded-lg px-2 hover:bg-muted/50 transition-colors">
+                        <AccordionItem value={id!} key={id} className="border rounded-lg px-2 group transition-colors">
                             <AccordionTrigger className="p-4 hover:no-underline text-left">
-                                <div className="flex-1">
+                                <div className="flex-1 pr-4">
                                     <h4 className="font-medium text-left">{title}</h4>
                                     <p className="text-sm text-muted-foreground text-left">{description}</p>
                                 </div>
