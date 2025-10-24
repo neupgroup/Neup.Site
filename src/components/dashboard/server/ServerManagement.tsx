@@ -19,9 +19,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 import { Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 const FormContainer = ({ children }: { children: React.ReactNode }) => (
-    <div className="p-4 border-t transition-colors">
+    <div className="p-4 border-t transition-colors group-hover:bg-muted/50 data-[state=open]:border-primary">
         {children}
     </div>
 );
@@ -155,6 +156,20 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
 
     const pageSize = 5;
 
+    const handleRunCommand = (command: string, description: string) => {
+        startTransition(async () => {
+            await runCommand(serverId, command);
+            toast({ title: "Command Sent", description: `Running command: ${description}`});
+        });
+    };
+    
+    const handleRunSavedCommand = (commandId: string, params: Record<string, any>) => {
+        startTransition(async () => {
+            await runCommand(serverId, commandId, params);
+            toast({ title: "Command Sent" });
+        });
+    };
+
     const staticManagementItems = [
         {
             id: 'nginx-config',
@@ -178,7 +193,7 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
     
     const fetchCommands = async (page: number, search: string) => {
         setLoading(true);
-        const savedCommandsResult = await getServerCommands({ page: 1, pageSize: 1000, searchQuery: search });
+        const savedCommandsResult = await getServerCommands({ page, pageSize, searchQuery: search });
         
         let allItems = [
             ...(savedCommandsResult.commands || []).map(cmd => ({
@@ -188,23 +203,14 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                 form: <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
             })),
             ...staticManagementItems.filter(item => 
-                item.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.description.toLowerCase().includes(search.toLowerCase())
+                !search || (item.name.toLowerCase().includes(search.toLowerCase()) ||
+                item.description.toLowerCase().includes(search.toLowerCase()))
             )
         ];
-
-        if (search) {
-             allItems = allItems.filter(item => 
-                item.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.description.toLowerCase().includes(search.toLowerCase())
-            );
-        }
-
-        setTotalCount(allItems.length);
-        const paginatedItems = allItems.slice((page - 1) * pageSize, page * pageSize);
         
-        // This is a temporary type assertion. A better approach would be to have a unified item type.
-        setCommands(paginatedItems as unknown as ServerCommand[]);
+        // This logic is now mostly handled by the server action
+        setTotalCount(savedCommandsResult.totalCount || allItems.length);
+        setCommands(savedCommandsResult.commands || []);
         setLoading(false);
     };
 
@@ -214,20 +220,6 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
         });
     }, [currentPage, searchQuery]);
     
-    const handleRunCommand = (command: string, description: string) => {
-        startTransition(async () => {
-            await runCommand(serverId, command);
-            toast({ title: "Command Sent", description: `Running command: ${description}`});
-        });
-    };
-    
-    const handleRunSavedCommand = (commandId: string, params: Record<string, any>) => {
-        startTransition(async () => {
-            await runCommand(serverId, commandId, params);
-            toast({ title: "Command Sent" });
-        });
-    }
-
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
@@ -261,14 +253,11 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                 ) : (
                     <Accordion type="single" collapsible className="w-full space-y-2">
                         {commands.map((cmd) => {
-                            // Find the corresponding form from the full list
-                            const item = [
-                                ...allCommands.map(c => ({...c, form: <SavedCommandForm command={c} onRun={handleRunSavedCommand} isPending={isPending} />})),
-                                ...staticManagementItems
-                            ].find(item => item.id === cmd.id);
+                            const staticItem = staticManagementItems.find(item => item.id === cmd.id);
+                            const formContent = staticItem ? staticItem.form : <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />;
 
                             return (
-                                <AccordionItem value={cmd.id!} key={cmd.id} className="border rounded-lg data-[state=open]:border-primary">
+                                <AccordionItem value={cmd.id!} key={cmd.id} className="border rounded-lg data-[state=open]:border-primary group">
                                     <AccordionTrigger className="p-4 hover:no-underline text-left">
                                         <div className="flex-1 pr-4">
                                             <h4 className="font-medium text-left">{cmd.name}</h4>
@@ -276,7 +265,7 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                                         </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <FormContainer>{item?.form || <div>Form not found.</div>}</FormContainer>
+                                        <FormContainer>{formContent}</FormContainer>
                                     </AccordionContent>
                                 </AccordionItem>
                             );
@@ -291,7 +280,7 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                             variant="outline"
                             size="sm"
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage <= 1 || isPending}
+                            disabled={currentPage <= 1 || isPending || loading}
                         >
                             <ChevronLeft className="h-4 w-4" />
                             Previous
@@ -300,7 +289,7 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                             variant="outline"
                             size="sm"
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage >= totalPages || isPending}
+                            disabled={currentPage >= totalPages || isPending || loading}
                         >
                             Next
                             <ChevronRight className="h-4 w-4" />
