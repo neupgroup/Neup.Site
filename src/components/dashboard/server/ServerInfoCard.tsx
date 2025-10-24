@@ -1,10 +1,11 @@
+
 'use client';
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2, ServerCrash, RefreshCw, Loader2 } from 'lucide-react';
+import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2, ServerCrash, RefreshCw, Loader2, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -12,16 +13,19 @@ import { useRouter } from 'next/navigation';
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
 import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
+import { getUptime } from '@/actions/server/management/get-uptime';
 
 interface ServerInfoCardProps {
     server: Server;
-    uptime: string | null;
+    initialUptime: string | null;
 }
 
-export default function ServerInfoCard({ server: initialServer, uptime }: ServerInfoCardProps) {
+export default function ServerInfoCard({ server: initialServer, initialUptime }: ServerInfoCardProps) {
     const [server, setServer] = useState(initialServer);
+    const [uptime, setUptime] = useState(initialUptime);
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
     const [isRefreshingStorage, setIsRefreshingStorage] = useState(false);
+    const [isRefreshingUptime, setIsRefreshingUptime] = useState(false);
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
     const router = useRouter();
@@ -43,6 +47,18 @@ export default function ServerInfoCard({ server: initialServer, uptime }: Server
         setIsRefreshingStorage(false);
     };
 
+    const handleRefreshUptime = async () => {
+        setIsRefreshingUptime(true);
+        const result = await getUptime(server.id);
+        if (result.success && result.uptime) {
+            setUptime(result.uptime);
+            toast({ title: "Uptime Refreshed" });
+        } else {
+            toast({ variant: 'destructive', title: "Failed to Refresh Uptime", description: result.error });
+        }
+        setIsRefreshingUptime(false);
+    }
+
     const handleReboot = async () => {
         setShowRebootConfirm(false);
         startTransition(async () => {
@@ -61,7 +77,6 @@ export default function ServerInfoCard({ server: initialServer, uptime }: Server
                             <CardDescription>ID: {server.id}</CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
-                            {uptime && <Badge variant="secondary">{uptime}</Badge>}
                             {server.isPrivate && <Badge variant="secondary">Private</Badge>}
                             {server.serverType && <Badge variant="outline" className="capitalize">{server.serverType}</Badge>}
                         </div>
@@ -104,6 +119,15 @@ export default function ServerInfoCard({ server: initialServer, uptime }: Server
                                 </Button>
                             </div>
                         </div>
+                         <div>
+                            <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Clock className="h-4 w-4" />Uptime</h4>
+                            <div className="flex items-center gap-2">
+                                <p className="text-sm">{uptime || 'N/A'}</p>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleRefreshUptime} disabled={isRefreshingUptime}>
+                                    {isRefreshingUptime ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                     {server.usedPorts && server.usedPorts.length > 0 && (
                         <div>
@@ -120,19 +144,15 @@ export default function ServerInfoCard({ server: initialServer, uptime }: Server
                         </div>
                     )}
                 </CardContent>
-                <CardFooter className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                        <Button asChild variant="outline">
-                            <Link href={`/root/servers/allocations/create?serverId=${server.id}`}>
-                                <Share2 className="mr-2 h-4 w-4" /> Allocate Server
-                            </Link>
-                        </Button>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button variant="destructive" onClick={() => setShowRebootConfirm(true)}>
-                            <ServerCrash className="mr-2 h-4 w-4" /> Reboot Server
-                        </Button>
-                    </div>
+                <CardFooter className="flex flex-wrap gap-2">
+                    <Button asChild variant="outline">
+                        <Link href={`/root/servers/allocations/create?serverId=${server.id}`}>
+                            <Share2 className="mr-2 h-4 w-4" /> Allocate Server
+                        </Link>
+                    </Button>
+                    <Button variant="destructive" onClick={() => setShowRebootConfirm(true)}>
+                        <ServerCrash className="mr-2 h-4 w-4" /> Reboot Server
+                    </Button>
                 </CardFooter>
             </Card>
 

@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
@@ -97,7 +98,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
         </Button>
       </div>
 
-      <ServerInfoCard server={server} uptime={uptime} />
+      <ServerInfoCard server={server} initialUptime={uptime} />
 
       <ServerManagement serverId={server.id} />
       
