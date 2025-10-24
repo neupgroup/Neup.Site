@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { getActivePorts, ActivePortInfo } from '@/actions/server/management/get-active-ports';
+import { getActiveProcesses, ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
@@ -136,6 +137,75 @@ const ActivePortsSection = ({ serverId }: { serverId: string }) => {
   );
 };
 
+const ActiveProcessesSection = ({ serverId }: { serverId: string }) => {
+  const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProcesses = async () => {
+    setIsLoading(true);
+    setError(null);
+    const result = await getActiveProcesses(serverId);
+    if (result.success) {
+      setProcesses(result.processes || []);
+    } else {
+      setError(result.error || 'Failed to fetch active processes.');
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <AccordionItem value="active-processes">
+      <AccordionTrigger className="text-lg font-medium" onClick={() => !processes && fetchProcesses()}>
+        <div className="flex items-center gap-2">
+          <Cpu className="h-5 w-5" /> Active Processes
+        </div>
+      </AccordionTrigger>
+      <AccordionContent className="pt-2">
+        {isLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : error ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : processes && processes.length > 0 ? (
+          <ScrollArea className="h-96">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>PID</TableHead>
+                  <TableHead>User</TableHead>
+                  <TableHead>%CPU</TableHead>
+                  <TableHead>%MEM</TableHead>
+                  <TableHead>Command</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {processes.map((proc) => (
+                  <TableRow key={proc.pid}>
+                    <TableCell className="font-mono text-xs">{proc.pid}</TableCell>
+                    <TableCell>{proc.user}</TableCell>
+                    <TableCell>{proc.cpu}</TableCell>
+                    <TableCell>{proc.mem}</TableCell>
+                    <TableCell className="font-mono text-xs max-w-xs truncate">{proc.command}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        ) : (
+          <div className="text-center text-muted-foreground p-8">
+            <p>No active processes found or could not parse process list.</p>
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
+};
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -452,12 +522,13 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
         <Card>
             <CardHeader>
-                <CardTitle>Live Server Status</CardTitle>
+                <CardTitle>Server Status</CardTitle>
                 <CardDescription>Real-time information fetched directly from the server.</CardDescription>
             </CardHeader>
             <CardContent>
-                 <Accordion type="single" collapsible className="w-full space-y-2">
+                 <Accordion type="multiple" className="w-full space-y-2">
                     <ActivePortsSection serverId={id} />
+                    <ActiveProcessesSection serverId={id} />
                 </Accordion>
             </CardContent>
         </Card>
