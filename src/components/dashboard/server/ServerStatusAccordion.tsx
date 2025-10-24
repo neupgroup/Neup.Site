@@ -126,6 +126,11 @@ const ActivePortsSection = ({ serverId, isExpanded, initialData }: { serverId: s
                 <div className="flex items-center gap-4">
                   <span className="font-bold w-12">{portInfo.port}</span>
                   <Badge variant="outline" className="w-14 justify-center">{portInfo.protocol}</Badge>
+                   {portInfo.process && (
+                      <span className="font-mono text-xs text-muted-foreground truncate" title={portInfo.process}>
+                        {portInfo.process}
+                      </span>
+                  )}
                 </div>
                 <span className="font-mono text-xs">{portInfo.address}</span>
               </div>
@@ -133,7 +138,7 @@ const ActivePortsSection = ({ serverId, isExpanded, initialData }: { serverId: s
           </div>
       ) : (
         <div className="text-center text-muted-foreground py-8">
-          <p>No active listening ports found.</p>
+          <p>No active ports found.</p>
         </div>
       )}
     </>
