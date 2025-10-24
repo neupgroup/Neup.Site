@@ -522,13 +522,12 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
         <Card>
             <CardHeader>
-                <CardTitle>Server Status</CardTitle>
+                <CardTitle>Live Server Status</CardTitle>
                 <CardDescription>Real-time information fetched directly from the server.</CardDescription>
             </CardHeader>
             <CardContent>
-                 <Accordion type="multiple" className="w-full space-y-2">
+                 <Accordion type="single" collapsible className="w-full space-y-2">
                     <ActivePortsSection serverId={id} />
-                    <ActiveProcessesSection serverId={id} />
                 </Accordion>
             </CardContent>
         </Card>
