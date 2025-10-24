@@ -16,8 +16,8 @@ import { getActivePorts, type ActivePortInfo } from '@/actions/server/management
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { getPm2Processes, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
 
-const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean; }) => {
-  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
+const StorageStatusSection = ({ serverId, isExpanded, initialData }: { serverId: string; isExpanded: boolean; initialData: StorageInfo | null }) => {
+  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,14 +34,14 @@ const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isEx
   }, [serverId]);
   
   React.useEffect(() => {
-    if (isExpanded && !storageInfo) {
+    if (isExpanded && !storageInfo && !initialData) {
       fetchStorage();
     }
-  }, [isExpanded, storageInfo, fetchStorage]);
+  }, [isExpanded, storageInfo, fetchStorage, initialData]);
 
   return (
     <>
-      {isLoading && !storageInfo ? (
+      {isLoading ? (
         <div className="space-y-4">
           <div className="space-y-2">
             <Skeleton className="h-4 w-24" />
@@ -84,8 +84,8 @@ const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isEx
   );
 };
 
-const ActivePortsSection = ({ serverId, isExpanded }: { serverId: string, isExpanded: boolean }) => {
-  const [ports, setPorts] = useState<ActivePortInfo[] | null>(null);
+const ActivePortsSection = ({ serverId, isExpanded, initialData }: { serverId: string, isExpanded: boolean, initialData: ActivePortInfo[] | null }) => {
+  const [ports, setPorts] = useState<ActivePortInfo[] | null>(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,14 +102,14 @@ const ActivePortsSection = ({ serverId, isExpanded }: { serverId: string, isExpa
   }, [serverId]);
 
   React.useEffect(() => {
-    if (isExpanded && !ports) {
+    if (isExpanded && !ports && !initialData) {
       fetchPorts();
     }
-  }, [isExpanded, ports, fetchPorts]);
+  }, [isExpanded, ports, fetchPorts, initialData]);
 
   return (
     <>
-      {isLoading && !ports ? (
+      {isLoading ? (
         <div className="space-y-2">
             {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
         </div>
@@ -140,8 +140,8 @@ const ActivePortsSection = ({ serverId, isExpanded }: { serverId: string, isExpa
   );
 };
 
-const ActiveProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExpanded: boolean }) => {
-  const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
+const ActiveProcessesSection = ({ serverId, isExpanded, initialData }: { serverId: string, isExpanded: boolean, initialData: ProcessInfo[] | null }) => {
+  const [processes, setProcesses] = useState<ProcessInfo[] | null>(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -158,14 +158,14 @@ const ActiveProcessesSection = ({ serverId, isExpanded }: { serverId: string, is
   }, [serverId]);
 
   React.useEffect(() => {
-    if (isExpanded && !processes) {
+    if (isExpanded && !processes && !initialData) {
       fetchProcesses();
     }
-  }, [isExpanded, processes, fetchProcesses]);
+  }, [isExpanded, processes, fetchProcesses, initialData]);
 
   return (
     <>
-      {isLoading && !processes ? (
+      {isLoading ? (
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="flex justify-between p-2">
@@ -204,8 +204,8 @@ const ActiveProcessesSection = ({ serverId, isExpanded }: { serverId: string, is
   );
 };
 
-const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExpanded: boolean }) => {
-  const [processes, setProcesses] = useState<ProcessManagerInfo[] | null>(null);
+const Pm2ProcessesSection = ({ serverId, isExpanded, initialData }: { serverId: string, isExpanded: boolean, initialData: ProcessManagerInfo[] | null }) => {
+  const [processes, setProcesses] = useState<ProcessManagerInfo[] | null>(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -222,10 +222,10 @@ const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExp
   }, [serverId]);
 
   React.useEffect(() => {
-    if (isExpanded && !processes) {
+    if (isExpanded && !processes && !initialData) {
       fetchProcesses();
     }
-  }, [isExpanded, processes, fetchProcesses]);
+  }, [isExpanded, processes, fetchProcesses, initialData]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -246,7 +246,7 @@ const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExp
 
   return (
     <>
-      {isLoading && !processes ? (
+      {isLoading ? (
         <div className="space-y-4">
             {[...Array(2)].map((_, i) => (
                 <div key={i} className="flex justify-between p-2">
@@ -288,8 +288,16 @@ const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExp
   );
 };
 
+interface ServerStatusAccordionProps {
+    serverId: string;
+    initialStorageInfo: StorageInfo | null;
+    initialActivePorts: ActivePortInfo[] | null;
+    initialActiveProcesses: ProcessInfo[] | null;
+    initialPm2Processes: ProcessManagerInfo[] | null;
+}
 
-export default function ServerStatusAccordion({ serverId }: { serverId: string }) {
+
+export default function ServerStatusAccordion({ serverId, initialStorageInfo, initialActivePorts, initialActiveProcesses, initialPm2Processes }: ServerStatusAccordionProps) {
   const [openAccordion, setOpenAccordion] = useState<string | undefined>(undefined);
 
   return (
@@ -308,7 +316,7 @@ export default function ServerStatusAccordion({ serverId }: { serverId: string }
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <StorageStatusSection serverId={serverId} isExpanded={openAccordion === 'storage'} />
+              <StorageStatusSection serverId={serverId} isExpanded={openAccordion === 'storage'} initialData={initialStorageInfo} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="network" className="border rounded-lg">
@@ -319,7 +327,7 @@ export default function ServerStatusAccordion({ serverId }: { serverId: string }
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <ActivePortsSection serverId={serverId} isExpanded={openAccordion === 'network'} />
+              <ActivePortsSection serverId={serverId} isExpanded={openAccordion === 'network'} initialData={initialActivePorts}/>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="processes" className="border rounded-lg">
@@ -330,7 +338,7 @@ export default function ServerStatusAccordion({ serverId }: { serverId: string }
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <ActiveProcessesSection serverId={serverId} isExpanded={openAccordion === 'processes'} />
+              <ActiveProcessesSection serverId={serverId} isExpanded={openAccordion === 'processes'} initialData={initialActiveProcesses} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="pm2" className="border rounded-lg">
@@ -341,7 +349,7 @@ export default function ServerStatusAccordion({ serverId }: { serverId: string }
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <Pm2ProcessesSection serverId={serverId} isExpanded={openAccordion === 'pm2'} />
+              <Pm2ProcessesSection serverId={serverId} isExpanded={openAccordion === 'pm2'} initialData={initialPm2Processes} />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
