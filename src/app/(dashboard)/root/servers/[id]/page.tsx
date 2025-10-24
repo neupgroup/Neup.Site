@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, ArrowLeft, Pencil, Share2, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder, PlayCircle, Eye, Lock, UploadCloud, FileText, X, Search, RefreshCw, HardDrive, Wifi, ListTree } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Share2, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder, PlayCircle, Eye, Lock, UploadCloud, FileText, X, Search, RefreshCw, HardDrive, Wifi, ListTree, ServerCrash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,15 +23,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { getConfigureNginxCommand } from '@/actions/server/management/configure-nginx';
-import { getInstallCertbotNginxCommand } from '@/actions/server/management/install-certbot-nginx';
 import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
 import { getServerLogs, type ServerLog } from '@/actions/server-logs';
 import { getServerCommands, type ServerCommand } from '@/actions/commands';
+import { getUptime } from '@/actions/server/management/get-uptime';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
-import { useDropzone } from 'react-dropzone';
-import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
@@ -41,11 +38,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
 import { getActivePorts, ActivePortInfo } from '@/actions/server/management/get-active-ports';
 import { getActiveProcesses, ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { getPm2Processes, ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
+import { getDetailedStorageForServer, StorageInfo } from '@/actions/server/management/get-detailed-storage-for-server';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Progress } from '@/components/ui/progress';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 interface UploadingFile {
@@ -71,6 +69,77 @@ const FullLog = ({ log }: { log: ServerLog }) => {
             )}
         </div>
     );
+};
+
+const StorageStatusSection = ({ serverId }: { serverId: string }) => {
+  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStorage = async () => {
+    setIsLoading(true);
+    setError(null);
+    const result = await getDetailedStorageForServer(serverId);
+    if (result.success && result.data) {
+      setStorageInfo(result.data);
+    } else {
+      setError(result.error || 'Failed to fetch storage info.');
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <AccordionItem value="storage-status">
+      <AccordionTrigger className="text-lg font-medium" onClick={() => !storageInfo && fetchStorage()}>
+        <div className="flex items-center gap-2">
+          <HardDrive className="h-5 w-5" /> Storage Status
+        </div>
+      </AccordionTrigger>
+      <AccordionContent className="pt-2">
+        {isLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : error ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : storageInfo ? (
+          <div className="space-y-4">
+              <div className="space-y-2">
+                 <div className="flex justify-between items-baseline">
+                    <p className="text-sm font-medium">{storageInfo.usePercentage} Used</p>
+                    <p className="text-sm text-muted-foreground">{storageInfo.used} of {storageInfo.size}</p>
+                 </div>
+                <Progress value={parseInt(storageInfo.usePercentage)} />
+              </div>
+              <Table>
+                <TableBody>
+                    <TableRow>
+                        <TableCell className="font-medium text-muted-foreground">Total Size</TableCell>
+                        <TableCell className="text-right">{storageInfo.size}</TableCell>
+                    </TableRow>
+                     <TableRow>
+                        <TableCell className="font-medium text-muted-foreground">Used</TableCell>
+                        <TableCell className="text-right">{storageInfo.used}</TableCell>
+                    </TableRow>
+                     <TableRow>
+                        <TableCell className="font-medium text-muted-foreground">Available</TableCell>
+                        <TableCell className="text-right">{storageInfo.available}</TableCell>
+                    </TableRow>
+                </TableBody>
+              </Table>
+          </div>
+        ) : (
+          <div className="text-center text-muted-foreground p-8">
+            <p>Click to fetch storage status.</p>
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
 };
 
 
@@ -299,6 +368,8 @@ const Pm2ProcessesSection = ({ serverId }: { serverId: string }) => {
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const [server, setServer] = useState<Server | null>(null);
+  const [uptime, setUptime] = useState<string | null>(null);
+  const [showRebootConfirm, setShowRebootConfirm] = useState(false);
   const router = useRouter();
   
   const [loading, setLoading] = useState(true);
@@ -325,49 +396,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const [commandParams, setCommandParams] = useState<Record<string, string>>({});
   const [isCustomCommand, setIsCustomCommand] = useState(false);
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
-      file,
-      status: 'pending',
-      progress: 0,
-    }));
-    setUploadingFiles(prev => [...prev, ...newFiles]);
-  }, []);
-
-  const handleFileUpload = async () => {
-    const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
-    if (filesToUpload.length === 0) return;
-
-    for (const fileToUpload of filesToUpload) {
-      setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, status: 'uploading' } : f));
-      
-      const result = await uploadFile(fileToUpload.file, fileToUpload.file.webkitRelativePath, (progress) => {
-         setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, progress } : f));
-      });
-      
-      setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, status: result.success ? 'success' : 'error', error: result.error } : f));
-    }
-  };
-  
-    const uploadFile = async (file: File, path: string, onProgress: (progress: number) => void): Promise<{success: boolean, error?: string}> => {
-        // This would be an API call to a serverless function or backend that handles the SSH connection and upload.
-        // For now, we simulate the upload.
-        console.log(`Simulating upload for ${file.name} to ${path}`);
-        
-        // Simulate progress
-        for (let i = 0; i <= 100; i+= 10) {
-            await new Promise(resolve => setTimeout(resolve, 50));
-            onProgress(i);
-        }
-        
-        // Simulate a potential failure
-        if (file.name.includes('fail')) {
-            return { success: false, error: 'Simulated upload failure.' };
-        }
-        
-        return { success: true };
-    }
-
   const fetchLogs = async (page = 1) => {
     setLoadingLogs(true);
     setLogsError(null);
@@ -390,11 +418,15 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
   const fetchInitialData = useCallback(async () => {
     setLoading(true);
-    const result = await getServer(id);
-    if (result.success && result.server) {
-      setServer(result.server);
+    const [serverResult, uptimeResult] = await Promise.all([
+        getServer(id),
+        getUptime(id)
+    ]);
+    
+    if (serverResult.success && serverResult.server) {
+      setServer(serverResult.server);
     } else {
-      const errorMessage = result.error || 'Failed to fetch server.';
+      const errorMessage = serverResult.error || 'Failed to fetch server.';
       setError(errorMessage);
        logErrorToFirestore({
           message: `Client-side error fetching server details for serverId: ${id}. Error: ${errorMessage}`,
@@ -402,6 +434,11 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
           source: 'ServerDetailPage.fetchInitialData',
       });
     }
+
+    if (uptimeResult.success && uptimeResult.uptime) {
+        setUptime(uptimeResult.uptime);
+    }
+
     setLoading(false);
   }, [id]);
 
@@ -482,7 +519,14 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     });
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const handleReboot = async () => {
+      setShowRebootConfirm(false);
+      startTransition(async () => {
+        await runCommand(id, 'reboot-server');
+        toast({ title: "Reboot Command Sent", description: `The server is now rebooting. This may take a few minutes.`});
+        setTimeout(() => fetchLogs(1), 1000);
+    });
+  }
   
   if (loading) {
     return (
@@ -540,6 +584,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                         <CardDescription>ID: {server.id}</CardDescription>
                     </div>
                      <div className="flex items-center gap-2">
+                        {uptime && <Badge variant="secondary">{uptime}</Badge>}
                         {server.isPrivate && <Badge variant="secondary">Private</Badge>}
                         {server.serverType && <Badge variant="outline" className="capitalize">{server.serverType}</Badge>}
                      </div>
@@ -600,12 +645,19 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                     </div>
                  )}
             </CardContent>
-            <CardFooter className="flex justify-start gap-2">
-                 <Button asChild variant="outline">
-                    <Link href={`/root/servers/allocations/create?serverId=${id}`}>
-                        <Share2 className="mr-2 h-4 w-4"/> Allocate Server
-                    </Link>
-                </Button>
+            <CardFooter className="flex justify-between items-center">
+                 <div className="flex gap-2">
+                    <Button asChild variant="outline">
+                        <Link href={`/root/servers/allocations/create?serverId=${id}`}>
+                            <Share2 className="mr-2 h-4 w-4"/> Allocate Server
+                        </Link>
+                    </Button>
+                 </div>
+                 <div className="flex gap-2">
+                     <Button variant="destructive" onClick={() => setShowRebootConfirm(true)}>
+                        <ServerCrash className="mr-2 h-4 w-4"/> Reboot Server
+                    </Button>
+                 </div>
             </CardFooter>
         </Card>
 
@@ -616,6 +668,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
             </CardHeader>
             <CardContent>
                  <Accordion type="single" collapsible className="w-full space-y-2">
+                    <StorageStatusSection serverId={id} />
                     <ActivePortsSection serverId={id} />
                     <ActiveProcessesSection serverId={id} />
                     <Pm2ProcessesSection serverId={id} />
@@ -798,6 +851,20 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+        <AlertDialog open={showRebootConfirm} onOpenChange={setShowRebootConfirm}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This will restart the server. Any unsaved work on running applications may be lost.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleReboot}>Reboot</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </div>
   );
 }
