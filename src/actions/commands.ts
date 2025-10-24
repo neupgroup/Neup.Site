@@ -68,6 +68,7 @@ export async function getServerCommands({
             type: data.type || 'view',
             danger: data.danger || 'low',
             preprocess: data.preprocess ?? false,
+            allocatesPort: data.allocatesPort ?? false,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         } as ServerCommand;
     });
@@ -111,6 +112,7 @@ export async function getServerCommand(id: string): Promise<{ success: boolean; 
             type: data.type || 'view',
             danger: data.danger || 'low',
             preprocess: data.preprocess ?? false,
+            allocatesPort: data.allocatesPort ?? false,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         };
         return { success: true, command };
@@ -146,3 +148,5 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
         return { success: false, error: 'Failed to delete command.' };
     }
 }
+
+    

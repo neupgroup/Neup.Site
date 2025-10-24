@@ -2,7 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   Card,
   CardContent,
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, ArrowLeft, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createServer } from '@/actions/servers';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ import { Server } from '@/schemas/server';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
-type FormValues = Omit<Server, 'id' | 'createdOn' | 'expiresOn'>;
+type FormValues = Omit<Server, 'id' | 'createdOn' | 'expiresOn' | 'portsOpen' | 'usedPorts'>;
 
 export default function CreateServerPage() {
   const { toast } = useToast();
@@ -37,16 +37,10 @@ export default function CreateServerPage() {
       privateKey: '',
       serverType: 'vps',
       provider: '',
-      portsOpen: [],
       isPrivate: false,
       username: 'root',
       basePath: '/var/www'
     }
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "portsOpen"
   });
 
   const handleCreateServer = async (data: FormValues) => {
@@ -55,12 +49,7 @@ export default function CreateServerPage() {
       return;
     }
     
-    const ports = (data.portsOpen as any[])
-        .map(p => p.value)
-        .filter(p => p !== '' && !isNaN(p))
-        .map(p => Number(p));
-
-    const result = await createServer({...data, portsOpen: ports});
+    const result = await createServer(data);
 
     if (result.success) {
       toast({ title: 'Server Created!', description: `Successfully created ${data.name}.` });
@@ -128,20 +117,6 @@ export default function CreateServerPage() {
                     <Label htmlFor="basePath">Default Base Path</Label>
                     <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www" />
                 </div>
-            </div>
-             <div className="space-y-2">
-                <Label>Open Ports</Label>
-                {fields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2">
-                        <Input type="number" {...register(`portsOpen.${index}.value` as any)} placeholder="e.g., 80" />
-                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ))}
-                <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' } as any)}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Port
-                </Button>
             </div>
              <div className="flex items-center space-x-2">
                 <Switch id="is-private" {...register('isPrivate')} />

@@ -35,7 +35,6 @@ export interface Server {
   privateKey?: string;
   serverType?: 'vps' | 'dedicated' | 'cloud';
   provider?: string;
-  portsOpen?: number[];
   usedPorts?: UsedPort[];
   isPrivate?: boolean;
   username?: string;

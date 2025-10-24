@@ -26,35 +26,44 @@ async function getAllocationUsername(serverId: string): Promise<string | null> {
     return snapshot.docs[0].data().username || null;
 }
 
-interface PortAllocationParams {
-    port: number;
-    description: string;
-}
+const getAvailablePorts = (usedPorts: number[]): number[] => {
+    const allPorts = Array.from({ length: 65535 - 1024 + 1 }, (_, i) => 1024 + i);
+    const usedPortsSet = new Set(usedPorts);
+    return allPorts.filter(port => !usedPortsSet.has(port));
+};
+
 
 export async function runCommand(
     serverId: string,
-    commandTemplate: string,
+    commandIdentifier: string, // This can be a command ID or a raw command string
     processedParams: Record<string, any> = {},
-    preprocess?: boolean,
-    portAllocation?: PortAllocationParams,
-    commandId?: string
 ) {
-    if (!commandTemplate) {
-        console.error('Runner Error: No command template provided.');
-        return;
-    }
-    
+    const isCommandId = !commandIdentifier.includes(' '); // Simple check if it's an ID or a command string
+    let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
+    let commandTemplate: string = isCommandId ? '' : commandIdentifier;
+    let loggedCommand = commandTemplate;
     let confidentialParamKeys: string[] = [];
+    let preprocess = false;
+    let allocatesPort = false;
+    let portToReserve: string | undefined = undefined;
+
     if (commandId) {
         const commandDetails = await getServerCommand(commandId);
-        if (commandDetails.success && commandDetails.command && commandDetails.command.parameters) {
-            confidentialParamKeys = commandDetails.command.parameters
-                .filter(p => p.confidential)
-                .map(p => p.key);
+        if (commandDetails.success && commandDetails.command) {
+            const cmd = commandDetails.command;
+            commandTemplate = cmd.commandTemplate;
+            loggedCommand = cmd.commandTemplate; // Log the template initially
+            preprocess = cmd.preprocess || false;
+            allocatesPort = cmd.allocatesPort || false;
+            portToReserve = cmd.portToReserve;
+            confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
+        } else {
+             await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
+             return; // Exit if command not found
         }
     }
     
-    let loggedCommand = commandTemplate;
+    // Mask confidential parameters for logging
     for (const key of confidentialParamKeys) {
         if (processedParams[key]) {
             const maskedValue = '*'.repeat(String(processedParams[key]).length);
@@ -80,6 +89,7 @@ export async function runCommand(
     const ssh = new NodeSSH();
     let finalOutput = ''; 
     let finalCommand = commandTemplate;
+    let actualReservedPort: number | undefined;
 
     try {
         const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -102,9 +112,38 @@ export async function runCommand(
              console.error('Failed to fetch GitHub token for universal variable.', e);
         }
 
-        const openPorts = server.portsOpen || [];
-        const usedPorts = [...(server.usedPorts || []), ...(portAllocation ? [portAllocation] : [])].map(p => p.port);
-        const availablePorts = openPorts.filter(p => !usedPorts.includes(p));
+        const usedPorts = (server.usedPorts || []).map(p => p.port);
+        const availablePorts = getAvailablePorts(usedPorts);
+        
+        if (allocatesPort && portToReserve) {
+            let portToUse: number;
+            if (portToReserve === '{{universal.available_port}}') {
+                if (availablePorts.length === 0) {
+                    throw new Error("Port allocation failed: No available ports on the server.");
+                }
+                portToUse = availablePorts[0];
+            } else {
+                portToUse = parseInt(portToReserve, 10);
+                if (isNaN(portToUse) || usedPorts.includes(portToUse)) {
+                    throw new Error(`Port allocation failed: Port ${portToReserve} is invalid or already in use.`);
+                }
+            }
+            actualReservedPort = portToUse;
+
+            finalOutput += `Attempting to reserve port ${actualReservedPort}...\n`;
+            await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
+             
+             const updateResult = await updateServer(serverId, {
+                 usedPorts: [...(server.usedPorts || []), { port: actualReservedPort, description: `Reserved by command: ${commandId || 'Custom'}` }]
+             });
+
+             if (!updateResult.success) {
+                 throw new Error(`Failed to update server with new port allocation: ${updateResult.error}`);
+             }
+             finalOutput += `Successfully reserved port ${actualReservedPort}.\n\n`;
+             await updateServerLog(logId, { output: finalOutput });
+             revalidatePath(`/root/servers/${serverId}`);
+        }
 
         const universal = {
             name: server.name,
@@ -113,7 +152,7 @@ export async function runCommand(
             username: server.username || '',
             base_path: server.basePath || '',
             available_port: availablePorts[0]?.toString() || '',
-            available_ports: availablePorts.join(','),
+            reserved_port: actualReservedPort?.toString() || '',
             used_ports: usedPorts.join(','),
             linked_account_github: githubAccessToken,
             account_id: accountId,
@@ -147,31 +186,20 @@ export async function runCommand(
             }
         }
         
-        // Phase 2: Substitute universal variables into the final command string
-        for (const [key, value] of Object.entries(universal)) {
-            if (value) { // Only substitute if value is not empty
-                finalCommand = finalCommand.replace(new RegExp(`{{universal.${key}}}`, 'g'), String(value));
+        // Loop to substitute all placeholders until none are left or an iteration changes nothing.
+        let lastCommand = '';
+        let loopCount = 0;
+        const MAX_LOOPS = 5; // Safety break
+        while (finalCommand !== lastCommand && loopCount < MAX_LOOPS) {
+            lastCommand = finalCommand;
+            
+            // Substitute universal variables
+            for (const [key, value] of Object.entries(universal)) {
+                if (value) {
+                    finalCommand = finalCommand.replace(new RegExp(`{{universal.${key}}}`, 'g'), String(value));
+                }
             }
-        }
-
-        if (portAllocation && portAllocation.port) {
-             await updateServerLog(logId, { status: 'ongoing', output: `${finalOutput}Allocating port ${portAllocation.port}...` });
-             
-             const currentUsedPorts = server.usedPorts || [];
-             if (currentUsedPorts.some(p => p.port === portAllocation.port)) {
-                 throw new Error(`Port allocation failed: Port ${portAllocation.port} is already in use.`);
-             }
-
-             const updateResult = await updateServer(serverId, {
-                 usedPorts: [...currentUsedPorts, portAllocation]
-             });
-
-             if (!updateResult.success) {
-                 throw new Error(`Failed to update server with new port allocation: ${updateResult.error}`);
-             }
-             finalOutput += `Successfully allocated port ${portAllocation.port} for: ${portAllocation.description}\n\n`;
-             await updateServerLog(logId, { output: finalOutput });
-             revalidatePath(`/root/servers/${serverId}`);
+            loopCount++;
         }
         
         const remainingPlaceholders = finalCommand.match(/\{\{([^}]+)\}\}/g);

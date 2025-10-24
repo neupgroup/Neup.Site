@@ -197,7 +197,6 @@
         "privateKey": { "type": "string", "description": "The SSH private key for accessing the server." },
         "serverType": { "type": "string", "enum": ["vps", "dedicated", "cloud"], "description": "The type of the server." },
         "provider": { "type": "string", "description": "The hosting provider (e.g., AWS, DigitalOcean)." },
-        "portsOpen": { "type": "array", "items": { "type": "number" }, "description": "A list of open ports." },
         "usedPorts": {
             "type": "array",
             "items": {
@@ -271,6 +270,10 @@
             "type": "string",
             "enum": ["low", "mid", "high"],
             "description": "The danger level associated with running the command."
+        },
+        "allocatesPort": {
+            "type": "boolean",
+            "description": "Whether this command automatically allocates an available port."
         },
         "createdAt": { "type": "string", "format": "date-time" }
       },
@@ -573,3 +576,5 @@
     "reasoning": "This design prioritizes security and scalability by adhering to the principles of Authorization Independence, Structural Segregation, Access Modeling, and Data Clarity. \n\nThe `sites` collection stores site data. The `pages` subcollection stores page data related to the site.\n\n**Authorization Independence**: No `get()` calls are needed in the security rules because access control is based on the `status` field in the `sites` collection and `requiresPendingSite` field in the `pages` collection. All required attributes for pages authorization are denormalized into the page document itself, removing the need for hierarchical dependencies.\n\n**Structural Segregation**: The `sites` collection is dedicated solely to site data, ensuring a homogeneous security posture. Similarly, the `pages` subcollection only contains page documents associated to a specific site.\n\n**Access Modeling**: The structure uses path-based ownership (`/sites/{siteId}/pages/{pageId}`).\n\n**QAPs**: The segregation of sites and pages based on the site ID supports efficient and secure list operations, as queries can be scoped to a specific site.\n\n**Invariants**: The structure supports invariants by associating pages to sites via the `siteId` field in the `pages` subcollection. This ensures the integrity of the 1:N relationship between sites and pages."
   }
 }
+
+    

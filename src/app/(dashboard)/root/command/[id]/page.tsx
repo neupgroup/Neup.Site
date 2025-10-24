@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Command as CommandIcon } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Trash2, Command as CommandIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -32,7 +32,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 export default function CommandDetailPage({ params }: { params: { id: string } }) {
-  const { id } = use(params);
+  const { id } = params;
   const [command, setCommand] = useState<ServerCommand | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -169,11 +169,6 @@ export default function CommandDetailPage({ params }: { params: { id: string } }
             <CardFooter className="flex justify-end gap-2">
                 <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete
-                </Button>
-                <Button asChild>
-                    <Link href={`/root/command/${id}/edit`}>
-                        <Pencil className="mr-2 h-4 w-4"/> Edit
-                    </Link>
                 </Button>
             </CardFooter>
         </Card>

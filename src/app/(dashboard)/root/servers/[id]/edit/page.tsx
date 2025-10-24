@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Card,
   CardContent,
@@ -30,10 +31,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 
 
-type FormValues = Omit<Server, 'id' | 'createdOn'>;
+type FormValues = Omit<Server, 'id' | 'createdOn' | 'portsOpen'>;
 
-export default function EditServerPage({ params }: { params: { id:string } }) {
-  const { id } = params;
+export default function EditServerPage({ params }: { params: Promise<{ id:string }> }) {
+  const { id } = use(params);
   const [server, setServer] = useState<Server | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,18 +53,12 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
       privateKey: '', 
       serverType: 'vps',
       provider: '',
-      portsOpen: [],
       usedPorts: [],
       isPrivate: false,
       username: '',
       basePath: '',
       expiresOn: null,
     }
-  });
-
-  const { fields: portFields, append: appendPort, remove: removePort } = useFieldArray({
-    control,
-    name: 'portsOpen',
   });
   
   const { fields: usedPortFields, append: appendUsedPort, remove: removeUsedPort } = useFieldArray({
@@ -86,7 +81,6 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
           privateKey: '', // Keep private key field blank for security
           serverType: result.server.serverType || 'vps',
           provider: result.server.provider || '',
-          portsOpen: result.server.portsOpen?.map(p => ({ value: p })) as any || [],
           usedPorts: result.server.usedPorts || [],
           isPrivate: result.server.isPrivate || false,
           username: result.server.username || '',
@@ -103,12 +97,7 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
   }, [id, reset]);
 
   const handleUpdateServer = async (data: FormValues) => {
-    const ports = (data.portsOpen as any[])
-        .map(p => p.value)
-        .filter(p => p !== '' && !isNaN(p))
-        .map(p => Number(p));
-    
-    const result = await updateServer(id, {...data, portsOpen: ports});
+    const result = await updateServer(id, data);
 
     if (result.success) {
       toast({ title: 'Server Updated!', description: `Successfully updated ${data.name}.` });
@@ -220,20 +209,6 @@ export default function EditServerPage({ params }: { params: { id:string } }) {
                         <Label htmlFor="basePath">Default Base Path</Label>
                         <Input id="basePath" {...register('basePath')} />
                     </div>
-                </div>
-                 <div className="space-y-2">
-                    <Label>Open Ports</Label>
-                    {portFields.map((field, index) => (
-                        <div key={field.id} className="flex items-center gap-2">
-                            <Input type="number" {...register(`portsOpen.${index}.value` as any)} placeholder="e.g., 80" />
-                            <Button type="button" variant="destructive" size="icon" onClick={() => removePort(index)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" className="w-full" onClick={() => appendPort({ value: '' } as any)}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Port
-                    </Button>
                 </div>
                 <div className="space-y-2">
                     <Label>Used Ports</Label>

@@ -71,7 +71,7 @@ const FullLog = ({ log }: { log: ServerLog }) => {
 
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
-  const { id } = use(params);
+  const { id } = params;
   const [server, setServer] = useState<Server | null>(null);
   const router = useRouter();
   
@@ -101,8 +101,8 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const [loadingCommands, setLoadingCommands] = useState(false);
   const [commandToRun, setCommandToRun] = useState<ServerCommand | null>(null);
   const [commandParams, setCommandParams] = useState<Record<string, string>>({});
-  const [allocatePort, setAllocatePort] = useState(false);
-  const [portToAllocate, setPortToAllocate] = useState<number | ''>('');
+  const [isCustomCommand, setIsCustomCommand] = useState(false);
+  const [portToAllocate, setPortToAllocate] = useState<string>('');
   const [portDescription, setPortDescription] = useState('');
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -240,35 +240,24 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   };
 
 
-  const handleRunCommand = (command: string, commandName?: string, portAllocation?: { port: number; description: string; }) => {
+  const handleRunCommand = (command: string, commandName?: string) => {
       if (!command) return;
       startTransition(async () => {
-          await runCommand(id, command, {}, '', portAllocation);
+          await runCommand(id, command, {}, false, commandName);
           toast({ title: "Command Sent", description: `The command "${commandName || command}" has been sent to the server.`});
+          setCustomCommand('');
           setTimeout(() => fetchLogs(1), 1000);
       });
   };
 
   const handleRunSavedCommand = () => {
     if (!commandToRun) return;
-
-    let portAllocation;
-    if (allocatePort) {
-        if (!portToAllocate || !portDescription) {
-            toast({ variant: 'destructive', title: 'Missing Port Info', description: 'Port number and description are required for allocation.' });
-            return;
-        }
-        portAllocation = { port: portToAllocate, description: portDescription };
-    }
-
+    
     startTransition(async () => {
-        await runCommand(id, commandToRun.commandTemplate, commandParams, commandToRun.preExecutionScript, portAllocation, commandToRun.id);
+        await runCommand(id, commandToRun.id, commandParams);
         toast({ title: "Command Sent", description: `The command "${commandToRun.name}" has been sent to the server.`});
         setCommandToRun(null);
         setCommandParams({});
-        setAllocatePort(false);
-        setPortToAllocate('');
-        setPortDescription('');
         setTimeout(() => fetchLogs(1), 1000); // refetch logs after a delay
     });
   };
@@ -418,11 +407,11 @@ const handleInstallCertbot = async () => {
                     </div>
                 </div>
                 
-                 {server.portsOpen && server.portsOpen.length > 0 && (
+                 {server.usedPorts && server.usedPorts.length > 0 && (
                      <div>
-                        <h4 className="font-semibold text-sm text-muted-foreground">Open Ports</h4>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Used Ports</h4>
                         <div className="flex flex-wrap gap-2 mt-1">
-                            {server.portsOpen.map(port => <Badge key={port} variant="secondary">{port}</Badge>)}
+                            {server.usedPorts.map(p => <Badge key={p.port} variant="secondary">{p.port}: {p.description}</Badge>)}
                         </div>
                     </div>
                  )}
@@ -482,7 +471,7 @@ const handleInstallCertbot = async () => {
                                             <p className="font-medium">{cmd.name}</p>
                                             <p className="text-xs text-muted-foreground">{cmd.description}</p>
                                         </div>
-                                        <Button size="sm" onClick={() => setCommandToRun(cmd)}>Run</Button>
+                                        <Button size="sm" onClick={() => { setCommandToRun(cmd); setIsCustomCommand(false); }}>Run</Button>
                                     </div>
                                 ))}
                             </div>
@@ -562,7 +551,7 @@ www.example.com/subpath"
                                 className="font-mono"
                             />
                             <div className="flex justify-start">
-                                <Button size="sm" onClick={() => handleRunCommand(customCommand)} disabled={isPending || !customCommand}>
+                                <Button size="sm" onClick={() => { setCommandToRun(null); setIsCustomCommand(true); }} disabled={isPending || !customCommand}>
                                     <Send className="mr-2 h-4 w-4" /> Run Command
                                 </Button>
                             </div>
@@ -652,15 +641,15 @@ www.example.com/subpath"
             )}
         </Card>
         
-        {commandToRun && (
-            <Dialog open={!!commandToRun} onOpenChange={() => { setCommandToRun(null); setCommandParams({}); }}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Run: {commandToRun.name}</DialogTitle>
-                        <DialogDescription>{commandToRun.description}</DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                        {(commandToRun.parameters || []).map(param => (
+        <Dialog open={!!commandToRun || isCustomCommand} onOpenChange={() => { setCommandToRun(null); setIsCustomCommand(false); setCommandParams({}); }}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Run: {commandToRun?.name || 'Custom Command'}</DialogTitle>
+                    <DialogDescription>{commandToRun?.description || 'Enter parameters to run this custom command.'}</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    {commandToRun ? (
+                        (commandToRun.parameters || []).map(param => (
                             <div key={param.key} className="space-y-2">
                                 <Label htmlFor={param.key}>{param.label}</Label>
                                 <Input
@@ -670,48 +659,23 @@ www.example.com/subpath"
                                     type={param.type === 'number' ? 'number' : 'text'}
                                 />
                             </div>
-                        ))}
-                        {(!commandToRun.parameters || commandToRun.parameters.length === 0) && (
-                            <p className="text-sm text-muted-foreground">This command has no parameters.</p>
-                        )}
-                        <div className="space-y-3 pt-4 border-t">
-                            <div className="flex items-center space-x-2">
-                                <Switch id="allocate-port" checked={allocatePort} onCheckedChange={setAllocatePort} />
-                                <Label htmlFor="allocate-port">Allocate a port for this command</Label>
-                            </div>
-                            {allocatePort && (
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="port-to-allocate">Port</Label>
-                                        <Input
-                                            id="port-to-allocate"
-                                            type="number"
-                                            value={portToAllocate}
-                                            onChange={(e) => setPortToAllocate(e.target.value ? parseInt(e.target.value, 10) : '')}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="port-description">Description</Label>
-                                        <Input
-                                            id="port-description"
-                                            value={portDescription}
-                                            onChange={(e) => setPortDescription(e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                            )}
+                        ))
+                    ) : (
+                        <div className="space-y-2">
+                             <Label htmlFor="custom-command-text">Command</Label>
+                             <Textarea id="custom-command-text" value={customCommand} onChange={e => setCustomCommand(e.target.value)} rows={4} className="font-mono" />
                         </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="ghost" onClick={() => setCommandToRun(null)}>Cancel</Button>
-                        <Button onClick={handleRunSavedCommand} disabled={isPending}>
-                            {isPending && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
-                            Run Command
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        )}
+                    )}
+                </div>
+                <DialogFooter>
+                    <Button variant="ghost" onClick={() => { setCommandToRun(null); setIsCustomCommand(false); }}>Cancel</Button>
+                    <Button onClick={commandToRun ? handleRunSavedCommand : () => handleRunCommand(customCommand, 'Custom Command')} disabled={isPending}>
+                        {isPending && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
+                        Run Command
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }

@@ -49,6 +49,8 @@ export default function CreateCommandPage() {
       type: 'view',
       danger: 'low',
       preprocess: false,
+      allocatesPort: false,
+      portToReserve: '',
     },
   });
 
@@ -59,6 +61,7 @@ export default function CreateCommandPage() {
 
   const commandTemplateValue = form.watch('commandTemplate');
   const preprocessValue = form.watch('preprocess');
+  const allocatesPortValue = form.watch('allocatesPort');
 
   useEffect(() => {
     const foundParams = commandTemplateValue?.match(/\{\{([^}]+)\}\}/g) || [];
@@ -212,6 +215,46 @@ export default function CreateCommandPage() {
                   </FormItem>
                 )}
               />
+              <div className="rounded-lg border p-4 space-y-4">
+                <FormField
+                    control={form.control}
+                    name="allocatesPort"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel>Allocates a Port</FormLabel>
+                          <FormDescription>
+                            Signal that this command will use and reserve a port on the server.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  {allocatesPortValue && (
+                       <div className="space-y-2 border-t pt-4">
+                          <FormField
+                              control={form.control}
+                              name="portToReserve"
+                              render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>Port to Reserve</FormLabel>
+                                      <FormControl><Input {...field} placeholder="e.g., 8080 or {{universal.available_port}}" /></FormControl>
+                                      <FormDescription>
+                                          Enter a specific port or use the placeholder for an available one. Use <code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.reserved_port}}'}</code> in the template.
+                                      </FormDescription>
+                                      <FormMessage />
+                                  </FormItem>
+                              )}
+                              />
+                       </div>
+                  )}
+              </div>
               <FormField
                 control={form.control}
                 name="commandTemplate"
@@ -238,7 +281,7 @@ export default function CreateCommandPage() {
                     <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.base_path}}'}</code> - Default base path</li>
                     <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.account_id}}'}</code> - User Account ID</li>
                     <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.available_port}}'}</code> - First available port</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.available_ports}}'}</code> - CSV of available ports</li>
+                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{'{{universal.reserved_port}}'}</code> - The port reserved for this execution.</li>
                     <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.used_ports}}'}</code> - CSV of used ports</li>
                     <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{'{{universal.linked_account_github}}'}</code> - GitHub Token (Confidential)</li>
                   </ul>
