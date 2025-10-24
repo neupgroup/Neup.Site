@@ -38,6 +38,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { getActivePorts, ActivePortInfo } from '@/actions/server/management/get-active-ports';
 import { getActiveProcesses, ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { getPm2Processes, ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
@@ -522,7 +532,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const handleReboot = async () => {
       setShowRebootConfirm(false);
       startTransition(async () => {
-        await runCommand(id, 'reboot-server');
+        await runCommand(id, 'reboot');
         toast({ title: "Reboot Command Sent", description: `The server is now rebooting. This may take a few minutes.`});
         setTimeout(() => fetchLogs(1), 1000);
     });
