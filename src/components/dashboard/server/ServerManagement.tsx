@@ -22,7 +22,7 @@ import { Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const FormContainer = ({ children }: { children: React.ReactNode }) => (
-    <div className="p-4 border-t group-hover:bg-muted/50 transition-colors">
+    <div className="p-4 border-t transition-colors">
         {children}
     </div>
 );
@@ -242,7 +242,7 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                 </div>
                 <Accordion type="single" collapsible className="w-full space-y-2">
                     {paginatedItems.map(({id, title, description, form}) => (
-                        <AccordionItem value={id!} key={id} className="border rounded-lg px-2 group transition-colors">
+                        <AccordionItem value={id!} key={id} className="border rounded-lg px-2 transition-colors data-[state=open]:border-primary">
                             <AccordionTrigger className="p-4 hover:no-underline text-left">
                                 <div className="flex-1 pr-4">
                                     <h4 className="font-medium text-left">{title}</h4>
@@ -283,3 +283,4 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
         </Card>
     );
 }
+
