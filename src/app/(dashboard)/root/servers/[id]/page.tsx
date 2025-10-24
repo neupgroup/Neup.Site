@@ -93,7 +93,7 @@ const ActivePortsSection = ({ serverId }: { serverId: string }) => {
     <AccordionItem value="active-ports">
       <AccordionTrigger className="text-lg font-medium" onClick={() => !ports && fetchPorts()}>
         <div className="flex items-center gap-2">
-          <Wifi className="h-5 w-5" /> Live Port Status
+          <Wifi className="h-5 w-5" /> Network Status
         </div>
       </AccordionTrigger>
       <AccordionContent className="pt-2">
@@ -450,95 +450,77 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
             </CardFooter>
         </Card>
 
-        <Accordion type="multiple" className="w-full space-y-4">
-             <Card>
-                <AccordionItem value="live-status" className="border-b-0">
-                    <CardHeader className="p-0">
-                        <AccordionTrigger className="flex w-full items-center justify-between p-6 hover:bg-muted/50 rounded-t-lg">
-                             <div>
-                                <CardTitle>Live Server Status</CardTitle>
-                                <CardDescription>Real-time information fetched directly from the server.</CardDescription>
-                            </div>
-                        </AccordionTrigger>
-                    </CardHeader>
-                    <AccordionContent asChild>
-                        <div className="p-6 pt-0">
-                            <Accordion type="single" collapsible className="w-full space-y-2">
-                                <ActivePortsSection serverId={id} />
-                            </Accordion>
+        <Card>
+            <CardHeader>
+                <CardTitle>Live Server Status</CardTitle>
+                <CardDescription>Real-time information fetched directly from the server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <Accordion type="single" collapsible className="w-full space-y-2">
+                    <ActivePortsSection serverId={id} />
+                </Accordion>
+            </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Management</CardTitle>
+                <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <div>
+                        <Label htmlFor="command-search">Run Saved Command</Label>
+                        <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                id="command-search"
+                                placeholder="Search for a command..."
+                                className="pl-8"
+                                value={commandSearchQuery}
+                                onChange={(e) => setCommandSearchQuery(e.target.value)}
+                            />
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Card>
-
-            <Card>
-                <AccordionItem value="management" className="border-b-0">
-                    <CardHeader className="p-0">
-                         <AccordionTrigger className="flex w-full items-center justify-between p-6 hover:bg-muted/50 rounded-t-lg">
-                             <div>
-                                <CardTitle>Server Management</CardTitle>
-                                <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
+                        {loadingCommands ? (
+                            <div className="text-center p-4"><Loader2Icon className="h-6 w-6 animate-spin mx-auto text-muted-foreground" /></div>
+                        ) : searchedCommands.length > 0 ? (
+                            <div className="space-y-2 mt-2">
+                                {searchedCommands.map(cmd => (
+                                    <div key={cmd.id} className="flex items-center justify-between p-2 border rounded-md">
+                                        <div className="flex-1">
+                                            <p className="font-medium">{cmd.name}</p>
+                                            <p className="text-xs text-muted-foreground">{cmd.description}</p>
+                                        </div>
+                                        <Button size="sm" onClick={() => { setCommandToRun(cmd); setIsCustomCommand(false); }}>Run</Button>
+                                    </div>
+                                ))}
                             </div>
-                        </AccordionTrigger>
-                    </CardHeader>
-                    <AccordionContent asChild>
-                        <div className="p-6 pt-0">
-                            <div className="space-y-4">
-                                <div>
-                                    <Label htmlFor="command-search">Run Saved Command</Label>
-                                    <div className="relative">
-                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            id="command-search"
-                                            placeholder="Search for a command..."
-                                            className="pl-8"
-                                            value={commandSearchQuery}
-                                            onChange={(e) => setCommandSearchQuery(e.target.value)}
-                                        />
-                                    </div>
-                                    {loadingCommands ? (
-                                        <div className="text-center p-4"><Loader2Icon className="h-6 w-6 animate-spin mx-auto text-muted-foreground" /></div>
-                                    ) : searchedCommands.length > 0 ? (
-                                        <div className="space-y-2 mt-2">
-                                            {searchedCommands.map(cmd => (
-                                                <div key={cmd.id} className="flex items-center justify-between p-2 border rounded-md">
-                                                    <div className="flex-1">
-                                                        <p className="font-medium">{cmd.name}</p>
-                                                        <p className="text-xs text-muted-foreground">{cmd.description}</p>
-                                                    </div>
-                                                    <Button size="sm" onClick={() => { setCommandToRun(cmd); setIsCustomCommand(false); }}>Run</Button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : commandSearchQuery.length > 2 ? (
-                                        <p className="text-sm text-muted-foreground text-center p-4">No commands found.</p>
-                                    ) : null}
-                                </div>
+                        ) : commandSearchQuery.length > 2 ? (
+                            <p className="text-sm text-muted-foreground text-center p-4">No commands found.</p>
+                        ) : null}
+                    </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="custom-command">Run Custom Command</Label>
-                                    <div className="grid w-full gap-2">
-                                        <Textarea 
-                                            id="custom-command"
-                                            value={customCommand}
-                                            onChange={(e) => setCustomCommand(e.target.value)}
-                                            placeholder="e.g., ls -la" 
-                                            rows={4}
-                                            className="font-mono"
-                                        />
-                                        <div className="flex justify-start">
-                                            <Button size="sm" onClick={() => { setCommandToRun(null); setIsCustomCommand(true); }} disabled={isPending || !customCommand}>
-                                                <Send className="mr-2 h-4 w-4" /> Run Command
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="custom-command">Run Custom Command</Label>
+                        <div className="grid w-full gap-2">
+                            <Textarea 
+                                id="custom-command"
+                                value={customCommand}
+                                onChange={(e) => setCustomCommand(e.target.value)}
+                                placeholder="e.g., ls -la" 
+                                rows={4}
+                                className="font-mono"
+                            />
+                            <div className="flex justify-start">
+                                <Button size="sm" onClick={() => { setCommandToRun(null); setIsCustomCommand(true); }} disabled={isPending || !customCommand}>
+                                    <Send className="mr-2 h-4 w-4" /> Run Command
+                                </Button>
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Card>
-        </Accordion>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
 
 
         <Card>
