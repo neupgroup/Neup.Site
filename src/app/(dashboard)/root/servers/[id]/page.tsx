@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, ArrowLeft, Pencil, Share2, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder, PlayCircle, Eye, Lock, UploadCloud, FileText, X, Search, RefreshCw, HardDrive, Wifi } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Share2, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder, PlayCircle, Eye, Lock, UploadCloud, FileText, X, Search, RefreshCw, HardDrive, Wifi, ListTree } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -44,6 +44,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { getActivePorts, ActivePortInfo } from '@/actions/server/management/get-active-ports';
 import { getActiveProcesses, ProcessInfo } from '@/actions/server/management/get-active-processes';
+import { getPm2Processes, ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
@@ -206,6 +207,94 @@ const ActiveProcessesSection = ({ serverId }: { serverId: string }) => {
     </AccordionItem>
   );
 };
+
+const Pm2ProcessesSection = ({ serverId }: { serverId: string }) => {
+  const [processes, setProcesses] = useState<ProcessManagerInfo[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProcesses = async () => {
+    setIsLoading(true);
+    setError(null);
+    const result = await getPm2Processes(serverId);
+    if (result.success) {
+      setProcesses(result.processes || []);
+    } else {
+      setError(result.error || 'Failed to fetch PM2 processes.');
+    }
+    setIsLoading(false);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'online':
+        return <Badge variant="default" className="bg-green-600">Online</Badge>;
+      case 'stopping':
+      case 'stopped':
+        return <Badge variant="secondary">Stopped</Badge>;
+      case 'launching':
+        return <Badge variant="outline">Launching</Badge>;
+      case 'errored':
+      case 'failed':
+        return <Badge variant="destructive">Errored</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  return (
+    <AccordionItem value="pm2-processes">
+      <AccordionTrigger className="text-lg font-medium" onClick={() => !processes && fetchProcesses()}>
+        <div className="flex items-center gap-2">
+          <ListTree className="h-5 w-5" /> PM2 Processes
+        </div>
+      </AccordionTrigger>
+      <AccordionContent className="pt-2">
+        {isLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : error ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : processes && processes.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>CPU</TableHead>
+                <TableHead>Memory</TableHead>
+                <TableHead>Uptime</TableHead>
+                <TableHead>Restarts</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {processes.map((proc) => (
+                <TableRow key={proc.id}>
+                  <TableCell className="font-medium">{proc.name}</TableCell>
+                  <TableCell>{getStatusBadge(proc.status)}</TableCell>
+                  <TableCell>{proc.cpu}%</TableCell>
+                  <TableCell>{proc.memory}</TableCell>
+                  <TableCell>{proc.uptime}</TableCell>
+                  <TableCell>{proc.restarts}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="text-center text-muted-foreground p-8">
+            <p>No PM2 processes found or PM2 is not installed.</p>
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
+};
+
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -522,12 +611,14 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
         <Card>
             <CardHeader>
-                <CardTitle>Live Server Status</CardTitle>
+                <CardTitle>Server Status</CardTitle>
                 <CardDescription>Real-time information fetched directly from the server.</CardDescription>
             </CardHeader>
             <CardContent>
                  <Accordion type="single" collapsible className="w-full space-y-2">
                     <ActivePortsSection serverId={id} />
+                    <ActiveProcessesSection serverId={id} />
+                    <Pm2ProcessesSection serverId={id} />
                 </Accordion>
             </CardContent>
         </Card>
