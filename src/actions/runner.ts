@@ -115,6 +115,9 @@ export async function runCommand(
         const usedPorts = (server.usedPorts || []).map(p => p.port);
         const availablePorts = getAvailablePorts(usedPorts);
         
+        // Default to first available port if we're not explicitly allocating one
+        actualReservedPort = availablePorts[0];
+        
         if (allocatesPort && portToReserve) {
             let portToUse: number;
             if (portToReserve === '{{universal.available_port}}') {
