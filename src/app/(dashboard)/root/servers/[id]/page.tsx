@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, ArrowLeft, Pencil, Share2, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder, PlayCircle, Eye, Lock, UploadCloud, FileText, X, Search, RefreshCw, HardDrive } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Share2, Terminal, Send, Globe, Zap, ShieldAlert, ChevronLeft, ChevronRight, Loader2 as Loader2Icon, Cpu, Warehouse, User, Folder, PlayCircle, Eye, Lock, UploadCloud, FileText, X, Search, RefreshCw, HardDrive, Wifi } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -42,6 +42,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { getActivePorts, ActivePortInfo } from '@/actions/server/management/get-active-ports';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 interface UploadingFile {
@@ -70,6 +72,71 @@ const FullLog = ({ log }: { log: ServerLog }) => {
 };
 
 
+const ActivePortsSection = ({ serverId }: { serverId: string }) => {
+  const [ports, setPorts] = useState<ActivePortInfo[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPorts = async () => {
+    setIsLoading(true);
+    setError(null);
+    const result = await getActivePorts(serverId);
+    if (result.success) {
+      setPorts(result.ports || []);
+    } else {
+      setError(result.error || 'Failed to fetch active ports.');
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <AccordionItem value="active-ports">
+      <AccordionTrigger className="text-lg font-medium" onClick={() => !ports && fetchPorts()}>
+        <div className="flex items-center gap-2">
+          <Wifi className="h-5 w-5" /> Network Status
+        </div>
+      </AccordionTrigger>
+      <AccordionContent className="pt-2">
+        {isLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : error ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : ports && ports.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Port</TableHead>
+                <TableHead>Protocol</TableHead>
+                <TableHead>Address</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {ports.map((portInfo, index) => (
+                <TableRow key={`${portInfo.port}-${portInfo.protocol}-${index}`}>
+                  <TableCell className="font-medium">{portInfo.port}</TableCell>
+                  <TableCell>{portInfo.protocol}</TableCell>
+                  <TableCell className="font-mono text-xs">{portInfo.address}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="text-center text-muted-foreground p-8">
+            <p>No active listening ports found.</p>
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
+};
+
+
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const [server, setServer] = useState<Server | null>(null);
@@ -79,10 +146,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const [isRefreshingStorage, setIsRefreshingStorage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [customCommand, setCustomCommand] = useState('');
-  const [nginxDomains, setNginxDomains] = useState('');
-  const [proxyUrl, setProxyUrl] = useState('http://localhost:3000');
-  const [certbotDomain, setCertbotDomain] = useState('');
-  const [certbotEmail, setCertbotEmail] = useState('');
   
   const [isPending, startTransition] = useTransition();
 
@@ -102,8 +165,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const [commandToRun, setCommandToRun] = useState<ServerCommand | null>(null);
   const [commandParams, setCommandParams] = useState<Record<string, string>>({});
   const [isCustomCommand, setIsCustomCommand] = useState(false);
-  const [portToAllocate, setPortToAllocate] = useState<string>('');
-  const [portDescription, setPortDescription] = useState('');
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
@@ -243,7 +304,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const handleRunCommand = (command: string, commandName?: string) => {
       if (!command) return;
       startTransition(async () => {
-          await runCommand(id, command, {}, false, commandName);
+          await runCommand(id, command, {});
           toast({ title: "Command Sent", description: `The command "${commandName || command}" has been sent to the server.`});
           setCustomCommand('');
           setTimeout(() => fetchLogs(1), 1000);
@@ -261,49 +322,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
         setTimeout(() => fetchLogs(1), 1000); // refetch logs after a delay
     });
   };
-
-
-const handleNginxConfig = async () => {
-    const urls = nginxDomains.split('\n').map(u => u.trim()).filter(Boolean);
-    if (urls.length === 0) {
-        toast({ variant: 'destructive', title: 'Error', description: 'At least one domain or path is required.' });
-        return;
-    }
-
-    try {
-        const proxyPort = new URL(proxyUrl).port;
-        if (['80', '443', '22'].includes(proxyPort)) {
-            toast({ variant: 'destructive', title: 'Invalid Port', description: `Cannot proxy to reserved port ${proxyPort}.`});
-            return;
-        }
-
-        const listenPort = 80;
-
-        const command = await getConfigureNginxCommand({
-            urls,
-            proxyUrl,
-            listenPort,
-        });
-        
-        handleRunCommand(command, `Configure Nginx for ${urls[0]}`);
-
-    } catch (e: any) {
-        if (e instanceof TypeError && e.message.includes('Invalid URL')) {
-            toast({ variant: 'destructive', title: 'Invalid URL', description: 'One of the provided URLs is not valid.'});
-        } else {
-             toast({ variant: 'destructive', title: 'Configuration Error', description: e.message || 'An unexpected error occurred.'});
-        }
-    }
-};
-
-const handleInstallCertbot = async () => {
-    try {
-        const command = await getInstallCertbotNginxCommand({ domain: certbotDomain, email: certbotEmail });
-        handleRunCommand(command, `Install SSL for ${certbotDomain}`);
-    } catch (e: any) {
-        toast({ variant: 'destructive', title: 'SSL Setup Error', description: e.message });
-    }
-};
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   
@@ -409,7 +427,7 @@ const handleInstallCertbot = async () => {
                 
                  {server.usedPorts && server.usedPorts.length > 0 && (
                      <div>
-                        <h4 className="font-semibold text-sm text-muted-foreground">Used Ports</h4>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Used Ports (from DB)</h4>
                         <div className="flex flex-wrap gap-2 mt-1">
                             {server.usedPorts.map(p => <Badge key={p.port} variant="secondary">{p.port}: {p.description}</Badge>)}
                         </div>
@@ -429,32 +447,34 @@ const handleInstallCertbot = async () => {
                         <Share2 className="mr-2 h-4 w-4"/> Allocate Server
                     </Link>
                 </Button>
-                <Button asChild>
-                    <Link href={`/root/servers/${id}/edit`}>
-                        <Pencil className="mr-2 h-4 w-4"/> Edit
-                    </Link>
-                </Button>
             </CardFooter>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Server Management</CardTitle>
-            <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
-          </CardHeader>
-          <CardContent>
-             <Accordion type="single" collapsible className="w-full space-y-2">
-                 <AccordionItem value="run-saved-command" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Run Saved Command</h4>
-                            <p className="text-sm text-muted-foreground text-left">Execute a pre-defined command template on this server.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
+            <CardHeader>
+                <CardTitle>Live Server Status</CardTitle>
+                <CardDescription>Real-time information fetched directly from the server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <Accordion type="single" collapsible className="w-full space-y-2">
+                    <ActivePortsSection serverId={id} />
+                </Accordion>
+            </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Management</CardTitle>
+                <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <div>
+                        <Label htmlFor="command-search">Run Saved Command</Label>
                         <div className="relative">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
+                                id="command-search"
                                 placeholder="Search for a command..."
                                 className="pl-8"
                                 value={commandSearchQuery}
@@ -464,7 +484,7 @@ const handleInstallCertbot = async () => {
                         {loadingCommands ? (
                             <div className="text-center p-4"><Loader2Icon className="h-6 w-6 animate-spin mx-auto text-muted-foreground" /></div>
                         ) : searchedCommands.length > 0 ? (
-                            <div className="space-y-2">
+                            <div className="space-y-2 mt-2">
                                 {searchedCommands.map(cmd => (
                                     <div key={cmd.id} className="flex items-center justify-between p-2 border rounded-md">
                                         <div className="flex-1">
@@ -478,72 +498,13 @@ const handleInstallCertbot = async () => {
                         ) : commandSearchQuery.length > 2 ? (
                             <p className="text-sm text-muted-foreground text-center p-4">No commands found.</p>
                         ) : null}
-                    </AccordionContent>
-                </AccordionItem>
+                    </div>
 
-                 <AccordionItem value="config-nginx" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Configure Nginx Reverse Proxy</h4>
-                            <p className="text-sm text-muted-foreground text-left">Point one or more domains/paths to an application running on this server.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
-                         <div className="space-y-2">
-                            <Label htmlFor="nginx-domains">Domains / Paths</Label>
-                            <Textarea 
-                                id="nginx-domains"
-                                value={nginxDomains} 
-                                onChange={e => setNginxDomains(e.target.value)} 
-                                placeholder="example.com
-www.example.com/subpath"
-                                rows={3}
-                            />
-                            <p className="text-xs text-muted-foreground">Enter one URL per line.</p>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="proxy-url">Proxy Pass URL</Label>
-                            <Input id="proxy-url" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)} />
-                            <p className="text-xs text-muted-foreground">The internal URL of your application (e.g., http://localhost:3000).</p>
-                        </div>
-                         <Button onClick={handleNginxConfig} disabled={isPending}>
-                            <Globe className="mr-2 h-4 w-4" /> Configure Nginx
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="install-certbot" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Setup SSL with Certbot</h4>
-                            <p className="text-sm text-muted-foreground text-left">Install Certbot and get a free SSL certificate from Let's Encrypt.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4 space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="certbot-domain">Domain</Label>
-                            <Input id="certbot-domain" value={certbotDomain} onChange={e => setCertbotDomain(e.target.value)} placeholder="e.g., yourdomain.com" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="certbot-email">Email</Label>
-                            <Input id="certbot-email" type="email" value={certbotEmail} onChange={e => setCertbotEmail(e.target.value)} placeholder="e.g., admin@yourdomain.com" />
-                        </div>
-                        <Button onClick={handleInstallCertbot} disabled={isPending}>
-                            <Lock className="mr-2 h-4 w-4" /> Setup SSL
-                        </Button>
-                    </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="custom-command" className="border-0">
-                    <AccordionTrigger className="flex w-full items-center justify-between rounded-lg border p-4 hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:border-b-0 hover:no-underline cursor-pointer">
-                        <div>
-                            <h4 className="font-medium text-left">Run Custom Command</h4>
-                            <p className="text-sm text-muted-foreground text-left">Execute any shell command on the server.</p>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="border rounded-b-lg p-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="custom-command">Run Custom Command</Label>
                         <div className="grid w-full gap-2">
                             <Textarea 
+                                id="custom-command"
                                 value={customCommand}
                                 onChange={(e) => setCustomCommand(e.target.value)}
                                 placeholder="e.g., ls -la" 
@@ -556,11 +517,11 @@ www.example.com/subpath"
                                 </Button>
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-          </CardContent>
+                    </div>
+                </div>
+            </CardContent>
         </Card>
+
 
         <Card>
             <CardHeader>
