@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-import { Search, Loader2, Globe, Lock, Terminal, Code, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const FormContainer = ({ children }: { children: React.ReactNode }) => (
     <div className="p-4 bg-muted/50 border-t">
@@ -125,9 +125,6 @@ const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerComman
                     />
                 </div>
             ))}
-            {(!command.parameters || command.parameters.length === 0) && (
-                <p className="text-sm text-muted-foreground">This command has no parameters.</p>
-            )}
             <Button onClick={() => onRun(command.id, commandParams)} disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Run Command
@@ -178,21 +175,18 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
             id: 'nginx-config',
             title: 'Configure Nginx Reverse Proxy',
             description: 'Point domains/paths to a running application.',
-            icon: Globe,
             form: <NginxForm onRun={handleRunCommand} isPending={isPending} />
         },
         {
             id: 'certbot-setup',
             title: 'Setup SSL with Certbot',
             description: 'Install a free SSL certificate from Let\'s Encrypt.',
-            icon: Lock,
             form: <CertbotForm onRun={handleRunCommand} isPending={isPending} />
         },
         {
             id: 'custom-command',
             title: 'Run Custom Command',
             description: 'Execute any shell command on the server.',
-            icon: Terminal,
             form: <CustomCommandForm onRun={handleRunCommand} isPending={isPending} />
         },
     ];
@@ -202,7 +196,6 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
             id: cmd.id,
             title: cmd.name,
             description: cmd.description || 'No description',
-            icon: Code,
             form: <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
         })),
         ...staticManagementItems,
@@ -237,15 +230,12 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                     />
                 </div>
                 <Accordion type="single" collapsible className="w-full space-y-2">
-                    {paginatedItems.map(({id, icon: Icon, title, description, form}) => (
-                        <AccordionItem value={id!} key={id} className="border rounded-md px-2 hover:bg-muted/50 transition-colors">
-                            <AccordionTrigger className="p-2 hover:no-underline text-left">
-                                <div className="flex items-start gap-4">
-                                    <Icon className="h-6 w-6 text-muted-foreground mt-1" />
-                                    <div className="flex-1">
-                                        <h4 className="font-medium text-left">{title}</h4>
-                                        <p className="text-sm text-muted-foreground text-left">{description}</p>
-                                    </div>
+                    {paginatedItems.map(({id, title, description, form}) => (
+                        <AccordionItem value={id!} key={id} className="border rounded-lg px-2 hover:bg-muted/50 transition-colors">
+                            <AccordionTrigger className="p-4 hover:no-underline text-left">
+                                <div className="flex-1">
+                                    <h4 className="font-medium text-left">{title}</h4>
+                                    <p className="text-sm text-muted-foreground text-left">{description}</p>
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
