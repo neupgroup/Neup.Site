@@ -12,7 +12,6 @@ import { useRouter } from 'next/navigation';
 
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
-import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
 import { getUptime } from '@/actions/server/management/get-uptime';
 
 interface ServerInfoCardProps {
@@ -24,28 +23,10 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
     const [server, setServer] = useState(initialServer);
     const [uptime, setUptime] = useState(initialUptime);
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
-    const [isRefreshingStorage, setIsRefreshingStorage] = useState(false);
     const [isRefreshingUptime, setIsRefreshingUptime] = useState(false);
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
     const router = useRouter();
-
-    const handleRefreshStorage = async () => {
-        setIsRefreshingStorage(true);
-        const result = await getStorageUsage(server.id);
-        if (result.success && result.data) {
-            setServer(prev => prev ? {
-                ...prev,
-                storageUsed: result.data!.used,
-                storageTotal: result.data!.total,
-                storageUnit: result.data!.unit,
-            } : null);
-            toast({ title: "Storage Refreshed" });
-        } else {
-            toast({ variant: 'destructive', title: "Failed to Refresh Storage", description: result.error });
-        }
-        setIsRefreshingStorage(false);
-    };
 
     const handleRefreshUptime = async () => {
         setIsRefreshingUptime(true);
@@ -105,19 +86,6 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
                         <div>
                             <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Folder className="h-4 w-4" />Default Base Path</h4>
                             <p className="font-mono text-sm">{server.basePath || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><HardDrive className="h-4 w-4" />Storage</h4>
-                            <div className="flex items-center gap-2">
-                                <p className="font-mono text-sm">
-                                    {server.storageUsed && server.storageTotal
-                                        ? `${server.storageUsed}${server.storageUnit} / ${server.storageTotal}${server.storageUnit}`
-                                        : 'N/A'}
-                                </p>
-                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleRefreshStorage} disabled={isRefreshingStorage}>
-                                    {isRefreshingStorage ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                                </Button>
-                            </div>
                         </div>
                          <div>
                             <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Clock className="h-4 w-4" />Uptime</h4>
