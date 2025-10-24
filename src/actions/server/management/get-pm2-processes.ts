@@ -13,6 +13,7 @@ export interface ProcessManagerInfo {
   cpu: number;
   memory: string; // e.g., "155.2 MB"
   uptime: string;
+  restarts: number;
 }
 
 function parsePm2List(output: string): ProcessManagerInfo[] {
@@ -39,6 +40,7 @@ function parsePm2List(output: string): ProcessManagerInfo[] {
             cpu: proc.monit?.cpu || 0,
             memory: proc.monit?.memory ? `${(proc.monit.memory / (1024 * 1024)).toFixed(1)} MB` : '0 MB',
             uptime: uptimeString,
+            restarts: proc.pm2_env?.restart_time || 0,
         }
     });
 
@@ -61,6 +63,7 @@ function parsePm2List(output: string): ProcessManagerInfo[] {
                 cpu: parseFloat(parts[10]),
                 memory: parts[11],
                 uptime: parts[9],
+                restarts: parseInt(parts[12], 10) || 0,
             });
         }
     }

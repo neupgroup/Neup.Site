@@ -269,6 +269,7 @@ const Pm2ProcessesSection = ({ serverId }: { serverId: string }) => {
                 <TableHead>CPU</TableHead>
                 <TableHead>Memory</TableHead>
                 <TableHead>Uptime</TableHead>
+                <TableHead>Restarts</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -279,6 +280,7 @@ const Pm2ProcessesSection = ({ serverId }: { serverId: string }) => {
                   <TableCell>{proc.cpu}%</TableCell>
                   <TableCell>{proc.memory}</TableCell>
                   <TableCell>{proc.uptime}</TableCell>
+                  <TableCell>{proc.restarts}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
