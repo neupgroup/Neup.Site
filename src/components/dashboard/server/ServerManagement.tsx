@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
@@ -19,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 import { Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const FormContainer = ({ children }: { children: React.ReactNode }) => (
     <div className="p-4 border-t transition-colors">
@@ -115,7 +114,7 @@ const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerComman
     
     if (!command.parameters || command.parameters.length === 0) {
         return (
-            <Button onClick={() => onRun(command.id, {})} disabled={isPending}>
+            <Button onClick={() => onRun(command.id!, {})} disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Run Command
             </Button>
@@ -136,7 +135,7 @@ const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerComman
                     />
                 </div>
             ))}
-            <Button onClick={() => onRun(command.id, commandParams)} disabled={isPending}>
+            <Button onClick={() => onRun(command.id!, commandParams)} disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Run Command
             </Button>
@@ -148,25 +147,73 @@ const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerComman
 export default function ServerManagement({ serverId }: { serverId: string }) {
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
-    const [allCommands, setAllCommands] = useState<ServerCommand[]>([]);
+    const [commands, setCommands] = useState<ServerCommand[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+
     const pageSize = 5;
 
-    useEffect(() => {
-        const fetchCommands = async () => {
-            const result = await getServerCommands({ pageSize: 1000 });
-            if (result.success && result.commands) {
-                setAllCommands(result.commands);
-            }
-        };
-        fetchCommands();
-    }, []);
+    const staticManagementItems = [
+        {
+            id: 'nginx-config',
+            name: 'Configure Nginx Reverse Proxy',
+            description: 'Point domains/paths to a running application.',
+            form: <NginxForm onRun={handleRunCommand} isPending={isPending} />
+        },
+        {
+            id: 'certbot-setup',
+            name: 'Setup SSL with Certbot',
+            description: 'Install a free SSL certificate from Let\'s Encrypt.',
+            form: <CertbotForm onRun={handleRunCommand} isPending={isPending} />
+        },
+        {
+            id: 'custom-command',
+            name: 'Run Custom Command',
+            description: 'Execute any shell command on the server.',
+            form: <CustomCommandForm onRun={handleRunCommand} isPending={isPending} />
+        },
+    ];
     
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery]);
+    const fetchCommands = async (page: number, search: string) => {
+        setLoading(true);
+        const savedCommandsResult = await getServerCommands({ page: 1, pageSize: 1000, searchQuery: search });
+        
+        let allItems = [
+            ...(savedCommandsResult.commands || []).map(cmd => ({
+                id: cmd.id!,
+                name: cmd.name,
+                description: cmd.description || 'No description',
+                form: <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
+            })),
+            ...staticManagementItems.filter(item => 
+                item.name.toLowerCase().includes(search.toLowerCase()) ||
+                item.description.toLowerCase().includes(search.toLowerCase())
+            )
+        ];
 
+        if (search) {
+             allItems = allItems.filter(item => 
+                item.name.toLowerCase().includes(search.toLowerCase()) ||
+                item.description.toLowerCase().includes(search.toLowerCase())
+            );
+        }
+
+        setTotalCount(allItems.length);
+        const paginatedItems = allItems.slice((page - 1) * pageSize, page * pageSize);
+        
+        // This is a temporary type assertion. A better approach would be to have a unified item type.
+        setCommands(paginatedItems as unknown as ServerCommand[]);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        startTransition(() => {
+            fetchCommands(currentPage, searchQuery);
+        });
+    }, [currentPage, searchQuery]);
+    
     const handleRunCommand = (command: string, description: string) => {
         startTransition(async () => {
             await runCommand(serverId, command);
@@ -181,48 +228,7 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
         });
     }
 
-    const staticManagementItems = [
-        {
-            id: 'nginx-config',
-            title: 'Configure Nginx Reverse Proxy',
-            description: 'Point domains/paths to a running application.',
-            form: <NginxForm onRun={handleRunCommand} isPending={isPending} />
-        },
-        {
-            id: 'certbot-setup',
-            title: 'Setup SSL with Certbot',
-            description: 'Install a free SSL certificate from Let\'s Encrypt.',
-            form: <CertbotForm onRun={handleRunCommand} isPending={isPending} />
-        },
-        {
-            id: 'custom-command',
-            title: 'Run Custom Command',
-            description: 'Execute any shell command on the server.',
-            form: <CustomCommandForm onRun={handleRunCommand} isPending={isPending} />
-        },
-    ];
-
-    const allManagementItems = [
-        ...allCommands.map(cmd => ({
-            id: cmd.id,
-            title: cmd.name,
-            description: cmd.description || 'No description',
-            form: <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
-        })),
-        ...staticManagementItems,
-    ];
-    
-    const filteredItems = allManagementItems.filter(item => 
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const paginatedItems = filteredItems.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-    );
-
-    const totalPages = Math.ceil(filteredItems.length / pageSize);
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
         <Card>
@@ -237,24 +243,46 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                         placeholder="Search commands..."
                         className="pl-8"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setCurrentPage(1); // Reset to first page on search
+                        }}
                     />
                 </div>
-                <Accordion type="single" collapsible className="w-full space-y-2">
-                    {paginatedItems.map(({id, title, description, form}) => (
-                        <AccordionItem value={id!} key={id} className="border rounded-lg px-2 transition-colors data-[state=open]:border-primary">
-                            <AccordionTrigger className="p-4 hover:no-underline text-left">
-                                <div className="flex-1 pr-4">
-                                    <h4 className="font-medium text-left">{title}</h4>
-                                    <p className="text-sm text-muted-foreground text-left">{description}</p>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                                <FormContainer>{form}</FormContainer>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                {loading || isPending ? (
+                    <div className="space-y-2">
+                        {[...Array(pageSize)].map((_, i) => (
+                           <div key={i} className="p-4 border rounded-lg space-y-2">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                           </div>
+                        ))}
+                    </div>
+                ) : (
+                    <Accordion type="single" collapsible className="w-full space-y-2">
+                        {commands.map((cmd) => {
+                            // Find the corresponding form from the full list
+                            const item = [
+                                ...allCommands.map(c => ({...c, form: <SavedCommandForm command={c} onRun={handleRunSavedCommand} isPending={isPending} />})),
+                                ...staticManagementItems
+                            ].find(item => item.id === cmd.id);
+
+                            return (
+                                <AccordionItem value={cmd.id!} key={cmd.id} className="border rounded-lg data-[state=open]:border-primary">
+                                    <AccordionTrigger className="p-4 hover:no-underline text-left">
+                                        <div className="flex-1 pr-4">
+                                            <h4 className="font-medium text-left">{cmd.name}</h4>
+                                            <p className="text-sm text-muted-foreground text-left">{cmd.description || 'No description'}</p>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <FormContainer>{item?.form || <div>Form not found.</div>}</FormContainer>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            );
+                        })}
+                    </Accordion>
+                )}
             </CardContent>
              {totalPages > 1 && (
                 <CardFooter className="justify-start">
@@ -283,4 +311,3 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
         </Card>
     );
 }
-
