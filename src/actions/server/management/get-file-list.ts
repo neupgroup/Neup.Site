@@ -36,6 +36,11 @@ function parseLsOutput(output: string, currentPath: string): FileInfo[] {
     }
     const name = parts[nameIndex];
     
+    // Filter out '.' and '..' entries
+    if (name === '.' || name === '..') {
+        continue;
+    }
+
     // Simple check for file type from permissions string
     const type = permissions.startsWith('d') ? 'd' : permissions.startsWith('l') ? 'l' : '-';
 

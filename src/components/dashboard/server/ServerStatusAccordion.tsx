@@ -19,6 +19,7 @@ import { getFileList, type FileInfo } from '@/actions/server/management/get-file
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { cn } from "@/lib/utils";
 
 const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean; }) => {
   const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
@@ -302,7 +303,6 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
     const pathname = usePathname();
     const searchParams = useSearchParams();
     
-    // The URL is the source of truth for the current path
     const currentPath = searchParams.get('fileManager') || '/';
 
     const [files, setFiles] = useState<FileInfo[]>([]);
@@ -335,11 +335,6 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
 
     const handleNavigate = (file: FileInfo) => {
         if (file.type === 'd') {
-            if (file.name === '..') {
-                goUp();
-                return;
-            }
-            if (file.name === '.') return;
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
         }
@@ -371,7 +366,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         <div className="space-y-4">
             <div className="flex items-center gap-2">
                 <Input 
-                  key={currentPath} // Force re-render on path change
+                  key={currentPath}
                   defaultValue={currentPath} 
                   onKeyDown={handlePathChange}
                   className="font-mono" 
@@ -391,8 +386,8 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                 <div className="space-y-1">
                     {currentPath !== '/' && (
                         <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
-                           <div className="pl-1"><ArrowLeft className="h-4 w-4 flex-shrink-0 text-muted-foreground"/></div>
-                           <span className="font-mono flex-1 truncate">..</span>
+                           {getFileIcon('d')}
+                           <span className="font-mono flex-1 truncate text-primary">Go back</span>
                         </div>
                     )}
                     {files.map(file => (
