@@ -1,20 +1,25 @@
 
 'use client';
 import * as React from "react"
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown } from 'lucide-react';
+import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, FileText, Link as LinkIcon, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 import { getDetailedStorageForServer, type StorageInfo } from '@/actions/server/management/get-detailed-storage-for-server';
 import { getActivePorts, type ActivePortInfo } from '@/actions/server/management/get-active-ports';
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { getPm2Processes, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
+import { getFileList, type FileInfo } from '@/actions/server/management/get-file-list';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { cn } from "@/lib/utils";
 
 const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean; }) => {
   const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
@@ -293,13 +298,163 @@ const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExp
   );
 };
 
+const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean }) => {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    
+    const currentPath = searchParams.get('fileManager') || '/';
+
+    const [files, setFiles] = useState<FileInfo[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const navigate = useCallback((newPath: string) => {
+        const params = new URLSearchParams(searchParams);
+        params.set('fileManager', newPath);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [pathname, router, searchParams]);
+    
+    const fetchFiles = useCallback(async (path: string) => {
+        setIsLoading(true);
+        setError(null);
+        const result = await getFileList(serverId, path);
+        if(result.success && result.files) {
+            setFiles(result.files);
+        } else {
+            setError(result.error || 'Failed to list files.');
+        }
+        setIsLoading(false);
+    }, [serverId]);
+    
+    useEffect(() => {
+        if (isExpanded) {
+            fetchFiles(currentPath);
+        }
+    }, [isExpanded, fetchFiles, currentPath]);
+
+    const handleNavigate = (file: FileInfo) => {
+        if (file.type === 'd') {
+            const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
+            navigate(newPath);
+        } else if (file.type === 'l' && file.targetPath && file.targetPath.endsWith('/')) {
+            navigate(file.targetPath);
+        }
+    };
+
+    const goUp = () => {
+        if (currentPath === '/') return;
+        const pathParts = currentPath.split('/').filter(Boolean);
+        pathParts.pop();
+        const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
+        navigate(newPath);
+    };
+    
+    const handlePathChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            navigate((e.target as HTMLInputElement).value);
+        }
+    };
+    
+    const getFileIcon = (type: FileInfo['type']) => {
+        switch(type) {
+            case 'd': return <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+            case 'l': return <LinkIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+            default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+        }
+    }
+    
+    const formatFileSize = (size: string): string => {
+        // du provides human-readable sizes like 4.0K, 12M, 1.2G
+        if (/^[0-9.]+$/.test(size)) {
+            const bytes = parseInt(size, 10);
+            if (isNaN(bytes) || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        // If size is already formatted (e.g. from `du -h`), return it as is.
+        return size.replace('K', ' KB').replace('M', ' MB').replace('G', ' GB');
+    }
+
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center gap-2">
+                <Input 
+                  key={currentPath}
+                  defaultValue={currentPath} 
+                  onKeyDown={handlePathChange}
+                  className="font-mono" 
+                />
+            </div>
+            {isLoading ? (
+                <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+                </div>
+            ) : error ? (
+                 <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            ) : (
+                <div className="space-y-1">
+                    {currentPath !== '/' && (
+                        <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
+                           <ArrowLeft className="h-4 w-4 text-primary" />
+                           <span className="font-mono flex-1 truncate text-primary">Go back</span>
+                        </div>
+                    )}
+                    {files.map(file => (
+                        <div key={file.name} className={cn("flex items-center gap-2 text-sm p-1 rounded-md", (file.type === 'd' || file.type === 'l') && "cursor-pointer hover:bg-muted/50")} onClick={() => handleNavigate(file)}>
+                            {getFileIcon(file.type)}
+                            <span className="font-mono truncate">{file.name}</span>
+                            {file.targetPath && (
+                                <>
+                                    <span className="text-muted-foreground text-xs">&gt;&gt;</span>
+                                    <span
+                                        className={cn("font-mono text-xs text-muted-foreground truncate", file.targetPath.endsWith('/') && "cursor-pointer hover:underline text-blue-500")}
+                                        onClick={(e) => {
+                                            if (file.targetPath?.endsWith('/')) {
+                                                e.stopPropagation();
+                                                navigate(file.targetPath);
+                                            }
+                                        }}
+                                    >
+                                        {file.targetPath}
+                                    </span>
+                                </>
+                            )}
+                            <span className="font-mono text-xs text-muted-foreground flex-1 text-right">{formatFileSize(file.size)}</span>
+                        </div>
+                    ))}
+                    {files.length === 0 && (
+                        <div className="text-center text-muted-foreground py-4">
+                            <p>Directory is empty.</p>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    )
+}
+
 interface ServerStatusAccordionProps {
     serverId: string;
 }
 
 
 export default function ServerStatusAccordion({ serverId }: ServerStatusAccordionProps) {
-  const [openAccordion, setOpenAccordion] = useState<string | undefined>(undefined);
+  const searchParams = useSearchParams();
+  const fileManagerPath = searchParams.get('fileManager');
+  const [openAccordion, setOpenAccordion] = useState<string | undefined>(fileManagerPath ? 'file-manager' : undefined);
+
+  useEffect(() => {
+    if (fileManagerPath && openAccordion !== 'file-manager') {
+        setOpenAccordion('file-manager');
+    }
+  }, [fileManagerPath, openAccordion]);
 
   return (
     <Card>
@@ -351,6 +506,17 @@ export default function ServerStatusAccordion({ serverId }: ServerStatusAccordio
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
               <Pm2ProcessesSection serverId={serverId} isExpanded={openAccordion === 'pm2'} />
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="file-manager" className="border rounded-lg">
+            <AccordionTrigger className="p-4 hover:no-underline font-medium [&>svg]:rotate-0 [&>svg]:-rotate-90">
+              <div className="flex items-center gap-2">
+                <Folder className="h-5 w-5 text-muted-foreground" />File Manager
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="p-4 pt-0">
+              <Separator className="mb-4" />
+              <FileManagerSection serverId={serverId} isExpanded={openAccordion === 'file-manager'} />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
