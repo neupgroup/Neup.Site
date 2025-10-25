@@ -14,6 +14,7 @@ export interface FileInfo {
   size: string;
   modified: string;
   fullPath?: string;
+  targetPath?: string; // The path a symlink points to
 }
 
 function parseLsOutput(output: string, currentPath: string): FileInfo[] {
@@ -21,28 +22,25 @@ function parseLsOutput(output: string, currentPath: string): FileInfo[] {
   const files: FileInfo[] = [];
 
   for (const line of lines) {
-    const parts = line.split(/\s+/);
+    const parts = line.trim().split(/\s+/);
     if (parts.length < 9) continue;
 
-    const [permissions, , owner, group, size, month, day, timeOrYear] = parts;
-    
-    // The file name can contain spaces, so we need to rejoin the end parts.
-    // The "name" is what we will check for links.
-    let nameIndex = 8;
-    // In `ls -la`, if there's a symlink, "->" appears. The part before it is the filename.
-    const linkArrowIndex = parts.findIndex(p => p === '->');
-    if (linkArrowIndex > -1) {
-        nameIndex = linkArrowIndex -1;
-    }
+    const [permissions, , owner, group, size, date, time] = parts;
+    const nameIndex = 8;
     const name = parts[nameIndex];
-    
-    // Filter out '.' and '..' entries
-    if (name === '.' || name === '..') {
-        continue;
-    }
 
-    // Simple check for file type from permissions string
+    if (name === '.' || name === '..') {
+      continue;
+    }
+    
     const type = permissions.startsWith('d') ? 'd' : permissions.startsWith('l') ? 'l' : '-';
+    
+    let targetPath: string | undefined;
+    // If it's a symlink, the target path is after '->'
+    const linkArrowIndex = parts.indexOf('->');
+    if (type === 'l' && linkArrowIndex > -1 && parts[linkArrowIndex + 1]) {
+      targetPath = parts.slice(linkArrowIndex + 1).join(' ');
+    }
 
     files.push({
       type,
@@ -51,7 +49,8 @@ function parseLsOutput(output: string, currentPath: string): FileInfo[] {
       owner,
       group,
       size,
-      modified: `${month} ${day} ${timeOrYear}`,
+      modified: `${date} ${time}`,
+      targetPath,
     });
   }
 
@@ -72,10 +71,10 @@ export async function getFileList(serverId: string, path: string = '/'): Promise
       privateKey: server.privateKey,
     });
     
-    // Sanitize path to prevent command injection
     const sanitizedPath = path.replace(/"/g, '\\"').replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
-    const result = await ssh.execCommand(`ls -la "${sanitizedPath}"`);
+    // Using --full-time gives a consistent date format, avoiding locale issues.
+    const result = await ssh.execCommand(`ls -la --full-time "${sanitizedPath}"`);
 
     if (result.code !== 0) {
       throw new Error(`Command failed: ${result.stderr}`);

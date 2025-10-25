@@ -337,6 +337,8 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         if (file.type === 'd') {
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
+        } else if (file.type === 'l' && file.targetPath?.endsWith('/')) {
+            navigate(file.targetPath.slice(0,-1));
         }
     };
 
@@ -366,7 +368,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         <div className="space-y-4">
             <div className="flex items-center gap-2">
                 <Input 
-                  key={currentPath}
+                  key={currentPath} // Force re-render on path change
                   defaultValue={currentPath} 
                   onKeyDown={handlePathChange}
                   className="font-mono" 
@@ -391,10 +393,26 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                         </div>
                     )}
                     {files.map(file => (
-                        <div key={file.name} className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={() => handleNavigate(file)}>
+                        <div key={file.name} className={cn("flex items-center gap-2 text-sm p-1 rounded-md", file.type === 'd' && "cursor-pointer hover:bg-muted/50")} onClick={() => handleNavigate(file)}>
                             {getFileIcon(file.type)}
-                            <span className="font-mono flex-1 truncate">{file.name}</span>
-                            <span className="font-mono text-xs text-muted-foreground">{file.size}</span>
+                            <span className="font-mono truncate">{file.name}</span>
+                            {file.targetPath && (
+                                <>
+                                    <span className="text-muted-foreground text-xs">&gt;&gt;</span>
+                                    <span
+                                        className={cn("font-mono text-xs text-muted-foreground truncate", file.targetPath.endsWith('/') && "cursor-pointer hover:underline text-blue-500")}
+                                        onClick={(e) => {
+                                            if (file.targetPath?.endsWith('/')) {
+                                                e.stopPropagation();
+                                                navigate(file.targetPath.slice(0, -1));
+                                            }
+                                        }}
+                                    >
+                                        {file.targetPath}
+                                    </span>
+                                </>
+                            )}
+                            <span className="font-mono text-xs text-muted-foreground flex-1 text-right">{file.size}</span>
                         </div>
                     ))}
                     {files.length === 0 && (
