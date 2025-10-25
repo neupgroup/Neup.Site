@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -105,19 +104,22 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                                             <span className="text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
                                             <span className="text-muted-foreground">by {log.initiatedBy}</span>
                                         </div>
-                                        <pre className="text-xs bg-muted p-3 rounded-md overflow-hidden text-ellipsis whitespace-nowrap font-mono w-full text-left">
-                                            {log.command ? (() => { const lines = log.command.split(/\r?\n/); return lines.length > 1 ? `${lines[0]} ...` : lines[0]; })() : 'No command specified.'}
+                                        {/* CHANGE HERE: Replaced nowrap and ellipsis with pre-wrap to allow wrapping */}
+                                        <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono w-full text-left break-all">
+                                            {log.command || 'No command specified.'}
                                         </pre>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="overflow-hidden data-[state=open]:animate-[accordion-down_300ms_ease-out] data-[state=closed]:animate-[accordion-up_300ms_ease-out]">
                                     <div className="space-y-2">
                                         <h4 className="font-semibold text-sm">Full Command:</h4>
-                                        <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
+                                        {/* CHANGE HERE: Added 'break-all' to force wrapping on long unbroken strings */}
+                                        <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono break-all">
                                             {log.command || 'No command specified.'}
                                         </pre>
                                         <h4 className="font-semibold text-sm mt-4">Output:</h4>
-                                        <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md whitespace-pre-wrap font-mono">
+                                        {/* CHANGE HERE: Added 'break-all' to force wrapping on long unbroken strings */}
+                                        <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md whitespace-pre-wrap font-mono break-all">
                                             {log.output || 'No output from server.'}
                                         </pre>
                                         {log.completedAt && (
