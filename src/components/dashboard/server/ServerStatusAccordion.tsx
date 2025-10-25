@@ -309,11 +309,11 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const navigate = (newPath: string) => {
+    const navigate = useCallback((newPath: string) => {
         const params = new URLSearchParams(searchParams);
         params.set('fileManager', newPath);
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    };
+    }, [pathname, router, searchParams]);
     
     const fetchFiles = useCallback(async (path: string) => {
         setIsLoading(true);
@@ -338,7 +338,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
         } else if (file.type === 'l' && file.targetPath && file.targetPath.endsWith('/')) {
-            navigate(file.targetPath.slice(0, -1));
+            navigate(file.targetPath);
         }
     };
 
@@ -364,24 +364,25 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         }
     }
     
-    const formatFileSize = (bytes: number | string): string => {
-        if (typeof bytes === 'string') {
-            bytes = parseInt(bytes, 10);
+    const formatFileSize = (size: string): string => {
+        // du provides human-readable sizes like 4.0K, 12M, 1.2G
+        if (/^[0-9.]+$/.test(size)) {
+            const bytes = parseInt(size, 10);
+            if (isNaN(bytes) || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-        if (isNaN(bytes) || bytes === 0) return '0 B';
-    
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        // If size is already formatted (e.g. from `du -h`), return it as is.
+        return size.replace('K', ' KB').replace('M', ' MB').replace('G', ' GB');
     }
 
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2">
                 <Input 
-                  key={currentPath} // Force re-render on path change
+                  key={currentPath}
                   defaultValue={currentPath} 
                   onKeyDown={handlePathChange}
                   className="font-mono" 
@@ -417,7 +418,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                                         onClick={(e) => {
                                             if (file.targetPath?.endsWith('/')) {
                                                 e.stopPropagation();
-                                                navigate(file.targetPath.slice(0, -1));
+                                                navigate(file.targetPath);
                                             }
                                         }}
                                     >
@@ -445,7 +446,15 @@ interface ServerStatusAccordionProps {
 
 
 export default function ServerStatusAccordion({ serverId }: ServerStatusAccordionProps) {
-  const [openAccordion, setOpenAccordion] = useState<string | undefined>(undefined);
+  const searchParams = useSearchParams();
+  const fileManagerPath = searchParams.get('fileManager');
+  const [openAccordion, setOpenAccordion] = useState<string | undefined>(fileManagerPath ? 'file-manager' : undefined);
+
+  useEffect(() => {
+    if (fileManagerPath && openAccordion !== 'file-manager') {
+        setOpenAccordion('file-manager');
+    }
+  }, [fileManagerPath, openAccordion]);
 
   return (
     <Card>
