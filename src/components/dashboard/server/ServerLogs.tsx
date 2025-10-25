@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, ChevronDown } from 'lucide-react'; // Import ChevronDown
 import { getServerLogs } from '@/actions/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
@@ -94,17 +94,26 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                     <Accordion type="single" collapsible className="w-full space-y-2">
                         {logs.map(log => (
                             <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
-                                <AccordionTrigger className="hover:no-underline text-left">
+                                {/* Hide the default chevron that lives outside our content area */}
+                                <AccordionTrigger className="hover:no-underline text-left py-3 [&>svg]:hidden">
+                                    {/* Component Container */}
                                     <div className='w-full'>
-                                        <div className="flex items-center gap-2 mb-2 text-sm w-full">
-                                            <Badge variant={getStatusVariant(log.status)} className={cn(log.status === 'completed' && 'bg-green-600')}>
-                                                {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
-                                                {log.status}
-                                            </Badge>
-                                            <span className="text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
-                                            <span className="text-muted-foreground">by {log.initiatedBy}</span>
+                                        {/* Container 1: flex, space-between */}
+                                        <div className="flex justify-between items-center w-full mb-2">
+                                            {/* Container 2: status and executor */}
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <Badge variant={getStatusVariant(log.status)} className={cn(log.status === 'completed' && 'bg-green-600')}>
+                                                    {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                                                    {log.status}
+                                                </Badge>
+                                                <span className="text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
+                                                <span className="text-muted-foreground">by {log.initiatedBy}</span>
+                                            </div>
+                                            {/* Element 1: The Chevron */}
+                                            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-muted-foreground" />
                                         </div>
-                                        {/* CHANGE HERE: Replaced nowrap and ellipsis with pre-wrap to allow wrapping */}
+
+                                        {/* Container 3: The command block */}
                                         <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono w-full text-left break-all">
                                             {log.command || 'No command specified.'}
                                         </pre>
@@ -113,12 +122,10 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                                 <AccordionContent className="overflow-hidden data-[state=open]:animate-[accordion-down_300ms_ease-out] data-[state=closed]:animate-[accordion-up_300ms_ease-out]">
                                     <div className="space-y-2">
                                         <h4 className="font-semibold text-sm">Full Command:</h4>
-                                        {/* CHANGE HERE: Added 'break-all' to force wrapping on long unbroken strings */}
                                         <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono break-all">
                                             {log.command || 'No command specified.'}
                                         </pre>
                                         <h4 className="font-semibold text-sm mt-4">Output:</h4>
-                                        {/* CHANGE HERE: Added 'break-all' to force wrapping on long unbroken strings */}
                                         <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md whitespace-pre-wrap font-mono break-all">
                                             {log.output || 'No output from server.'}
                                         </pre>
