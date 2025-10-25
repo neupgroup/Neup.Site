@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, ArrowLeft } from 'lucide-react';
+import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 import { getDetailedStorageForServer, type StorageInfo } from '@/actions/server/management/get-detailed-storage-for-server';
@@ -345,27 +345,40 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
 
     const handleNavigate = (file: FileInfo) => {
         if (file.type === 'd') {
-            const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
-            navigate(newPath);
+            if (file.name === '..') {
+                const pathParts = currentPath.split('/').filter(Boolean);
+                pathParts.pop();
+                const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
+                navigate(newPath);
+            } else if (file.name !== '.') {
+                const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
+                navigate(newPath);
+            }
         }
     };
     
-    const goUp = () => {
-        const pathParts = currentPath.split('/').filter(Boolean);
-        pathParts.pop();
-        const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
-        navigate(newPath);
-    }
+    const handlePathChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            navigate((e.target as HTMLInputElement).value);
+        }
+    };
     
+    const getFileIcon = (type: FileInfo['type']) => {
+        switch(type) {
+            case 'd': return <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+            case 'l': return <LinkIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+            default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+        }
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2">
-                {currentPath !== '/' && (
-                    <Button variant="ghost" size="icon" onClick={goUp}>
-                        <ArrowLeft className="h-4 w-4"/>
-                    </Button>
-                )}
-                <Input value={currentPath} readOnly className="font-mono" />
+                <Input 
+                  defaultValue={currentPath} 
+                  onKeyDown={handlePathChange}
+                  className="font-mono" 
+                />
             </div>
             {isLoading ? (
                 <div className="space-y-2">
@@ -378,14 +391,19 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             ) : (
-                <div className="space-y-1">
+                <div className="space-y-1 max-h-96 overflow-y-auto custom-scrollbar">
                     {files.map(file => (
                         <div key={file.name} className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={() => handleNavigate(file)}>
-                            <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>
+                            {getFileIcon(file.type)}
                             <span className="font-mono flex-1 truncate">{file.name}</span>
                             <span className="font-mono text-xs text-muted-foreground">{file.size}</span>
                         </div>
                     ))}
+                    {files.length === 0 && (
+                        <div className="text-center text-muted-foreground py-4">
+                            <p>Directory is empty.</p>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

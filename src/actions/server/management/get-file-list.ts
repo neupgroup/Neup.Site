@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
@@ -24,7 +25,16 @@ function parseLsOutput(output: string, currentPath: string): FileInfo[] {
     if (parts.length < 9) continue;
 
     const [permissions, , owner, group, size, month, day, timeOrYear] = parts;
-    const name = parts.slice(8).join(' ');
+    
+    // The file name can contain spaces, so we need to rejoin the end parts.
+    // The "name" is what we will check for links.
+    let nameIndex = 8;
+    // In `ls -la`, if there's a symlink, "->" appears. The part before it is the filename.
+    const linkArrowIndex = parts.findIndex(p => p === '->');
+    if (linkArrowIndex > -1) {
+        nameIndex = linkArrowIndex -1;
+    }
+    const name = parts[nameIndex];
     
     // Simple check for file type from permissions string
     const type = permissions.startsWith('d') ? 'd' : permissions.startsWith('l') ? 'l' : '-';
