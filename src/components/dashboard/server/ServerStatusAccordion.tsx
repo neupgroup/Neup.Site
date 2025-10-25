@@ -1,14 +1,14 @@
 
 'use client';
 import * as React from "react"
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, FileText, Link as LinkIcon } from 'lucide-react';
+import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, FileText, Link as LinkIcon, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 import { getDetailedStorageForServer, type StorageInfo } from '@/actions/server/management/get-detailed-storage-for-server';
@@ -311,7 +311,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
     const navigate = (newPath: string) => {
         const params = new URLSearchParams(searchParams);
         params.set('fileManager', newPath);
-        router.replace(`${pathname}?${params.toString()}`);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
     
     const fetchFiles = useCallback(async (path: string) => {
@@ -326,7 +326,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         setIsLoading(false);
     }, [serverId]);
     
-    React.useEffect(() => {
+    useEffect(() => {
       const newPathFromUrl = searchParams.get('fileManager') || '/';
       if (newPathFromUrl !== currentPath) {
           setCurrentPath(newPathFromUrl);
@@ -337,24 +337,25 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
     }, [searchParams, currentPath, isExpanded, fetchFiles]);
 
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isExpanded) {
             fetchFiles(currentPath);
         }
-    }, [isExpanded, currentPath, fetchFiles]);
+    }, [isExpanded, fetchFiles, currentPath]);
 
     const handleNavigate = (file: FileInfo) => {
         if (file.type === 'd') {
-            if (file.name === '..') {
-                const pathParts = currentPath.split('/').filter(Boolean);
-                pathParts.pop();
-                const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
-                navigate(newPath);
-            } else if (file.name !== '.') {
-                const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
-                navigate(newPath);
-            }
+            const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
+            navigate(newPath);
         }
+    };
+
+    const goUp = () => {
+        if (currentPath === '/') return;
+        const pathParts = currentPath.split('/').filter(Boolean);
+        pathParts.pop();
+        const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
+        navigate(newPath);
     };
     
     const handlePathChange = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -391,7 +392,13 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             ) : (
-                <div className="space-y-1 max-h-96 overflow-y-auto custom-scrollbar">
+                <div className="space-y-1">
+                    {currentPath !== '/' && (
+                        <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
+                           <div className="pl-1"><ArrowLeft className="h-4 w-4 flex-shrink-0 text-muted-foreground"/></div>
+                           <span className="font-mono flex-1 truncate">..</span>
+                        </div>
+                    )}
                     {files.map(file => (
                         <div key={file.name} className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={() => handleNavigate(file)}>
                             {getFileIcon(file.type)}
@@ -399,7 +406,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                             <span className="font-mono text-xs text-muted-foreground">{file.size}</span>
                         </div>
                     ))}
-                    {files.length === 0 && (
+                    {files.length === 0 && currentPath === '/' && (
                         <div className="text-center text-muted-foreground py-4">
                             <p>Directory is empty.</p>
                         </div>
