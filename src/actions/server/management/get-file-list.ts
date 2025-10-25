@@ -76,8 +76,8 @@ export async function getFileList(serverId: string, path: string = '/'): Promise
       privateKey: server.privateKey,
     });
     
-    // Sanitize path for shell command
-    const sanitizedPath = ssh.config.escape(path);
+    // Sanitize path for shell command by wrapping in single quotes
+    const sanitizedPath = `'${path.replace(/'/g, "'\\''")}'`;
 
     // This command is more complex. It gets a detailed list, then iterates through directories
     // to get their total size with `du -sh`.
@@ -104,7 +104,7 @@ export async function getFileList(serverId: string, path: string = '/'): Promise
 
     if (result.code !== 0) {
       // Fallback to simpler command if the complex one fails (e.g., due to permissions)
-      const fallbackResult = await ssh.execCommand(`ls -la --full-time "${sanitizedPath}"`);
+      const fallbackResult = await ssh.execCommand(`ls -la --full-time ${sanitizedPath}`);
       if (fallbackResult.code !== 0) {
         throw new Error(`Command failed: ${fallbackResult.stderr}`);
       }
