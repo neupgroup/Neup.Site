@@ -8,13 +8,17 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown } from 'lucide-react';
+import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 import { getDetailedStorageForServer, type StorageInfo } from '@/actions/server/management/get-detailed-storage-for-server';
 import { getActivePorts, type ActivePortInfo } from '@/actions/server/management/get-active-ports';
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { getPm2Processes, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
+import { getFileList, type FileInfo } from '@/actions/server/management/get-file-list';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean; }) => {
   const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
@@ -293,6 +297,101 @@ const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExp
   );
 };
 
+const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean }) => {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const initialPath = searchParams.get('fileManager') || '/';
+
+    const [files, setFiles] = useState<FileInfo[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [currentPath, setCurrentPath] = useState(initialPath);
+
+    const navigate = (newPath: string) => {
+        const params = new URLSearchParams(searchParams);
+        params.set('fileManager', newPath);
+        router.replace(`${pathname}?${params.toString()}`);
+    };
+    
+    const fetchFiles = useCallback(async (path: string) => {
+        setIsLoading(true);
+        setError(null);
+        const result = await getFileList(serverId, path);
+        if(result.success && result.files) {
+            setFiles(result.files);
+        } else {
+            setError(result.error || 'Failed to list files.');
+        }
+        setIsLoading(false);
+    }, [serverId]);
+    
+    React.useEffect(() => {
+      const newPathFromUrl = searchParams.get('fileManager') || '/';
+      if (newPathFromUrl !== currentPath) {
+          setCurrentPath(newPathFromUrl);
+          if (isExpanded) {
+            fetchFiles(newPathFromUrl);
+          }
+      }
+    }, [searchParams, currentPath, isExpanded, fetchFiles]);
+
+
+    React.useEffect(() => {
+        if (isExpanded) {
+            fetchFiles(currentPath);
+        }
+    }, [isExpanded, currentPath, fetchFiles]);
+
+    const handleNavigate = (file: FileInfo) => {
+        if (file.type === 'd') {
+            const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
+            navigate(newPath);
+        }
+    };
+    
+    const goUp = () => {
+        const pathParts = currentPath.split('/').filter(Boolean);
+        pathParts.pop();
+        const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
+        navigate(newPath);
+    }
+    
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center gap-2">
+                {currentPath !== '/' && (
+                    <Button variant="ghost" size="icon" onClick={goUp}>
+                        <ArrowLeft className="h-4 w-4"/>
+                    </Button>
+                )}
+                <Input value={currentPath} readOnly className="font-mono" />
+            </div>
+            {isLoading ? (
+                <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+                </div>
+            ) : error ? (
+                 <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            ) : (
+                <div className="space-y-1">
+                    {files.map(file => (
+                        <div key={file.name} className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={() => handleNavigate(file)}>
+                            <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>
+                            <span className="font-mono flex-1 truncate">{file.name}</span>
+                            <span className="font-mono text-xs text-muted-foreground">{file.size}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
 interface ServerStatusAccordionProps {
     serverId: string;
 }
@@ -351,6 +450,17 @@ export default function ServerStatusAccordion({ serverId }: ServerStatusAccordio
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
               <Pm2ProcessesSection serverId={serverId} isExpanded={openAccordion === 'pm2'} />
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="file-manager" className="border rounded-lg">
+            <AccordionTrigger className="p-4 hover:no-underline font-medium [&>svg]:rotate-0 [&>svg]:-rotate-90">
+              <div className="flex items-center gap-2">
+                <Folder className="h-5 w-5 text-muted-foreground" />File Manager
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="p-4 pt-0">
+              <Separator className="mb-4" />
+              <FileManagerSection serverId={serverId} isExpanded={openAccordion === 'file-manager'} />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
