@@ -337,6 +337,8 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         if (file.type === 'd') {
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
+        } else if (file.type === 'l' && file.targetPath && file.targetPath.endsWith('/')) {
+            navigate(file.targetPath.slice(0, -1));
         }
     };
 
@@ -360,6 +362,19 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
             case 'l': return <LinkIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
             default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
         }
+    }
+    
+    const formatFileSize = (bytes: number | string): string => {
+        if (typeof bytes === 'string') {
+            bytes = parseInt(bytes, 10);
+        }
+        if (isNaN(bytes) || bytes === 0) return '0 B';
+    
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     return (
@@ -410,7 +425,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                                     </span>
                                 </>
                             )}
-                            <span className="font-mono text-xs text-muted-foreground flex-1 text-right">{file.size}</span>
+                            <span className="font-mono text-xs text-muted-foreground flex-1 text-right">{formatFileSize(file.size)}</span>
                         </div>
                     ))}
                     {files.length === 0 && (
