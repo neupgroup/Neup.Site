@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const commandParameterSchema = z.object({
     key: z.string().min(1, 'Parameter key is required.'),
     label: z.string().min(1, 'Parameter label is required.'),
-    type: z.enum(['string', 'number']),
+    type: z.enum(['string', 'number', 'textarea']),
     defaultValue: z.string().optional(),
     confidential: z.boolean().optional(),
 });

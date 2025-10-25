@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import type { ServerCommand } from '@/actions/commands';
+import type { ServerCommand } from '@/schemas/command';
 import { getServerCommands } from '@/actions/commands';
 import { runCommand } from '@/actions/runner';
 
@@ -111,7 +111,15 @@ const CustomCommandForm = ({ onRun, isPending }: { onRun: (cmd: string, desc: st
 };
 
 const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerCommand, onRun: (cmdId: string, params: Record<string, any>) => void; isPending: boolean }) => {
-    const [commandParams, setCommandParams] = useState<Record<string, string>>({});
+    const [commandParams, setCommandParams] = useState<Record<string, string>>(() => {
+        const initialParams: Record<string, string> = {};
+        command.parameters?.forEach(p => {
+            if (p.defaultValue) {
+                initialParams[p.key] = p.defaultValue;
+            }
+        });
+        return initialParams;
+    });
     
     if (!command.parameters || command.parameters.length === 0) {
         return (
@@ -127,13 +135,24 @@ const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerComman
             {(command.parameters || []).map(param => (
                 <div key={param.key} className="space-y-2">
                     <Label htmlFor={param.key}>{param.label}</Label>
-                    <Input
-                        id={param.key}
-                        value={commandParams[param.key] || ''}
-                        onChange={e => setCommandParams(prev => ({ ...prev, [param.key]: e.target.value }))}
-                        placeholder={param.defaultValue}
-                        type={param.type === 'number' ? 'number' : 'text'}
-                    />
+                    {param.type === 'textarea' ? (
+                        <Textarea
+                            id={param.key}
+                            value={commandParams[param.key] || ''}
+                            onChange={e => setCommandParams(prev => ({ ...prev, [param.key]: e.target.value }))}
+                            placeholder={param.defaultValue}
+                            rows={4}
+                            className="font-mono"
+                        />
+                    ) : (
+                        <Input
+                            id={param.key}
+                            value={commandParams[param.key] || ''}
+                            onChange={e => setCommandParams(prev => ({ ...prev, [param.key]: e.target.value }))}
+                            placeholder={param.defaultValue}
+                            type={param.type === 'number' ? 'number' : 'text'}
+                        />
+                    )}
                 </div>
             ))}
             <Button onClick={() => onRun(command.id!, commandParams)} disabled={isPending}>

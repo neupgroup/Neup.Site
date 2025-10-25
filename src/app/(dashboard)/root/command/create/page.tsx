@@ -318,6 +318,9 @@ export default function CreateCommandPage() {
                         <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} placeholder="e.g., Package Name" /></FormControl><FormMessage /></FormItem>
                       )} />
                     </div>
+                     <FormField control={form.control} name={`parameters.${index}.defaultValue`} render={({ field }) => (
+                        <FormItem><FormLabel>Default Value</FormLabel><FormControl><Input {...field} placeholder="Optional default value" /></FormControl><FormMessage /></FormItem>
+                    )} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                       <FormField
                         control={form.control}
@@ -330,6 +333,7 @@ export default function CreateCommandPage() {
                               <SelectContent>
                                 <SelectItem value="string">String</SelectItem>
                                 <SelectItem value="number">Number</SelectItem>
+                                <SelectItem value="textarea">Textarea</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
