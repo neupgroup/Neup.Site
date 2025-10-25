@@ -43,7 +43,9 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
     const handleReboot = async () => {
         setShowRebootConfirm(false);
         startTransition(async () => {
-            await runCommand(server.id, 'reboot');
+            // By convention, raw commands are passed directly.
+            // Command IDs are for templates stored in Firestore.
+            await runCommand(server.id, 'sudo reboot');
             toast({ title: "Reboot Command Sent", description: `The server is now rebooting. This may take a few minutes.` });
         });
     };
