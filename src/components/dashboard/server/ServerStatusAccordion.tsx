@@ -337,8 +337,6 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         if (file.type === 'd') {
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
-        } else if (file.type === 'l' && file.targetPath?.endsWith('/')) {
-            navigate(file.targetPath.slice(0, -1));
         }
     };
 
