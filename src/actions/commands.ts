@@ -20,14 +20,19 @@ import {
 } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
-import { ServerCommand } from '@/schemas/command';
+import { ServerCommand, serverCommandSchema } from '@/schemas/command';
 import { logErrorToFirestore } from '@/lib/logging';
 
 export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'createdAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
+    const validatedData = serverCommandSchema.omit({ id: true, createdAt: true }).safeParse(data);
+    if (!validatedData.success) {
+      return { success: false, error: validatedData.error.flatten().fieldErrors.toString() };
+    }
+
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'serverCommands'), {
-      ...data,
+      ...validatedData.data,
       createdAt: serverTimestamp(),
     });
     revalidatePath('/root/command');
@@ -127,9 +132,15 @@ export async function getServerCommand(id: string): Promise<{ success: boolean; 
 
 export async function updateServerCommand(id: string, data: Partial<Omit<ServerCommand, 'id' | 'createdAt'>>): Promise<{ success: boolean; error?: string }> {
     try {
+        // Use .partial() to allow incomplete data for updates
+        const validatedData = serverCommandSchema.partial().safeParse(data);
+        if (!validatedData.success) {
+            return { success: false, error: validatedData.error.flatten().fieldErrors.toString() };
+        }
+
         const { firestore } = initializeFirebase();
         const docRef = doc(firestore, 'serverCommands', id);
-        await setDoc(docRef, data, { merge: true });
+        await setDoc(docRef, validatedData.data, { merge: true });
         revalidatePath('/root/command');
         revalidatePath(`/root/command/${id}`);
         return { success: true };
