@@ -301,12 +301,13 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const initialPath = searchParams.get('fileManager') || '/';
+    
+    // The URL is the source of truth for the current path
+    const currentPath = searchParams.get('fileManager') || '/';
 
     const [files, setFiles] = useState<FileInfo[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [currentPath, setCurrentPath] = useState(initialPath);
 
     const navigate = (newPath: string) => {
         const params = new URLSearchParams(searchParams);
@@ -327,17 +328,6 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
     }, [serverId]);
     
     useEffect(() => {
-      const newPathFromUrl = searchParams.get('fileManager') || '/';
-      if (newPathFromUrl !== currentPath) {
-          setCurrentPath(newPathFromUrl);
-          if (isExpanded) {
-            fetchFiles(newPathFromUrl);
-          }
-      }
-    }, [searchParams, currentPath, isExpanded, fetchFiles]);
-
-
-    useEffect(() => {
         if (isExpanded) {
             fetchFiles(currentPath);
         }
@@ -345,6 +335,11 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
 
     const handleNavigate = (file: FileInfo) => {
         if (file.type === 'd') {
+            if (file.name === '..') {
+                goUp();
+                return;
+            }
+            if (file.name === '.') return;
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
         }
@@ -376,6 +371,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         <div className="space-y-4">
             <div className="flex items-center gap-2">
                 <Input 
+                  key={currentPath} // Force re-render on path change
                   defaultValue={currentPath} 
                   onKeyDown={handlePathChange}
                   className="font-mono" 
@@ -406,7 +402,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                             <span className="font-mono text-xs text-muted-foreground">{file.size}</span>
                         </div>
                     ))}
-                    {files.length === 0 && currentPath === '/' && (
+                    {files.length === 0 && (
                         <div className="text-center text-muted-foreground py-4">
                             <p>Directory is empty.</p>
                         </div>
