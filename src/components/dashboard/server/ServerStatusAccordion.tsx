@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder } from 'lucide-react';
+import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 import { getDetailedStorageForServer, type StorageInfo } from '@/actions/server/management/get-detailed-storage-for-server';
