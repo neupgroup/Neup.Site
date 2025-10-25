@@ -16,8 +16,8 @@ import { getActivePorts, type ActivePortInfo } from '@/actions/server/management
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { getPm2Processes, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
 
-const StorageStatusSection = ({ serverId, isExpanded, initialData }: { serverId: string; isExpanded: boolean; initialData: StorageInfo | null }) => {
-  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(initialData);
+const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean; }) => {
+  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,10 +34,10 @@ const StorageStatusSection = ({ serverId, isExpanded, initialData }: { serverId:
   }, [serverId]);
   
   React.useEffect(() => {
-    if (isExpanded && !storageInfo && !initialData) {
+    if (isExpanded && !storageInfo) {
       fetchStorage();
     }
-  }, [isExpanded, storageInfo, fetchStorage, initialData]);
+  }, [isExpanded, storageInfo, fetchStorage]);
 
   return (
     <>
@@ -77,15 +77,15 @@ const StorageStatusSection = ({ serverId, isExpanded, initialData }: { serverId:
         </div>
       ) : (
         <div className="text-center text-muted-foreground py-4">
-          <p>Could not load storage status.</p>
+          <p>Click to load storage status.</p>
         </div>
       )}
     </>
   );
 };
 
-const ActivePortsSection = ({ serverId, isExpanded, initialData }: { serverId: string, isExpanded: boolean, initialData: ActivePortInfo[] | null }) => {
-  const [ports, setPorts] = useState<ActivePortInfo[] | null>(initialData);
+const ActivePortsSection = ({ serverId, isExpanded }: { serverId: string, isExpanded: boolean }) => {
+  const [ports, setPorts] = useState<ActivePortInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,10 +102,10 @@ const ActivePortsSection = ({ serverId, isExpanded, initialData }: { serverId: s
   }, [serverId]);
 
   React.useEffect(() => {
-    if (isExpanded && !ports && !initialData) {
+    if (isExpanded && !ports) {
       fetchPorts();
     }
-  }, [isExpanded, ports, fetchPorts, initialData]);
+  }, [isExpanded, ports, fetchPorts]);
 
   return (
     <>
@@ -126,6 +126,11 @@ const ActivePortsSection = ({ serverId, isExpanded, initialData }: { serverId: s
                 <div className="flex items-center gap-4">
                   <span className="font-bold w-12">{portInfo.port}</span>
                   <Badge variant="outline" className="w-14 justify-center">{portInfo.protocol}</Badge>
+                   {portInfo.process && (
+                      <span className="font-mono text-xs text-muted-foreground truncate" title={portInfo.process}>
+                        {portInfo.process}
+                      </span>
+                  )}
                 </div>
                 <span className="font-mono text-xs">{portInfo.address}</span>
               </div>
@@ -133,15 +138,15 @@ const ActivePortsSection = ({ serverId, isExpanded, initialData }: { serverId: s
           </div>
       ) : (
         <div className="text-center text-muted-foreground py-8">
-          <p>No active listening ports found.</p>
+          <p>No active ports found.</p>
         </div>
       )}
     </>
   );
 };
 
-const ActiveProcessesSection = ({ serverId, isExpanded, initialData }: { serverId: string, isExpanded: boolean, initialData: ProcessInfo[] | null }) => {
-  const [processes, setProcesses] = useState<ProcessInfo[] | null>(initialData);
+const ActiveProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExpanded: boolean }) => {
+  const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -158,10 +163,10 @@ const ActiveProcessesSection = ({ serverId, isExpanded, initialData }: { serverI
   }, [serverId]);
 
   React.useEffect(() => {
-    if (isExpanded && !processes && !initialData) {
+    if (isExpanded && !processes) {
       fetchProcesses();
     }
-  }, [isExpanded, processes, fetchProcesses, initialData]);
+  }, [isExpanded, processes, fetchProcesses]);
 
   return (
     <>
@@ -204,8 +209,8 @@ const ActiveProcessesSection = ({ serverId, isExpanded, initialData }: { serverI
   );
 };
 
-const Pm2ProcessesSection = ({ serverId, isExpanded, initialData }: { serverId: string, isExpanded: boolean, initialData: ProcessManagerInfo[] | null }) => {
-  const [processes, setProcesses] = useState<ProcessManagerInfo[] | null>(initialData);
+const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExpanded: boolean }) => {
+  const [processes, setProcesses] = useState<ProcessManagerInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -222,10 +227,10 @@ const Pm2ProcessesSection = ({ serverId, isExpanded, initialData }: { serverId: 
   }, [serverId]);
 
   React.useEffect(() => {
-    if (isExpanded && !processes && !initialData) {
+    if (isExpanded && !processes) {
       fetchProcesses();
     }
-  }, [isExpanded, processes, fetchProcesses, initialData]);
+  }, [isExpanded, processes, fetchProcesses]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -290,14 +295,10 @@ const Pm2ProcessesSection = ({ serverId, isExpanded, initialData }: { serverId: 
 
 interface ServerStatusAccordionProps {
     serverId: string;
-    initialStorageInfo: StorageInfo | null;
-    initialActivePorts: ActivePortInfo[] | null;
-    initialActiveProcesses: ProcessInfo[] | null;
-    initialPm2Processes: ProcessManagerInfo[] | null;
 }
 
 
-export default function ServerStatusAccordion({ serverId, initialStorageInfo, initialActivePorts, initialActiveProcesses, initialPm2Processes }: ServerStatusAccordionProps) {
+export default function ServerStatusAccordion({ serverId }: ServerStatusAccordionProps) {
   const [openAccordion, setOpenAccordion] = useState<string | undefined>(undefined);
 
   return (
@@ -316,7 +317,7 @@ export default function ServerStatusAccordion({ serverId, initialStorageInfo, in
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <StorageStatusSection serverId={serverId} isExpanded={openAccordion === 'storage'} initialData={initialStorageInfo} />
+              <StorageStatusSection serverId={serverId} isExpanded={openAccordion === 'storage'} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="network" className="border rounded-lg">
@@ -327,7 +328,7 @@ export default function ServerStatusAccordion({ serverId, initialStorageInfo, in
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <ActivePortsSection serverId={serverId} isExpanded={openAccordion === 'network'} initialData={initialActivePorts}/>
+              <ActivePortsSection serverId={serverId} isExpanded={openAccordion === 'network'} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="processes" className="border rounded-lg">
@@ -338,7 +339,7 @@ export default function ServerStatusAccordion({ serverId, initialStorageInfo, in
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <ActiveProcessesSection serverId={serverId} isExpanded={openAccordion === 'processes'} initialData={initialActiveProcesses} />
+              <ActiveProcessesSection serverId={serverId} isExpanded={openAccordion === 'processes'} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="pm2" className="border rounded-lg">
@@ -349,7 +350,7 @@ export default function ServerStatusAccordion({ serverId, initialStorageInfo, in
             </AccordionTrigger>
             <AccordionContent className="p-4 pt-0">
               <Separator className="mb-4" />
-              <Pm2ProcessesSection serverId={serverId} isExpanded={openAccordion === 'pm2'} initialData={initialPm2Processes} />
+              <Pm2ProcessesSection serverId={serverId} isExpanded={openAccordion === 'pm2'} />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
