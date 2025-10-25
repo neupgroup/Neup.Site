@@ -113,11 +113,11 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                                 <AccordionContent className="overflow-hidden data-[state=open]:animate-[accordion-down_300ms_ease-out] data-[state=closed]:animate-[accordion-up_300ms_ease-out]">
                                     <div className="space-y-2">
                                         <h4 className="font-semibold text-sm">Full Command:</h4>
-                                        <pre className="text-xs bg-muted p-3 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">
+                                        <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono">
                                             {log.command || 'No command specified.'}
                                         </pre>
                                         <h4 className="font-semibold text-sm mt-4">Output:</h4>
-                                        <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md overflow-x-auto whitespace-pre-wrap font-mono">
+                                        <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md whitespace-pre-wrap font-mono">
                                             {log.output || 'No output from server.'}
                                         </pre>
                                         {log.completedAt && (
