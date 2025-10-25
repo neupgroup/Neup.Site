@@ -338,7 +338,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
         } else if (file.type === 'l' && file.targetPath?.endsWith('/')) {
-            navigate(file.targetPath.slice(0,-1));
+            navigate(file.targetPath.slice(0, -1));
         }
     };
 
@@ -388,12 +388,12 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                 <div className="space-y-1">
                     {currentPath !== '/' && (
                         <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
-                           {getFileIcon('d')}
+                           <ArrowLeft className="h-4 w-4 text-primary" />
                            <span className="font-mono flex-1 truncate text-primary">Go back</span>
                         </div>
                     )}
                     {files.map(file => (
-                        <div key={file.name} className={cn("flex items-center gap-2 text-sm p-1 rounded-md", file.type === 'd' && "cursor-pointer hover:bg-muted/50")} onClick={() => handleNavigate(file)}>
+                        <div key={file.name} className={cn("flex items-center gap-2 text-sm p-1 rounded-md", (file.type === 'd' || file.type === 'l') && "cursor-pointer hover:bg-muted/50")} onClick={() => handleNavigate(file)}>
                             {getFileIcon(file.type)}
                             <span className="font-mono truncate">{file.name}</span>
                             {file.targetPath && (
