@@ -46,6 +46,7 @@ export async function runCommand(
     let preprocess = false;
     let allocatesPort = false;
     let portToReserve: string | undefined = undefined;
+    let commandName: string | undefined;
 
     if (commandId) {
         const commandDetails = await getServerCommand(commandId);
@@ -56,6 +57,7 @@ export async function runCommand(
             preprocess = cmd.preprocess || false;
             allocatesPort = cmd.allocatesPort || false;
             portToReserve = cmd.portToReserve;
+            commandName = cmd.name;
             confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
         } else {
              await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
@@ -73,6 +75,8 @@ export async function runCommand(
 
     const createResult = await createServerLog({
         serverId: serverId,
+        commandId,
+        commandName: commandName || 'Custom Command',
         command: loggedCommand, 
         output: `Initiating command...`,
         status: 'pending',

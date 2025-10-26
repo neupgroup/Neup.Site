@@ -108,8 +108,8 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                                             </div>
                                             <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-muted-foreground" />
                                         </div>
-                                        <p className="text-sm text-muted-foreground text-left truncate pr-8">
-                                            {log.command}
+                                        <p className="text-sm font-semibold text-left truncate pr-8">
+                                            {log.commandName || 'Undefined Command'}
                                         </p>
                                     </div>
                                 </AccordionTrigger>

@@ -1,5 +1,6 @@
 
 
+
 export interface ServerAllocationStorage {
   totalStorage: string;
   availableStorage: string;
@@ -49,6 +50,8 @@ export interface Server {
 export interface ServerLog {
   id: string;
   serverId: string;
+  commandId?: string;
+  commandName?: string;
   command: string;
   output: string;
   status: 'pending' | 'ongoing' | 'completed' | 'failed' | 'cancelled';

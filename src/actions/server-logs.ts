@@ -81,6 +81,8 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
                 id: doc.id,
                 serverId: data.serverId,
                 command: data.command,
+                commandId: data.commandId,
+                commandName: data.commandName,
                 output: data.output,
                 status: data.status,
                 initiatedBy: data.initiatedBy,
