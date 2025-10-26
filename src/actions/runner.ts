@@ -166,8 +166,8 @@ export async function runCommand(
             await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
             
             try {
-                // The sandbox only gets user-provided parameters
-                const sandbox = { params: processedParams, result: '' };
+                // The sandbox gets user parameters and universal variables
+                const sandbox = { params: processedParams, universal, result: '' };
                 vm.createContext(sandbox);
                 
                 const scriptToRun = `result = (() => { ${commandTemplate} })();`;
@@ -183,26 +183,16 @@ export async function runCommand(
                 throw new Error(`Pre-execution script failed: ${scriptError.message}`);
             }
         } else {
-             // Substitute user parameters directly if not pre-processing
+            // Substitute user parameters directly if not pre-processing
             for (const [key, value] of Object.entries(processedParams)) {
                 finalCommand = finalCommand.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
             }
-        }
-        
-        // Loop to substitute all placeholders until none are left or an iteration changes nothing.
-        let lastCommand = '';
-        let loopCount = 0;
-        const MAX_LOOPS = 5; // Safety break
-        while (finalCommand !== lastCommand && loopCount < MAX_LOOPS) {
-            lastCommand = finalCommand;
-            
-            // Substitute universal variables
+            // Also substitute universal variables
             for (const [key, value] of Object.entries(universal)) {
                 if (value) {
                     finalCommand = finalCommand.replace(new RegExp(`{{universal.${key}}}`, 'g'), String(value));
                 }
             }
-            loopCount++;
         }
         
         const remainingPlaceholders = finalCommand.match(/\{\{([^}]+)\}\}/g);
