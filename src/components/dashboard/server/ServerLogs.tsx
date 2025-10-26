@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, ChevronDown } from 'lucide-react'; // Import ChevronDown
+import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, ChevronDown } from 'lucide-react';
 import { getServerLogs } from '@/actions/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
@@ -94,12 +94,12 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                 ) : (
                     <Accordion type="single" collapsible className="w-full space-y-2">
                         {logs.map(log => (
-                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
-                                <AccordionTrigger className="hover:no-underline text-left py-3 [&>svg]:hidden">
-                                    <div className='w-full space-y-3'>
+                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 data-[state=open]:border-primary">
+                                <AccordionTrigger className="hover:no-underline text-left py-3">
+                                    <div className='w-full space-y-2'>
                                         <div className="flex justify-between items-center w-full">
                                             <div className="flex items-center gap-2 text-sm">
-                                                <Badge variant={getStatusVariant(log.status)} className={cn(log.status === 'completed' && 'bg-green-600')}>
+                                                <Badge variant={getStatusVariant(log.status)} className={cn('capitalize', log.status === 'completed' && 'bg-green-600')}>
                                                     {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
                                                     {log.status}
                                                 </Badge>
@@ -108,8 +108,9 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                                             </div>
                                             <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-muted-foreground" />
                                         </div>
-                                        <h4 className="font-semibold text-left">Name of the command run</h4>
-                                        <p className="text-sm text-muted-foreground text-left">{log.command}</p>
+                                        <p className="text-sm text-muted-foreground text-left truncate pr-8">
+                                            {log.command}
+                                        </p>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="overflow-hidden data-[state=open]:animate-[accordion-down_300ms_ease-out] data-[state=closed]:animate-[accordion-up_300ms_ease-out]">
