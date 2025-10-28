@@ -25,28 +25,47 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Globe, FileJson, Code } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Globe, Code } from 'lucide-react';
 import Link from 'next/link';
 import { createServerCommand } from '@/actions/commands';
 import { ServerCommand, serverCommandSchema } from '@/schemas/command';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
+
+const placeholderXml = `<javascript.preProcessor>
+// This script runs on our server, not the target server.
+// It can access user-provided 'params' and 'universal' variables.
+// Return an object to add or override parameters for the bash script.
+
+// Example:
+// const newParams = {
+//   packageName: params.someUserInput.toLowerCase()
+// };
+// return newParams;
+
+return {};
+</javascript.preProcessor>
+
+<server.ubuntuBashProcessor>
+# This script runs on the target server.
+# Use {{placeholder}} for parameters.
+
+echo "Hello, {{name}}!"
+</server.ubuntuBashProcessor>
+`;
 
 export default function CreateCommandPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const form = useForm<ServerCommand>({
-    resolver: zodResolver(serverCommandSchema),
+  const form = useForm<Omit<ServerCommand, 'id' | 'createdAt'>>({
+    resolver: zodResolver(serverCommandSchema.omit({ id: true, createdAt: true })),
     defaultValues: {
       name: '',
       description: '',
-      commandTemplate: '',
+      commandTemplate: placeholderXml,
       parameters: [],
-      preExecutionScript: '',
       type: 'view',
       danger: 'low',
       allocatesPort: false,
@@ -54,48 +73,9 @@ export default function CreateCommandPage() {
     },
   });
 
-  const { fields, append, remove, replace } = useFieldArray({
-    control: form.control,
-    name: 'parameters',
-  });
-
-  const commandTemplateValue = form.watch('commandTemplate');
-  const preExecutionScriptValue = form.watch('preExecutionScript');
   const allocatesPortValue = form.watch('allocatesPort');
 
-  useEffect(() => {
-    const combinedString = `${commandTemplateValue || ''} ${preExecutionScriptValue || ''}`;
-    const foundParams = combinedString.match(/\{\{([^}]+)\}\}/g) || [];
-    const paramKeys = foundParams
-      .map(p => p.slice(2, -2).trim())
-      .filter(p => !p.startsWith('universal.'));
-
-    const existingKeys = new Set(fields.map(f => f.key));
-    const newKeys = new Set<string>();
-
-    for (const key of paramKeys) {
-      if (!newKeys.has(key)) {
-        newKeys.add(key);
-        if (!existingKeys.has(key)) {
-          append({
-            key: key,
-            label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1'),
-            type: 'string',
-            defaultValue: '',
-            confidential: false,
-          });
-        }
-      }
-    }
-
-    const currentParams = form.getValues('parameters') || [];
-    const filteredParams = currentParams.filter(p => newKeys.has(p.key));
-    if (filteredParams.length !== currentParams.length) {
-      replace(filteredParams);
-    }
-  }, [commandTemplateValue, preExecutionScriptValue, append, fields, form, replace]);
-
-  const onSubmit = async (data: ServerCommand) => {
+  const onSubmit = async (data: Omit<ServerCommand, 'id' | 'createdAt'>) => {
     const result = await createServerCommand(data);
     if (result.success) {
       toast({ title: 'Command Created' });
@@ -144,34 +124,16 @@ export default function CreateCommandPage() {
           
           <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><FileJson className="h-5 w-5"/> Pre-Execution Script (Optional)</CardTitle>
-                <CardDescription>
-                    Write a JavaScript script to pre-process parameters or perform complex logic. The script must return an object with keys matching the placeholders in the command template.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <FormField control={form.control} name="preExecutionScript" render={({ field }) => (
-                    <FormItem>
-                        <FormControl>
-                            <Textarea {...field} placeholder="// e.g., return { packageName: params.name.toLowerCase() };" className="font-mono" rows={8} />
-                        </FormControl>
-                        <FormDescription>Access user input via `params` and universal variables via `universal`.</FormDescription>
-                        <FormMessage />
-                    </FormItem>
-                )} />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="h-5 w-5"/> Command Template</CardTitle>
-                <CardDescription>The final bash command to be executed. Use `{{placeholder}}` for dynamic values.</CardDescription>
+                <CardDescription>
+                  The command structure, including an optional pre-processor script and the final bash command.
+                </CardDescription>
             </CardHeader>
              <CardContent>
                 <FormField control={form.control} name="commandTemplate" render={({ field }) => (
                     <FormItem>
                         <FormControl>
-                            <Textarea {...field} placeholder="e.g., sudo apt-get install -y {{packageName}}" className="font-mono" rows={8} />
+                            <Textarea {...field} className="font-mono" rows={18} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -183,7 +145,7 @@ export default function CreateCommandPage() {
                 <Globe className="h-4 w-4" />
                 <AlertTitle>Universal Variables</AlertTitle>
                 <AlertDescription>
-                    These variables are available in your `preExecutionScript` via the `universal` object and in the `commandTemplate`.
+                    These variables are available in your `javascript.preProcessor` via the `universal` object and in the `server.ubuntuBashProcessor` block.
                     <ul className="list-disc pl-5 mt-2 text-xs">
                         <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.name}}'}</code> - Server name</li>
                         <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.public_ip}}'}</code> - Public IP</li>
@@ -198,32 +160,6 @@ export default function CreateCommandPage() {
                 </AlertDescription>
             </Alert>
           
-          {fields.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Parameters</CardTitle>
-                <CardDescription>
-                  Define user-provided values for your command. Parameters are auto-detected from {'{{...}}'} placeholders in the script and template.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {fields.map((field, index) => (
-                  <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField control={form.control} name={`parameters.${index}.key`} render={({ field }) => ( <FormItem><FormLabel>Key</FormLabel><FormControl><Input {...field} readOnly className="font-mono bg-muted" /></FormControl><FormMessage /></FormItem> )} />
-                      <FormField control={form.control} name={`parameters.${index}.label`} render={({ field }) => ( <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} placeholder="e.g., Package Name" /></FormControl><FormMessage /></FormItem> )} />
-                    </div>
-                     <FormField control={form.control} name={`parameters.${index}.defaultValue`} render={({ field }) => ( <FormItem><FormLabel>Default Value</FormLabel><FormControl><Input {...field} placeholder="Optional default value" /></FormControl><FormMessage /></FormItem> )} />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                      <FormField control={form.control} name={`parameters.${index}.type`} render={({ field }) => ( <FormItem><FormLabel>Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="string">String</SelectItem><SelectItem value="number">Number</SelectItem><SelectItem value="textarea">Textarea</SelectItem></SelectContent></Select><FormMessage /></FormItem> )} />
-                      <FormField control={form.control} name={`parameters.${index}.confidential`} render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0 pt-6"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel>Confidential</FormLabel></FormItem> )} />
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
-
           <CardFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? ( <Loader2 className="animate-spin mr-2" /> ) : ( <Save className="mr-2" /> )}

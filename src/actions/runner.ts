@@ -32,17 +32,27 @@ const getAvailablePorts = (usedPorts: number[]): number[] => {
     return allPorts.filter(port => !usedPortsSet.has(port));
 };
 
+function parseCommandTemplate(template: string): { preExecutionScript?: string; bashCommand: string; } {
+    const preProcessorMatch = template.match(/<javascript.preProcessor>([\s\S]*?)<\/javascript.preProcessor>/);
+    const bashMatch = template.match(/<server.ubuntuBashProcessor>([\s\S]*?)<\/server.ubuntuBashProcessor>/);
+
+    const preExecutionScript = preProcessorMatch ? preProcessorMatch[1].trim() : undefined;
+    const bashCommand = bashMatch ? bashMatch[1].trim() : template; // Fallback to the whole template if no tags found
+
+    return { preExecutionScript, bashCommand };
+}
+
+
 export async function runCommand(
     serverId: string,
     commandIdentifier: string, // This can be a command ID or a raw command string
     processedParams: Record<string, any> = {},
 ) {
-    const isCommandId = !commandIdentifier.includes(' '); // Simple check if it's an ID or a command string
+    const isCommandId = !commandIdentifier.includes(' '); // Simple check
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
-    let commandTemplate: string = isCommandId ? '' : commandIdentifier;
-    let loggedCommand = commandTemplate;
+    let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
+    let loggedCommand = rawCommandTemplate;
     let confidentialParamKeys: string[] = [];
-    let preExecutionScript: string | undefined = undefined;
     let allocatesPort = false;
     let portToReserve: string | undefined = undefined;
     let commandName: string | undefined;
@@ -51,9 +61,8 @@ export async function runCommand(
         const commandDetails = await getServerCommand(commandId);
         if (commandDetails.success && commandDetails.command) {
             const cmd = commandDetails.command;
-            commandTemplate = cmd.commandTemplate;
-            loggedCommand = cmd.commandTemplate;
-            preExecutionScript = cmd.preExecutionScript;
+            rawCommandTemplate = cmd.commandTemplate;
+            loggedCommand = cmd.commandTemplate; // Will be refined later
             allocatesPort = cmd.allocatesPort || false;
             portToReserve = cmd.portToReserve;
             commandName = cmd.name;
@@ -69,6 +78,8 @@ export async function runCommand(
              return; // Exit if command not found
         }
     }
+
+    const { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
     
     // Mask confidential parameters for logging
     for (const key of confidentialParamKeys) {
@@ -97,7 +108,7 @@ export async function runCommand(
 
     const ssh = new NodeSSH();
     let finalOutput = ''; 
-    let finalCommand = commandTemplate;
+    let finalCommand = bashCommand;
     let actualReservedPort: number | undefined;
 
     try {
@@ -123,8 +134,6 @@ export async function runCommand(
 
         const usedPorts = (server.usedPorts || []).map(p => p.port);
         const availablePorts = getAvailablePorts(usedPorts);
-        
-        actualReservedPort = availablePorts[0];
         
         if (allocatesPort && portToReserve) {
             let portToUse: number;
@@ -176,17 +185,16 @@ export async function runCommand(
             await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
             
             try {
-                const sandbox = { params: processedParams, universal };
+                const sandbox = { params: processedParams, universal, result: {} };
                 vm.createContext(sandbox);
                 
-                const scriptToRun = `(function() { ${preExecutionScript} })();`;
-                const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
+                const scriptResult = vm.runInContext(preExecutionScript, sandbox, { timeout: 2000 });
                 
                 if (typeof scriptResult === 'object' && scriptResult !== null) {
                     templateParams = { ...templateParams, ...scriptResult };
                     finalOutput += `Pre-execution script completed. Merged script results with parameters.\n\n`;
                 } else {
-                    finalOutput += `Pre-execution script ran but did not return a valid object. Proceeding without its output.\n\n`;
+                     finalOutput += `Pre-execution script ran, but did not return a valid object to merge. Proceeding...\n\n`;
                 }
 
                 await updateServerLog(logId, { output: finalOutput });
@@ -221,8 +229,7 @@ export async function runCommand(
             username: username,
             privateKey: server.privateKey
         });
-
-        // Log the final command, masking any confidential parameters
+        
         const loggedFinalCommand = confidentialParamKeys.reduce((cmd, key) => {
             if (templateParams[key]) {
                 const valueToMask = String(templateParams[key]);
@@ -250,7 +257,6 @@ export async function runCommand(
         await updateServerLog(logId, {
             status: result.code === 0 ? 'completed' : 'failed',
             output: finalOutput,
-            completedAt: new Date().toISOString(), 
         });
 
     } catch (error: any) {
@@ -264,7 +270,6 @@ export async function runCommand(
         await updateServerLog(logId, {
             status: 'failed',
             output: `Error during command execution: ${finalOutput}`,
-            completedAt: new Date().toISOString(),
         });
         await logErrorToFirestore({ message: `Runner Error for server ${serverId}, log ${logId}:`, stack: error.stack, source: 'runCommand.main' });
     } finally {
