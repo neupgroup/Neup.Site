@@ -2,41 +2,29 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, Save, Globe, Code } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Globe, Code, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { createServerCommand } from '@/actions/commands';
-import { ServerCommand, serverCommandSchema } from '@/schemas/command';
+import { ServerCommand, serverCommandSchema, CommandParameter } from '@/schemas/command';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
+import { useEffect, useMemo } from 'react';
+import { Badge } from '@/components/ui/badge';
 
 const placeholderXml = `<javascript.preProcessor>
 // This script runs on our server, not the target server.
 // It can access user-provided 'params' and 'universal' variables.
-// Return an object to add or override parameters for the bash script.
+// Return a command string to execute it directly.
+// OR return an object of new parameters to use in the bash block below.
 
 // Example:
 // const newParams = {
@@ -73,6 +61,58 @@ export default function CreateCommandPage() {
     },
   });
 
+  const { fields, append, remove, update } = useFieldArray({
+    control: form.control,
+    name: 'parameters'
+  });
+
+  const commandTemplateValue = useWatch({
+    control: form.control,
+    name: 'commandTemplate',
+  });
+
+  const detectedParams = useMemo(() => {
+    const userParamRegex = /\{\{([a-zA-Z0-9_]+)\}\}/g;
+    const universalParamRegex = /\{\{universal\.([a-zA-Z0-9_]+)\}\}/g;
+    
+    const userParams = new Set<string>();
+    const universalParams = new Set<string>();
+    
+    let match;
+    while ((match = userParamRegex.exec(commandTemplateValue)) !== null) {
+      if (match[1] !== 'universal') {
+        userParams.add(match[1]);
+      }
+    }
+    
+    while ((match = universalParamRegex.exec(commandTemplateValue)) !== null) {
+      universalParams.add(`universal.${match[1]}`);
+    }
+
+    return { user: Array.from(userParams), universal: Array.from(universalParams) };
+  }, [commandTemplateValue]);
+  
+  useEffect(() => {
+    const existingParamKeys = new Set(fields.map(f => f.key));
+    const detectedParamKeys = new Set(detectedParams.user);
+
+    // Add new params
+    detectedParamKeys.forEach(key => {
+        if (!existingParamKeys.has(key)) {
+            append({ key, label: '', type: 'string', defaultValue: '', confidential: false });
+        }
+    });
+
+    // Remove old params
+    fields.forEach((field, index) => {
+        if (!detectedParamKeys.has(field.key)) {
+            remove(index);
+        }
+    });
+
+  }, [detectedParams.user, fields, append, remove]);
+
+
   const allocatesPortValue = form.watch('allocatesPort');
 
   const onSubmit = async (data: Omit<ServerCommand, 'id' | 'createdAt'>) => {
@@ -90,7 +130,7 @@ export default function CreateCommandPage() {
   };
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full max-w-4xl">
       <div className="mb-4">
         <Button variant="ghost" asChild>
           <Link href="/root/command">
@@ -126,7 +166,7 @@ export default function CreateCommandPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="h-5 w-5"/> Command Template</CardTitle>
                 <CardDescription>
-                  The command structure, including an optional pre-processor script and the final bash command.
+                  The command structure. Parameters are detected automatically from `{{placeholder}}` syntax.
                 </CardDescription>
             </CardHeader>
              <CardContent>
@@ -139,6 +179,44 @@ export default function CreateCommandPage() {
                     </FormItem>
                 )} />
              </CardContent>
+          </Card>
+          
+          <Card>
+                <CardHeader>
+                    <CardTitle>Detected Parameters</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground mb-2">User-Defined Parameters</h3>
+                        {fields.length > 0 ? (
+                            <div className="space-y-4">
+                                {fields.map((field, index) => (
+                                    <div key={field.id} className="p-4 border rounded-lg space-y-4">
+                                        <Badge variant="secondary" className="font-mono">{`{{${field.key}}}`}</Badge>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                             <FormField control={form.control} name={`parameters.${index}.label`} render={({ field }) => (<FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} placeholder="e.g. 'Package Name'" /></FormControl><FormMessage /></FormItem>)} />
+                                             <FormField control={form.control} name={`parameters.${index}.type`} render={({ field }) => (<FormItem><FormLabel>Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="string">String</SelectItem><SelectItem value="number">Number</SelectItem><SelectItem value="textarea">Textarea</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                                        </div>
+                                         <FormField control={form.control} name={`parameters.${index}.defaultValue`} render={({ field }) => (<FormItem><FormLabel>Default Value (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                         <FormField control={form.control} name={`parameters.${index}.confidential`} render={({ field }) => ( <FormItem className="flex flex-row items-center gap-2 space-y-0"><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="flex items-center gap-1"><KeyRound className="h-4 w-4"/> Confidential</FormLabel></FormItem> )} />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No user-defined parameters detected.</p>
+                        )}
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground mb-2">Universal Parameters</h3>
+                        {detectedParams.universal.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {detectedParams.universal.map(key => <Badge key={key} variant="outline" className="font-mono">{`{{${key}}}`}</Badge>)}
+                            </div>
+                        ) : (
+                             <p className="text-sm text-muted-foreground">No universal parameters detected.</p>
+                        )}
+                    </div>
+                </CardContent>
           </Card>
 
             <Alert>
