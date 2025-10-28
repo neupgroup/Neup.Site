@@ -25,7 +25,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Globe } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Plus, Trash2, Globe, FileJson, Code } from 'lucide-react';
 import Link from 'next/link';
 import { createServerCommand } from '@/actions/commands';
 import { ServerCommand, serverCommandSchema } from '@/schemas/command';
@@ -46,9 +46,9 @@ export default function CreateCommandPage() {
       description: '',
       commandTemplate: '',
       parameters: [],
+      preExecutionScript: '',
       type: 'view',
       danger: 'low',
-      preprocess: false,
       allocatesPort: false,
       portToReserve: '',
     },
@@ -60,11 +60,12 @@ export default function CreateCommandPage() {
   });
 
   const commandTemplateValue = form.watch('commandTemplate');
-  const preprocessValue = form.watch('preprocess');
+  const preExecutionScriptValue = form.watch('preExecutionScript');
   const allocatesPortValue = form.watch('allocatesPort');
 
   useEffect(() => {
-    const foundParams = commandTemplateValue?.match(/\{\{([^}]+)\}\}/g) || [];
+    const combinedString = `${commandTemplateValue || ''} ${preExecutionScriptValue || ''}`;
+    const foundParams = combinedString.match(/\{\{([^}]+)\}\}/g) || [];
     const paramKeys = foundParams
       .map(p => p.slice(2, -2).trim())
       .filter(p => !p.startsWith('universal.'));
@@ -92,9 +93,7 @@ export default function CreateCommandPage() {
     if (filteredParams.length !== currentParams.length) {
       replace(filteredParams);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [commandTemplateValue, append, fields, replace]);
+  }, [commandTemplateValue, preExecutionScriptValue, append, fields, form, replace]);
 
   const onSubmit = async (data: ServerCommand) => {
     const result = await createServerCommand(data);
@@ -130,237 +129,107 @@ export default function CreateCommandPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Command Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g., Install Package" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} placeholder="A short description of what this command does." />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <FormField control={form.control} name="name" render={({ field }) => ( <FormItem><FormLabel>Command Name</FormLabel><FormControl><Input {...field} placeholder="e.g., Install Package" /></FormControl><FormMessage /></FormItem> )} />
+              <FormField control={form.control} name="description" render={({ field }) => ( <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} placeholder="A short description of what this command does." /></FormControl><FormMessage /></FormItem> )} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          <SelectItem value="creation">Creation</SelectItem>
-                          <SelectItem value="destruction">Destruction</SelectItem>
-                          <SelectItem value="updation">Updation</SelectItem>
-                          <SelectItem value="view">View</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="danger"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Danger Level</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="mid">Mid</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="type" render={({ field }) => ( <FormItem><FormLabel>Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="creation">Creation</SelectItem><SelectItem value="destruction">Destruction</SelectItem><SelectItem value="updation">Updation</SelectItem><SelectItem value="view">View</SelectItem></SelectContent></Select><FormMessage /></FormItem> )} />
+                <FormField control={form.control} name="danger" render={({ field }) => ( <FormItem><FormLabel>Danger Level</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="low">Low</SelectItem><SelectItem value="mid">Mid</SelectItem><SelectItem value="high">High</SelectItem></SelectContent></Select><FormMessage /></FormItem> )} />
               </div>
-              <FormField
-                control={form.control}
-                name="preprocess"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                      <FormLabel>Pre-process as JavaScript</FormLabel>
-                      <FormDescription>
-                        The command template will be run as a script to generate the final bash command.
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
               <div className="rounded-lg border p-4 space-y-4">
-                <FormField
-                    control={form.control}
-                    name="allocatesPort"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between">
-                        <div className="space-y-0.5">
-                          <FormLabel>Allocates a Port</FormLabel>
-                          <FormDescription>
-                            Signal that this command will use and reserve a port on the server.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  {allocatesPortValue && (
-                       <div className="space-y-2 border-t pt-4">
-                          <FormField
-                              control={form.control}
-                              name="portToReserve"
-                              render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>Port to Reserve</FormLabel>
-                                      <FormControl><Input {...field} placeholder="e.g., 8080 or {{universal.available_port}}" /></FormControl>
-                                      <FormDescription>
-                                          Enter a specific port or use the placeholder for an available one. Use <code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.reserved_port}}'}</code> in the template.
-                                      </FormDescription>
-                                      <FormMessage />
-                                  </FormItem>
-                              )}
-                              />
-                       </div>
-                  )}
+                <FormField control={form.control} name="allocatesPort" render={({ field }) => ( <FormItem className="flex flex-row items-center justify-between"><div className="space-y-0.5"><FormLabel>Allocates a Port</FormLabel><FormDescription>Signal that this command will use and reserve a port on the server.</FormDescription></div><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem> )} />
+                {allocatesPortValue && ( <div className="space-y-2 border-t pt-4"><FormField control={form.control} name="portToReserve" render={({ field }) => ( <FormItem><FormLabel>Port to Reserve</FormLabel><FormControl><Input {...field} placeholder="e.g., 8080 or {{universal.available_port}}" /></FormControl><FormDescription>Enter a specific port or use the placeholder for an available one. Use <code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.reserved_port}}'}</code> in the template.</FormDescription><FormMessage /></FormItem> )} /></div> )}
               </div>
-              <FormField
-                control={form.control}
-                name="commandTemplate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{preprocessValue ? 'JavaScript Pre-processor' : 'Command Template'}</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} placeholder={preprocessValue ? "// Must return a string, e.g.,\n// return 'echo ' + params.message;" : "e.g., sudo apt-get install -y {{packageName}}"} className="font-mono" rows={8} />
-                    </FormControl>
-                    <FormDescription>{preprocessValue ? "The script runs on the server and has access to a 'params' object with user inputs. Universal variables are substituted after." : "Use `{{placeholder}}` for dynamic user values and `{{universal.placeholder}}` for system values."}</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Alert>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><FileJson className="h-5 w-5"/> Pre-Execution Script (Optional)</CardTitle>
+                <CardDescription>
+                    Write a JavaScript script to pre-process parameters or perform complex logic. The script must return an object with keys matching the placeholders in the command template.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <FormField control={form.control} name="preExecutionScript" render={({ field }) => (
+                    <FormItem>
+                        <FormControl>
+                            <Textarea {...field} placeholder="// e.g., return { packageName: params.name.toLowerCase() };" className="font-mono" rows={8} />
+                        </FormControl>
+                        <FormDescription>Access user input via `params` and universal variables via `universal`.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Code className="h-5 w-5"/> Command Template</CardTitle>
+                <CardDescription>The final bash command to be executed. Use `{{placeholder}}` for dynamic values.</CardDescription>
+            </CardHeader>
+             <CardContent>
+                <FormField control={form.control} name="commandTemplate" render={({ field }) => (
+                    <FormItem>
+                        <FormControl>
+                            <Textarea {...field} placeholder="e.g., sudo apt-get install -y {{packageName}}" className="font-mono" rows={8} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+             </CardContent>
+          </Card>
+
+            <Alert>
                 <Globe className="h-4 w-4" />
                 <AlertTitle>Universal Variables</AlertTitle>
                 <AlertDescription>
-                  These variables are always available in your final command string (after any JS pre-processing).
-                  <ul className="list-disc pl-5 mt-2 text-xs">
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.name}}'}</code> - Server name</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.public_ip}}'}</code> - Public IP</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.username}}'}</code> - Default username</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.base_path}}'}</code> - Default base path</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.account_id}}'}</code> - User Account ID</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.available_port}}'}</code> - First available port</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{'{{universal.reserved_port}}'}</code> - The port reserved for this execution.</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.used_ports}}'}</code> - CSV of used ports</li>
-                    <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{'{{universal.linked_account_github}}'}</code> - GitHub Token (Confidential)</li>
-                  </ul>
+                    These variables are available in your `preExecutionScript` via the `universal` object and in the `commandTemplate`.
+                    <ul className="list-disc pl-5 mt-2 text-xs">
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.name}}'}</code> - Server name</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.public_ip}}'}</code> - Public IP</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.username}}'}</code> - Default username</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.base_path}}'}</code> - Default base path</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.account_id}}'}</code> - User Account ID</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.available_port}}'}</code> - First available port</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{'{{universal.reserved_port}}'}</code> - The port reserved for this execution.</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.used_ports}}'}</code> - CSV of used ports</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{'{{universal.linked_account_github}}'}</code> - GitHub Token (Confidential)</li>
+                    </ul>
                 </AlertDescription>
-              </Alert>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? (
-                  <Loader2 className="animate-spin mr-2" />
-                ) : (
-                  <Save className="mr-2" />
-                )}
-                Create Command
-              </Button>
-            </CardFooter>
-          </Card>
+            </Alert>
+          
           {fields.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle>Parameters</CardTitle>
                 <CardDescription>
-                  Define user-provided values for your command template or script. Parameters are auto-detected from {'{{...}}'} placeholders.
+                  Define user-provided values for your command. Parameters are auto-detected from {'{{...}}'} placeholders in the script and template.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {fields.map((field, index) => (
                   <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField control={form.control} name={`parameters.${index}.key`} render={({ field }) => (
-                        <FormItem><FormLabel>Key</FormLabel><FormControl><Input {...field} readOnly className="font-mono bg-muted" /></FormControl><FormMessage /></FormItem>
-                      )} />
-                      <FormField control={form.control} name={`parameters.${index}.label`} render={({ field }) => (
-                        <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} placeholder="e.g., Package Name" /></FormControl><FormMessage /></FormItem>
-                      )} />
+                      <FormField control={form.control} name={`parameters.${index}.key`} render={({ field }) => ( <FormItem><FormLabel>Key</FormLabel><FormControl><Input {...field} readOnly className="font-mono bg-muted" /></FormControl><FormMessage /></FormItem> )} />
+                      <FormField control={form.control} name={`parameters.${index}.label`} render={({ field }) => ( <FormItem><FormLabel>Label</FormLabel><FormControl><Input {...field} placeholder="e.g., Package Name" /></FormControl><FormMessage /></FormItem> )} />
                     </div>
-                     <FormField control={form.control} name={`parameters.${index}.defaultValue`} render={({ field }) => (
-                        <FormItem><FormLabel>Default Value</FormLabel><FormControl><Input {...field} placeholder="Optional default value" /></FormControl><FormMessage /></FormItem>
-                    )} />
+                     <FormField control={form.control} name={`parameters.${index}.defaultValue`} render={({ field }) => ( <FormItem><FormLabel>Default Value</FormLabel><FormControl><Input {...field} placeholder="Optional default value" /></FormControl><FormMessage /></FormItem> )} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                      <FormField
-                        control={form.control}
-                        name={`parameters.${index}.type`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                              <SelectContent>
-                                <SelectItem value="string">String</SelectItem>
-                                <SelectItem value="number">Number</SelectItem>
-                                <SelectItem value="textarea">Textarea</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`parameters.${index}.confidential`}
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-2 space-y-0 pt-6">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormLabel>Confidential</FormLabel>
-                          </FormItem>
-                        )}
-                      />
+                      <FormField control={form.control} name={`parameters.${index}.type`} render={({ field }) => ( <FormItem><FormLabel>Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="string">String</SelectItem><SelectItem value="number">Number</SelectItem><SelectItem value="textarea">Textarea</SelectItem></SelectContent></Select><FormMessage /></FormItem> )} />
+                      <FormField control={form.control} name={`parameters.${index}.confidential`} render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-2 space-y-0 pt-6"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel>Confidential</FormLabel></FormItem> )} />
                     </div>
                   </div>
                 ))}
               </CardContent>
             </Card>
           )}
+
+          <CardFooter>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? ( <Loader2 className="animate-spin mr-2" /> ) : ( <Save className="mr-2" /> )}
+                Create Command
+              </Button>
+            </CardFooter>
         </form>
       </Form>
     </div>

@@ -27,7 +27,8 @@ export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'crea
   try {
     const validatedData = serverCommandSchema.omit({ id: true, createdAt: true }).safeParse(data);
     if (!validatedData.success) {
-      return { success: false, error: validatedData.error.flatten().fieldErrors.toString() };
+      const errorDetails = validatedData.error.flatten().fieldErrors;
+      return { success: false, error: JSON.stringify(errorDetails) };
     }
 
     const { firestore } = initializeFirebase();
@@ -56,8 +57,6 @@ export async function getServerCommands({
     const { firestore } = initializeFirebase();
     const commandsRef = collection(firestore, 'serverCommands');
     
-    // The search implementation remains client-side for simplicity, as Firestore doesn't support partial text search natively.
-    // We fetch all, then filter and paginate. For larger datasets, a search service like Algolia would be needed.
     const allDocsQuery = query(commandsRef, orderBy('name'));
     const allDocsSnapshot = await getDocs(allDocsQuery);
     
@@ -70,9 +69,9 @@ export async function getServerCommands({
             description: data.description,
             commandTemplate: data.commandTemplate,
             parameters: data.parameters || [],
+            preExecutionScript: data.preExecutionScript,
             type: data.type || 'view',
             danger: data.danger || 'low',
-            preprocess: data.preprocess ?? false,
             allocatesPort: data.allocatesPort ?? false,
             portToReserve: data.portToReserve,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
@@ -115,9 +114,9 @@ export async function getServerCommand(id: string): Promise<{ success: boolean; 
             description: data.description,
             commandTemplate: data.commandTemplate,
             parameters: data.parameters || [],
+            preExecutionScript: data.preExecutionScript,
             type: data.type || 'view',
             danger: data.danger || 'low',
-            preprocess: data.preprocess ?? false,
             allocatesPort: data.allocatesPort ?? false,
             portToReserve: data.portToReserve,
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
@@ -132,10 +131,10 @@ export async function getServerCommand(id: string): Promise<{ success: boolean; 
 
 export async function updateServerCommand(id: string, data: Partial<Omit<ServerCommand, 'id' | 'createdAt'>>): Promise<{ success: boolean; error?: string }> {
     try {
-        // Use .partial() to allow incomplete data for updates
         const validatedData = serverCommandSchema.partial().safeParse(data);
         if (!validatedData.success) {
-            return { success: false, error: validatedData.error.flatten().fieldErrors.toString() };
+             const errorDetails = validatedData.error.flatten().fieldErrors;
+            return { success: false, error: JSON.stringify(errorDetails) };
         }
 
         const { firestore } = initializeFirebase();

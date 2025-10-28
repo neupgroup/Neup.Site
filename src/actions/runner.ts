@@ -32,7 +32,6 @@ const getAvailablePorts = (usedPorts: number[]): number[] => {
     return allPorts.filter(port => !usedPortsSet.has(port));
 };
 
-
 export async function runCommand(
     serverId: string,
     commandIdentifier: string, // This can be a command ID or a raw command string
@@ -43,7 +42,7 @@ export async function runCommand(
     let commandTemplate: string = isCommandId ? '' : commandIdentifier;
     let loggedCommand = commandTemplate;
     let confidentialParamKeys: string[] = [];
-    let preprocess = false;
+    let preExecutionScript: string | undefined = undefined;
     let allocatesPort = false;
     let portToReserve: string | undefined = undefined;
     let commandName: string | undefined;
@@ -53,12 +52,18 @@ export async function runCommand(
         if (commandDetails.success && commandDetails.command) {
             const cmd = commandDetails.command;
             commandTemplate = cmd.commandTemplate;
-            loggedCommand = cmd.commandTemplate; // Log the template initially
-            preprocess = cmd.preprocess || false;
+            loggedCommand = cmd.commandTemplate;
+            preExecutionScript = cmd.preExecutionScript;
             allocatesPort = cmd.allocatesPort || false;
             portToReserve = cmd.portToReserve;
             commandName = cmd.name;
             confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
+
+            if (cmd.danger === 'high') {
+                await createServerLog({ serverId: serverId, commandId, commandName: commandName || 'High Risk Command', command: 'Execution Blocked', output: 'High-risk command execution is blocked from the UI for safety. Please run manually via SSH.', status: 'cancelled' });
+                revalidatePath(`/root/servers/${serverId}`);
+                return;
+            }
         } else {
              await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
              return; // Exit if command not found
@@ -119,7 +124,6 @@ export async function runCommand(
         const usedPorts = (server.usedPorts || []).map(p => p.port);
         const availablePorts = getAvailablePorts(usedPorts);
         
-        // Default to first available port if we're not explicitly allocating one
         actualReservedPort = availablePorts[0];
         
         if (allocatesPort && portToReserve) {
@@ -165,37 +169,40 @@ export async function runCommand(
             account_id: accountId,
         };
         
-        if (preprocess) {
-            finalOutput += 'Running pre-execution script on server...\n';
+        let templateParams = { ...processedParams };
+
+        if (preExecutionScript) {
+            finalOutput += 'Running pre-execution script...\n';
             await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
             
             try {
-                // The sandbox gets user parameters and universal variables
-                const sandbox = { params: processedParams, universal, result: '' };
+                const sandbox = { params: processedParams, universal };
                 vm.createContext(sandbox);
                 
-                const scriptToRun = `result = (() => { ${commandTemplate} })();`;
-                vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
+                const scriptToRun = `(function() { ${preExecutionScript} })();`;
+                const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
                 
-                if (typeof sandbox.result !== 'string') {
-                    throw new Error('Pre-execution script must return a string.');
+                if (typeof scriptResult === 'object' && scriptResult !== null) {
+                    templateParams = { ...templateParams, ...scriptResult };
+                    finalOutput += `Pre-execution script completed. Merged script results with parameters.\n\n`;
+                } else {
+                    finalOutput += `Pre-execution script ran but did not return a valid object. Proceeding without its output.\n\n`;
                 }
-                finalCommand = sandbox.result;
-                finalOutput += `Pre-execution script completed. Final command generated.\n\n`;
+
                 await updateServerLog(logId, { output: finalOutput });
             } catch (scriptError: any) {
                 throw new Error(`Pre-execution script failed: ${scriptError.message}`);
             }
-        } else {
-            // Substitute user parameters directly if not pre-processing
-            for (const [key, value] of Object.entries(processedParams)) {
-                finalCommand = finalCommand.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
-            }
-            // Also substitute universal variables
-            for (const [key, value] of Object.entries(universal)) {
-                if (value) {
-                    finalCommand = finalCommand.replace(new RegExp(`{{universal.${key}}}`, 'g'), String(value));
-                }
+        }
+        
+        // Substitute all parameters (user-provided and script-generated)
+        for (const [key, value] of Object.entries(templateParams)) {
+            finalCommand = finalCommand.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
+        }
+        // Also substitute universal variables
+        for (const [key, value] of Object.entries(universal)) {
+            if (value) {
+                finalCommand = finalCommand.replace(new RegExp(`{{universal.${key}}}`, 'g'), String(value));
             }
         }
         
@@ -217,9 +224,8 @@ export async function runCommand(
 
         // Log the final command, masking any confidential parameters
         const loggedFinalCommand = confidentialParamKeys.reduce((cmd, key) => {
-            if (processedParams[key]) {
-                const valueToMask = String(processedParams[key]);
-                 // Escape special regex characters in the value to be masked
+            if (templateParams[key]) {
+                const valueToMask = String(templateParams[key]);
                 const escapedValue = valueToMask.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const maskedValue = '*'.repeat(valueToMask.length);
                 return cmd.replace(new RegExp(escapedValue, 'g'), maskedValue);
