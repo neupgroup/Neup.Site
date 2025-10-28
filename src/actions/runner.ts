@@ -68,11 +68,6 @@ export async function runCommand(
             commandName = cmd.name;
             confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
 
-            if (cmd.danger === 'high') {
-                await createServerLog({ serverId: serverId, commandId, commandName: commandName || 'High Risk Command', command: 'Execution Blocked', output: 'High-risk command execution is blocked from the UI for safety. Please run manually via SSH.', status: 'cancelled' });
-                revalidatePath(`/root/servers/${serverId}`);
-                return;
-            }
         } else {
              await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
              return; // Exit if command not found
@@ -184,17 +179,22 @@ export async function runCommand(
             finalOutput += 'Running pre-execution script...\n';
             await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
             
+            const sandbox = { params: processedParams, universal, result: {} };
+            vm.createContext(sandbox);
+
             try {
-                const sandbox = { params: processedParams, universal, result: {} };
-                vm.createContext(sandbox);
-                
                 const scriptResult = vm.runInContext(preExecutionScript, sandbox, { timeout: 2000 });
                 
-                if (typeof scriptResult === 'object' && scriptResult !== null) {
+                if (typeof scriptResult === 'string') {
+                    // Method 1: The script returns the entire command string
+                    finalCommand = scriptResult;
+                    finalOutput += `Pre-execution script returned a complete command.\n\n`;
+                } else if (typeof scriptResult === 'object' && scriptResult !== null) {
+                    // Method 2: The script returns an object of parameters to inject
                     templateParams = { ...templateParams, ...scriptResult };
                     finalOutput += `Pre-execution script completed. Merged script results with parameters.\n\n`;
                 } else {
-                     finalOutput += `Pre-execution script ran, but did not return a valid object to merge. Proceeding...\n\n`;
+                     finalOutput += `Pre-execution script ran, but did not return a valid object or string. Proceeding...\n\n`;
                 }
 
                 await updateServerLog(logId, { output: finalOutput });
