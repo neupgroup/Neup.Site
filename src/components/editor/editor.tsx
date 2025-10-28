@@ -32,6 +32,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const [dropZone, setDropZone] = useState<{ parentId: string | null, elementId: string | null; }>({ parentId: null, elementId: null });
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -117,6 +118,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const handleDragOver = (e: DragEvent, targetParentId?: string | null, targetElementId?: string | null) => {
       e.preventDefault();
       e.stopPropagation();
+      setDropZone({ parentId: targetParentId || null, elementId: targetElementId || null });
   };
   
   const handleDragLeave = (e: DragEvent) => {
@@ -124,6 +126,8 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       e.stopPropagation();
       const editorContainer = (e.currentTarget as HTMLElement).closest('.h-screen.w-full');
       if (editorContainer && !editorContainer.contains(e.relatedTarget as Node)) {
+          setDraggedId(null);
+          setDropZone({parentId: null, elementId: null});
           console.log('Drag state exited.');
       }
   }
@@ -131,6 +135,8 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const handleDrop = (e: DragEvent, parentId?: string, dropZoneId?: string) => {
       e.preventDefault();
       e.stopPropagation();
+      setDraggedId(null);
+      setDropZone({parentId: null, elementId: null});
       console.log('Drag state exited.');
 
       const dataStr = e.dataTransfer.getData('application/json');
@@ -138,25 +144,35 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       const data = JSON.parse(dataStr);
 
       setElements(prev => {
-          let [elementsWithoutDragged, draggedElement] = removeElementRecursive(prev, data.id);
-
-          if (!draggedElement) {
-              const definition = elementDefinitions[data.elementType as CanvasElementData['type']];
-              draggedElement = {
-                  ...JSON.parse(JSON.stringify(definition)),
-                  id: `${data.elementType}-${Date.now()}`,
-                  properties: definition.properties || {},
-              };
+          let elementsWithoutDragged = prev;
+          let draggedElement: CanvasElementData | null = null;
+          
+          if(data.id) { // Moving an existing element
+             [elementsWithoutDragged, draggedElement] = removeElementRecursive(prev, data.id);
+          } else if (data.type === 'sidebar-element' || data.type === 'template-element') { // Adding a new element
+              const definition = data.type === 'template-element' ? data.element : elementDefinitions[data.elementType as CanvasElementData['type']];
+              if (definition) {
+                  draggedElement = {
+                      ...JSON.parse(JSON.stringify(definition)),
+                      id: `${data.elementType || data.element.type}-${Date.now()}`,
+                  };
+                  if (data.type === 'template-element' && data.element.children) {
+                    draggedElement.children = data.element.children;
+                  }
+              }
           }
 
           if (!draggedElement) return prev;
 
           const insertElement = (els: CanvasElementData[]): CanvasElementData[] => {
-              if (parentId) {
+              const targetParentId = parentId || dropZone.parentId;
+              const targetElementId = dropZoneId || dropZone.elementId;
+
+              if (targetParentId) {
                   return els.map(el => {
-                      if (el.id === parentId) {
+                      if (el.id === targetParentId) {
                           const newChildren = el.children ? [...el.children] : [];
-                          const dropIndex = dropZoneId ? newChildren.findIndex(c => c.id === dropZoneId) : newChildren.length;
+                          const dropIndex = targetElementId ? newChildren.findIndex(c => c.id === targetElementId) : newChildren.length;
                           newChildren.splice(dropIndex, 0, draggedElement!);
                           return {...el, children: newChildren};
                       }
@@ -167,7 +183,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                   });
               } else {
                   const newEls = [...els];
-                  const dropIndex = dropZoneId ? newEls.findIndex(c => c.id === dropZoneId) : newEls.length;
+                  const dropIndex = targetElementId ? newEls.findIndex(c => c.id === targetElementId) : newEls.length;
                   newEls.splice(dropIndex, 0, draggedElement!);
                   return newEls;
               }
@@ -175,7 +191,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
           return insertElement(elementsWithoutDragged);
       });
 
-      setDraggedId(null);
   };
 
 
@@ -759,6 +774,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             draggedId={draggedId}
             hoveredElementId={hoveredElementId}
             setHoveredElementId={setHoveredElementId}
+            dropZone={dropZone}
             />
             <HighlightBox 
                 hoveredElementId={hoveredElementId} 
