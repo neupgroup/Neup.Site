@@ -179,18 +179,18 @@ export async function runCommand(
             finalOutput += 'Running pre-execution script...\n';
             await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
             
-            const sandbox = { params: processedParams, universal, result: {} };
+            const sandbox = { params: processedParams, universal };
             vm.createContext(sandbox);
 
             try {
-                const scriptResult = vm.runInContext(preExecutionScript, sandbox, { timeout: 2000 });
+                // Wrap the script in an IIFE to allow top-level return statements.
+                const scriptToRun = `(() => { ${preExecutionScript} })();`;
+                const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
                 
                 if (typeof scriptResult === 'string') {
-                    // Method 1: The script returns the entire command string
                     finalCommand = scriptResult;
                     finalOutput += `Pre-execution script returned a complete command.\n\n`;
                 } else if (typeof scriptResult === 'object' && scriptResult !== null) {
-                    // Method 2: The script returns an object of parameters to inject
                     templateParams = { ...templateParams, ...scriptResult };
                     finalOutput += `Pre-execution script completed. Merged script results with parameters.\n\n`;
                 } else {
