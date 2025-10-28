@@ -60,7 +60,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
 
 
     return (
-        <div className="relative">
+        <>
             {isEditing && (
                  <div 
                     className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 flex items-center gap-1 bg-background p-1 rounded-md border shadow-md"
@@ -123,13 +123,13 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 className={cn(
-                    "w-full whitespace-pre-wrap outline-none",
+                    "w-full whitespace-pre-wrap outline-none relative",
                     "focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background rounded-sm",
                     className
                 )} 
                 style={style}
                 dangerouslySetInnerHTML={{ __html: initialValue || ' ' }}
             />
-        </div>
+        </>
     );
 };
