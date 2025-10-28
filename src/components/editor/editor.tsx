@@ -12,7 +12,6 @@ import { savePage, createPage } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { elementDefinitions } from '@/elements';
-import { temp_element } from '@/elements/html';
 import HighlightBox from './HighlightBox'; // Import HighlightBox
 
 interface EditorProps {
@@ -118,35 +117,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const handleDragOver = (e: DragEvent, targetParentId?: string | null, targetElementId?: string | null) => {
       e.preventDefault();
       e.stopPropagation();
-
-      setElements(prev => {
-          let [cleanedElements] = removeElementRecursive(prev, 'temp_element');
-          
-          if (targetElementId === 'temp_element') return cleanedElements;
-
-          const insertPlaceholder = (els: CanvasElementData[]): CanvasElementData[] => {
-              if (targetParentId) {
-                  return els.map(el => {
-                      if (el.id === targetParentId) {
-                          const newChildren = el.children ? [...el.children] : [];
-                          const dropIndex = targetElementId ? newChildren.findIndex(c => c.id === targetElementId) : newChildren.length;
-                          newChildren.splice(dropIndex, 0, temp_element);
-                          return {...el, children: newChildren};
-                      }
-                      if (el.children) {
-                          return {...el, children: insertPlaceholder(el.children)};
-                      }
-                      return el;
-                  });
-              } else {
-                  const dropIndex = targetElementId ? els.findIndex(c => c.id === targetElementId) : els.length;
-                  const newEls = [...els];
-                  newEls.splice(dropIndex, 0, temp_element);
-                  return newEls;
-              }
-          };
-          return insertPlaceholder(cleanedElements);
-      }, false);
   };
   
   const handleDragLeave = (e: DragEvent) => {
@@ -154,7 +124,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       e.stopPropagation();
       const editorContainer = (e.currentTarget as HTMLElement).closest('.h-screen.w-full');
       if (editorContainer && !editorContainer.contains(e.relatedTarget as Node)) {
-          setElements(prev => removeElementRecursive(prev, 'temp_element')[0], false);
           console.log('Drag state exited.');
       }
   }
@@ -169,8 +138,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       const data = JSON.parse(dataStr);
 
       setElements(prev => {
-          const [elementsWithoutPlaceholder] = removeElementRecursive(prev, 'temp_element');
-          let [elementsWithoutDragged, draggedElement] = removeElementRecursive(elementsWithoutPlaceholder, data.id);
+          let [elementsWithoutDragged, draggedElement] = removeElementRecursive(prev, data.id);
 
           if (!draggedElement) {
               const definition = elementDefinitions[data.elementType as CanvasElementData['type']];
@@ -181,7 +149,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
               };
           }
 
-          if (!draggedElement) return elementsWithoutPlaceholder;
+          if (!draggedElement) return prev;
 
           const insertElement = (els: CanvasElementData[]): CanvasElementData[] => {
               if (parentId) {

@@ -117,17 +117,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
     ),
   };
 
-  if (id === 'temp_element' || id === draggedId) {
-      if (id === 'temp_element') {
-        return (
-            <div 
-                style={properties as React.CSSProperties}
-                className="w-full h-2 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all"
-            >
-                {/* Removed text content */}
-            </div>
-        );
-      }
+  if (id === draggedId) {
       return null;
   }
 
