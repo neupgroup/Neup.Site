@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { FC, useEffect, useState } from 'react';
@@ -40,7 +41,7 @@ const HighlightBox: FC<HighlightBoxProps> = ({ hoveredElementId, selectedElement
         const canvasRect = canvasRef.current.getBoundingClientRect();
 
         setPosition({
-          top: elementRect.top - canvasRect.top,
+          top: elementRect.top - canvasRect.top + canvasRef.current.scrollTop,
           left: elementRect.left - canvasRect.left,
           width: elementRect.width,
           height: elementRect.height,
