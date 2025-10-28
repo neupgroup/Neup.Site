@@ -32,7 +32,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [dropZone, setDropZone] = useState<{ parentId: string | null, elementId: string | null; }>({ parentId: null, elementId: null });
+  const [dropZone, setDropZone] = useState<{ parentId: string | null; elementId: string | null; }>({ parentId: null, elementId: null });
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -149,18 +149,21 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
           
           if(data.id) { // Moving an existing element
              [elementsWithoutDragged, draggedElement] = removeElementRecursive(prev, data.id);
-          } else if (data.type === 'sidebar-element' || data.type === 'template-element') { // Adding a new element
-              const definition = data.type === 'template-element' ? data.element : elementDefinitions[data.elementType as CanvasElementData['type']];
+          } else if (data.type === 'sidebar-element') { // Adding a new element from sidebar
+              const definition = elementDefinitions[data.elementType as CanvasElementData['type']];
               if (definition) {
                   draggedElement = {
-                      ...JSON.parse(JSON.stringify(definition)),
-                      id: `${data.elementType || data.element.type}-${Date.now()}`,
+                      ...JSON.parse(JSON.stringify(definition)), // Deep copy to prevent reference issues
+                      id: `${data.elementType}-${Date.now()}`,
                   };
-                  if (data.type === 'template-element' && data.element.children) {
-                    draggedElement.children = data.element.children;
-                  }
               }
+          } else if (data.type === 'template-element') { // Adding a template
+              draggedElement = {
+                  ...JSON.parse(JSON.stringify(data.element)), // Deep copy
+                  id: `${data.element.type}-${Date.now()}`
+              };
           }
+
 
           if (!draggedElement) return prev;
 
@@ -519,16 +522,19 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const pasteElement = useCallback(() => {
     try {
         if (!clipboard) return;
+        
+        const newElement = JSON.parse(JSON.stringify(clipboard));
+        newElement.id = `${newElement.type}-${Date.now()}`;
+        
         setElements(prev => {
             const clonedPrev = JSON.parse(JSON.stringify(prev));
-            const newClipboard = { ...clipboard, id: `${clipboard.type}-${Date.now()}` };
 
             if (!selectedElementId) {
-                return [...clonedPrev, newClipboard];
+                return [...clonedPrev, newElement];
             }
 
             const result = findElementRecursive(clonedPrev, selectedElementId);
-            if (!result) return [...clonedPrev, newClipboard];
+            if (!result) return [...clonedPrev, newElement];
 
             const { element: selectedEl, parent } = result;
 
@@ -536,7 +542,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                 const addInside = (els: CanvasElementData[]): CanvasElementData[] => {
                     return els.map(el => {
                         if (el.id === selectedEl.id) {
-                            return { ...el, children: [...(el.children || []), newClipboard] };
+                            return { ...el, children: [...(el.children || []), newElement] };
                         }
                         if (el.children) {
                             return { ...el, children: addInside(el.children) };
@@ -552,7 +558,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                             if (els[i].id === parentId && els[i].children) {
                                 const targetIdx = els[i].children!.findIndex(c => c.id === targetId);
                                 if (targetIdx !== -1) {
-                                    els[i].children!.splice(targetIdx + 1, 0, newClipboard);
+                                    els[i].children!.splice(targetIdx + 1, 0, newElement);
                                 }
                                 return els;
                             }
@@ -563,7 +569,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                     } else { 
                         const rootIndex = els.findIndex(c => c.id === targetId);
                         if (rootIndex !== -1) {
-                        els.splice(rootIndex + 1, 0, newClipboard);
+                        els.splice(rootIndex + 1, 0, newElement);
                         }
                     }
                     return els;
