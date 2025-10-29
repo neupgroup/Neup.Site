@@ -1,8 +1,25 @@
 
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Repeat } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { logout } from '@/actions/auth/logout';
 
 export default function SwitchAccountPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleLogout = async () => {
+      await logout();
+      router.push('/auth');
+      router.refresh(); // Ensure the page reloads to clear any client-side state
+    };
+    
+    handleLogout();
+  }, [router]);
+
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
@@ -10,16 +27,16 @@ export default function SwitchAccountPage() {
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Switch Active Site</CardTitle>
+          <CardTitle>Switching Account</CardTitle>
           <CardDescription>
-            Functionality to switch between different sites will be available here soon.
+            Clearing your session and redirecting...
           </CardDescription>
         </CardHeader>
         <CardContent>
-           <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-            <Repeat className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <p>Account switching is coming soon.</p>
-           </div>
+          <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+            <Loader2 className="mx-auto h-12 w-12 text-muted-foreground animate-spin" />
+            <p className="mt-4">Please wait...</p>
+          </div>
         </CardContent>
       </Card>
     </div>
