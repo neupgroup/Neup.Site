@@ -33,7 +33,6 @@ export interface Server {
   privateKey?: string;
   serverType?: 'vps' | 'dedicated' | 'cloud';
   provider?: string;
-  usedPorts?: UsedPort[];
   isPrivate?: boolean;
   username?: string;
   basePath?: string;

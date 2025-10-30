@@ -99,14 +99,7 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
                             </div>
                         </div>
                     </div>
-                    {server.usedPorts && server.usedPorts.length > 0 && (
-                        <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground">Used Ports (from DB)</h4>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                                {server.usedPorts.map(p => <Badge key={p.port} variant="secondary">{p.port}: {p.description}</Badge>)}
-                            </div>
-                        </div>
-                    )}
+                    
                     {server.expiresOn && (
                         <div>
                             <h4 className="font-semibold text-sm text-muted-foreground">Expires On</h4>

@@ -12,13 +12,8 @@ import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
 import type { Server, UsedPort, ServerAllocation } from '@/schemas/server';
+import { getActivePorts } from './server/management/get-active-ports';
 
-async function getAllocationsForServer(serverId: string): Promise<ServerAllocation[]> {
-    const { firestore } = initializeFirebase();
-    const q = query(collection(firestore, 'serverAllocations'), where('serverId', '==', serverId));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as ServerAllocation));
-}
 
 const getAvailablePorts = (allUsedPorts: number[]): number[] => {
     const allPorts = Array.from({ length: 65535 - 1024 + 1 }, (_, i) => 1024 + i);
@@ -119,21 +114,12 @@ export async function runCommand(
             }
         }
         
-        const allAllocations = await getAllocationsForServer(serverId);
-        const serverUsedPorts = server.usedPorts?.map(p => p.port) || [];
-        const allAllocatedPorts = allAllocations.flatMap(alloc => alloc.allocatedPorts?.map(p => p.port) || []);
-        const allUsedPortsSet = new Set([...serverUsedPorts, ...allAllocatedPorts]);
-        
+        const { ports: activePorts } = await getActivePorts(serverId);
+        const allUsedPortsSet = new Set(activePorts?.map(p => p.port) || []);
+
         const openPorts = getAvailablePorts(Array.from(allUsedPortsSet));
 
-        let siteAllocation: ServerAllocation | undefined;
         let holdingPorts: number[] = [];
-        if (accountId) { // Using accountId as a proxy for siteId context
-            siteAllocation = allAllocations.find(a => a.siteId === accountId); // This logic needs to be more robust
-            if (siteAllocation) {
-                holdingPorts = siteAllocation.allocatedPorts?.filter(p => p.status === 'holding').map(p => p.port) || [];
-            }
-        }
         
         const universal = {
             name: server.name,
@@ -197,7 +183,7 @@ export async function runCommand(
             throw new Error(`Unresolved placeholders remaining: ${remainingPlaceholders.join(', ')}`);
         }
 
-        const username = siteAllocation?.username || server.username || 'root';
+        const username = server.username || 'root';
 
         await updateServerLog(logId, { status: 'ongoing', output: `${finalOutput}Connecting to ${server.publicIp}...` });
         revalidatePath(`/root/servers/${serverId}`);

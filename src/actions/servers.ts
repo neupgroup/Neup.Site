@@ -15,7 +15,6 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' |
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'servers'), {
       ...serverData,
-      usedPorts: serverData.usedPorts || [],
       createdOn: serverTimestamp(),
       expiresOn: null,
     });
@@ -45,7 +44,6 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
             publicIp: data.publicIp,
             serverType: data.serverType,
             provider: data.provider,
-            usedPorts: data.usedPorts || [],
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
@@ -89,14 +87,12 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
                 id: serverDoc.id,
                 name: serverData.name,
                 publicIp: serverData.publicIp,
-                usedPorts: serverData.usedPorts || [],
                 createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             };
 
             const allocation: ServerAllocation = {
                 id: allocDoc.id,
                 ...allocationData,
-                allocatedPorts: allocationData.allocatedPorts || [],
                 allocatedOn: allocationData.allocatedOn instanceof Timestamp ? allocationData.allocatedOn.toDate().toISOString() : null,
                 expiresOn: allocationData.expiresOn instanceof Timestamp ? allocationData.expiresOn.toDate().toISOString() : null,
             }
@@ -140,7 +136,6 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             privateIp: data.privateIp,
             serverType: data.serverType,
             provider: data.provider,
-            usedPorts: data.usedPorts || [],
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
@@ -180,7 +175,6 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
             privateKey: data.privateKey,
             serverType: data.serverType,
             provider: data.provider,
-            usedPorts: data.usedPorts || [],
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,

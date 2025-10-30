@@ -31,7 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 
 
-type FormValues = Omit<Server, 'id' | 'createdOn' | 'portsOpen'>;
+type FormValues = Omit<Server, 'id' | 'createdOn' | 'portsOpen' | 'usedPorts'>;
 
 export default function EditServerPage({ params }: { params: Promise<{ id:string }> }) {
   const { id } = use(params);
@@ -53,17 +53,11 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
       privateKey: '', 
       serverType: 'vps',
       provider: '',
-      usedPorts: [],
       isPrivate: false,
       username: '',
       basePath: '',
       expiresOn: null,
     }
-  });
-  
-  const { fields: usedPortFields, append: appendUsedPort, remove: removeUsedPort } = useFieldArray({
-    control,
-    name: 'usedPorts',
   });
 
   const expiresOn = watch('expiresOn');
@@ -81,7 +75,6 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
           privateKey: '', // Keep private key field blank for security
           serverType: result.server.serverType || 'vps',
           provider: result.server.provider || '',
-          usedPorts: result.server.usedPorts || [],
           isPrivate: result.server.isPrivate || false,
           username: result.server.username || '',
           basePath: result.server.basePath || '',
@@ -209,21 +202,6 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
                         <Label htmlFor="basePath">Default Base Path</Label>
                         <Input id="basePath" {...register('basePath')} />
                     </div>
-                </div>
-                <div className="space-y-2">
-                    <Label>Used Ports</Label>
-                     {usedPortFields.map((field, index) => (
-                        <div key={field.id} className="flex items-start gap-2">
-                            <Input type="number" {...register(`usedPorts.${index}.port`)} placeholder="e.g., 8080" className="w-24" />
-                            <Input {...register(`usedPorts.${index}.description`)} placeholder="e.g., Nginx for myapp.com" />
-                            <Button type="button" variant="destructive" size="icon" onClick={() => removeUsedPort(index)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" className="w-full" onClick={() => appendUsedPort({ port: 0, description: '' })}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Used Port
-                    </Button>
                 </div>
                  <div className="flex items-center space-x-2">
                     <Switch id="is-private" checked={watch('isPrivate')} onCheckedChange={(checked) => setValue('isPrivate', checked)} />
