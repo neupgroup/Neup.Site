@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -36,6 +37,7 @@ import {
   Menu,
   X,
   Shield,
+  User,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -69,7 +71,7 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
     return (
         <nav className="flex flex-col gap-2">
             <NavLink href="/" currentPath={currentPath} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
-            <NavLink href="/profile" currentPath={currentPath} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Profile</span></NavLink>
+            <NavLink href="/profile" currentPath={currentPath} onClick={onLinkClick}><User className="h-4 w-4" /><span>Profile</span></NavLink>
             <NavLink href="/settings" currentPath={currentPath} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></NavLink>
 
             <div className="mt-4 space-y-2">
