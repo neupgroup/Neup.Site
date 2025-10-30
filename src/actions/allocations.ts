@@ -14,7 +14,6 @@ export async function createServerAllocation(allocationData: Omit<ServerAllocati
     const { firestore } = initializeFirebase();
     const dataToSave = {
         ...allocationData,
-        allocatedPorts: allocationData.allocatedPorts || [],
         storageAllocation: allocationData.storageAllocation,
         allocatedOn: serverTimestamp(),
         expiresOn: allocationData.expiresOn ? new Date(allocationData.expiresOn) : null,
@@ -46,9 +45,7 @@ export async function getServerAllocations(): Promise<{ success: boolean; alloca
         serverId: data.serverId,
         username: data.username,
         deploymentPath: data.deploymentPath,
-        allocatedPorts: data.allocatedPorts || [],
         storageAllocation: data.storageAllocation,
-        storage: data.storage,
         allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
         expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
       } as ServerAllocation;
@@ -83,9 +80,7 @@ export async function getServerAllocation(id: string): Promise<{ success: boolea
             serverId: data.serverId,
             username: data.username,
             deploymentPath: data.deploymentPath,
-            allocatedPorts: data.allocatedPorts || [],
             storageAllocation: data.storageAllocation,
-            storage: data.storage,
             allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };

@@ -9,23 +9,15 @@ export interface ServerAllocationStorage {
   unit: string;
 }
 
-export interface AllocatedPort {
-    port: number;
-    description: string;
-    status: 'holding' | 'used';
-}
-
 export interface ServerAllocation {
   id: string;
   siteId: string;
   serverId: string;
   username?: string;
   deploymentPath?: string;
-  allocatedPorts?: AllocatedPort[];
   storageAllocation: string; // e.g., "1024" for 1024MB
   allocatedOn?: string | null;
   expiresOn?: string | null;
-  storage?: ServerAllocationStorage;
 }
 
 export interface UsedPort {

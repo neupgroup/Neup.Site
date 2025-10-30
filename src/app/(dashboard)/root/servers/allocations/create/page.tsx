@@ -2,7 +2,7 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
@@ -16,11 +16,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Save, ArrowLeft, Loader2, Plus, Trash2, Calendar as CalendarIcon } from 'lucide-react';
+import { Save, ArrowLeft, Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createServerAllocation } from '@/actions/allocations';
 import Link from 'next/link';
-import { ServerAllocation } from '@/schemas/server';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -32,7 +31,6 @@ const formSchema = z.object({
   username: z.string().optional(),
   deploymentPath: z.string().optional(),
   storageAllocation: z.string().min(1, 'Storage allocation is required.'),
-  allocatedPorts: z.array(z.object({ value: z.string() })).optional(),
   expiresOn: z.string().nullable().optional(),
 });
 
@@ -52,14 +50,8 @@ export default function CreateAllocationPage() {
       username: '',
       deploymentPath: '',
       storageAllocation: '',
-      allocatedPorts: [],
       expiresOn: null,
     }
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: 'allocatedPorts'
   });
   
   const expiresOn = form.watch('expiresOn');
@@ -72,9 +64,7 @@ export default function CreateAllocationPage() {
 
 
   const handleCreateAllocation = async (data: FormValues) => {
-    const ports = data.allocatedPorts?.map(p => Number(p.value)).filter(p => !isNaN(p));
-
-    const result = await createServerAllocation({ ...data, allocatedPorts: ports });
+    const result = await createServerAllocation(data);
 
     if (result.success) {
       toast({ title: 'Allocation Created!', description: `Successfully allocated server.` });
@@ -160,29 +150,6 @@ export default function CreateAllocationPage() {
                   </FormItem>
                 )}
               />
-              <div className="space-y-2">
-                  <FormLabel>Allocated Ports</FormLabel>
-                  {fields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2">
-                        <FormField
-                            control={form.control}
-                            name={`allocatedPorts.${index}.value`}
-                            render={({ field }) => (
-                                <FormItem className="flex-1">
-                                    <FormControl><Input type="number" {...field} placeholder="e.g., 3000" /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                ))}
-                <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' })}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Port
-                </Button>
-              </div>
               <FormField
                 control={form.control}
                 name="expiresOn"
