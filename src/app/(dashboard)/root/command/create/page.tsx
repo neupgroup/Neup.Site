@@ -166,7 +166,7 @@ export default function CreateCommandPage() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Code className="h-5 w-5"/> Command Template</CardTitle>
                 <CardDescription>
-                  The command structure. Parameters are detected automatically from `{{placeholder}}` syntax.
+                  The command structure. Parameters are detected automatically from <code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{placeholder}}`}</code> syntax.
                 </CardDescription>
             </CardHeader>
              <CardContent>
