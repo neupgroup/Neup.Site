@@ -447,6 +447,8 @@ interface ServerStatusAccordionProps {
 
 export default function ServerStatusAccordion({ serverId }: ServerStatusAccordionProps) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const fileManagerPath = searchParams.get('fileManager');
   const [openAccordion, setOpenAccordion] = useState<string | undefined>(fileManagerPath ? 'file-manager' : undefined);
 
@@ -456,6 +458,15 @@ export default function ServerStatusAccordion({ serverId }: ServerStatusAccordio
     }
   }, [fileManagerPath, openAccordion]);
 
+  const handleValueChange = (value: string) => {
+    setOpenAccordion(value);
+    if (value !== 'file-manager' && searchParams.has('fileManager')) {
+        const params = new URLSearchParams(searchParams);
+        params.delete('fileManager');
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -463,7 +474,7 @@ export default function ServerStatusAccordion({ serverId }: ServerStatusAccordio
         <CardDescription>Real-time information fetched directly from the server. Click a section to expand.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Accordion type="single" collapsible className="w-full space-y-2" value={openAccordion} onValueChange={setOpenAccordion}>
+        <Accordion type="single" collapsible className="w-full space-y-2" value={openAccordion} onValueChange={handleValueChange}>
           <AccordionItem value="storage" className="border rounded-lg">
             <AccordionTrigger className="p-4 hover:no-underline font-medium [&>svg]:rotate-0 [&>svg]:-rotate-90">
               <div className="flex items-center gap-2">
