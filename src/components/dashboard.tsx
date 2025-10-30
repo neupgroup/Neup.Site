@@ -172,7 +172,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
   );
 }
 
-export function Dashboard({ children }: { children: React.ReactNode }) {
+export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: SiteTheme }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
