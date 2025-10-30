@@ -16,6 +16,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Share2, ArrowRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function AllocationsPage() {
   const [allocations, setAllocations] = useState<Allocation[]>([]);
@@ -36,6 +38,15 @@ export default function AllocationsPage() {
 
     fetchAllocations();
   }, []);
+
+  const getStatusVariant = (status: Allocation['status']) => {
+    switch(status) {
+        case 'active': return 'default';
+        case 'pending': return 'secondary';
+        case 'error': return 'destructive';
+        default: return 'outline';
+    }
+  }
 
   return (
     <div className="w-full">
@@ -76,7 +87,7 @@ export default function AllocationsPage() {
                   <TableHead>Site ID</TableHead>
                   <TableHead>Server ID</TableHead>
                   <TableHead>Port</TableHead>
-                  <TableHead>Storage (MB)</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Allocated On</TableHead>
                   <TableHead className="text-right">Details</TableHead>
                 </TableRow>
@@ -87,7 +98,9 @@ export default function AllocationsPage() {
                     <TableCell className="font-mono">{alloc.siteId}</TableCell>
                     <TableCell className="font-mono">{alloc.serverId}</TableCell>
                     <TableCell>{alloc.port}</TableCell>
-                    <TableCell>{alloc.allocatedStorage}</TableCell>
+                    <TableCell>
+                        <Badge variant={getStatusVariant(alloc.status)} className={cn('capitalize', alloc.status === 'active' && 'bg-green-600')}>{alloc.status}</Badge>
+                    </TableCell>
                     <TableCell>{alloc.allocatedOn ? new Date(alloc.allocatedOn).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
                          <Button asChild variant="ghost" size="icon">

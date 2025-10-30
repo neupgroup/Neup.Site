@@ -1,4 +1,5 @@
 
+
 {
   "entities": {
     "Site": {
@@ -278,6 +279,7 @@
         "siteId": { "type": "string", "description": "The ID of the site receiving the allocation." },
         "port": { "type": "number", "description": "The network port allocated to the site on this server." },
         "allocatedStorage": { "type": "number", "description": "The amount of storage in MB allocated." },
+        "status": { "type": "string", "enum": ["active", "inactive", "pending", "error"], "description": "The status of the allocation." },
         "allocatedOn": { "type": "string", "format": "date-time", "description": "Timestamp of when the allocation was made." }
       },
       "required": ["serverId", "siteId", "port", "allocatedStorage"]

@@ -6,4 +6,5 @@ export interface Allocation {
   port: number;
   allocatedStorage: number; // in MB
   allocatedOn: string | null;
+  status: 'active' | 'inactive' | 'pending' | 'error';
 }

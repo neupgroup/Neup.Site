@@ -27,6 +27,8 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function AllocationDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -63,6 +65,15 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
     }
   }
   
+  const getStatusVariant = (status: Allocation['status']) => {
+    switch(status) {
+        case 'active': return 'default';
+        case 'pending': return 'secondary';
+        case 'error': return 'destructive';
+        default: return 'outline';
+    }
+  }
+
   if (loading) {
     return (
         <Card className="w-full max-w-2xl">
@@ -111,8 +122,13 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
         </div>
         <Card>
             <CardHeader>
-                <CardTitle>Allocation Details</CardTitle>
-                <CardDescription>ID: {allocation.id}</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Allocation Details</CardTitle>
+                        <CardDescription>ID: {allocation.id}</CardDescription>
+                    </div>
+                    <Badge variant={getStatusVariant(allocation.status)} className={cn('capitalize', allocation.status === 'active' && 'bg-green-600')}>{allocation.status}</Badge>
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">

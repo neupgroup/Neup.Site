@@ -23,12 +23,14 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
   siteId: z.string().min(1, 'Site ID is required'),
   serverId: z.string().min(1, 'Server ID is required'),
   port: z.coerce.number().min(1024, 'Port must be 1024 or greater.'),
   allocatedStorage: z.coerce.number().min(1, 'Storage must be at least 1MB.'),
+  status: z.enum(['active', 'inactive', 'pending', 'error']),
 });
 
 
@@ -48,6 +50,7 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
       serverId: '',
       port: 1024,
       allocatedStorage: 512,
+      status: 'active',
     }
   });
 
@@ -126,6 +129,29 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
                   <FormField control={form.control} name="port" render={({ field }) => ( <FormItem><FormLabel>Port</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem> )} />
                   <FormField control={form.control} name="allocatedStorage" render={({ field }) => ( <FormItem><FormLabel>Allocated Storage (MB)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem> )} />
               </div>
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="error">Error</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
           </CardContent>
           <CardFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>

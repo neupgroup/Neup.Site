@@ -18,12 +18,13 @@ import { revalidatePath } from 'next/cache';
 import type { Allocation } from '@/schemas/allocation';
 import { logErrorToFirestore } from '@/lib/logging';
 
-export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedOn'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedOn' | 'status'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'allocations'), {
       ...data,
       allocatedOn: serverTimestamp(),
+      status: 'active', // Default status
     });
     revalidatePath('/root/servers/allocations');
     return { success: true, id: docRef.id };
@@ -48,6 +49,7 @@ export async function getAllocations(): Promise<{ success: boolean; allocations?
         port: data.port,
         allocatedStorage: data.allocatedStorage,
         allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
+        status: data.status || 'active',
       } as Allocation;
     });
     return { success: true, allocations };
@@ -76,6 +78,7 @@ export async function getAllocation(id: string): Promise<{ success: boolean; all
             port: data.port,
             allocatedStorage: data.allocatedStorage,
             allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
+            status: data.status || 'active',
         };
         return { success: true, allocation };
 
