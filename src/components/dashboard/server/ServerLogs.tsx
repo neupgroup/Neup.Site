@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, ChevronDown } from 'lucide-react';
+import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, ChevronDown, RefreshCw } from 'lucide-react';
 import { getServerLogs } from '@/actions/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
@@ -71,8 +71,16 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Server Logs</CardTitle>
-                <CardDescription>History of all commands run on this server.</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Server Logs</CardTitle>
+                        <CardDescription>History of all commands run on this server.</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => fetchLogs(logsPage)} disabled={loadingLogs}>
+                       {loadingLogs ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                       Reload
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent>
                 {loadingLogs && logs.length === 0 ? (
