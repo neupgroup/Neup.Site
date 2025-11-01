@@ -8,18 +8,23 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, FileText, Link as LinkIcon, ArrowLeft } from 'lucide-react';
+import { ServerCrash, HardDrive, Wifi, Cpu, ListTree, AlertCircle, ChevronDown, Folder, FileText, Link as LinkIcon, ArrowLeft, Save, Loader2 as Spinner } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { getDetailedStorageForServer, type StorageInfo } from '@/actions/server/management/get-detailed-storage-for-server';
 import { getActivePorts, type ActivePortInfo } from '@/actions/server/management/get-active-ports';
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { getPm2Processes, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
 import { getFileList, type FileInfo } from '@/actions/server/management/get-file-list';
+import { readFileContent } from '@/actions/server/management/read-file-content';
+import { saveFileContent } from '@/actions/server/management/save-file-content';
+
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 const StorageStatusSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean; }) => {
   const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
@@ -298,16 +303,61 @@ const Pm2ProcessesSection = ({ serverId, isExpanded }: { serverId: string, isExp
   );
 };
 
+const FileEditorDialog = ({ file, serverId, onClose }: { file: { path: string; content: string }, serverId: string, onClose: () => void }) => {
+    const [content, setContent] = useState(file.content);
+    const [isSaving, setIsSaving] = useState(false);
+    const { toast } = useToast();
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        const result = await saveFileContent(serverId, file.path, content);
+        if (result.success) {
+            toast({ title: 'File Saved', description: `Successfully saved ${file.path}` });
+            onClose();
+        } else {
+            toast({ variant: 'destructive', title: 'Error Saving File', description: result.error });
+        }
+        setIsSaving(false);
+    };
+
+    return (
+        <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>Edit File</DialogTitle>
+                    <DialogDescription className="font-mono">{file.path}</DialogDescription>
+                </DialogHeader>
+                <div className="flex-1 overflow-hidden">
+                    <Textarea 
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        className="h-full w-full font-mono text-xs resize-none"
+                    />
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                    <Button onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? <Spinner className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        Save
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
 const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpanded: boolean }) => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const { toast } = useToast();
     
     const currentPath = searchParams.get('fileManager') || '/';
 
     const [files, setFiles] = useState<FileInfo[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [editingFile, setEditingFile] = useState<{ path: string; content: string; } | null>(null);
 
     const navigate = useCallback((newPath: string) => {
         const params = new URLSearchParams(searchParams);
@@ -333,12 +383,21 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
         }
     }, [isExpanded, fetchFiles, currentPath]);
 
-    const handleNavigate = (file: FileInfo) => {
+    const handleFileClick = async (file: FileInfo) => {
         if (file.type === 'd') {
             const newPath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
             navigate(newPath);
         } else if (file.type === 'l' && file.targetPath && file.targetPath.endsWith('/')) {
             navigate(file.targetPath);
+        } else if (file.type === '-') {
+            // It's a file, open the editor
+            toast({ title: "Loading file..." });
+            const result = await readFileContent(serverId, `${currentPath === '/' ? '' : currentPath}/${file.name}`);
+            if(result.success && result.content !== null) {
+                setEditingFile({ path: `${currentPath === '/' ? '' : currentPath}/${file.name}`, content: result.content });
+            } else {
+                toast({ variant: 'destructive', title: 'Error Reading File', description: result.error });
+            }
         }
     };
 
@@ -365,7 +424,6 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
     }
     
     const formatFileSize = (size: string): string => {
-        // du provides human-readable sizes like 4.0K, 12M, 1.2G
         if (/^[0-9.]+$/.test(size)) {
             const bytes = parseInt(size, 10);
             if (isNaN(bytes) || bytes === 0) return '0 B';
@@ -374,12 +432,18 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-        // If size is already formatted (e.g. from `du -h`), return it as is.
         return size.replace('K', ' KB').replace('M', ' MB').replace('G', ' GB');
     }
 
     return (
         <div className="space-y-4">
+             {editingFile && (
+                <FileEditorDialog 
+                    file={editingFile}
+                    serverId={serverId} 
+                    onClose={() => setEditingFile(null)} 
+                />
+            )}
             <div className="flex items-center gap-2">
                 <Input 
                   key={currentPath}
@@ -407,7 +471,7 @@ const FileManagerSection = ({ serverId, isExpanded }: { serverId: string; isExpa
                         </div>
                     )}
                     {files.map(file => (
-                        <div key={file.name} className={cn("flex items-center gap-2 text-sm p-1 rounded-md", (file.type === 'd' || file.type === 'l') && "cursor-pointer hover:bg-muted/50")} onClick={() => handleNavigate(file)}>
+                        <div key={file.name} className={cn("flex items-center gap-2 text-sm p-1 rounded-md cursor-pointer hover:bg-muted/50")} onClick={() => handleFileClick(file)}>
                             {getFileIcon(file.type)}
                             <span className="font-mono truncate">{file.name}</span>
                             {file.targetPath && (
