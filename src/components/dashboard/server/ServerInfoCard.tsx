@@ -13,12 +13,19 @@ import { useRouter } from 'next/navigation';
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
 import { getUptime } from '@/actions/server/management/get-uptime';
-import ServerStatusNavigation from './ServerStatusNavigation';
+import { Separator } from '@/components/ui/separator';
 
 interface ServerInfoCardProps {
     server: Server;
     initialUptime: string | null;
 }
+
+const statusSections = [
+    { title: 'Storage & Files', href: 'storage', description: 'View disk usage and browse files.', icon: HardDrive },
+    { title: 'Network', href: 'network', description: 'See active ports and listening services.', icon: Wifi },
+    { title: 'Processes', href: 'processes', description: 'Browse system processes and PM2 apps.', icon: ListTree },
+];
+
 
 export default function ServerInfoCard({ server: initialServer, initialUptime }: ServerInfoCardProps) {
     const [server, setServer] = useState(initialServer);
@@ -44,8 +51,6 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
     const handleReboot = async () => {
         setShowRebootConfirm(false);
         startTransition(async () => {
-            // By convention, raw commands are passed directly.
-            // Command IDs are for templates stored in Firestore.
             await runCommand(server.id, 'sudo reboot');
             toast({ title: "Reboot Command Sent", description: `The server is now rebooting. This may take a few minutes.` });
         });
@@ -107,6 +112,23 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
                             <p className="text-sm">{new Date(server.expiresOn).toLocaleString()}</p>
                         </div>
                     )}
+                    <Separator />
+                     <div>
+                        <h3 className="text-base font-semibold mb-4">Server Status & Management</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             {statusSections.map(section => (
+                                <Link key={section.href} href={`/root/servers/${server.id}/${section.href}`} className="block">
+                                    <div className="p-4 border rounded-lg hover:bg-muted/50 hover:border-primary transition-all h-full">
+                                        <div className="flex items-center gap-2">
+                                            <section.icon className="h-5 w-5 text-muted-foreground" />
+                                            <h4 className="font-semibold">{section.title}</h4>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mt-1">{section.description}</p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
                 </CardContent>
                 <CardFooter className="flex flex-wrap gap-2">
                     <Button asChild variant="outline">
