@@ -19,8 +19,10 @@ export async function saveFileContent(serverId: string, filePath: string, conten
       privateKey: server.privateKey,
     });
     
-    // Use putFile to write content to the server
-    await ssh.putFile(Buffer.from(content, 'utf-8'), filePath);
+    // Use exec to write content to the server via stdin
+    await ssh.exec('tee', [filePath], {
+        stdin: content
+    });
 
     return { success: true };
 
