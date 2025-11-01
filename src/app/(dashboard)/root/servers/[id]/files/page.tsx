@@ -113,7 +113,7 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
             toast({ title: "Loading file..." });
             const result = await readFileContent(serverId, fullPath);
             if(result.success && result.content !== null) {
-                setEditingFile({ path: fullPath, content: result.content });
+                setEditingFile({ path: fullPath, content: result.content || '' });
             } else {
                 toast({ variant: 'destructive', title: 'Error Reading File', description: result.error });
             }

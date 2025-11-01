@@ -15,7 +15,6 @@ import { logErrorToFirestore } from '@/lib/logging';
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
 import ServerManagement from '@/components/dashboard/server/ServerManagement';
-import ServerStatusNavigation from '@/components/dashboard/server/ServerStatusAccordion';
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -107,8 +106,6 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
       <ServerInfoCard server={server} initialUptime={uptime} />
 
       <ServerManagement serverId={server.id} />
-      
-      <ServerStatusNavigation serverId={server.id} />
       
       <ServerLogs serverId={server.id} />
     </div>
