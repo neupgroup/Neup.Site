@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,9 +13,9 @@ import { getUptime } from '@/actions/server/management/get-uptime';
 import { logErrorToFirestore } from '@/lib/logging';
 
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
-import ServerStatusAccordion from '@/components/dashboard/server/ServerStatusAccordion';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
 import ServerManagement from '@/components/dashboard/server/ServerManagement';
+import ServerStatusNavigation from '@/components/dashboard/server/ServerStatusAccordion';
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -108,7 +108,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
       <ServerManagement serverId={server.id} />
       
-      <ServerStatusAccordion serverId={server.id} />
+      <ServerStatusNavigation serverId={server.id} />
       
       <ServerLogs serverId={server.id} />
     </div>
