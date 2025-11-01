@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
 import { getUptime } from '@/actions/server/management/get-uptime';
-import PM2Status from './PM2Status';
+import ServerStatusNavigation from './ServerStatusNavigation';
 
 interface ServerInfoCardProps {
     server: Server;
@@ -107,14 +107,6 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
                             <p className="text-sm">{new Date(server.expiresOn).toLocaleString()}</p>
                         </div>
                     )}
-                    
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t">
-                        <Button variant="outline" asChild><Link href={`/root/servers/${server.id}/storage`}><HardDrive className="mr-2 h-4 w-4"/>Storage</Link></Button>
-                        <Button variant="outline" asChild><Link href={`/root/servers/${server.id}/network`}><Wifi className="mr-2 h-4 w-4"/>Network</Link></Button>
-                        <Button variant="outline" asChild><Link href={`/root/servers/${server.id}/processes`}><ListTree className="mr-2 h-4 w-4"/>Processes</Link></Button>
-                        <Button variant="outline" asChild><Link href={`/root/servers/${server.id}/pm2`}><ListTree className="mr-2 h-4 w-4"/>PM2</Link></Button>
-                    </div>
-
                 </CardContent>
                 <CardFooter className="flex flex-wrap gap-2">
                     <Button asChild variant="outline">
