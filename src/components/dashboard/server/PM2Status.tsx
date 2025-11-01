@@ -1,17 +1,23 @@
 
 'use client';
 import { useCallback, useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle } from 'lucide-react';
-import { getPm2Processes, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Loader2, Save, Trash2 } from 'lucide-react';
+import { getPm2Processes, managePm2Process, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PM2Status({ serverId }: { serverId: string }) {
   const [processes, setProcesses] = useState<ProcessManagerInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const fetchProcesses = useCallback(async () => {
     setIsLoading(true);
@@ -27,9 +33,31 @@ export default function PM2Status({ serverId }: { serverId: string }) {
 
   useEffect(() => {
     fetchProcesses();
-    const interval = setInterval(fetchProcesses, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
   }, [fetchProcesses]);
+  
+  const handleSave = async () => {
+      setIsSaving(true);
+      const result = await managePm2Process(serverId, 'save');
+      if (result.success) {
+          toast({ title: 'Process List Saved', description: 'Your current PM2 process list will now restart on server reboot.' });
+      } else {
+          toast({ variant: 'destructive', title: 'Error Saving List', description: result.error });
+      }
+      setIsSaving(false);
+  };
+  
+  const handleDelete = async (processId: number) => {
+      setDeletingId(processId);
+      const result = await managePm2Process(serverId, 'delete', processId);
+      if (result.success) {
+          toast({ title: 'Process Removed', description: `Process ${processId} has been removed from PM2.` });
+          fetchProcesses(); // Refresh list after deleting
+      } else {
+          toast({ variant: 'destructive', title: 'Error Removing Process', description: result.error });
+      }
+      setDeletingId(null);
+  };
+
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -52,7 +80,7 @@ export default function PM2Status({ serverId }: { serverId: string }) {
     <Card>
       <CardHeader>
         <CardTitle>PM2 Processes</CardTitle>
-        <CardDescription>Real-time status of applications managed by PM2.</CardDescription>
+        <CardDescription>Status of applications managed by PM2.</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -76,15 +104,38 @@ export default function PM2Status({ serverId }: { serverId: string }) {
           ) : processes && processes.length > 0 ? (
             <div className="space-y-2">
                 {processes.map((proc) => (
-                  <div key={proc.id} className="p-2 bg-muted/50 rounded-md hover:bg-muted">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-semibold truncate">{proc.name}</span>
-                      {getStatusBadge(proc.status)}
+                  <div key={proc.id} className="p-2 bg-muted/50 rounded-md hover:bg-muted flex justify-between items-center">
+                    <div>
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-semibold truncate">{proc.name}</span>
+                          {getStatusBadge(proc.status)}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          <span>{proc.cpu}% CPU / {proc.memory}</span> | 
+                          <span> Uptime: {proc.uptime}</span> |
+                          <span> Restarts: {proc.restarts}</span>
+                        </div>
                     </div>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground mt-1">
-                      <span>{proc.cpu}% CPU / {proc.memory}</span>
-                      <span>{proc.uptime} / {proc.restarts} restarts</span>
-                    </div>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                             <Button variant="ghost" size="icon" className="h-8 w-8" disabled={deletingId === proc.id}>
+                                {deletingId === proc.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <Trash2 className="h-4 w-4 text-destructive" />}
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will stop and remove the process "{proc.name}" (ID: {proc.id}) from PM2.
+                                    This action does not delete your application files.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(proc.id)}>Delete</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 ))}
               </div>
@@ -94,6 +145,14 @@ export default function PM2Status({ serverId }: { serverId: string }) {
             </div>
           )}
       </CardContent>
+      {processes && processes.length > 0 && (
+          <CardFooter>
+              <Button onClick={handleSave} disabled={isSaving}>
+                  {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  Save Process List
+              </Button>
+          </CardFooter>
+      )}
     </Card>
   );
 };
