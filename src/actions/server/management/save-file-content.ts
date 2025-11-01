@@ -19,8 +19,8 @@ export async function saveFileContent(serverId: string, filePath: string, conten
       privateKey: server.privateKey,
     });
     
-    // Use exec to write content to the server via stdin
-    await ssh.exec('tee', [filePath], {
+    // Use 'sudo tee' to write content with elevated privileges
+    await ssh.exec('sudo', ['tee', filePath], {
         stdin: content
     });
 
