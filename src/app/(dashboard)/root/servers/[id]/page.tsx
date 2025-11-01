@@ -9,6 +9,8 @@ import Link from 'next/link';
 
 import { getServer, type Server } from '@/actions/servers';
 import { getUptime } from '@/actions/server/management/get-uptime';
+import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
+import { getMemoryUsage } from '@/actions/server/management/get-memory-usage';
 
 import { logErrorToFirestore } from '@/lib/logging';
 
@@ -20,6 +22,8 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   const { id } = params;
   const [server, setServer] = useState<Server | null>(null);
   const [uptime, setUptime] = useState<string | null>(null);
+  const [storage, setStorage] = useState<{ used: string, total: string, unit: string } | null>(null);
+  const [memory, setMemory] = useState<{ used: number, total: number, unit: string } | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +36,13 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
         const [
           serverResult,
           uptimeResult,
+          storageResult,
+          memoryResult,
         ] = await Promise.all([
           getServer(id),
           getUptime(id),
+          getStorageUsage(id),
+          getMemoryUsage(id),
         ]);
 
         if (serverResult.success && serverResult.server) {
@@ -46,6 +54,8 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
         }
 
         if (uptimeResult.success) setUptime(uptimeResult.uptime || null);
+        if (storageResult.success) setStorage(storageResult.data || null);
+        if (memoryResult.success) setMemory(memoryResult.data || null);
 
       } catch (e: any) {
         setError('An unexpected error occurred while fetching server data.');
@@ -103,7 +113,12 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
         </Button>
       </div>
 
-      <ServerInfoCard server={server} initialUptime={uptime} />
+      <ServerInfoCard 
+        server={server} 
+        initialUptime={uptime} 
+        initialStorage={storage}
+        initialMemory={memory}
+      />
       
       <ServerManagement serverId={server.id} />
       

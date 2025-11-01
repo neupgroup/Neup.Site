@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2, ServerCrash, RefreshCw, Loader2, Clock, ListTree, Wifi } from 'lucide-react';
+import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2, ServerCrash, RefreshCw, Loader2, Clock, ListTree, Wifi, Cpu } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -13,39 +13,56 @@ import { useRouter } from 'next/navigation';
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
 import { getUptime } from '@/actions/server/management/get-uptime';
+import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
+import { getMemoryUsage } from '@/actions/server/management/get-memory-usage';
 import { Separator } from '@/components/ui/separator';
 
 interface ServerInfoCardProps {
     server: Server;
     initialUptime: string | null;
+    initialStorage: { used: string, total: string, unit: string } | null;
+    initialMemory: { used: number, total: number, unit: string } | null;
 }
 
-const statusSections = [
-    { title: 'Storage & Files', href: 'storage', description: 'View disk usage and browse files.', icon: HardDrive },
-    { title: 'Network', href: 'network', description: 'See active ports and listening services.', icon: Wifi },
-    { title: 'Processes', href: 'processes', description: 'Browse system processes and PM2 apps.', icon: ListTree },
-];
+const DetailItem = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
+    <div>
+        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Icon className="h-4 w-4" />{label}</h4>
+        <div className="text-sm">{children}</div>
+    </div>
+);
 
-
-export default function ServerInfoCard({ server: initialServer, initialUptime }: ServerInfoCardProps) {
+export default function ServerInfoCard({ server: initialServer, initialUptime, initialStorage, initialMemory }: ServerInfoCardProps) {
     const [server, setServer] = useState(initialServer);
     const [uptime, setUptime] = useState(initialUptime);
+    const [storage, setStorage] = useState(initialStorage);
+    const [memory, setMemory] = useState(initialMemory);
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
-    const [isRefreshingUptime, setIsRefreshingUptime] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
     const router = useRouter();
 
-    const handleRefreshUptime = async () => {
-        setIsRefreshingUptime(true);
-        const result = await getUptime(server.id);
-        if (result.success && result.uptime) {
-            setUptime(result.uptime);
-            toast({ title: "Uptime Refreshed" });
+    const handleRefreshAll = async () => {
+        setIsRefreshing(true);
+        toast({ title: "Refreshing Server Data..." });
+
+        const [uptimeResult, storageResult, memoryResult] = await Promise.all([
+            getUptime(server.id),
+            getStorageUsage(server.id),
+            getMemoryUsage(server.id),
+        ]);
+
+        if (uptimeResult.success) setUptime(uptimeResult.uptime || null);
+        if (storageResult.success) setStorage(storageResult.data || null);
+        if (memoryResult.success) setMemory(memoryResult.data || null);
+
+        if (!uptimeResult.success || !storageResult.success || !memoryResult.success) {
+            toast({ variant: 'destructive', title: "Failed to Refresh Some Data" });
         } else {
-            toast({ variant: 'destructive', title: "Failed to Refresh Uptime", description: result.error });
+            toast({ title: "Server Data Refreshed" });
         }
-        setIsRefreshingUptime(false);
+        setIsRefreshing(false);
     }
 
     const handleReboot = async () => {
@@ -73,37 +90,38 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Globe className="h-4 w-4" />Public IP</h4>
-                            <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline">
+                        <DetailItem icon={Globe} label="Public IP">
+                            <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline">
                                 {server.publicIp}
                             </a>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Warehouse className="h-4 w-4" />Provider</h4>
-                            <p className="text-sm">{server.provider || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground">Created On</h4>
-                            <p className="text-sm">{server.createdOn ? new Date(server.createdOn).toLocaleString() : 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><User className="h-4 w-4" />Default Username</h4>
-                            <p className="font-mono text-sm">{server.username || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Folder className="h-4 w-4" />Default Base Path</h4>
-                            <p className="font-mono text-sm">{server.basePath || 'N/A'}</p>
-                        </div>
-                         <div>
-                            <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Clock className="h-4 w-4" />Uptime</h4>
-                            <div className="flex items-center gap-2">
-                                <p className="text-sm">{uptime || 'N/A'}</p>
-                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleRefreshUptime} disabled={isRefreshingUptime}>
-                                    {isRefreshingUptime ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                                </Button>
-                            </div>
-                        </div>
+                        </DetailItem>
+                        <DetailItem icon={Warehouse} label="Provider">
+                            <p>{server.provider || 'N/A'}</p>
+                        </DetailItem>
+                        <DetailItem icon={User} label="Default Username">
+                           <p className="font-mono">{server.username || 'N/A'}</p>
+                        </DetailItem>
+                        <DetailItem icon={Folder} label="Default Base Path">
+                           <p className="font-mono">{server.basePath || 'N/A'}</p>
+                        </DetailItem>
+                        <DetailItem icon={Clock} label="Uptime">
+                           <p>{uptime || 'N/A'}</p>
+                        </DetailItem>
+                         <DetailItem icon={HardDrive} label="Storage">
+                           <Link href={`/root/servers/${server.id}/storage`} className="hover:underline text-primary">
+                             {storage ? `${storage.used}${storage.unit} / ${storage.total}${storage.unit}` : 'Click to view'}
+                           </Link>
+                        </DetailItem>
+                        <DetailItem icon={Cpu} label="Processes (RAM)">
+                           <Link href={`/root/servers/${server.id}/processes`} className="hover:underline text-primary">
+                             {memory ? `${memory.used}${memory.unit} / ${memory.total}${memory.unit}` : 'Click to view'}
+                           </Link>
+                        </DetailItem>
+                         <DetailItem icon={Wifi} label="Network">
+                           <Link href={`/root/servers/${server.id}/network`} className="hover:underline text-primary">
+                            View active connections
+                           </Link>
+                        </DetailItem>
                     </div>
                     
                     {server.expiresOn && (
@@ -112,31 +130,18 @@ export default function ServerInfoCard({ server: initialServer, initialUptime }:
                             <p className="text-sm">{new Date(server.expiresOn).toLocaleString()}</p>
                         </div>
                     )}
-                    <Separator />
-                     <div>
-                        <h3 className="text-base font-semibold mb-4">Server Status & Management</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             {statusSections.map(section => (
-                                <Link key={section.href} href={`/root/servers/${server.id}/${section.href}`} className="block">
-                                    <div className="p-4 border rounded-lg hover:bg-muted/50 hover:border-primary transition-all h-full">
-                                        <div className="flex items-center gap-2">
-                                            <section.icon className="h-5 w-5 text-muted-foreground" />
-                                            <h4 className="font-semibold">{section.title}</h4>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mt-1">{section.description}</p>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
                 </CardContent>
                 <CardFooter className="flex flex-wrap gap-2">
-                    <Button asChild variant="outline">
+                    <Button variant="outline" size="sm" onClick={handleRefreshAll} disabled={isRefreshing}>
+                        {isRefreshing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                        Refresh Stats
+                    </Button>
+                    <Button asChild variant="outline" size="sm">
                         <Link href={`/root/servers/allocations/create?serverId=${server.id}`}>
                             <Share2 className="mr-2 h-4 w-4" /> Allocate Server
                         </Link>
                     </Button>
-                    <Button variant="destructive" onClick={() => setShowRebootConfirm(true)}>
+                    <Button variant="destructive" size="sm" onClick={() => setShowRebootConfirm(true)}>
                         <ServerCrash className="mr-2 h-4 w-4" /> Reboot Server
                     </Button>
                 </CardFooter>
