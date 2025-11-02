@@ -3,9 +3,9 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { getSiteServers, type Server } from '@/actions/servers';
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, PlayCircle, Server as ServerIcon } from 'lucide-react';
+import { Loader2, PlayCircle, Server as ServerIcon, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { runCommand } from '@/actions/runner';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -13,14 +13,107 @@ import { AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
+import { getServerLog, type ServerLog } from '@/actions/server-logs';
+import { Progress } from '@/components/ui/progress';
+
+interface DeploymentStatus {
+    logId: string;
+    status: 'pending' | 'ongoing' | 'completed' | 'failed';
+    message: string;
+    progress: number;
+}
+
+const getStatusFromLog = (logOutput: string): { message: string, progress: number } => {
+    if (logOutput.includes('--- Deployment Complete ---')) return { message: 'Deployment Complete!', progress: 100 };
+    if (logOutput.includes('--- Step 4: Setting up SSL with Certbot ---')) return { message: 'Securing server with SSL...', progress: 85 };
+    if (logOutput.includes('--- Step 3: Configuring Nginx reverse proxy ---')) return { message: 'Configuring web server...', progress: 60 };
+    if (logOutput.includes('--- Step 2: Starting application with PM2 ---')) return { message: 'Starting application...', progress: 40 };
+    if (logOutput.includes('--- Step 1: Building application ---')) return { message: 'Building application...', progress: 20 };
+    if (logOutput.includes('Starting deployment...')) return { message: 'Initiating deployment...', progress: 5 };
+    return { message: 'Preparing...', progress: 0 };
+};
+
+
+const DeploymentStatusCard = ({ serverId, logId }: { serverId: string, logId: string }) => {
+    const [status, setStatus] = useState<DeploymentStatus>({ logId, status: 'pending', message: 'Starting...', progress: 0 });
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!logId) return;
+
+        const interval = setInterval(async () => {
+            const result = await getServerLog(logId);
+            if (result.success && result.log) {
+                const { message, progress } = getStatusFromLog(result.log.output);
+                setStatus({
+                    logId: result.log.id,
+                    status: result.log.status,
+                    message,
+                    progress
+                });
+
+                if (result.log.status === 'completed' || result.log.status === 'failed') {
+                    clearInterval(interval);
+                }
+            } else {
+                 // Stop polling on error
+                 clearInterval(interval);
+                 setStatus(prev => ({...prev, status: 'failed', message: 'Could not retrieve logs.'}));
+            }
+        }, 3000); // Poll every 3 seconds
+
+        return () => clearInterval(interval);
+    }, [logId]);
+
+    return (
+         <Card className="w-full">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    {status.status === 'ongoing' && <Loader2 className="animate-spin text-primary" />}
+                    {status.status === 'completed' && <CheckCircle className="text-green-500" />}
+                    {status.status === 'failed' && <XCircle className="text-destructive" />}
+                    Deployment in Progress
+                </CardTitle>
+                <CardDescription>Server: {serverId}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <Progress value={status.progress} />
+                <p className="text-sm text-muted-foreground text-center">{status.message}</p>
+                {status.status === 'failed' && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Deployment Failed</AlertTitle>
+                        <AlertDescription>
+                            There was an error during the deployment process. Please check the server logs for more details.
+                        </AlertDescription>
+                    </Alert>
+                )}
+                 {status.status === 'completed' && (
+                    <Alert variant="default" className="border-green-500/50 text-green-700 dark:text-green-400">
+                        <CheckCircle className="h-4 w-4" />
+                        <AlertTitle>Success!</AlertTitle>
+                        <AlertDescription>
+                            Your application has been successfully deployed.
+                        </AlertDescription>
+                    </Alert>
+                )}
+            </CardContent>
+             <CardFooter>
+                <Button onClick={() => router.push(`/root/servers/${serverId}`)}>
+                    View Full Logs
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+};
+
 
 export default function StartApplicationPage() {
     const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isStarting, setIsStarting] = useState<string | null>(null);
+    const [deployingServer, setDeployingServer] = useState<{ serverId: string; logId: string } | null>(null);
     const { toast } = useToast();
-    const router = useRouter();
 
     useEffect(() => {
         const fetchServers = async () => {
@@ -36,17 +129,26 @@ export default function StartApplicationPage() {
         fetchServers();
     }, []);
 
-    const handleStart = (serverId: string, serverName: string) => {
-        setIsStarting(serverId);
-        toast({ title: `Starting App on ${serverName}`, description: "This process may take several minutes. You will be redirected to the server logs."});
+    const handleStart = async (serverId: string, serverName: string) => {
+        setDeployingServer({ serverId, logId: '' }); // Immediately switch view
+        toast({ title: `Starting App on ${serverName}`, description: "The deployment process has begun."});
         
-        runCommand(serverId, "app-start-prod").then(() => {
-            router.push(`/root/servers/${serverId}`);
-        }).catch((e) => {
+        try {
+            const result = await runCommand(serverId, "app-start-prod");
+            if (result.success && result.logId) {
+                setDeployingServer({ serverId, logId: result.logId });
+            } else {
+                throw new Error(result.error || 'Failed to initiate command.');
+            }
+        } catch (e: any) {
             toast({ variant: 'destructive', title: 'Error', description: `Failed to start application: ${e.message}` });
-            setIsStarting(null);
-        });
+            setDeployingServer(null); // Revert UI on failure to start
+        }
     };
+
+    if (deployingServer) {
+        return <DeploymentStatusCard serverId={deployingServer.serverId} logId={deployingServer.logId} />;
+    }
 
     return (
         <div className="w-full max-w-4xl mx-auto">
@@ -84,9 +186,9 @@ export default function StartApplicationPage() {
                                 <CardDescription>{server.publicIp}</CardDescription>
                             </CardHeader>
                             <CardFooter>
-                                <Button onClick={() => handleStart(server.id, server.name)} disabled={isStarting === server.id}>
-                                    {isStarting === server.id ? <Loader2 className="mr-2 animate-spin" /> : <PlayCircle className="mr-2" />}
-                                    {isStarting === server.id ? 'Starting...' : 'Start Application'}
+                                <Button onClick={() => handleStart(server.id, server.name)}>
+                                    <PlayCircle className="mr-2" />
+                                    Start Application
                                 </Button>
                             </CardFooter>
                         </Card>
