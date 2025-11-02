@@ -61,7 +61,7 @@ export async function runCommand(
         }
     }
 
-    const { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
+    let { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
     
     for (const key of confidentialParamKeys) {
         if (processedParams[key]) {
@@ -153,16 +153,26 @@ export async function runCommand(
         }
         
         let templateParams = { ...processedParams };
+        const allParamsForInjection = { ...templateParams, ...universal };
+
 
         if (preExecutionScript) {
             finalOutput += 'Running pre-execution script...\n';
             await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
             
-            const sandbox = { params: processedParams, universal };
+            // Inject all available parameters into the script body
+            let scriptWithInjectedParams = preExecutionScript;
+            for (const [key, value] of Object.entries(allParamsForInjection)) {
+                const placeholder = `{{${key}}}`;
+                 // Using JSON.stringify ensures values are correctly escaped for JS
+                scriptWithInjectedParams = scriptWithInjectedParams.replace(new RegExp(placeholder, 'g'), JSON.stringify(value));
+            }
+            
+            const sandbox = {}; // Empty sandbox, as variables are now directly in the script
             vm.createContext(sandbox);
 
             try {
-                const scriptToRun = `(() => { ${preExecutionScript} })();`;
+                const scriptToRun = `(() => { ${scriptWithInjectedParams} })();`;
                 const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
                 
                 if (typeof scriptResult === 'string') {
@@ -181,13 +191,9 @@ export async function runCommand(
             }
         }
         
-        for (const [key, value] of Object.entries(templateParams)) {
+        const allParamsForBash = { ...templateParams, ...universal };
+        for (const [key, value] of Object.entries(allParamsForBash)) {
             finalCommand = finalCommand.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
-        }
-        for (const [key, value] of Object.entries(universal)) {
-            if (value) {
-                finalCommand = finalCommand.replace(new RegExp(`{{universal.${key}}}`, 'g'), String(value));
-            }
         }
         
         const remainingPlaceholders = finalCommand.match(/\{\{([^}]+)\}\}/g);
