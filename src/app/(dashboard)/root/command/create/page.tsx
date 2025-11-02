@@ -224,16 +224,19 @@ export default function CreateCommandPage() {
                 <AlertTitle>Universal Variables</AlertTitle>
                 <AlertDescription>
                     These variables are available in your `javascript.preProcessor` via the `universal` object and in the `server.ubuntuBashProcessor` block.
-                    <ul className="list-disc pl-5 mt-2 text-xs">
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.name}}'}</code> - Server name</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.public_ip}}'}</code> - Public IP</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.username}}'}</code> - Default username</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.base_path}}'}</code> - Default base path</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.account_id}}'}</code> - User Account ID</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.available_port}}'}</code> - First available port</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{'{{universal.reserved_port}}'}</code> - The port reserved for this execution.</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.used_ports}}'}</code> - CSV of used ports</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{'{{universal.linked_account_github}}'}</code> - GitHub Token (Confidential)</li>
+                    <ul className="list-disc pl-5 mt-2 text-xs space-y-1">
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_name}}`}</code> - Server name</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_publicIp}}`}</code> - Public IP</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_basePath}}`}</code> - Default base path</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_appPath}}`}</code> - Base path + site name</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePort}}`}</code> - First available port</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePorts}}`}</code> - CSV of available ports</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_usedPorts}}`}</code> - CSV of used ports</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{universal.server_reservedPort}}`}</code> - Port reserved for this execution (if any)</li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.account_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{universal.account_githubToken}}`}</code></li>
                     </ul>
                 </AlertDescription>
             </Alert>
