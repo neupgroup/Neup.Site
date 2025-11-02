@@ -83,9 +83,8 @@ export default function CommandsGuidePage() {
             </p>
             <CodeBlock>
 {`<javascript.preProcessor>
-  // User enters 'My App' for a 'appName' parameter.
-  const appName = {{appName}};
-  const appSlug = appName.toLowerCase().replace(/\\s+/g, '-');
+  // User enters 'My App' for an 'appName' parameter.
+  const appSlug = {{appName}}.toLowerCase().replace(/\\s+/g, '-');
   
   // This makes {{appSlug}} available in the bash script.
   return { appSlug: appSlug };
@@ -132,50 +131,42 @@ export default function CommandsGuidePage() {
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{server_name}}'}
-                    </code>{' '}
-                    - Server name
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{server_publicIp}}'}
-                    </code>{' '}
-                    - Public IP
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{server_basePath}}'}
-                    </code>{' '}
-                    - Default base path
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{server_appPath}}'}
-                    </code>{' '}
-                    - Base path + site name
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{server_availablePort}}'}
-                    </code>{' '}
-                    - First available port
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{server_availablePorts}}'}
-                    </code>{' '}
-                    - CSV of available ports
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{server_usedPorts}}'}
-                    </code>{' '}
-                    - CSV of used ports
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">
                       {'{{server_reservedPort}}'}
-                    </code>{' '}
-                    - Port reserved for this execution (if any)
+                    </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
@@ -185,6 +176,11 @@ export default function CommandsGuidePage() {
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
                       {'{{site_name}}'}
+                    </code>
+                  </li>
+                   <li>
+                    <code className="font-mono bg-muted px-1 py-0.5 rounded">
+                      {'{{site_domain}}'}
                     </code>
                   </li>
                   <li>

@@ -19,6 +19,7 @@ export interface Site {
   id: string;
   name: string;
   url: string;
+  domains?: { value: string }[];
   tier: 'free' | 'premium';
   logoUrl?: string;
   hideSitename?: boolean;

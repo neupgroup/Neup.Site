@@ -22,15 +22,11 @@ import { Badge } from '@/components/ui/badge';
 
 const placeholderXml = `<javascript.preProcessor>
 // This script runs on our server, not the target server.
-// It can access user-provided 'params' and 'universal' variables.
-// Return a command string to execute it directly.
-// OR return an object of new parameters to use in the bash block below.
+// Use {{variableName}} to access user-provided or universal variables.
 
 // Example:
-// const newParams = {
-//   packageName: params.someUserInput.toLowerCase()
-// };
-// return newParams;
+// const appSlug = {{appName}}.toLowerCase().replace(/\\s+/g, '-');
+// return { appSlug }; // Makes {{appSlug}} available in the bash block
 
 return {};
 </javascript.preProcessor>
@@ -73,23 +69,17 @@ export default function CreateCommandPage() {
 
   const detectedParams = useMemo(() => {
     const userParamRegex = /\{\{([a-zA-Z0-9_]+)\}\}/g;
-    const universalParamRegex = /\{\{universal\.([a-zA-Z0-9_]+)\}\}/g;
     
     const userParams = new Set<string>();
-    const universalParams = new Set<string>();
     
     let match;
     while ((match = userParamRegex.exec(commandTemplateValue)) !== null) {
-      if (match[1] !== 'universal') {
+      if (!match[1].startsWith('server_') && !match[1].startsWith('site_') && !match[1].startsWith('account_')) {
         userParams.add(match[1]);
       }
     }
-    
-    while ((match = universalParamRegex.exec(commandTemplateValue)) !== null) {
-      universalParams.add(`universal.${match[1]}`);
-    }
 
-    return { user: Array.from(userParams), universal: Array.from(universalParams) };
+    return { user: Array.from(userParams) };
   }, [commandTemplateValue]);
   
   useEffect(() => {
@@ -157,7 +147,7 @@ export default function CreateCommandPage() {
               </div>
               <div className="rounded-lg border p-4 space-y-4">
                 <FormField control={form.control} name="allocatesPort" render={({ field }) => ( <FormItem className="flex flex-row items-center justify-between"><div className="space-y-0.5"><FormLabel>Allocates a Port</FormLabel><FormDescription>Signal that this command will use and reserve a port on the server.</FormDescription></div><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem> )} />
-                {allocatesPortValue && ( <div className="space-y-2 border-t pt-4"><FormField control={form.control} name="portToReserve" render={({ field }) => ( <FormItem><FormLabel>Port to Reserve</FormLabel><FormControl><Input {...field} placeholder="e.g., 8080 or {{universal.available_port}}" /></FormControl><FormDescription>Enter a specific port or use the placeholder for an available one. Use <code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.reserved_port}}'}</code> in the template.</FormDescription><FormMessage /></FormItem> )} /></div> )}
+                {allocatesPortValue && ( <div className="space-y-2 border-t pt-4"><FormField control={form.control} name="portToReserve" render={({ field }) => ( <FormItem><FormLabel>Port to Reserve</FormLabel><FormControl><Input {...field} placeholder="e.g., 8080 or {{server_availablePort}}" /></FormControl><FormDescription>Enter a specific port or use the placeholder for an available one. Use <code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{server_reservedPort}}'}</code> in the template.</FormDescription><FormMessage /></FormItem> )} /></div> )}
               </div>
             </CardContent>
           </Card>
@@ -206,16 +196,6 @@ export default function CreateCommandPage() {
                             <p className="text-sm text-muted-foreground">No user-defined parameters detected.</p>
                         )}
                     </div>
-                    <div>
-                        <h3 className="text-sm font-semibold text-muted-foreground mb-2">Universal Parameters</h3>
-                        {detectedParams.universal.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                                {detectedParams.universal.map(key => <Badge key={key} variant="outline" className="font-mono">{`{{${key}}}`}</Badge>)}
-                            </div>
-                        ) : (
-                             <p className="text-sm text-muted-foreground">No universal parameters detected.</p>
-                        )}
-                    </div>
                 </CardContent>
           </Card>
 
@@ -223,20 +203,21 @@ export default function CreateCommandPage() {
                 <Globe className="h-4 w-4" />
                 <AlertTitle>Universal Variables</AlertTitle>
                 <AlertDescription>
-                    These variables are available in your `javascript.preProcessor` via the `universal` object and in the `server.ubuntuBashProcessor` block.
+                    These variables are available in both the pre-processor and the Bash script.
                     <ul className="list-disc pl-5 mt-2 text-xs space-y-1">
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_name}}`}</code> - Server name</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_publicIp}}`}</code> - Public IP</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_basePath}}`}</code> - Default base path</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_appPath}}`}</code> - Base path + site name</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePort}}`}</code> - First available port</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePorts}}`}</code> - CSV of available ports</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_usedPorts}}`}</code> - CSV of used ports</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{universal.server_reservedPort}}`}</code> - Port reserved for this execution (if any)</li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_id}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_name}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.account_id}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{universal.account_githubToken}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_publicIp}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_basePath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_appPath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_availablePort}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_availablePorts}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_usedPorts}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{server_reservedPort}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_domain}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{account_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{account_githubToken}}`}</code></li>
                     </ul>
                 </AlertDescription>
             </Alert>

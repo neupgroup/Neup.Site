@@ -310,18 +310,19 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                 <AlertDescription>
                     These variables are available in both the pre-processor and the Bash script.
                     <ul className="list-disc pl-5 mt-2 text-xs space-y-1">
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_name}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_publicIp}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_basePath}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_appPath}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePort}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePorts}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_usedPorts}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{universal.server_reservedPort}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_id}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_name}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.account_id}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{universal.account_githubToken}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_publicIp}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_basePath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_appPath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_availablePort}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_availablePorts}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_usedPorts}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{server_reservedPort}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_domain}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{account_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{account_githubToken}}`}</code></li>
                     </ul>
                 </AlertDescription>
             </Alert>

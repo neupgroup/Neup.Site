@@ -122,11 +122,13 @@ export async function runCommand(
 
         let site_name = '';
         let site_id = '';
+        let site_domain = '';
         let server_appPath = '';
         const siteResult = await getSite();
         if(siteResult.success && siteResult.site) {
             site_name = siteResult.site.name;
             site_id = siteResult.site.id;
+            site_domain = siteResult.site.domains?.map(d => d.value).join(',') || '';
             if(server.basePath && site_name) {
                 server_appPath = `${server.basePath}/${site_name}`;
             }
@@ -143,6 +145,7 @@ export async function runCommand(
             server_appPath: server_appPath,
             site_id: site_id,
             site_name: site_name,
+            site_domain: site_domain,
             account_id: accountId,
             account_githubToken: githubAccessToken,
         };
