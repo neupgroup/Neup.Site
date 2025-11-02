@@ -20,10 +20,11 @@ export async function createFile(serverId: string, filePath: string): Promise<{ 
     });
 
     // Determine if sudo is needed based on path
-    const userHome = `/home/${server.username}`;
+    const userHome = server.username === 'root' ? '/root' : `/home/${server.username}`;
     const useSudo = !filePath.startsWith(userHome);
+    const sanitizedFilePath = `'${filePath.replace(/'/g, "'\\''")}'`;
 
-    const command = useSudo ? `sudo touch '${filePath}'` : `touch '${filePath}'`;
+    const command = useSudo ? `sudo touch ${sanitizedFilePath}` : `touch ${sanitizedFilePath}`;
     
     const result = await ssh.execCommand(command);
 

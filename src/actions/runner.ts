@@ -1,27 +1,16 @@
 
-
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
-import { getPrivateServerDetails, updateServer, getSiteServers, getServer } from '@/actions/servers';
+import { getPrivateServerDetails } from '@/actions/servers';
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
-import { getFirestore, collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
 import { logErrorToFirestore } from '@/lib/logging';
 import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
-import type { Server, UsedPort, ServerAllocation } from '@/schemas/server';
-import { getActivePorts } from './server/management/get-active-ports';
 import { getSite } from './editor/site';
 
-
-const getAvailablePorts = (allUsedPorts: number[]): number[] => {
-    const allPorts = Array.from({ length: 65535 - 1024 + 1 }, (_, i) => 1024 + i);
-    const usedPortsSet = new Set(allUsedPorts);
-    return allPorts.filter(port => !usedPortsSet.has(port));
-};
 
 function parseCommandTemplate(template: string): { preExecutionScript?: string; bashCommand: string; } {
     const preProcessorMatch = template.match(/<javascript.preProcessor>([\s\S]*?)<\/javascript.preProcessor>/);
@@ -64,10 +53,11 @@ export async function runCommand(
 
     let { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
     
+    // Mask confidential parameters before creating the initial log
     for (const key of confidentialParamKeys) {
         if (processedParams[key]) {
             const maskedValue = '*'.repeat(String(processedParams[key]).length);
-            loggedCommand = loggedCommand.replace(new RegExp(`{{${key}}}`, 'g'), maskedValue);
+            loggedCommand = loggedCommand.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), maskedValue);
         }
     }
 
@@ -90,10 +80,9 @@ export async function runCommand(
 
     const ssh = new NodeSSH();
     let finalOutput = ''; 
-    let finalCommand = bashCommand;
-    let actualReservedPort: number | undefined;
 
     try {
+        // --- STAGE 1: Pre-computation and Variable Resolution on Application Server ---
         const { server, error: serverError } = await getPrivateServerDetails(serverId);
         if (serverError || !server || !server.publicIp || !server.privateKey) {
             throw new Error(`Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`);
@@ -112,69 +101,45 @@ export async function runCommand(
                     }
                 }
             } catch (e: any) {
-                 console.error('Failed to fetch GitHub token for universal variable.', e);
+                 console.warn('Failed to fetch GitHub token for universal variable.', e);
             }
         }
         
-        const { ports: activePorts } = await getActivePorts(serverId);
-        const allUsedPortsSet = new Set(activePorts?.map(p => p.port) || []);
-
-        const availablePorts = getAvailablePorts(Array.from(allUsedPortsSet));
-
-        let site_name = '';
-        let site_id = '';
-        let site_domain = '';
-        let server_appPath = '';
         const siteResult = await getSite();
-        if(siteResult.success && siteResult.site) {
-            site_name = siteResult.site.name;
-            site_id = siteResult.site.id;
-            site_domain = siteResult.site.domains?.map(d => d.value).join(',') || '';
-            if (server.appPath) {
-                server_appPath = server.appPath.replace(/\{\{universal\.site_id\}\}/g, site_id);
-            } else {
-                server_appPath = `/var/www/${site_id}`;
-            }
-        }
+        const site = siteResult.success ? siteResult.site : null;
 
-        const universal = {
-            server_name: server.name,
-            server_publicIp: server.publicIp,
-            server_availablePorts: availablePorts.slice(0, 10).join(','),
-            server_availablePort: availablePorts[0]?.toString() || '',
-            server_reservedPort: '',
-            server_usedPorts: Array.from(allUsedPortsSet).join(','),
-            server_basePath: server.basePath || '',
-            server_appPath: server_appPath,
-            site_id: site_id,
-            site_name: site_name,
-            site_domain: site_domain,
-            account_id: accountId,
-            account_githubToken: githubAccessToken,
+        // Resolve appPath which depends on site_id
+        const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || `/var/www/${site?.id}`;
+
+        const appServerVariables = {
+            'server_name': server.name,
+            'server_publicIp': server.publicIp,
+            'server_basePath': server.basePath || `/home/${server.username || 'root'}`,
+            'server_appPath': resolvedAppPath,
+            'site_id': site?.id || '',
+            'site_name': site?.name || '',
+            'site_domain': site?.domains?.map(d => d.value).join(' ') || '',
+            'account_id': accountId || '',
+            'account_githubToken': githubAccessToken,
         };
-        
-        if (allocatesPort && universal.server_availablePort) {
-            universal.server_reservedPort = universal.server_availablePort;
-            actualReservedPort = parseInt(universal.server_availablePort, 10);
-        }
-        
+
         let templateParams = { ...processedParams };
-        const allParamsForInjection = { ...templateParams, ...universal };
+        const allParamsForPreExecution = { ...templateParams, ...appServerVariables };
+        
+        let commandToExecute = bashCommand;
 
-
+        // --- Execute Pre-Processor Script ---
         if (preExecutionScript) {
             finalOutput += 'Running pre-execution script...\n';
             await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
-            
-            // Inject all available parameters into the script body
+
             let scriptWithInjectedParams = preExecutionScript;
-            for (const [key, value] of Object.entries(allParamsForInjection)) {
-                const placeholder = `{{${key}}}`;
-                 // Using JSON.stringify ensures values are correctly escaped for JS
-                scriptWithInjectedParams = scriptWithInjectedParams.replace(new RegExp(placeholder, 'g'), JSON.stringify(value));
+            for (const [key, value] of Object.entries(allParamsForPreExecution)) {
+                const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+                scriptWithInjectedParams = scriptWithInjectedParams.replace(placeholderRegex, JSON.stringify(value));
             }
             
-            const sandbox = {}; // Empty sandbox, as variables are now directly in the script
+            const sandbox = {};
             vm.createContext(sandbox);
 
             try {
@@ -182,51 +147,52 @@ export async function runCommand(
                 const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
                 
                 if (typeof scriptResult === 'string') {
-                    finalCommand = scriptResult;
-                    finalOutput += `Pre-execution script returned a complete command.\n\n`;
+                    commandToExecute = scriptResult;
+                    finalOutput += `Pre-execution script returned a new command.\n\n`;
                 } else if (typeof scriptResult === 'object' && scriptResult !== null) {
                     templateParams = { ...templateParams, ...scriptResult };
-                    finalOutput += `Pre-execution script completed. Merged script results with parameters.\n\n`;
+                    finalOutput += `Pre-execution script completed. Merged results with parameters.\n\n`;
                 } else {
-                     finalOutput += `Pre-execution script ran, but did not return a valid object or string. Proceeding...\n\n`;
+                     finalOutput += `Pre-execution script ran. Proceeding...\n\n`;
                 }
-
-                await updateServerLog(logId, { output: finalOutput });
+                 await updateServerLog(logId, { output: finalOutput });
             } catch (scriptError: any) {
                 throw new Error(`Pre-execution script failed: ${scriptError.message}`);
             }
         }
         
-        const allParamsForBash = { ...templateParams, ...universal };
-        for (const [key, value] of Object.entries(allParamsForBash)) {
-            finalCommand = finalCommand.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
+        // --- Replace App Server Variables in Bash Command ---
+        let partiallyResolvedCommand = commandToExecute;
+        const allResolvedParams = { ...templateParams, ...appServerVariables };
+        for (const [key, value] of Object.entries(allResolvedParams)) {
+             const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+             partiallyResolvedCommand = partiallyResolvedCommand.replace(placeholderRegex, String(value));
         }
         
-        const remainingPlaceholders = finalCommand.match(/\{\{([^}]+)\}\}/g);
-        if (remainingPlaceholders) {
-            throw new Error(`Unresolved placeholders remaining: ${remainingPlaceholders.join(', ')}`);
-        }
+        // --- STAGE 2: Generate wrapper script for Target Server variable resolution ---
+        const runtimeResolutionScript = `
+set -e
+get_available_port() {
+    comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
+}
+SERVER_AVAILABLE_PORT=$(get_available_port)
+export SERVER_RESERVED_PORT=${allocatesPort ? '$SERVER_AVAILABLE_PORT' : '""'}
+export SERVER_AVAILABLE_PORTS=$(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u | tr '\\n' ',' | sed 's/,$//')
+export SERVER_USED_PORTS=$SERVER_AVAILABLE_PORTS
 
-        const username = server.username || 'root';
+cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.server_availablePort}}/$SERVER_AVAILABLE_PORT/g" | sed "s/{{universal.server_reservedPort}}/$SERVER_RESERVED_PORT/g" | sed "s/{{universal.server_availablePorts}}/$SERVER_AVAILABLE_PORTS/g" | sed "s/{{universal.server_usedPorts}}/$SERVER_USED_PORTS/g" | bash
+${partiallyResolvedCommand}
+BASH_COMMAND_EOF
+        `;
+
+        const finalCommand = runtimeResolutionScript;
 
         await updateServerLog(logId, { status: 'ongoing', output: `${finalOutput}Connecting to ${server.publicIp}...` });
         revalidatePath(`/root/servers/${serverId}`);
 
-        await ssh.connect({ host: server.publicIp, username, privateKey: server.privateKey });
+        await ssh.connect({ host: server.publicIp, username: server.username || 'root', privateKey: server.privateKey });
         
-        const loggedFinalCommand = confidentialParamKeys.reduce((cmd, key) => {
-            if (templateParams[key]) {
-                const valueToMask = String(templateParams[key]);
-                const escapedValue = valueToMask.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const maskedValue = '*'.repeat(valueToMask.length);
-                return cmd.replace(new RegExp(escapedValue, 'g'), maskedValue);
-            }
-            return cmd;
-        }, finalCommand);
-
-
-        await updateServerLog(logId, { output: `${finalOutput}Connection successful as '${username}'. Running command...\n\n$ ${loggedFinalCommand}` });
-        revalidatePath(`/root/servers/${serverId}`);
+        await updateServerLog(logId, { output: `${finalOutput}Connection successful. Running command...` });
 
         const result = await ssh.execCommand(finalCommand);
         

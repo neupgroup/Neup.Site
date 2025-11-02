@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useTransition, useCallback } from 'react';
 import { getSiteServers, type Server } from '@/actions/servers';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ import { Progress } from '@/components/ui/progress';
 
 interface DeploymentStatus {
     logId: string;
-    status: 'pending' | 'ongoing' | 'completed' | 'failed';
+    status: 'pending' | 'ongoing' | 'completed' | 'failed' | 'cancelled';
     message: string;
     progress: number;
 }
@@ -28,9 +28,10 @@ const getStatusFromLog = (logOutput: string): { message: string, progress: numbe
     if (logOutput.includes('--- Step 4: Setting up SSL with Certbot ---')) return { message: 'Securing server with SSL...', progress: 85 };
     if (logOutput.includes('--- Step 3: Configuring Nginx reverse proxy ---')) return { message: 'Configuring web server...', progress: 60 };
     if (logOutput.includes('--- Step 2: Starting application with PM2 ---')) return { message: 'Starting application...', progress: 40 };
-    if (logOutput.includes('--- Step 1: Building application ---')) return { message: 'Building application...', progress: 20 };
-    if (logOutput.includes('Starting deployment...')) return { message: 'Initiating deployment...', progress: 5 };
-    return { message: 'Preparing...', progress: 0 };
+    if (logOutput.includes('--- Step 1: Building application in')) return { message: 'Building application...', progress: 20 };
+    if (logOutput.includes('Running pre-execution script')) return { message: 'Running pre-execution script...', progress: 10 };
+    if (logOutput.includes('Connection successful. Running command...')) return { message: 'Connected to server...', progress: 5 };
+    return { message: 'Preparing...', progress: 2 };
 };
 
 
@@ -38,10 +39,10 @@ const DeploymentStatusCard = ({ serverId, logId }: { serverId: string, logId: st
     const [status, setStatus] = useState<DeploymentStatus>({ logId, status: 'pending', message: 'Starting...', progress: 0 });
     const router = useRouter();
 
-    useEffect(() => {
+    const checkLog = useCallback(async () => {
         if (!logId) return;
-
-        const interval = setInterval(async () => {
+        
+        try {
             const result = await getServerLog(logId);
             if (result.success && result.log) {
                 const { message, progress } = getStatusFromLog(result.log.output);
@@ -51,19 +52,28 @@ const DeploymentStatusCard = ({ serverId, logId }: { serverId: string, logId: st
                     message,
                     progress
                 });
-
-                if (result.log.status === 'completed' || result.log.status === 'failed') {
-                    clearInterval(interval);
-                }
+                return result.log.status; // Return status for interval control
             } else {
-                 // Stop polling on error
-                 clearInterval(interval);
-                 setStatus(prev => ({...prev, status: 'failed', message: 'Could not retrieve logs.'}));
+                 return 'failed';
+            }
+        } catch {
+            return 'failed';
+        }
+
+    }, [logId]);
+
+    useEffect(() => {
+        if (!logId) return;
+
+        const interval = setInterval(async () => {
+            const currentStatus = await checkLog();
+            if (currentStatus === 'completed' || currentStatus === 'failed' || currentStatus === 'cancelled') {
+                clearInterval(interval);
             }
         }, 3000); // Poll every 3 seconds
 
         return () => clearInterval(interval);
-    }, [logId]);
+    }, [logId, checkLog]);
 
     return (
          <Card className="w-full">
