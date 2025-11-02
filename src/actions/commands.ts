@@ -70,7 +70,7 @@ sudo nginx -t
 
 # 4. Setup SSL with Certbot
 echo "--- Step 4: Setting up SSL with Certbot ---"
-sudo certbot --nginx --non-interactive --agree-tos --email admin@{{universal.site_id}} -d {{universal.site_domain}} --redirect
+sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 
 sudo systemctl reload nginx
 
