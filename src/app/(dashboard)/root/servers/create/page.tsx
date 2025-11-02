@@ -29,7 +29,7 @@ export default function CreateServerPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, control, handleSubmit, formState: { isSubmitting }, setValue } = useForm<FormValues>({
     defaultValues: {
       name: '',
       publicIp: '',
@@ -39,7 +39,7 @@ export default function CreateServerPage() {
       provider: '',
       isPrivate: false,
       username: 'root',
-      basePath: '/var/www'
+      basePath: '/var/www/{{universal.site_name}}'
     }
   });
 
@@ -92,7 +92,7 @@ export default function CreateServerPage() {
              <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="server-type">Server Type</Label>
-                    <Select onValueChange={(value) => register('serverType').onChange({ target: { value } })} defaultValue="vps">
+                    <Select onValueChange={(value) => setValue('serverType', value as any)} defaultValue="vps">
                         <SelectTrigger id="server-type">
                             <SelectValue placeholder="Select type" />
                         </SelectTrigger>
@@ -115,7 +115,7 @@ export default function CreateServerPage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="basePath">Default Base Path</Label>
-                    <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www" />
+                    <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
                 </div>
             </div>
              <div className="flex items-center space-x-2">
