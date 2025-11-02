@@ -22,6 +22,85 @@ import { initializeFirebase } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/schemas/command';
 import { logErrorToFirestore } from '@/lib/logging';
+import { getConfigureNginxCommand } from './server/management/configure-nginx';
+import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
+
+async function createBuiltInCommands() {
+    const buildAndStartCommand = {
+        name: "Start Next.js App (Production)",
+        description: "Builds, starts, and configures a Next.js app on an Ubuntu server using PM2 and Nginx with SSL.",
+        commandTemplate: `
+<server.ubuntuBashProcessor>
+set -e
+echo "--- Starting Application Deployment ---"
+
+# 1. Build the application
+echo "--- Step 1: Building application in {{universal.server_appPath}} ---"
+cd {{universal.server_appPath}}
+npm install
+npm run build
+
+# 2. Start with PM2
+echo "--- Step 2: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
+pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}.production"
+pm2 save
+
+# 3. Configure Nginx & SSL
+echo "--- Step 3: Configuring Nginx reverse proxy ---"
+sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
+server {
+    listen 80;
+    server_name {{universal.site_domain}};
+
+    location / {
+        proxy_pass http://localhost:{{universal.server_reservedPort}};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+EOF
+sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+
+# 4. Setup SSL with Certbot
+echo "--- Step 4: Setting up SSL with Certbot ---"
+sudo certbot --nginx --non-interactive --agree-tos --email admin@{{universal.site_id}} -d {{universal.site_domain}} --redirect
+
+sudo systemctl reload nginx
+
+echo "--- Deployment Complete ---"
+</server.ubuntuBashProcessor>
+        `,
+        parameters: [],
+        allocatesPort: true,
+        type: 'creation',
+        danger: 'high',
+    };
+
+    try {
+        const { firestore } = initializeFirebase();
+        // Use a specific ID to prevent duplicates
+        const docRef = doc(firestore, 'serverCommands', 'app-start-prod');
+        await setDoc(docRef, {
+            ...buildAndStartCommand,
+            createdAt: serverTimestamp(),
+        });
+        console.log("Upserted built-in command: app-start-prod");
+    } catch(e) {
+        console.error("Failed to create built-in command", e);
+    }
+}
+
+
+// Immediately try to create the built-in command when this module is loaded.
+// This is a simple way to ensure it exists. A more robust system might use a migration script.
+createBuiltInCommands();
 
 export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'createdAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {

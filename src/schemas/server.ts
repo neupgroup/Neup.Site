@@ -1,6 +1,5 @@
 
 
-
 export interface ServerAllocationStorage {
   totalStorage: string;
   availableStorage: string;
