@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
@@ -129,8 +130,10 @@ export async function runCommand(
             site_name = siteResult.site.name;
             site_id = siteResult.site.id;
             site_domain = siteResult.site.domains?.map(d => d.value).join(',') || '';
-            if(server.basePath && site_name) {
-                server_appPath = `${server.basePath}/${site_name}`;
+            if (server.basePath) {
+                server_appPath = server.basePath.replace(/\{\{universal\.site_id\}\}/g, site_id).replace(/\{\{universal\.site_name\}\}/g, site_name);
+            } else if (site_name) {
+                server_appPath = `/var/www/${site_name}`;
             }
         }
 
