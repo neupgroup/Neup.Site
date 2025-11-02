@@ -17,9 +17,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-import { Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Loader2, ChevronLeft, ChevronRight, Globe } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 
 const FormContainer = ({ children }: { children: React.ReactNode }) => (
     <div className="p-4 border-t transition-colors group-hover:bg-muted/50 data-[state=open]:border-primary">
@@ -214,21 +216,7 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
         setLoading(true);
         const savedCommandsResult = await getServerCommands({ page, pageSize, searchQuery: search });
         
-        let allItems = [
-            ...(savedCommandsResult.commands || []).map(cmd => ({
-                id: cmd.id!,
-                name: cmd.name,
-                description: cmd.description || 'No description',
-                form: <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
-            })),
-            ...staticManagementItems.filter(item => 
-                !search || (item.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.description.toLowerCase().includes(search.toLowerCase()))
-            )
-        ];
-        
-        // This logic is now mostly handled by the server action
-        setTotalCount(savedCommandsResult.totalCount || allItems.length);
+        setTotalCount(savedCommandsResult.totalCount || 0);
         setCommands(savedCommandsResult.commands || []);
         setLoading(false);
     };
@@ -260,22 +248,19 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                         }}
                     />
                 </div>
-                {loading || isPending ? (
-                    <div className="space-y-2">
-                        {[...Array(pageSize)].map((_, i) => (
-                           <div key={i} className="p-4 border rounded-lg space-y-2">
+                <Accordion type="single" collapsible className="w-full space-y-2">
+                    {loading || isPending ? (
+                        <div className="space-y-2">
+                            {[...Array(3)].map((_, i) => (
+                            <div key={i} className="p-4 border rounded-lg space-y-2">
                                 <Skeleton className="h-5 w-3/4" />
                                 <Skeleton className="h-4 w-1/2" />
-                           </div>
-                        ))}
-                    </div>
-                ) : (
-                    <Accordion type="single" collapsible className="w-full space-y-2">
-                        {commands.map((cmd) => {
-                            const staticItem = staticManagementItems.find(item => item.id === cmd.id);
-                            const formContent = staticItem ? staticItem.form : <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />;
-
-                            return (
+                            </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <>
+                            {commands.map((cmd) => (
                                 <AccordionItem value={cmd.id!} key={cmd.id} className="border rounded-lg data-[state=open]:border-primary group">
                                     <AccordionTrigger className="p-4 hover:no-underline text-left">
                                         <div className="flex-1 pr-4">
@@ -284,13 +269,16 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                                         </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                        <FormContainer>{formContent}</FormContainer>
+                                        <FormContainer>
+                                            <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
+                                        </FormContainer>
                                     </AccordionContent>
                                 </AccordionItem>
-                            );
-                        })}
-                    </Accordion>
-                )}
+                            ))}
+                            {/* Static items can be added here if needed, or integrated into the fetched list */}
+                        </>
+                    )}
+                </Accordion>
             </CardContent>
              {totalPages > 1 && (
                 <CardFooter className="justify-start">
@@ -316,6 +304,27 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                     </div>
                 </CardFooter>
             )}
+             <Alert>
+                <Globe className="h-4 w-4" />
+                <AlertTitle>Universal Variables</AlertTitle>
+                <AlertDescription>
+                    These variables are available in both the pre-processor and the Bash script.
+                    <ul className="list-disc pl-5 mt-2 text-xs space-y-1">
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_publicIp}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_basePath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_appPath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePort}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_availablePorts}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_usedPorts}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{universal.server_reservedPort}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.account_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{universal.account_githubToken}}`}</code></li>
+                    </ul>
+                </AlertDescription>
+            </Alert>
         </Card>
     );
 }

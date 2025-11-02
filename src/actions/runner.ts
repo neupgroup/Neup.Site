@@ -2,7 +2,7 @@
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
-import { getPrivateServerDetails, updateServer } from '@/actions/servers';
+import { getPrivateServerDetails, updateServer, getSiteServers, getServer } from '@/actions/servers';
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
 import { getFirestore, collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
@@ -13,6 +13,7 @@ import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
 import type { Server, UsedPort, ServerAllocation } from '@/schemas/server';
 import { getActivePorts } from './server/management/get-active-ports';
+import { getSite } from './editor/site';
 
 
 const getAvailablePorts = (allUsedPorts: number[]): number[] => {
@@ -96,7 +97,7 @@ export async function runCommand(
         if (serverError || !server || !server.publicIp || !server.privateKey) {
             throw new Error(`Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`);
         }
-        
+
         const accountId = await getAccountId();
         
         let githubAccessToken = '';
@@ -117,27 +118,38 @@ export async function runCommand(
         const { ports: activePorts } = await getActivePorts(serverId);
         const allUsedPortsSet = new Set(activePorts?.map(p => p.port) || []);
 
-        const openPorts = getAvailablePorts(Array.from(allUsedPortsSet));
+        const availablePorts = getAvailablePorts(Array.from(allUsedPortsSet));
 
-        let holdingPorts: number[] = [];
-        
+        let site_name = '';
+        let site_id = '';
+        let server_appPath = '';
+        const siteResult = await getSite();
+        if(siteResult.success && siteResult.site) {
+            site_name = siteResult.site.name;
+            site_id = siteResult.site.id;
+            if(server.basePath && site_name) {
+                server_appPath = `${server.basePath}/${site_name}`;
+            }
+        }
+
         const universal = {
-            name: server.name,
-            public_ip: server.publicIp,
-            provider: server.provider || '',
-            username: server.username || '',
-            base_path: server.basePath || '',
-            holdingPort: holdingPorts[0]?.toString() || '',
-            holdingPorts: holdingPorts.join(','),
-            openPort: openPorts[0]?.toString() || '',
-            openPorts: openPorts.slice(0, 5).join(','),
-            closedPorts: Array.from(allUsedPortsSet).join(','),
+            server_name: server.name,
+            server_publicIp: server.publicIp,
+            server_availablePorts: availablePorts.slice(0, 10).join(','),
+            server_availablePort: availablePorts[0]?.toString() || '',
+            server_reservedPort: '',
+            server_usedPorts: Array.from(allUsedPortsSet).join(','),
+            server_basePath: server.basePath || '',
+            server_appPath: server_appPath,
+            site_id: site_id,
+            site_name: site_name,
             account_id: accountId,
-            linked_account_github: githubAccessToken,
+            account_githubToken: githubAccessToken,
         };
-
-        if (allocatesPort && universal.holdingPort) {
-            actualReservedPort = parseInt(universal.holdingPort, 10);
+        
+        if (allocatesPort && universal.server_availablePort) {
+            universal.server_reservedPort = universal.server_availablePort;
+            actualReservedPort = parseInt(universal.server_availablePort, 10);
         }
         
         let templateParams = { ...processedParams };

@@ -1,5 +1,6 @@
 
 
+
 export interface ServerAllocationStorage {
   totalStorage: string;
   availableStorage: string;
@@ -17,7 +18,6 @@ export interface ServerAllocation {
   deploymentPath?: string;
   storageAllocation: string; // e.g., "1024" for 1024MB
   allocatedOn?: string | null;
-  expiresOn?: string | null;
 }
 
 export interface UsedPort {

@@ -68,7 +68,7 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
 
   try {
     const { firestore } = initializeFirebase();
-    const allocationsQuery = query(collection(firestore, 'serverAllocations'), where('siteId', '==', siteId));
+    const allocationsQuery = query(collection(firestore, 'allocations'), where('siteId', '==', siteId));
     const allocationsSnapshot = await getDocs(allocationsQuery);
 
     if (allocationsSnapshot.empty) {
@@ -94,7 +94,6 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
                 id: allocDoc.id,
                 ...allocationData,
                 allocatedOn: allocationData.allocatedOn instanceof Timestamp ? allocationData.allocatedOn.toDate().toISOString() : null,
-                expiresOn: allocationData.expiresOn instanceof Timestamp ? allocationData.expiresOn.toDate().toISOString() : null,
             }
             
             return { ...serverInfo, allocation };
