@@ -105,7 +105,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
         <Card>
         <CardHeader>
             <CardTitle>All Active Processes</CardTitle>
-            <CardDescription>A list of all running processes on the server.</CardDescription>
+            <CardDescription>A list of all running processes on the server, sorted by memory usage.</CardDescription>
         </CardHeader>
         <CardContent>
         {isLoading ? (
@@ -135,7 +135,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
                             <p className="font-mono text-sm">PID: {proc.pid} ({proc.user})</p>
                             <p className="font-mono truncate text-muted-foreground">{proc.command}</p>
                         </div>
-                        <p className="font-mono text-right flex-shrink-0 ml-4">{proc.cpu}% CPU / {proc.mem}% MEM</p>
+                        <p className="font-mono text-right flex-shrink-0 ml-4">{proc.cpu}% CPU / {proc.mem.toFixed(2)} MB</p>
                     </div>
                     ))}
                 </div>
