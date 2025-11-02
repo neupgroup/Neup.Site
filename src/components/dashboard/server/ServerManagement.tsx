@@ -275,7 +275,6 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                                     </AccordionContent>
                                 </AccordionItem>
                             ))}
-                            {/* Static items can be added here if needed, or integrated into the fetched list */}
                         </>
                     )}
                 </Accordion>

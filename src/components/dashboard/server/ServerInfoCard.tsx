@@ -101,8 +101,11 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
                         <DetailItem icon={User} label="Default Username">
                            <p className="font-mono">{server.username || 'N/A'}</p>
                         </DetailItem>
-                        <DetailItem icon={Folder} label="Default Base Path">
+                        <DetailItem icon={Folder} label="Base Path">
                            <p className="font-mono">{server.basePath || 'N/A'}</p>
+                        </DetailItem>
+                         <DetailItem icon={Folder} label="App Path Template">
+                           <p className="font-mono">{server.appPath || 'N/A'}</p>
                         </DetailItem>
                         <DetailItem icon={Clock} label="Uptime">
                            <p>{uptime || 'N/A'}</p>

@@ -49,6 +49,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
+            appPath: data.appPath,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         } as Server
@@ -141,6 +142,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
+            appPath: data.appPath,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
@@ -181,6 +183,7 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
+            appPath: data.appPath,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };

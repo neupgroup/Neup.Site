@@ -58,6 +58,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
       isPrivate: false,
       username: '',
       basePath: '',
+      appPath: '',
       expiresOn: null,
     }
   });
@@ -81,6 +82,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
           isPrivate: result.server.isPrivate || false,
           username: result.server.username || '',
           basePath: result.server.basePath || '',
+          appPath: result.server.appPath || '',
           expiresOn: result.server.expiresOn || null,
         });
       } else {
@@ -213,10 +215,14 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
                         <Label htmlFor="username">Default Username</Label>
                         <Input id="username" {...register('username')} />
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="basePath">Application Path Template</Label>
-                        <Input id="basePath" {...register('basePath')} />
+                     <div className="space-y-2">
+                        <Label htmlFor="basePath">Base Path</Label>
+                        <Input id="basePath" {...register('basePath')} placeholder="e.g., /home/{{username}}"/>
                     </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="appPath">Application Path Template</Label>
+                    <Input id="appPath" {...register('appPath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
                 </div>
                  <div className="flex items-center space-x-2">
                     <Switch id="is-private" checked={watch('isPrivate')} onCheckedChange={(checked) => setValue('isPrivate', checked)} />

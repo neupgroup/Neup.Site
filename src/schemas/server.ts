@@ -35,7 +35,8 @@ export interface Server {
   provider?: string;
   isPrivate?: boolean;
   username?: string;
-  basePath?: string; // This will now serve as the App Path Template
+  basePath?: string;
+  appPath?: string;
   storageUsed?: string;
   storageTotal?: string;
   storageUnit?: string;

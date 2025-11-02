@@ -41,7 +41,8 @@ export default function CreateServerPage() {
       provider: '',
       isPrivate: false,
       username: 'root',
-      basePath: '/var/www/{{universal.site_id}}'
+      basePath: '/home/{{username}}',
+      appPath: '/var/www/{{universal.site_id}}'
     }
   });
 
@@ -128,9 +129,15 @@ export default function CreateServerPage() {
                     <Input id="username" {...register('username')} placeholder="e.g., root" />
                 </div>
             </div>
-            <div className="space-y-2">
-                <Label htmlFor="basePath">Application Path Template</Label>
-                <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
+             <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="basePath">Base Path</Label>
+                    <Input id="basePath" {...register('basePath')} placeholder="e.g., /home/{{username}}" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="appPath">Application Path Template</Label>
+                    <Input id="appPath" {...register('appPath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
+                </div>
             </div>
              <div className="flex items-center space-x-2">
                 <Switch id="is-private" {...register('isPrivate')} />
