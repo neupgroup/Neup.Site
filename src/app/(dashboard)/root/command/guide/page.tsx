@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Code, ArrowLeft, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const CodeBlock = ({ children }: { children: React.ReactNode }) => (
   <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto">
@@ -56,14 +57,14 @@ export default function CommandsGuidePage() {
 </server.ubuntuBashProcessor>`}
               </CodeBlock>
               <p>
-                Placeholders like `{{name}}` are automatically detected and will create input fields on the command execution form.
+                Placeholders like ` + "`{{name}}`" + ` are automatically detected and will create input fields on the command execution form.
               </p>
             </TabsContent>
 
             <TabsContent value="variables" className="pt-6 space-y-4">
               <h3 className="text-xl font-semibold font-headline">Universal Variables</h3>
               <p>
-                You can use a set of built-in "universal" variables in both the pre-processor (as `universal.variableName`) and the bash script (`{{universal.variableName}}`).
+                You can use a set of built-in "universal" variables in both the pre-processor (as ` + "`universal.variableName`" + `) and the bash script (` + "`{{universal.variableName}}`" + `).
               </p>
                <Alert>
                 <Globe className="h-4 w-4" />
@@ -90,9 +91,9 @@ export default function CommandsGuidePage() {
             <TabsContent value="pre-processor" className="pt-6 space-y-4">
               <h3 className="text-xl font-semibold font-headline">JavaScript Pre-Processor</h3>
               <p>
-                The `javascript.preProcessor` block runs on our application server *before* the bash script is sent to your server. It's a powerful way to prepare data.
+                The ` + "`javascript.preProcessor`" + ` block runs on our application server *before* the bash script is sent to your server. It's a powerful way to prepare data.
               </p>
-              <p>Two objects are available in its scope: `params` (user input) and `universal` (built-in variables).</p>
+              <p>Two objects are available in its scope: ` + "`params`" + ` (user input) and ` + "`universal`" + ` (built-in variables).</p>
               <h4 className="font-semibold pt-2">Use Case 1: Modifying Parameters</h4>
               <p>You can return an object from the script. Its properties will be merged with the user's parameters, overriding any existing keys.</p>
               <CodeBlock>
@@ -109,7 +110,7 @@ export default function CommandsGuidePage() {
 </server.ubuntuBashProcessor>`}
               </CodeBlock>
               <h4 className="font-semibold pt-2">Use Case 2: Dynamic Command Generation</h4>
-              <p>If you return a string from the pre-processor, it will completely replace the `server.ubuntuBashProcessor` block for that execution.</p>
+              <p>If you return a string from the pre-processor, it will completely replace the ` + "`server.ubuntuBashProcessor`" + ` block for that execution.</p>
               <CodeBlock>
 {`<javascript.preProcessor>
   if (params.install_type === 'full') {
