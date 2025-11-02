@@ -1,18 +1,8 @@
 
 'use client'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users, Repeat, Power, Loader2, PlayCircle, StopCircle, Settings, Rocket } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { runCommand } from '@/actions/runner';
-import { useState, useTransition, useEffect } from 'react';
-import { getSiteServers } from '@/actions/servers';
-import type { Server } from '@/schemas/server';
-import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
-import { useProfile } from '@/context/ProfileContext';
+import { ArrowRight, Users, Repeat, Power } from 'lucide-react';
 
 export default function SettingsPage() {
   const settingsOptions = [
