@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -52,6 +53,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
       privateIp: '',
       privateKey: '', 
       serverType: 'vps',
+      platform: 'ubuntu',
       provider: '',
       isPrivate: false,
       username: '',
@@ -74,6 +76,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
           privateIp: '', // Leave blank for security
           privateKey: '', // Keep private key field blank for security
           serverType: result.server.serverType || 'vps',
+          platform: result.server.platform || 'ubuntu',
           provider: result.server.provider || '',
           isPrivate: result.server.isPrivate || false,
           username: result.server.username || '',
@@ -188,10 +191,22 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="provider">Provider</Label>
-                        <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
+                     <div className="space-y-2">
+                        <Label htmlFor="platform">Platform (OS)</Label>
+                        <Select onValueChange={(value) => setValue('platform', value as any)} defaultValue={watch('platform')}>
+                            <SelectTrigger id="platform">
+                                <SelectValue placeholder="Select platform" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                                <SelectItem value="windows">Windows</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="provider">Provider</Label>
+                    <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
                 </div>
                  <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -199,7 +214,7 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
                         <Input id="username" {...register('username')} />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="basePath">Default Base Path</Label>
+                        <Label htmlFor="basePath">Application Path Template</Label>
                         <Input id="basePath" {...register('basePath')} />
                     </div>
                 </div>

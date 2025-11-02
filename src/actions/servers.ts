@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
@@ -43,6 +44,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
             name: data.name,
             publicIp: data.publicIp,
             serverType: data.serverType,
+            platform: data.platform,
             provider: data.provider,
             isPrivate: data.isPrivate,
             username: data.username,
@@ -134,6 +136,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             publicIp: data.publicIp,
             privateIp: data.privateIp,
             serverType: data.serverType,
+            platform: data.platform,
             provider: data.provider,
             isPrivate: data.isPrivate,
             username: data.username,
@@ -173,6 +176,7 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
             privateIp: data.privateIp,
             privateKey: data.privateKey,
             serverType: data.serverType,
+            platform: data.platform,
             provider: data.provider,
             isPrivate: data.isPrivate,
             username: data.username,

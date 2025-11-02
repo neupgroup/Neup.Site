@@ -31,10 +31,11 @@ export interface Server {
   privateIp?: string;
   privateKey?: string;
   serverType?: 'vps' | 'dedicated' | 'cloud';
+  platform?: 'ubuntu' | 'windows';
   provider?: string;
   isPrivate?: boolean;
   username?: string;
-  basePath?: string;
+  basePath?: string; // This will now serve as the App Path Template
   storageUsed?: string;
   storageTotal?: string;
   storageUnit?: string;

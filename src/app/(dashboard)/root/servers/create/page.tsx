@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -36,10 +37,11 @@ export default function CreateServerPage() {
       privateIp: '',
       privateKey: '',
       serverType: 'vps',
+      platform: 'ubuntu',
       provider: '',
       isPrivate: false,
       username: 'root',
-      basePath: '/var/www/{{universal.site_name}}'
+      basePath: '/var/www/{{universal.site_id}}'
     }
   });
 
@@ -104,19 +106,31 @@ export default function CreateServerPage() {
                     </Select>
                 </div>
                 <div className="space-y-2">
+                    <Label htmlFor="platform">Platform (OS)</Label>
+                    <Select onValueChange={(value) => setValue('platform', value as any)} defaultValue="ubuntu">
+                        <SelectTrigger id="platform">
+                            <SelectValue placeholder="Select platform" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                            <SelectItem value="windows">Windows</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+             <div className="grid sm:grid-cols-2 gap-4">
+                 <div className="space-y-2">
                     <Label htmlFor="provider">Provider</Label>
                     <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
                 </div>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="username">Default Username</Label>
                     <Input id="username" {...register('username')} placeholder="e.g., root" />
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="basePath">Default Base Path</Label>
-                    <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
-                </div>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="basePath">Application Path Template</Label>
+                <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
             </div>
              <div className="flex items-center space-x-2">
                 <Switch id="is-private" {...register('isPrivate')} />
