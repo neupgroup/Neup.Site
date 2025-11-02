@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
-import { getServers, type Server } from '@/actions/servers';
+import { getSiteServers, type Server } from '@/actions/servers';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, PlayCircle, Server as ServerIcon } from 'lucide-react';
@@ -12,9 +12,10 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
+import type { ServerAllocation } from '@/schemas/server';
 
 export default function StartApplicationPage() {
-    const [servers, setServers] = useState<Server[]>([]);
+    const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isStarting, setIsStarting] = useState<string | null>(null);
@@ -24,11 +25,11 @@ export default function StartApplicationPage() {
     useEffect(() => {
         const fetchServers = async () => {
             setLoading(true);
-            const result = await getServers();
+            const result = await getSiteServers();
             if (result.success && result.servers) {
                 setServers(result.servers);
             } else {
-                setError(result.error || 'Failed to fetch servers.');
+                setError(result.error || 'Failed to fetch allocated servers.');
             }
             setLoading(false);
         };
@@ -68,8 +69,8 @@ export default function StartApplicationPage() {
             ) : servers.length === 0 ? (
                  <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
                     <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold">No Servers Found</h3>
-                    <p>You need to create a server before you can start an application.</p>
+                    <h3 className="text-lg font-semibold">No Allocated Servers Found</h3>
+                    <p>You need to allocate a server to this site before you can start an application.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
