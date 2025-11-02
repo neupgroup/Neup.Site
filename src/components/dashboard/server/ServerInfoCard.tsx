@@ -9,6 +9,7 @@ import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useProfile } from '@/context/ProfileContext';
 
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
@@ -39,6 +40,7 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
+    const { site } = useProfile();
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
     const router = useRouter();
@@ -73,6 +75,8 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
         });
     };
 
+    const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site?.id || '') || 'N/A';
+
     return (
         <>
             <Card>
@@ -104,8 +108,8 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
                         <DetailItem icon={Folder} label="Base Path">
                            <p className="font-mono">{server.basePath || 'N/A'}</p>
                         </DetailItem>
-                         <DetailItem icon={Folder} label="App Path Template">
-                           <p className="font-mono">{server.appPath || 'N/A'}</p>
+                         <DetailItem icon={Folder} label="App Path">
+                           <p className="font-mono">{resolvedAppPath}</p>
                         </DetailItem>
                         <DetailItem icon={Clock} label="Uptime">
                            <p>{uptime || 'N/A'}</p>
