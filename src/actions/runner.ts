@@ -30,7 +30,7 @@ export async function runCommand(
     const isCommandId = !commandIdentifier.includes(' ');
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
     let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
-    let loggedCommand = rawCommandTemplate;
+    
     let confidentialParamKeys: string[] = [];
     let allocatesPort = false;
     let commandName: string | undefined;
@@ -40,11 +40,9 @@ export async function runCommand(
         if (commandDetails.success && commandDetails.command) {
             const cmd = commandDetails.command;
             rawCommandTemplate = cmd.commandTemplate;
-            loggedCommand = cmd.commandTemplate;
             allocatesPort = cmd.allocatesPort || false;
             commandName = cmd.name;
             confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
-
         } else {
              await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
              return;
@@ -53,13 +51,104 @@ export async function runCommand(
 
     let { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
     
-    // Mask confidential parameters before creating the initial log
-    for (const key of confidentialParamKeys) {
-        if (processedParams[key]) {
-            const maskedValue = '*'.repeat(String(processedParams[key]).length);
-            loggedCommand = loggedCommand.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), maskedValue);
+    // --- STAGE 1: Pre-computation and Variable Resolution on Application Server ---
+    const { server, error: serverError } = await getPrivateServerDetails(serverId);
+    if (serverError || !server || !server.publicIp || !server.privateKey) {
+        const errorMsg = `Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`;
+        await logErrorToFirestore({ message: errorMsg, source: 'runCommand.init' });
+        return;
+    }
+
+    const accountId = await getAccountId();
+    
+    let githubAccessToken = '';
+    if (accountId) {
+        try {
+            const accountsResult = await getLinkedAccounts();
+            if (accountsResult.success && accountsResult.accounts) {
+                const githubAccount = accountsResult.accounts.find(acc => acc.platform === 'github');
+                if (githubAccount) {
+                    githubAccessToken = githubAccount.authorization_info.access_token;
+                }
+            }
+        } catch (e: any) {
+             console.warn('Failed to fetch GitHub token for universal variable.', e);
         }
     }
+    
+    const siteResult = await getSite();
+    const site = siteResult.success ? siteResult.site : null;
+
+    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || `/var/www/${site?.id}`;
+
+    const appServerVariables = {
+        'universal.server_name': server.name,
+        'universal.server_publicIp': server.publicIp,
+        'universal.server_basePath': server.basePath || `/home/${server.username || 'root'}`,
+        'universal.server_appPath': resolvedAppPath,
+        'universal.site_id': site?.id || '',
+        'universal.site_name': site?.name || '',
+        'universal.site_domain': site?.domains?.map(d => d.value).join(' ') || '',
+        'universal.account_id': accountId || '',
+        'universal.account_githubToken': githubAccessToken,
+    };
+    
+    let templateParams = { ...processedParams };
+    const allParamsForPreExecution = { ...templateParams, ...appServerVariables };
+    
+    // --- Execute Pre-Processor Script ---
+    if (preExecutionScript) {
+        let scriptWithInjectedParams = preExecutionScript;
+        for (const [key, value] of Object.entries(allParamsForPreExecution)) {
+            const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+            scriptWithInjectedParams = scriptWithInjectedParams.replace(placeholderRegex, JSON.stringify(value));
+        }
+        
+        const sandbox = {};
+        vm.createContext(sandbox);
+
+        try {
+            const scriptToRun = `(() => { ${scriptWithInjectedParams} })();`;
+            const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
+            
+            if (typeof scriptResult === 'string') {
+                bashCommand = scriptResult;
+            } else if (typeof scriptResult === 'object' && scriptResult !== null) {
+                templateParams = { ...templateParams, ...scriptResult };
+            }
+        } catch (scriptError: any) {
+            await logErrorToFirestore({ message: `Pre-execution script failed: ${scriptError.message}`, source: 'runCommand.preExec' });
+            return;
+        }
+    }
+    
+    // --- Create final params object AFTER pre-execution ---
+    const allFinalParams = { ...templateParams, ...appServerVariables };
+    
+    // --- Replace App Server Variables in Bash Command ---
+    let commandToExecute = bashCommand;
+    for (const [key, value] of Object.entries(allFinalParams)) {
+         const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+         commandToExecute = commandToExecute.replace(placeholderRegex, String(value));
+    }
+    
+    // --- Create a separate command for logging, with confidential data masked ---
+    let loggedCommand = bashCommand;
+    const allParamsForLogging = { ...allFinalParams };
+    confidentialParamKeys.forEach(key => {
+        if (allParamsForLogging[key]) {
+            allParamsForLogging[key] = '********';
+        }
+    });
+    // Mask GitHub token as well, as it is always confidential
+    if(allParamsForLogging['universal.account_githubToken']) {
+        allParamsForLogging['universal.account_githubToken'] = '********';
+    }
+     for (const [key, value] of Object.entries(allParamsForLogging)) {
+         const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+         loggedCommand = loggedCommand.replace(placeholderRegex, String(value));
+    }
+
 
     const createResult = await createServerLog({
         serverId: serverId,
@@ -78,99 +167,8 @@ export async function runCommand(
     
     revalidatePath(`/root/servers/${serverId}`);
 
-    const ssh = new NodeSSH();
-    let finalOutput = ''; 
-
-    try {
-        // --- STAGE 1: Pre-computation and Variable Resolution on Application Server ---
-        const { server, error: serverError } = await getPrivateServerDetails(serverId);
-        if (serverError || !server || !server.publicIp || !server.privateKey) {
-            throw new Error(`Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`);
-        }
-
-        const accountId = await getAccountId();
-        
-        let githubAccessToken = '';
-        if (accountId) {
-            try {
-                const accountsResult = await getLinkedAccounts();
-                if (accountsResult.success && accountsResult.accounts) {
-                    const githubAccount = accountsResult.accounts.find(acc => acc.platform === 'github');
-                    if (githubAccount) {
-                        githubAccessToken = githubAccount.authorization_info.access_token;
-                    }
-                }
-            } catch (e: any) {
-                 console.warn('Failed to fetch GitHub token for universal variable.', e);
-            }
-        }
-        
-        const siteResult = await getSite();
-        const site = siteResult.success ? siteResult.site : null;
-
-        // Resolve appPath which depends on site_id
-        const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || `/var/www/${site?.id}`;
-
-        const appServerVariables = {
-            'server_name': server.name,
-            'server_publicIp': server.publicIp,
-            'server_basePath': server.basePath || `/home/${server.username || 'root'}`,
-            'server_appPath': resolvedAppPath,
-            'site_id': site?.id || '',
-            'site_name': site?.name || '',
-            'site_domain': site?.domains?.map(d => d.value).join(' ') || '',
-            'account_id': accountId || '',
-            'account_githubToken': githubAccessToken,
-        };
-
-        let templateParams = { ...processedParams };
-        const allParamsForPreExecution = { ...templateParams, ...appServerVariables };
-        
-        let commandToExecute = bashCommand;
-
-        // --- Execute Pre-Processor Script ---
-        if (preExecutionScript) {
-            finalOutput += 'Running pre-execution script...\n';
-            await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
-
-            let scriptWithInjectedParams = preExecutionScript;
-            for (const [key, value] of Object.entries(allParamsForPreExecution)) {
-                const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-                scriptWithInjectedParams = scriptWithInjectedParams.replace(placeholderRegex, JSON.stringify(value));
-            }
-            
-            const sandbox = {};
-            vm.createContext(sandbox);
-
-            try {
-                const scriptToRun = `(() => { ${scriptWithInjectedParams} })();`;
-                const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
-                
-                if (typeof scriptResult === 'string') {
-                    commandToExecute = scriptResult;
-                    finalOutput += `Pre-execution script returned a new command.\n\n`;
-                } else if (typeof scriptResult === 'object' && scriptResult !== null) {
-                    templateParams = { ...templateParams, ...scriptResult };
-                    finalOutput += `Pre-execution script completed. Merged results with parameters.\n\n`;
-                } else {
-                     finalOutput += `Pre-execution script ran. Proceeding...\n\n`;
-                }
-                 await updateServerLog(logId, { output: finalOutput });
-            } catch (scriptError: any) {
-                throw new Error(`Pre-execution script failed: ${scriptError.message}`);
-            }
-        }
-        
-        // --- Replace App Server Variables in Bash Command ---
-        let partiallyResolvedCommand = commandToExecute;
-        const allResolvedParams = { ...templateParams, ...appServerVariables };
-        for (const [key, value] of Object.entries(allResolvedParams)) {
-             const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-             partiallyResolvedCommand = partiallyResolvedCommand.replace(placeholderRegex, String(value));
-        }
-        
-        // --- STAGE 2: Generate wrapper script for Target Server variable resolution ---
-        const runtimeResolutionScript = `
+    // --- STAGE 2: Generate wrapper script for Target Server variable resolution ---
+    const runtimeResolutionScript = `
 set -e
 get_available_port() {
     comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
@@ -181,12 +179,16 @@ export SERVER_AVAILABLE_PORTS=$(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 
 export SERVER_USED_PORTS=$SERVER_AVAILABLE_PORTS
 
 cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.server_availablePort}}/$SERVER_AVAILABLE_PORT/g" | sed "s/{{universal.server_reservedPort}}/$SERVER_RESERVED_PORT/g" | sed "s/{{universal.server_availablePorts}}/$SERVER_AVAILABLE_PORTS/g" | sed "s/{{universal.server_usedPorts}}/$SERVER_USED_PORTS/g" | bash
-${partiallyResolvedCommand}
+${commandToExecute}
 BASH_COMMAND_EOF
         `;
 
-        const finalCommand = runtimeResolutionScript;
+    const finalCommand = runtimeResolutionScript;
 
+    const ssh = new NodeSSH();
+    let finalOutput = ''; 
+
+    try {
         await updateServerLog(logId, { status: 'ongoing', output: `${finalOutput}Connecting to ${server.publicIp}...` });
         revalidatePath(`/root/servers/${serverId}`);
 
