@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import {
@@ -34,19 +35,40 @@ async function createBuiltInCommands() {
 set -e
 echo "--- Starting Application Deployment ---"
 
-# 1. Build the application
-echo "--- Step 1: Building application in {{universal.server_appPath}} ---"
+# Function to clean up swap file
+cleanup() {
+    echo "--- Cleaning up swap file ---"
+    if [ -f /swapfile ]; then
+        sudo swapoff /swapfile
+        sudo rm -f /swapfile
+        echo "Swap file removed."
+    fi
+}
+
+# Trap ensures cleanup runs on script exit, error, or interruption
+trap cleanup EXIT
+
+# 1. Create and enable 4GB swap file
+echo "--- Step 1: Creating 4GB swap file ---"
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo "Swap file created and activated."
+
+# 2. Build the application
+echo "--- Step 2: Building application in {{universal.server_appPath}} ---"
 cd {{universal.server_appPath}}
 npm install
 npm run build
 
-# 2. Start with PM2
-echo "--- Step 2: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
+# 3. Start with PM2
+echo "--- Step 3: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
 pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}.production"
 pm2 save
 
-# 3. Configure Nginx & SSL
-echo "--- Step 3: Configuring Nginx reverse proxy ---"
+# 4. Configure Nginx & SSL
+echo "--- Step 4: Configuring Nginx reverse proxy ---"
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
@@ -68,8 +90,8 @@ EOF
 sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 
-# 4. Setup SSL with Certbot
-echo "--- Step 4: Setting up SSL with Certbot ---"
+# 5. Setup SSL with Certbot
+echo "--- Step 5: Setting up SSL with Certbot ---"
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 
 sudo systemctl reload nginx
