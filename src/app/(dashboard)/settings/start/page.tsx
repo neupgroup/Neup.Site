@@ -30,6 +30,7 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
     const [isRebuilding, setIsRebuilding] = useState(false);
     const [isRestarting, setIsRestarting] = useState(false);
     const [steps, setSteps] = useState<DeploymentStep[]>([
+        { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...' },
         { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...' },
         { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...' },
         { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
@@ -39,6 +40,10 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
         setIsChecking(true);
         const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site?.id || '') || '';
         
+        // Check Application Directory
+        const appDirCheck = await checkPathExists(server.id, resolvedAppPath);
+        updateStep('Application Exists', appDirCheck.exists ? 'success' : 'failure', appDirCheck.exists ? `Directory found at ${resolvedAppPath}.` : 'Application directory not found.');
+
         // Check Build Status
         const buildCheck = await checkPathExists(server.id, `${resolvedAppPath}/.next`);
         updateStep('Application Built', buildCheck.exists ? 'success' : 'failure', buildCheck.exists ? 'Build folder found.' : 'Application not built on server.');
