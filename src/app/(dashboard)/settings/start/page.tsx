@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getSiteServers, type Server } from '@/actions/servers';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, RefreshCw, AlertCircle, Rocket } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -200,4 +200,3 @@ export default function StartApplicationPage() {
         </div>
     );
 }
-
