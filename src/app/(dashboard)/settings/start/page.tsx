@@ -35,31 +35,69 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
         { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...' },
         { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
     ]);
+    
+    const updateStep = (name: string, status: DeploymentStep['status'], description: string) => {
+        setSteps(prev => prev.map(step => step.name === name ? { ...step, status, description } : step));
+    };
+
+    const failSubsequentSteps = (fromStepIndex: number) => {
+        setSteps(prev => prev.map((step, index) => {
+            if (index >= fromStepIndex) {
+                return { ...step, status: 'failure', description: 'Skipped because a previous step failed.' };
+            }
+            return step;
+        }));
+    };
 
     const runChecks = useCallback(async () => {
         setIsChecking(true);
+        // Reset all to pending before starting
+        setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...'})));
+
         const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site?.id || '') || '';
         
-        // Check Application Directory
+        // Step 1: Check Application Directory
         const appDirCheck = await checkPathExists(server.id, resolvedAppPath);
-        updateStep('Application Exists', appDirCheck.exists ? 'success' : 'failure', appDirCheck.exists ? `Directory found at ${resolvedAppPath}.` : 'Application directory not found.');
+        if (!appDirCheck.exists) {
+            updateStep('Application Exists', 'failure', `Directory not found at ${resolvedAppPath}.`);
+            failSubsequentSteps(1);
+            setIsChecking(false);
+            return;
+        }
+        updateStep('Application Exists', 'success', `Directory found at ${resolvedAppPath}.`);
 
-        // Check Build Status
+        // Step 2: Check Build Status
         const buildCheck = await checkPathExists(server.id, `${resolvedAppPath}/.next`);
-        updateStep('Application Built', buildCheck.exists ? 'success' : 'failure', buildCheck.exists ? 'Build folder found.' : 'Application not built on server.');
+        if (!buildCheck.exists) {
+            updateStep('Application Built', 'failure', 'Application not built on server. The ".next" folder is missing.');
+            failSubsequentSteps(2);
+            setIsChecking(false);
+            return;
+        }
+        updateStep('Application Built', 'success', 'Build folder found.');
         
-        // Check PM2 Status
+        // Step 3: Check PM2 Status
         const pm2Check = await getPm2Processes(server.id);
         const expectedProcessName = `${site?.id}.${allocation.port}.production`;
         const isRunning = pm2Check.success && pm2Check.processes?.some(p => p.name === expectedProcessName && p.status === 'online');
-        updateStep('Application Running', isRunning ? 'success' : 'failure', isRunning ? `Process "${expectedProcessName}" is online.` : 'Application process not found or not running.');
+        if (!isRunning) {
+            updateStep('Application Running', 'failure', `Process "${expectedProcessName}" not found or not online.`);
+            failSubsequentSteps(3);
+            setIsChecking(false);
+            return;
+        }
+        updateStep('Application Running', 'success', `Process "${expectedProcessName}" is online.`);
 
-        // Check Live URL Status
+        // Step 4: Check Live URL Status
         if (site?.domains && site.domains.length > 0) {
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
-                updateStep('Website Live', res.ok ? 'success' : 'failure', res.ok ? `URL is reachable with status ${res.status}.` : `URL returned status ${res.status}.`);
+                if (res.ok) {
+                    updateStep('Website Live', 'success', `URL is reachable with status ${res.status}.`);
+                } else {
+                     updateStep('Website Live', 'failure', `URL returned status ${res.status}.`);
+                }
             } catch (e) {
                 updateStep('Website Live', 'failure', 'Could not reach the website URL.');
             }
@@ -73,10 +111,6 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
     useEffect(() => {
         runChecks();
     }, [runChecks]);
-
-    const updateStep = (name: string, status: DeploymentStep['status'], description: string) => {
-        setSteps(prev => prev.map(step => step.name === name ? { ...step, status, description } : step));
-    };
 
     const handleRebuild = async () => {
         setIsRebuilding(true);
@@ -98,10 +132,10 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
         
         try {
             const result = await runCommand(server.id, "app-start-prod");
-            if (result.success && result.logId) {
+            if (result && result.success && result.logId) {
                 router.push(`/root/servers/${result.serverId}`);
             } else {
-                throw new Error(result.error || 'Failed to initiate command.');
+                throw new Error(result?.error || 'Failed to initiate command.');
             }
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Error', description: `Failed to start application: ${e.message}` });
