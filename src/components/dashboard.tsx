@@ -39,6 +39,8 @@ import {
   Shield,
   User,
   Package,
+  Mountain,
+  UtensilsCrossed,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -98,6 +100,14 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
             <NavLink href="/news/create" currentPath={currentPath} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
             <NavLink href="/news/category" currentPath={currentPath} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
             <NavLink href="/news/featured" currentPath={currentPath} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
+            </div>
+
+            <div className="mt-4 space-y-2">
+            <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+                Tourio
+            </div>
+            <NavLink href="/tourio/experience" currentPath={currentPath} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></NavLink>
+            <NavLink href="/tourio/dish" currentPath={currentPath} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></NavLink>
             </div>
 
             {/* Site Section */}
