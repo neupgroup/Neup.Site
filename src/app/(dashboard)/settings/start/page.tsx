@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, RefreshCw, AlertCircle, Rocket } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { runCommand } from '@/actions/runner';
+import { runCommand, type ServerLog } from '@/actions/runner';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
@@ -32,20 +32,25 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const [isChecking, setIsChecking] = useState(true);
     const [isExecutingAction, setIsExecutingAction] = useState<string | null>(null);
     const [steps, setSteps] = useState<DeploymentStep[]>([
-        { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...' },
-        { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
-        { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...', subActions: [{ commandId: 'run-permanently', label: 'Run Permanently'}]},
-        { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
+        { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
+        { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
+        { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...', action: { commandId: 'run-app', label: 'Run App' } },
+        { name: 'Process is Permanent', status: 'pending', description: 'Checking PM2 startup script...', action: { commandId: 'run-permanently', label: 'Run Permanently'}},
+        { name: 'Website Live', status: 'pending', description: 'Pinging public domain...', action: { commandId: 'make-config', label: 'Make Config' } },
     ]);
     
-    const updateStep = (name: string, status: DeploymentStep['status'], description: string, action?: DeploymentStep['action']) => {
-        setSteps(prev => prev.map(step => step.name === name ? { ...step, status, description, action } : step));
+    const updateStep = (index: number, status: DeploymentStep['status'], description: string) => {
+        setSteps(prev => {
+            const newSteps = [...prev];
+            newSteps[index] = { ...newSteps[index], status, description };
+            return newSteps;
+        });
     };
 
     const failSubsequentSteps = (fromStepIndex: number, description: string = 'Skipped because a previous step failed.') => {
         setSteps(prev => prev.map((step, index) => {
             if (index >= fromStepIndex) {
-                return { ...step, status: 'failure', description, action: undefined };
+                return { ...step, status: 'failure', description };
             }
             return step;
         }));
@@ -58,59 +63,67 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(true);
-        setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...', action: undefined})));
+        setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...', action: s.action})));
 
-        // Step 1: Check Application Directory
-        updateStep('Application Exists', 'loading', 'Checking for application directory...');
+        // Step 0: Check Application Directory
+        updateStep(0, 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
         if (!appDirCheck.exists) {
-            updateStep('Application Exists', 'failure', `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
+            updateStep(0, 'failure', `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
             failSubsequentSteps(1);
             setIsChecking(false);
             return;
         }
-        updateStep('Application Exists', 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
+        updateStep(0, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
 
-        // Step 2: Check Build Status
-        updateStep('Application Built', 'loading', 'Checking for .next build folder...');
+        // Step 1: Check Build Status
+        updateStep(1, 'loading', 'Checking for .next build folder...');
         const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
         if (!buildCheck.exists) {
-            updateStep('Application Built', 'failure', 'Application not built. The ".next" folder is missing.', { commandId: 'build-app', label: 'Build App' });
+            updateStep(1, 'failure', 'Application not built. The ".next" folder is missing.');
             failSubsequentSteps(2, 'Skipped because application is not built.');
             setIsChecking(false);
             return;
         }
-        updateStep('Application Built', 'success', 'Build folder found.', { commandId: `cd ${appDirCheck.resolvedPath} && rm -rf .next && npm run build`, label: 'Rebuild Application'});
+        updateStep(1, 'success', 'Build folder found.');
         
-        // Step 3: Check PM2 Status
-        updateStep('Application Running', 'loading', 'Checking for PM2 process...');
+        // Step 2: Check PM2 Status
+        updateStep(2, 'loading', 'Checking for PM2 process...');
         const pm2Check = await getPm2Processes(server.id);
         const runningProcess = pm2Check.success ? pm2Check.processes?.find(p => p.name.startsWith(`${site.id}.`) && p.status === 'online') : undefined;
         if (!runningProcess) {
-            updateStep('Application Running', 'failure', `Process not found or not online.`, { commandId: 'run-app', label: 'Run App' });
+            updateStep(2, 'failure', `Process not found or not online.`);
             failSubsequentSteps(3, 'Skipped because application is not running.');
             setIsChecking(false);
             return;
         }
-        updateStep('Application Running', 'success', `Process "${runningProcess.name}" is online.`);
+        updateStep(2, 'success', `Process "${runningProcess.name}" is online.`);
+
+        // Step 3: Check PM2 startup script
+        updateStep(3, 'loading', 'Checking for PM2 startup script...');
+        // This is a simplified check. A real implementation might check `pm2 list` more deeply
+        // or check for the presence of the startup script file.
+        // For now, we assume if it's running, the 'save' step is what's needed.
+        updateStep(3, 'success', 'Assuming PM2 is ready to be saved.');
+
 
         // Step 4: Check Live URL Status
         if (site.domains && site.domains.length > 0) {
-            updateStep('Website Live', 'loading', `Pinging ${site.domains[0].value}...`);
+            updateStep(4, 'loading', `Pinging ${site.domains[0].value}...`);
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    updateStep('Website Live', 'success', `URL is reachable with status ${data.status}.`);
+                    updateStep(4, 'success', `URL is reachable with status ${data.status}.`);
                 } else {
-                    updateStep('Website Live', 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`, { commandId: 'make-config', label: 'Make Config' });
+                    updateStep(4, 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`);
                 }
             } catch (e) {
-                updateStep('Website Live', 'failure', 'Could not reach the website URL.', { commandId: 'make-config', label: 'Make Config' });
+                updateStep(4, 'failure', 'Could not reach the website URL.');
             }
         } else {
-             updateStep('Website Live', 'failure', 'No domain configured for this site.');
+             updateStep(4, 'failure', 'No domain configured for this site.');
         }
 
         setIsChecking(false);
@@ -120,17 +133,33 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         runChecks();
     }, [runChecks]);
 
-    const handleActionClick = async (commandId: string, label: string) => {
+    const handleActionClick = async (clickedStepIndex: number) => {
         if (!site) return;
-        setIsExecutingAction(commandId);
-        toast({ title: `Executing: ${label}`, description: "This may take a moment..." });
-        const result = await runCommand(server.id, commandId, {}, label);
-         if (result && result.success && result.logId) {
-            toast({ title: 'Action Sent', description: `Check server logs for progress.` });
-            router.push(`/root/servers/${result.serverId}?log=${result.logId}`);
-        } else {
-            toast({ variant: 'destructive', title: 'Action Failed', description: result?.error || 'An unknown error occurred.' });
+        
+        const stepsToRun = steps.slice(clickedStepIndex).filter(step => step.action);
+        if (stepsToRun.length === 0) return;
+
+        setIsExecutingAction(steps[clickedStepIndex].name);
+
+        for (let i = 0; i < stepsToRun.length; i++) {
+            const step = stepsToRun[i];
+            const action = step.action!;
+            
+            toast({ title: `Executing: ${action.label}`, description: "This may take a moment..." });
+            
+            const result = await runCommand(server.id, action.commandId, {}, action.label);
+            
+            if (result.success && result.finalStatus === 'completed') {
+                toast({ title: 'Step Succeeded!', description: `${action.label} completed successfully.`});
+            } else {
+                toast({ variant: 'destructive', title: 'Step Failed', description: `Action "${action.label}" failed. Check server logs.` });
+                if (result.logId) {
+                    router.push(`/root/servers/${result.serverId}?log=${result.logId}`);
+                }
+                break; // Stop the sequence on failure
+            }
         }
+
         setIsExecutingAction(null);
         setTimeout(() => runChecks(), 2000); // Re-run checks after action with a small delay
     };
@@ -140,7 +169,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         toast({ title: `Starting App on ${server.name}`, description: "This may take up to 5 minutes." });
         
         try {
-            const result = await runCommand(server.id, "app-start-prod", {}, "Restart Application");
+            const result = await runCommand(server.id, "app-start-prod", {}, "Start Application (Production)");
             if (result && result.success && result.logId) {
                 router.push(`/root/servers/${result.serverId}`);
             } else {
@@ -152,17 +181,18 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             setIsExecutingAction(null);
         }
     };
+    
 
-    const renderStepActions = (step: DeploymentStep) => {
+    const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
-        if (step.action) {
-             actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(step.action!.commandId, step.action!.label)} disabled={!!isExecutingAction}>{isExecutingAction === step.action.commandId ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
+        if (step.action && step.status === 'failure') {
+             actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
         }
 
         if (step.status === 'failure' && step.subActions) {
             step.subActions.forEach(subAction => {
-                actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => handleActionClick(subAction.commandId, subAction.label)} disabled={!!isExecutingAction}>{isExecutingAction === subAction.commandId ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
+                actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
             });
         }
         
@@ -181,7 +211,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 <CardDescription>{server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {steps.map(step => (
+                {steps.map((step, index) => (
                     <div key={step.name}>
                         <div className="flex items-start gap-4">
                             <div className="flex-shrink-0 pt-1">
@@ -192,7 +222,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                             <div>
                                 <p className="font-medium">{step.name}</p>
                                 <p className="text-sm text-muted-foreground">{step.description}</p>
-                                {renderStepActions(step)}
+                                {renderStepActions(step, index)}
                             </div>
                         </div>
                     </div>

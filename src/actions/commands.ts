@@ -40,21 +40,32 @@ async function createBuiltInCommands() {
 set -e
 echo "--- Starting Application Deployment ---"
 
+APP_NAME="{{universal.site_id}}.{{universal.server_reservedPort}}"
+SWAP_FILE="/swapfile"
+
 cleanup() {
-    echo "--- Cleaning up swap file ---"
-    if [ -f /swapfile ]; then
-        sudo swapoff /swapfile
-        sudo rm -f /swapfile
+    echo "--- Running Cleanup ---"
+    
+    echo "Stopping and deleting PM2 process if it exists..."
+    pm2 delete "$APP_NAME" || echo "PM2 process $APP_NAME did not exist."
+    pm2 save
+    
+    echo "Removing swap file..."
+    if [ -f "$SWAP_FILE" ]; then
+        sudo swapoff "$SWAP_FILE"
+        sudo rm -f "$SWAP_FILE"
         echo "Swap file removed."
     fi
 }
-trap cleanup EXIT
+
+# Trap ERR to call cleanup function on any command failure
+trap cleanup ERR
 
 echo "--- Step 1: Creating 4GB swap file ---"
-sudo fallocate -l 4G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
+sudo fallocate -l 4G "$SWAP_FILE"
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE"
+sudo swapon "$SWAP_FILE"
 echo "Swap file created and activated."
 
 echo "--- Step 2: Building application in {{universal.server_appPath}} ---"
@@ -63,10 +74,12 @@ npm install
 npm run build
 
 echo "--- Step 3: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
-pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env
+pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "$APP_NAME" --update-env
+
+echo "--- Step 4: Saving PM2 process list ---"
 pm2 save
 
-echo "--- Step 4: Configuring Nginx reverse proxy ---"
+echo "--- Step 5: Configuring Nginx reverse proxy ---"
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
@@ -88,10 +101,14 @@ EOF
 sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 
-echo "--- Step 5: Setting up SSL with Certbot ---"
+echo "--- Step 6: Setting up SSL with Certbot ---"
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 
 sudo systemctl reload nginx
+
+# Final cleanup of swap file on success
+cleanup
+
 echo "--- Deployment Complete ---"
 </server.ubuntuBashProcessor>
                 `,
@@ -104,7 +121,7 @@ echo "--- Deployment Complete ---"
         { id: 'install-requisites', data: { name: "Install Requisites", description: "Installs Node.js and npm on an Ubuntu server.", commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", type: 'updation', danger: 'mid' } },
         { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm install", type: 'updation', danger: 'low' } },
         { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm run build", type: 'updation', danger: 'low' } },
-        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2.", commandTemplate: "pm2 start \"npm start -- -p {{universal.server_reservedPort}}\" --name \"{{universal.site_id}}.{{universal.server_reservedPort}}\" --update-env", type: 'updation', danger: 'mid' } },
+        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2.", commandTemplate: `pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env`, type: 'updation', danger: 'mid', allocatesPort: true } },
         { id: 'run-permanently', data: { name: "Run Permanently", description: "Saves the current PM2 process list to persist after reboots.", commandTemplate: "pm2 save", type: 'updation', danger: 'low' } },
         { id: 'make-config', data: { name: "Make Nginx Config", description: "Creates and enables an Nginx config file for the site.", commandTemplate: `
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
@@ -129,7 +146,7 @@ sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/s
 sudo nginx -t
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 sudo systemctl reload nginx
-        `, type: 'updation', danger: 'mid' } },
+        `, type: 'updation', danger: 'mid', allocatesPort: true } },
     ];
 
     for (const cmd of commandsToCreate) {

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
@@ -26,14 +27,15 @@ export async function runCommand(
     serverId: string,
     commandIdentifier: string,
     processedParams: Record<string, any> = {},
-) {
+    commandNameToLog?: string,
+): Promise<{ success: boolean; error?: string; logId?: string; finalStatus?: ServerLog['status'] }> {
     const isCommandId = !commandIdentifier.includes(' ') && !commandIdentifier.includes('\n');
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
     let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
     
     let confidentialParamKeys: string[] = [];
     let allocatesPort = false;
-    let commandName: string | undefined;
+    let commandName: string | undefined = commandNameToLog;
 
     if (commandId) {
         const commandDetails = await getServerCommand(commandId);
@@ -41,7 +43,9 @@ export async function runCommand(
             const cmd = commandDetails.command;
             rawCommandTemplate = cmd.commandTemplate;
             allocatesPort = cmd.allocatesPort || false;
-            commandName = cmd.name;
+            if (!commandName) {
+                commandName = cmd.name;
+            }
             confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
         } else {
              await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
@@ -118,7 +122,7 @@ export async function runCommand(
             }
         } catch (scriptError: any) {
             await logErrorToFirestore({ message: `Pre-execution script failed: ${scriptError.message}`, source: 'runCommand.preExec' });
-            return;
+            return { success: false, error: 'Pre-execution script failed.'};
         }
     }
     
@@ -186,23 +190,24 @@ BASH_COMMAND_EOF
     const finalCommand = runtimeResolutionScript;
 
     const ssh = new NodeSSH();
-    let finalOutput = ''; 
+    let finalOutput = '';
+    let finalStatus: ServerLog['status'] = 'failed';
 
     try {
-        await updateServerLog(logId, { status: 'ongoing', output: `${finalOutput}Connecting to ${server.publicIp}...` });
+        await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
         revalidatePath(`/root/servers/${serverId}`);
 
         await ssh.connect({ host: server.publicIp, username: server.username || 'root', privateKey: server.privateKey });
         
-        await updateServerLog(logId, { output: `${finalOutput}Connection successful. Running command...` });
+        await updateServerLog(logId, { output: `Connection successful. Running command...` });
 
         const result = await ssh.execCommand(finalCommand);
         
-        finalOutput += result.stdout ? `\n\nSTDOUT:\n${result.stdout}\n` : '';
+        finalOutput += result.stdout ? `STDOUT:\n${result.stdout}\n` : '';
         finalOutput += result.stderr ? `\nSTDERR:\n${result.stderr}\n` : '';
         finalOutput += `\nExited with code: ${result.code}`;
         
-        const finalStatus = result.code === 0 ? 'completed' : 'failed';
+        finalStatus = result.code === 0 ? 'completed' : 'failed';
         await updateServerLog(logId, { status: finalStatus, output: finalOutput });
 
     } catch (error: any) {
@@ -212,8 +217,8 @@ BASH_COMMAND_EOF
         } else if (error.message.includes('Connection timed out')) {
             finalOutput = `SSH Connection Timed Out. Server might be unreachable or IP is incorrect. Error: ${error.message}`;
         }
-
-        await updateServerLog(logId, { status: 'failed', output: `Error during command execution: ${finalOutput}` });
+        finalStatus = 'failed';
+        await updateServerLog(logId, { status: finalStatus, output: `Error during command execution: ${finalOutput}` });
         await logErrorToFirestore({ message: `Runner Error for server ${serverId}, log ${logId}:`, stack: error.stack, source: 'runCommand.main' });
     } finally {
         if(ssh.isConnected()) {
@@ -222,6 +227,5 @@ BASH_COMMAND_EOF
         revalidatePath(`/root/servers/${serverId}`);
     }
     
-    return { success: true, logId };
+    return { success: finalStatus === 'completed', logId, finalStatus };
 }
-
