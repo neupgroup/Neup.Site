@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
 import type { Site } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
-import { checkPathExists } from '@/actions/server/management/check-build';
+import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
 
 interface DeploymentStep {
@@ -147,9 +147,9 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         currentSteps[3].status = 'loading';
         currentSteps[3].description = 'Checking Nginx configuration...';
         setSteps([...currentSteps]);
-        const nginxConfigAvailablePath = `/etc/nginx/sites-available/${site.id}.conf`;
-        const nginxConfigEnabledPath = `/etc/nginx/sites-enabled/${site.id}.conf`;
-
+        const nginxConfigAvailablePath = `/etc/nginx/sites-available/{{universal.site_id}}.conf`;
+        const nginxConfigEnabledPath = `/etc/nginx/sites-enabled/{{universal.site_id}}.conf`;
+        
         const [availableCheck, enabledCheck] = await Promise.all([
             checkPathExists(server.id, nginxConfigAvailablePath),
             checkPathExists(server.id, nginxConfigEnabledPath)
@@ -203,6 +203,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setSteps([...currentSteps]);
 
         setIsChecking(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [server.id, site]);
 
     useEffect(() => {
@@ -257,7 +258,15 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     };
     
     const handleRebuild = async () => {
-        handleActionClick(1);
+        setIsExecutingAction('Application Built');
+        const result = await rebuildApplication(server.id);
+        if (result.success) {
+            toast({ title: 'Rebuild Successful' });
+            runChecks();
+        } else {
+            toast({ variant: 'destructive', title: 'Rebuild Failed', description: result.error });
+        }
+        setIsExecutingAction(null);
     };
 
     const handleFullRestart = async () => {
@@ -292,7 +301,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
 
-        const canShowFixAction = (index === 0 || (index > 0 && steps[index-1].status === 'success')) && step.status === 'failure';
+        const canShowFixAction = (index === 0 || (index > 0 && steps[index - 1].status === 'success')) && step.status === 'failure';
         
         if (canShowFixAction) {
             if (step.action) {

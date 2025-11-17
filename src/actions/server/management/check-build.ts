@@ -6,15 +6,15 @@ import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
 import { getSite } from '@/actions/editor/site';
 
-async function resolveAppPath(serverId: string): Promise<string> {
-    const { server, error } = await getPrivateServerDetails(serverId);
-    if (error || !server) {
-        throw new Error('Could not retrieve server details for path resolution.');
+async function resolveAppPath(serverId: string): Promise<{ resolvedPath: string, error?: string }> {
+    const { server, error: serverError } = await getPrivateServerDetails(serverId);
+    if (serverError || !server) {
+        return { resolvedPath: '', error: 'Could not retrieve server details for path resolution.' };
     }
 
-    const { site } = await getSite();
-    if (!site) {
-        throw new Error('Could not retrieve site details for path resolution.');
+    const { site, error: siteError } = await getSite();
+    if (siteError || !site) {
+        return { resolvedPath: '', error: 'Could not retrieve site details for path resolution.' };
     }
 
     let resolvedPath = server.appPath || `/var/www/{{universal.site_id}}`;
@@ -22,20 +22,20 @@ async function resolveAppPath(serverId: string): Promise<string> {
     const variables: Record<string, string> = {
         '{{universal.site_id}}': site.id,
         '{{server.username}}': server.username || 'root',
-        // Add any other variables that might appear in appPath
     };
 
     for (const [key, value] of Object.entries(variables)) {
-        resolvedPath = resolvedPath.replace(new RegExp(key, 'g'), value);
+        resolvedPath = resolvedPath.replace(new RegExp(key.replace(/\{|\}/g, '\\$&'), 'g'), value);
     }
     
-    return resolvedPath;
+    return { resolvedPath };
 }
 
 
 export async function checkPathExists(serverId: string, path?: string): Promise<{ exists: boolean; error?: string, resolvedPath?: string }> {
   const ssh = new NodeSSH();
   let pathToCheck = path;
+  let resolvedPathForOutput = path;
 
   try {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -44,8 +44,24 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
     }
     
     if (!pathToCheck) {
-        pathToCheck = await resolveAppPath(serverId);
+        const { resolvedPath, error: resolveError } = await resolveAppPath(serverId);
+        if (resolveError) {
+            throw new Error(resolveError);
+        }
+        pathToCheck = resolvedPath;
     }
+
+    // Resolve {{universal.site_id}} if it exists in the path
+    if (pathToCheck.includes('{{universal.site_id}}')) {
+        const { site } = await getSite();
+        if (site) {
+            pathToCheck = pathToCheck.replace(/\{\{universal\.site_id\}\}/g, site.id);
+        } else {
+            throw new Error('Could not resolve {{universal.site_id}} because site context is not available.');
+        }
+    }
+    resolvedPathForOutput = pathToCheck;
+
 
     await ssh.connect({
       host: server.publicIp,
@@ -53,9 +69,9 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
       privateKey: server.privateKey,
     });
 
-    const result = await ssh.execCommand(`test -d '${pathToCheck}'`);
+    const result = await ssh.execCommand(`test -e '${pathToCheck}'`);
     
-    return { exists: result.code === 0, resolvedPath: pathToCheck };
+    return { exists: result.code === 0, resolvedPath: resolvedPathForOutput };
 
   } catch (error: any) {
     await logErrorToFirestore({
@@ -63,7 +79,7 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
       stack: error.stack,
       source: 'checkPathExists',
     });
-    return { exists: false, error: error.message, resolvedPath: pathToCheck };
+    return { exists: false, error: error.message, resolvedPath: resolvedPathForOutput };
   } finally {
     if (ssh.isConnected()) {
       ssh.dispose();
@@ -75,7 +91,11 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
     const ssh = new NodeSSH();
     let appPath = '';
     try {
-        appPath = await resolveAppPath(serverId);
+        const { resolvedPath, error: resolveError } = await resolveAppPath(serverId);
+        if (resolveError) {
+            throw new Error(resolveError);
+        }
+        appPath = resolvedPath;
 
         const { server, error: serverError } = await getPrivateServerDetails(serverId);
         if (serverError || !server) {
