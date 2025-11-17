@@ -154,7 +154,6 @@ cd {{universal.server_appPath}} && npm run build
 </server.ubuntuBashProcessor>
         `, type: 'updation', danger: 'low' } },
         { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2, removing any old instances first.", commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env`, type: 'updation', danger: 'mid', allocatesPort: true } },
-        { id: 'run-permanently', data: { name: "Run Permanently", description: "Saves the current PM2 process list to persist after reboots.", commandTemplate: "pm2 save", type: 'updation', danger: 'low' } },
         { id: 'make-config', data: { name: "Make Nginx Config", description: "Creates and enables an Nginx config file for the site.", commandTemplate: `
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
@@ -340,5 +339,3 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
 
 
     
-
-

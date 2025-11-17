@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback, use } from 'react';
@@ -35,7 +34,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
         { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
         { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...', action: { commandId: 'run-app', label: 'Run App' } },
-        { name: 'Process is Permanent', status: 'pending', description: 'Checking PM2 startup script...', action: { commandId: 'run-permanently', label: 'Run Permanently'}},
         { name: 'Nginx Config', status: 'pending', description: 'Checking for Nginx configuration...', action: { commandId: 'make-config', label: 'Make Config' } },
         { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
     ]);
@@ -145,59 +143,53 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setSteps([...currentSteps]);
 
 
-        // Step 3: Check PM2 startup script
+        // Step 3: Check Nginx Config
         currentSteps[3].status = 'loading';
-        currentSteps[3].description = 'Checking for PM2 startup script...';
-        setSteps([...currentSteps]);
-        updateStep(3, 'success', 'Assuming PM2 is ready to be saved.');
-
-        // Step 4: Check Nginx Config
-        currentSteps[4].status = 'loading';
-        currentSteps[4].description = 'Checking Nginx configuration...';
+        currentSteps[3].description = 'Checking Nginx configuration...';
         setSteps([...currentSteps]);
         const nginxConfigPath = `/etc/nginx/sites-enabled/${site.id}.conf`;
         const nginxCheck = await checkPathExists(server.id, nginxConfigPath);
         if (!nginxCheck.exists) {
-             currentSteps[4].status = 'failure';
-             currentSteps[4].description = 'Nginx config file not found.';
+             currentSteps[3].status = 'failure';
+             currentSteps[3].description = 'Nginx config file not found.';
              setSteps([...currentSteps]);
-             failSubsequentSteps(5, 'Skipped because Nginx is not configured.');
+             failSubsequentSteps(4, 'Skipped because Nginx is not configured.');
              setIsChecking(false);
              return;
         }
-        currentSteps[4].status = 'success';
-        currentSteps[4].description = 'Nginx config file found.';
+        currentSteps[3].status = 'success';
+        currentSteps[3].description = 'Nginx config file found.';
         setSteps([...currentSteps]);
 
 
-        // Step 5: Check Live URL Status
+        // Step 4: Check Live URL Status
         if (site.domains && site.domains.length > 0) {
-            currentSteps[5].status = 'loading';
-            currentSteps[5].description = `Pinging ${site.domains[0].value}...`;
+            currentSteps[4].status = 'loading';
+            currentSteps[4].description = `Pinging ${site.domains[0].value}...`;
             setSteps([...currentSteps]);
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    currentSteps[5].status = 'success';
-                    currentSteps[5].description = `URL is reachable with status ${data.status}.`;
+                    currentSteps[4].status = 'success';
+                    currentSteps[4].description = `URL is reachable with status ${data.status}.`;
                 } else {
-                    currentSteps[5].status = 'failure';
-                    currentSteps[5].description = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
+                    currentSteps[4].status = 'failure';
+                    currentSteps[4].description = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
                 }
             } catch (e) {
-                currentSteps[5].status = 'failure';
-                currentSteps[5].description = 'Could not reach the website URL.';
+                currentSteps[4].status = 'failure';
+                currentSteps[4].description = 'Could not reach the website URL.';
             }
         } else {
-             currentSteps[5].status = 'failure';
-             currentSteps[5].description = 'No domain configured for this site.';
+             currentSteps[4].status = 'failure';
+             currentSteps[4].description = 'No domain configured for this site.';
         }
         setSteps([...currentSteps]);
 
         setIsChecking(false);
-    }, [server.id, site]);
+    }, [server.id, site, steps]);
 
     useEffect(() => {
         runChecks();
@@ -250,6 +242,10 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setTimeout(() => runChecks(), 2000); // Re-run checks after all actions with a small delay
     };
 
+    const handleRebuild = async () => {
+        handleActionClick(1);
+    };
+
     const handleFullRestart = async () => {
         setIsExecutingAction('app-start-prod');
         toast({ title: `Starting App on ${server.name}`, description: "This may take up to 5 minutes." });
@@ -274,14 +270,10 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
     };
     
-    const handleRebuild = async () => {
-        handleActionClick(1);
-    };
-
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
-        if (index === 1 && step.status !== 'pending') { // Always show rebuild for step 2 if not pending
+        if (index === 1 && steps[0].status === 'success' && step.status !== 'pending') { // Always show rebuild for step 2 if not pending
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
 
