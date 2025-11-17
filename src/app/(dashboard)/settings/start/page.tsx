@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback, use } from 'react';
@@ -120,7 +121,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (!site) return;
         setIsExecutingAction(commandId);
         toast({ title: `Executing: ${label}`, description: "This may take a moment..." });
-        const result = await runCommand(server.id, commandId);
+        const result = await runCommand(server.id, commandId, {}, label);
          if (result && result.success && result.logId) {
             toast({ title: 'Action Sent', description: `Check server logs for progress.` });
             router.push(`/root/servers/${result.serverId}?log=${result.logId}`);
@@ -136,7 +137,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         toast({ title: `Starting App on ${server.name}`, description: "This may take up to 5 minutes." });
         
         try {
-            const result = await runCommand(server.id, "app-start-prod");
+            const result = await runCommand(server.id, "app-start-prod", {}, "Restart Application");
             if (result && result.success && result.logId) {
                 router.push(`/root/servers/${result.serverId}`);
             } else {
@@ -262,3 +263,6 @@ export default function StartApplicationPage() {
     );
 }
 
+
+
+    
