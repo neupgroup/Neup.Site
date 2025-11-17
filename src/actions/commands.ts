@@ -27,15 +27,19 @@ import { getConfigureNginxCommand } from './server/management/configure-nginx';
 import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
 
 async function createBuiltInCommands() {
-    const buildAndStartCommand = {
-        name: "Start Next.js App (Production)",
-        description: "Builds, starts, and configures a Next.js app on an Ubuntu server using PM2 and Nginx with SSL.",
-        commandTemplate: `
+    const { firestore } = initializeFirebase();
+
+    const commandsToCreate = [
+        {
+            id: 'app-start-prod',
+            data: {
+                name: "Start Next.js App (Production)",
+                description: "Builds, starts, and configures a Next.js app on an Ubuntu server using PM2 and Nginx with SSL.",
+                commandTemplate: `
 <server.ubuntuBashProcessor>
 set -e
 echo "--- Starting Application Deployment ---"
 
-# Function to clean up swap file
 cleanup() {
     echo "--- Cleaning up swap file ---"
     if [ -f /swapfile ]; then
@@ -44,11 +48,8 @@ cleanup() {
         echo "Swap file removed."
     fi
 }
-
-# Trap ensures cleanup runs on script exit, error, or interruption
 trap cleanup EXIT
 
-# 1. Create and enable 4GB swap file
 echo "--- Step 1: Creating 4GB swap file ---"
 sudo fallocate -l 4G /swapfile
 sudo chmod 600 /swapfile
@@ -56,18 +57,15 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 echo "Swap file created and activated."
 
-# 2. Build the application
 echo "--- Step 2: Building application in {{universal.server_appPath}} ---"
 cd {{universal.server_appPath}}
 npm install
 npm run build
 
-# 3. Start with PM2
 echo "--- Step 3: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
 pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}.production" --update-env
 pm2 save
 
-# 4. Configure Nginx & SSL
 echo "--- Step 4: Configuring Nginx reverse proxy ---"
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
@@ -90,32 +88,60 @@ EOF
 sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 
-# 5. Setup SSL with Certbot
 echo "--- Step 5: Setting up SSL with Certbot ---"
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 
 sudo systemctl reload nginx
-
 echo "--- Deployment Complete ---"
 </server.ubuntuBashProcessor>
-        `,
-        parameters: [],
-        allocatesPort: true,
-        type: 'creation',
-        danger: 'high',
-    };
+                `,
+                parameters: [],
+                allocatesPort: true,
+                type: 'creation',
+                danger: 'high',
+            }
+        },
+        { id: 'install-requisites', data: { name: "Install Requisites", description: "Installs Node.js and npm on an Ubuntu server.", commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", type: 'updation', danger: 'mid' } },
+        { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm install", type: 'updation', danger: 'low' } },
+        { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm run build", type: 'updation', danger: 'low' } },
+        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2.", commandTemplate: "pm2 start \"npm start -- -p {{universal.server_reservedPort}}\" --name \"{{universal.site_id}}.{{universal.server_reservedPort}}.production\" --update-env", type: 'updation', danger: 'mid' } },
+        { id: 'run-permanently', data: { name: "Run Permanently", description: "Saves the current PM2 process list to persist after reboots.", commandTemplate: "pm2 save", type: 'updation', danger: 'low' } },
+        { id: 'make-config', data: { name: "Make Nginx Config", description: "Creates and enables an Nginx config file for the site.", commandTemplate: `
+sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
+server {
+    listen 80;
+    server_name {{universal.site_domain}};
 
-    try {
-        const { firestore } = initializeFirebase();
-        // Use a specific ID to prevent duplicates
-        const docRef = doc(firestore, 'serverCommands', 'app-start-prod');
-        await setDoc(docRef, {
-            ...buildAndStartCommand,
-            createdAt: serverTimestamp(),
-        });
-        console.log("Upserted built-in command: app-start-prod");
-    } catch(e) {
-        console.error("Failed to create built-in command", e);
+    location / {
+        proxy_pass http://localhost:{{universal.server_reservedPort}};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+EOF
+sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
+sudo systemctl reload nginx
+        `, type: 'updation', danger: 'mid' } },
+    ];
+
+    for (const cmd of commandsToCreate) {
+        try {
+            const docRef = doc(firestore, 'serverCommands', cmd.id);
+            await setDoc(docRef, {
+                ...cmd.data,
+                createdAt: serverTimestamp(),
+            }, { merge: true });
+        } catch(e) {
+            console.error(`Failed to upsert built-in command "${cmd.id}"`, e);
+        }
     }
 }
 
@@ -261,3 +287,4 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
         return { success: false, error: 'Failed to delete command.' };
     }
 }
+
