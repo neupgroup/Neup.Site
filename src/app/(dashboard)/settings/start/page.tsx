@@ -189,7 +189,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setSteps([...currentSteps]);
 
         setIsChecking(false);
-    }, [server.id, site, steps]);
+    }, [server.id, site]);
 
     useEffect(() => {
         runChecks();
@@ -278,15 +278,15 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         // Only show fix actions if previous steps succeeded and current one failed
-        const canShowFixAction = (index === 0 && step.status === 'failure') || (index > 0 && steps[index-1].status === 'success' && step.status === 'failure');
-
+        const canShowFixAction = (index === 0 || (index > 0 && steps[index-1].status === 'success')) && step.status === 'failure';
+        
         if (canShowFixAction) {
             if (step.action) {
                  actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
             }
             if (step.subActions) {
                 step.subActions.forEach(subAction => {
-                    actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
+                    actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => runCommand(server.id, subAction.commandId, {})} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
                 });
             }
         }
