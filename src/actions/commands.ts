@@ -76,8 +76,8 @@ npm install
 echo "--- Step 4: Building application ---"
 npm run build
 
-echo "--- Step 5: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
-pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "$APP_NAME" --update-env
+echo "--- Step 5: Starting application with PM2 on port {{universal.app_port}} ---"
+pm2 start "npm start -- -p {{universal.app_port}}" --name "$APP_NAME" --update-env
 
 echo "--- Step 6: Saving PM2 process list ---"
 pm2 save
@@ -89,7 +89,7 @@ server {
     server_name {{universal.site_domain}};
 
     location / {
-        proxy_pass http://localhost:{{universal.server_reservedPort}};
+        proxy_pass http://localhost:{{universal.app_port}};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -158,13 +158,13 @@ cd {{universal.server_appPath}} && npm run build
         { id: 'start-app-and-configure-proxy', data: { 
             name: "Start App & Configure Proxy", 
             description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx.",
-            commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}" --update-env && pm2 save && sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
+            commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env && pm2 save && sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
     server_name {{universal.site_domain}};
 
     location / {
-        proxy_pass http://localhost:{{universal.server_reservedPort}};
+        proxy_pass http://localhost:{{universal.app_port}};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

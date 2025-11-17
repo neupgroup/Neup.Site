@@ -16,7 +16,7 @@ export const serverCommandSchema = z.object({
   commandTemplate: z.string().min(1, 'Command template is required.'),
   parameters: z.array(commandParameterSchema).optional(),
   allocatesPort: z.boolean().optional().default(false),
-  portToReserve: z.string().optional(),
+  portToReserve: z.string().optional(), // This field is deprecated but kept for schema compatibility
   type: z.enum(['creation', 'destruction', 'updation', 'view']).default('view'),
   danger: z.enum(['low', 'mid', 'high']).default('low'),
   createdAt: z.string().optional().nullable(),

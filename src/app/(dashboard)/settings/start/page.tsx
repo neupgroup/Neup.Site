@@ -60,59 +60,50 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const runChecks = useCallback(async () => {
         if (!site) {
             setSteps(prev => prev.map(s => ({...s, status: 'failure', description: 'Site context not available.'})));
+            setIsChecking(false);
             return;
         }
 
         setIsChecking(true);
-        const currentSteps = steps.map(s => ({ ...s, status: 'pending', description: 'Checking...' } as DeploymentStep));
+        const currentSteps = [
+            { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
+            { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
+            { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Start App & Configure Proxy' } },
+            { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
+        ];
         setSteps(currentSteps);
 
-
         // Step 0: Check Application Directory
-        currentSteps[0].status = 'loading';
-        currentSteps[0].description = 'Checking for application directory...';
-        setSteps([...currentSteps]);
+        updateStep(0, 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
         if (!appDirCheck.exists || appDirCheck.error) {
-            currentSteps[0].status = 'failure';
-            currentSteps[0].description = appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`;
-            setSteps([...currentSteps]);
+            updateStep(0, 'failure', appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
             failSubsequentSteps(1);
             setIsChecking(false);
             return;
         }
-        currentSteps[0].status = 'success';
-        currentSteps[0].description = `Directory found at ${appDirCheck.resolvedPath}.`;
-        setSteps([...currentSteps]);
+        updateStep(0, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
 
 
         // Step 1: Check Build Status
-        currentSteps[1].status = 'loading';
-        currentSteps[1].description = 'Checking for .next build folder...';
-        setSteps([...currentSteps]);
+        updateStep(1, 'loading', 'Checking for .next build folder...');
         const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
         if (!buildCheck.exists) {
-            currentSteps[1].status = 'failure';
-            currentSteps[1].description = 'Application not built. The ".next" folder is missing.';
-            setSteps([...currentSteps]);
+            updateStep(1, 'failure', 'Application not built. The ".next" folder is missing.');
             failSubsequentSteps(2, 'Skipped because application is not built.');
             setIsChecking(false);
             return;
         }
-        currentSteps[1].status = 'success';
-        currentSteps[1].description = 'Build folder found.';
-        setSteps([...currentSteps]);
+        updateStep(1, 'success', 'Build folder found.');
 
         
         // Step 2: Check PM2 and Nginx Status
-        currentSteps[2].status = 'loading';
-        currentSteps[2].description = 'Checking for PM2 process and Nginx config...';
-        setSteps([...currentSteps]);
+        updateStep(2, 'loading', 'Checking for PM2 process and Nginx config...');
         
         const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
             getPm2Processes(server.id),
-            checkPathExists(server.id, `/etc/nginx/sites-available/${site.id}.conf`),
-            checkPathExists(server.id, `/etc/nginx/sites-enabled/${site.id}.conf`)
+            checkPathExists(server.id, `/etc/nginx/sites-available/{{universal.site_id}}.conf`),
+            checkPathExists(server.id, `/etc/nginx/sites-enabled/{{universal.site_id}}.conf`)
         ]);
 
         let pm2Ok = false;
@@ -143,44 +134,32 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         if (pm2Ok && nginxOk) {
-            currentSteps[2].status = 'success';
-            currentSteps[2].description = 'Application is running and Nginx is configured.';
+            updateStep(2, 'success', 'Application is running and Nginx is configured.');
         } else {
-            currentSteps[2].status = 'failure';
-            currentSteps[2].description = stepDescription.trim();
+            updateStep(2, 'failure', stepDescription.trim());
             failSubsequentSteps(3, 'Skipped because app/proxy is not configured.');
-            setSteps([...currentSteps]);
             setIsChecking(false);
             return;
         }
-        setSteps([...currentSteps]);
-
 
         // Step 3: Check Live URL Status
         if (site.domains && site.domains.length > 0) {
-            currentSteps[3].status = 'loading';
-            currentSteps[3].description = `Pinging ${site.domains[0].value}...`;
-            setSteps([...currentSteps]);
+            updateStep(3, 'loading', `Pinging ${site.domains[0].value}...`);
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    currentSteps[3].status = 'success';
-                    currentSteps[3].description = `URL is reachable with status ${data.status}.`;
+                    updateStep(3, 'success', `URL is reachable with status ${data.status}.`);
                 } else {
-                    currentSteps[3].status = 'failure';
-                    currentSteps[3].description = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
+                    updateStep(3, 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`);
                 }
             } catch (e) {
-                currentSteps[3].status = 'failure';
-                currentSteps[3].description = 'Could not reach the website URL.';
+                updateStep(3, 'failure', 'Could not reach the website URL.');
             }
         } else {
-             currentSteps[3].status = 'failure';
-             currentSteps[3].description = 'No domain configured for this site.';
+             updateStep(3, 'failure', 'No domain configured for this site.');
         }
-        setSteps([...currentSteps]);
 
         setIsChecking(false);
     }, [server.id, site]);
@@ -213,10 +192,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             
             updateStep(currentStepIndex, 'loading', `Executing: ${action.label}...`);
             
-            const result = await runCommand(server.id, action.commandId, {
-                'universal.server_reservedPort': allocation.port,
-                'universal.site_domain': site.domains?.[0]?.value || ''
-            }, action.label);
+            const result = await runCommand(server.id, action.commandId, {}, action.label);
             
             if (result.success && result.finalStatus === 'completed') {
                 updateStep(currentStepIndex, 'success', `${action.label} completed successfully.`);
@@ -253,9 +229,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         toast({ title: `Starting App on ${server.name}`, description: "This may take up to 5 minutes." });
         
         try {
-            const result = await runCommand(server.id, "app-start-prod", {
-                 'universal.site_domain': site?.domains?.[0]?.value || ''
-            }, "Start Application (Production)");
+            const result = await runCommand(server.id, "app-start-prod", {}, "Start Application (Production)");
             if (result && result.success && result.logId) {
                  setTimeout(() => {
                     router.push(`/root/servers/${result.serverId}`);
@@ -274,7 +248,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
-        // Always show rebuild action for step 2 if step 1 is a success
         if (index === 1 && steps[0].status === 'success') {
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }

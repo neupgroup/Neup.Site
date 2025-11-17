@@ -130,67 +130,52 @@ export default function CommandsGuidePage() {
                 <ul className="list-disc pl-5 mt-2 text-xs space-y-1">
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{server_name}}'}
+                      {'{{universal.server_name}}'}
                     </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{server_publicIp}}'}
+                      {'{{universal.server_publicIp}}'}
                     </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{server_basePath}}'}
+                      {'{{universal.server_basePath}}'}
                     </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{server_appPath}}'}
+                      {'{{universal.server_appPath}}'}
                     </code>
                   </li>
-                  <li>
-                    <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{server_availablePort}}'}
-                    </code>
-                  </li>
-                  <li>
-                    <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{server_availablePorts}}'}
-                    </code>
-                  </li>
-                  <li>
-                    <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{server_usedPorts}}'}
-                    </code>
-                  </li>
-                  <li>
+                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">
-                      {'{{server_reservedPort}}'}
+                      {'{{universal.app_port}}'}
                     </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{site_id}}'}
+                      {'{{universal.site_id}}'}
                     </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{site_name}}'}
+                      {'{{universal.site_name}}'}
                     </code>
                   </li>
                    <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{site_domain}}'}
+                      {'{{universal.site_domain}}'}
                     </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded">
-                      {'{{account_id}}'}
+                      {'{{universal.account_id}}'}
                     </code>
                   </li>
                   <li>
                     <code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">
-                      {'{{account_githubToken}}'}
+                      {'{{universal.account_githubToken}}'}
                     </code>
                   </li>
                 </ul>

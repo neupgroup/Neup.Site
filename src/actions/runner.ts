@@ -177,12 +177,10 @@ set -e
 get_available_port() {
     comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
 }
-SERVER_RESERVED_PORT=${allocatesPort ? "$(get_available_port)" : "''"}
-export SERVER_RESERVED_PORT
-export SERVER_AVAILABLE_PORTS=$(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u | tr '\\n' ',' | sed 's/,$//')
-export SERVER_USED_PORTS=$SERVER_AVAILABLE_PORTS
+APP_PORT=${allocatesPort ? "$(get_available_port)" : "''"}
+export APP_PORT
 
-cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.server_reservedPort}}/$SERVER_RESERVED_PORT/g" | sed "s/{{universal.server_availablePorts}}/$SERVER_AVAILABLE_PORTS/g" | sed "s/{{universal.server_usedPorts}}/$SERVER_USED_PORTS/g" | bash
+cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.app_port}}/$APP_PORT/g" | bash
 ${commandToExecute}
 BASH_COMMAND_EOF
         `;
@@ -229,4 +227,5 @@ BASH_COMMAND_EOF
     
     return { success: finalStatus === 'completed', logId, finalStatus };
 }
+
 

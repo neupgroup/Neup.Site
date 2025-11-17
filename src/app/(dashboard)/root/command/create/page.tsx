@@ -74,7 +74,7 @@ export default function CreateCommandPage() {
     
     let match;
     while ((match = userParamRegex.exec(commandTemplateValue)) !== null) {
-      if (!match[1].startsWith('server_') && !match[1].startsWith('site_') && !match[1].startsWith('account_')) {
+      if (!match[1].startsWith('universal.')) {
         userParams.add(match[1]);
       }
     }
@@ -147,7 +147,7 @@ export default function CreateCommandPage() {
               </div>
               <div className="rounded-lg border p-4 space-y-4">
                 <FormField control={form.control} name="allocatesPort" render={({ field }) => ( <FormItem className="flex flex-row items-center justify-between"><div className="space-y-0.5"><FormLabel>Allocates a Port</FormLabel><FormDescription>Signal that this command will use and reserve a port on the server.</FormDescription></div><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem> )} />
-                {allocatesPortValue && ( <div className="space-y-2 border-t pt-4"><FormField control={form.control} name="portToReserve" render={({ field }) => ( <FormItem><FormLabel>Port to Reserve</FormLabel><FormControl><Input {...field} placeholder="e.g., 8080 or {{server_availablePort}}" /></FormControl><FormDescription>Enter a specific port or use the placeholder for an available one. Use <code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{server_reservedPort}}'}</code> in the template.</FormDescription><FormMessage /></FormItem> )} /></div> )}
+                {allocatesPortValue && ( <div className="space-y-2 border-t pt-4"><p className="text-sm text-muted-foreground">The runner will automatically find and assign an available port. Use <code className="font-mono bg-muted px-1 py-0.5 rounded">{'{{universal.app_port}}'}</code> in the template to access it.</p></div> )}
               </div>
             </CardContent>
           </Card>
@@ -205,19 +205,16 @@ export default function CreateCommandPage() {
                 <AlertDescription>
                     These variables are available in both the pre-processor and the Bash script.
                     <ul className="list-disc pl-5 mt-2 text-xs space-y-1">
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_name}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_publicIp}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_basePath}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_appPath}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_availablePort}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_availablePorts}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{server_usedPorts}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{server_reservedPort}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_id}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_name}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{site_domain}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{account_id}}`}</code></li>
-                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{account_githubToken}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_publicIp}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_basePath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.server_appPath}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-blue-500">{`{{universal.app_port}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_name}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.site_domain}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded">{`{{universal.account_id}}`}</code></li>
+                        <li><code className="font-mono bg-muted px-1 py-0.5 rounded text-red-500">{`{{universal.account_githubToken}}`}</code></li>
                     </ul>
                 </AlertDescription>
             </Alert>
