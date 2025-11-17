@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, RefreshCw, AlertCircle, Rocket } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { runCommand, type ServerLog } from '@/actions/runner';
+import { runCommand } from '@/actions/runner';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
@@ -42,7 +42,9 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const updateStep = (index: number, status: DeploymentStep['status'], description: string) => {
         setSteps(prev => {
             const newSteps = [...prev];
-            newSteps[index] = { ...newSteps[index], status, description };
+            if (newSteps[index]) {
+                newSteps[index] = { ...newSteps[index], status, description };
+            }
             return newSteps;
         });
     };
@@ -68,8 +70,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         // Step 0: Check Application Directory
         updateStep(0, 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
-        if (!appDirCheck.exists) {
-            updateStep(0, 'failure', `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
+        if (!appDirCheck.exists || appDirCheck.error) {
+            updateStep(0, 'failure', appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
             failSubsequentSteps(1);
             setIsChecking(false);
             return;
@@ -90,14 +92,31 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         // Step 2: Check PM2 Status
         updateStep(2, 'loading', 'Checking for PM2 process...');
         const pm2Check = await getPm2Processes(server.id);
-        const runningProcess = pm2Check.success ? pm2Check.processes?.find(p => p.name.startsWith(`${site.id}.`) && p.status === 'online') : undefined;
-        if (!runningProcess) {
+        if (!pm2Check.success) {
+            updateStep(2, 'failure', `Could not check PM2 processes: ${pm2Check.error}`);
+            failSubsequentSteps(3);
+            setIsChecking(false);
+            return;
+        }
+
+        const siteProcess = pm2Check.processes?.find(p => p.name.startsWith(`${site.id}.`));
+
+        if (!siteProcess) {
             updateStep(2, 'failure', `Process not found or not online.`);
             failSubsequentSteps(3, 'Skipped because application is not running.');
             setIsChecking(false);
             return;
         }
-        updateStep(2, 'success', `Process "${runningProcess.name}" is online.`);
+
+        if (siteProcess.status !== 'online') {
+            updateStep(2, 'failure', `Process found in a crashed/stopped state.`);
+            failSubsequentSteps(3, 'Skipped because application is not online.');
+            setIsChecking(false);
+            return;
+        }
+
+        updateStep(2, 'success', `Process "${siteProcess.name}" is online.`);
+
 
         // Step 3: Check PM2 startup script
         updateStep(3, 'loading', 'Checking for PM2 startup script...');
@@ -136,15 +155,16 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const handleActionClick = async (clickedStepIndex: number) => {
         if (!site) return;
         
-        const stepsToRun = steps.slice(clickedStepIndex).filter(step => step.action);
-        if (stepsToRun.length === 0) return;
+        const actionQueue = steps
+            .slice(clickedStepIndex)
+            .map(step => step.action)
+            .filter(Boolean) as { commandId: string; label: string; }[];
+            
+        if (actionQueue.length === 0) return;
 
         setIsExecutingAction(steps[clickedStepIndex].name);
 
-        for (let i = 0; i < stepsToRun.length; i++) {
-            const step = stepsToRun[i];
-            const action = step.action!;
-            
+        for (const action of actionQueue) {
             toast({ title: `Executing: ${action.label}`, description: "This may take a moment..." });
             
             const result = await runCommand(server.id, action.commandId, {}, action.label);
@@ -156,12 +176,13 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 if (result.logId) {
                     router.push(`/root/servers/${result.serverId}?log=${result.logId}`);
                 }
-                break; // Stop the sequence on failure
+                setIsExecutingAction(null);
+                await runChecks(); // Re-run checks to show new failure state
+                return;
             }
         }
-
         setIsExecutingAction(null);
-        setTimeout(() => runChecks(), 2000); // Re-run checks after action with a small delay
+        setTimeout(() => runChecks(), 2000); // Re-run checks after all actions with a small delay
     };
 
     const handleFullRestart = async () => {
@@ -171,7 +192,10 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         try {
             const result = await runCommand(server.id, "app-start-prod", {}, "Start Application (Production)");
             if (result && result.success && result.logId) {
-                router.push(`/root/servers/${result.serverId}`);
+                 setTimeout(() => {
+                    router.push(`/root/servers/${result.serverId}`);
+                    runChecks();
+                }, 3000);
             } else {
                 throw new Error(result?.error || 'Failed to initiate command.');
             }
