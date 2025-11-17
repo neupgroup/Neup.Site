@@ -46,8 +46,8 @@ SWAP_FILE="/swapfile"
 cleanup() {
     echo "--- Running Cleanup ---"
     
-    echo "Stopping and deleting PM2 process if it exists..."
-    pm2 delete "$APP_NAME" || echo "PM2 process $APP_NAME did not exist."
+    echo "Stopping and deleting any existing PM2 processes for this site..."
+    pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No processes to clean up."
     pm2 save
     
     echo "Removing swap file..."
@@ -121,7 +121,7 @@ echo "--- Deployment Complete ---"
         { id: 'install-requisites', data: { name: "Install Requisites", description: "Installs Node.js and npm on an Ubuntu server.", commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", type: 'updation', danger: 'mid' } },
         { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm install", type: 'updation', danger: 'low' } },
         { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm run build", type: 'updation', danger: 'low' } },
-        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2.", commandTemplate: `pm2 delete {{universal.site_id}}.{{universal.server_reservedPort}} || true && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env`, type: 'updation', danger: 'mid', allocatesPort: true } },
+        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2, removing any old instances first.", commandTemplate: `pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete." && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env`, type: 'updation', danger: 'mid', allocatesPort: true } },
         { id: 'run-permanently', data: { name: "Run Permanently", description: "Saves the current PM2 process list to persist after reboots.", commandTemplate: "pm2 save", type: 'updation', danger: 'low' } },
         { id: 'make-config', data: { name: "Make Nginx Config", description: "Creates and enables an Nginx config file for the site.", commandTemplate: `
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
