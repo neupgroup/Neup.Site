@@ -40,7 +40,7 @@ async function createBuiltInCommands() {
 set -e
 echo "--- Starting Application Deployment ---"
 
-APP_NAME="{{universal.site_id}}.{{universal.server_reservedPort}}"
+APP_NAME="{{universal.site_id}}"
 SWAP_FILE="/swapfile"
 
 cleanup() {
@@ -74,7 +74,7 @@ echo "--- Step 4: Building application ---"
 npm run build
 
 echo "--- Step 5: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
-pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete."
+pm2 list | grep -q "{{universal.site_id}}" && pm2 delete "{{universal.site_id}}" || echo "No old processes to delete."
 pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "$APP_NAME" --update-env
 
 echo "--- Step 6: Saving PM2 process list ---"
@@ -153,7 +153,7 @@ sudo swapon "$SWAP_FILE"
 cd {{universal.server_appPath}} && npm run build
 </server.ubuntuBashProcessor>
         `, type: 'updation', danger: 'low' } },
-        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2, removing any old instances first.", commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env`, type: 'updation', danger: 'mid', allocatesPort: true } },
+        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2, removing any old instances first.", commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}" --update-env && pm2 save`, type: 'updation', danger: 'mid', allocatesPort: true } },
         { id: 'make-config', data: { name: "Make Nginx Config", description: "Creates and enables an Nginx config file for the site.", commandTemplate: `
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback, use } from 'react';
@@ -64,7 +65,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(true);
-        const currentSteps = [...steps].map(s => ({ ...s, status: 'pending', description: 'Checking...' } as DeploymentStep));
+        const currentSteps = steps.map(s => ({ ...s, status: 'pending', description: 'Checking...' } as DeploymentStep));
         setSteps(currentSteps);
 
 
@@ -118,7 +119,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             return;
         }
 
-        const siteProcess = pm2Check.processes?.find(p => p.name.startsWith(`${site.id}.`));
+        const siteProcess = pm2Check.processes?.find(p => p.name.startsWith(`${site.id}`));
 
         if (!siteProcess) {
             currentSteps[2].status = 'failure';
@@ -203,7 +204,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setSteps([...currentSteps]);
 
         setIsChecking(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [server.id, site]);
 
     useEffect(() => {
@@ -275,7 +275,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         
         try {
             const result = await runCommand(server.id, "app-start-prod", {
-                'universal.server_reservedPort': allocation.port,
                  'universal.site_domain': site?.domains?.[0]?.value || ''
             }, "Start Application (Production)");
             if (result && result.success && result.logId) {

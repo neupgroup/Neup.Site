@@ -177,12 +177,12 @@ set -e
 get_available_port() {
     comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
 }
-SERVER_AVAILABLE_PORT=$(get_available_port)
-export SERVER_RESERVED_PORT=${allocatesPort ? '$SERVER_AVAILABLE_PORT' : '""'}
+SERVER_RESERVED_PORT=${processedParams['universal.server_reservedPort'] || (allocatesPort ? "$(get_available_port)" : "''")}
+export SERVER_RESERVED_PORT
 export SERVER_AVAILABLE_PORTS=$(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u | tr '\\n' ',' | sed 's/,$//')
 export SERVER_USED_PORTS=$SERVER_AVAILABLE_PORTS
 
-cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.server_availablePort}}/$SERVER_AVAILABLE_PORT/g" | sed "s/{{universal.server_reservedPort}}/$SERVER_RESERVED_PORT/g" | sed "s/{{universal.server_availablePorts}}/$SERVER_AVAILABLE_PORTS/g" | sed "s/{{universal.server_usedPorts}}/$SERVER_USED_PORTS/g" | bash
+cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.server_reservedPort}}/$SERVER_RESERVED_PORT/g" | sed "s/{{universal.server_availablePorts}}/$SERVER_AVAILABLE_PORTS/g" | sed "s/{{universal.server_usedPorts}}/$SERVER_USED_PORTS/g" | bash
 ${commandToExecute}
 BASH_COMMAND_EOF
         `;
