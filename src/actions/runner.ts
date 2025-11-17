@@ -229,3 +229,4 @@ BASH_COMMAND_EOF
     
     return { success: finalStatus === 'completed', logId, finalStatus };
 }
+

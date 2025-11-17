@@ -46,8 +46,8 @@ SWAP_FILE="/swapfile"
 cleanup() {
     echo "--- Running Cleanup ---"
     
-    echo "Stopping and deleting previous PM2 process if it exists..."
-    pm2 delete $APP_NAME || echo "No process to delete or already deleted."
+    echo "Stopping and deleting previous PM2 process for {{universal.site_id}} if it exists..."
+    pm2 list | grep -q "{{universal.site_id}}" && pm2 delete $(pm2 list | grep "{{universal.site_id}}" | awk '{print $2}') || echo "No existing processes to delete."
 
     echo "Removing swap file..."
     if [ -f "$SWAP_FILE" ]; then

@@ -111,8 +111,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         
         const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
             getPm2Processes(server.id),
-            checkPathExists(server.id, `/etc/nginx/sites-available/{{universal.site_id}}.conf`),
-            checkPathExists(server.id, `/etc/nginx/sites-enabled/{{universal.site_id}}.conf`)
+            checkPathExists(server.id, `/etc/nginx/sites-available/${site.id}.conf`),
+            checkPathExists(server.id, `/etc/nginx/sites-enabled/${site.id}.conf`)
         ]);
 
         let pm2Ok = false;
@@ -183,7 +183,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setSteps([...currentSteps]);
 
         setIsChecking(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [server.id, site]);
 
     useEffect(() => {
