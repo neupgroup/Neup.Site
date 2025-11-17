@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import { getSiteServers, type Server } from '@/actions/servers';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
 import type { Site } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
-import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
+import { checkPathExists } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
 
 interface DeploymentStep {
@@ -154,17 +154,17 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         const actions: JSX.Element[] = [];
 
         if (step.name === 'Application Built') {
-             actions.push(<Button key="install-req" size="sm" variant="secondary" onClick={() => handleActionClick('install-requisites', 'Install Requisites')} disabled={!!isExecutingAction}>{isExecutingAction === 'install-requisites' ? <Loader2 className="animate-spin" /> : 'Install Requisites'}</Button>);
-            actions.push(<Button key="install-pkg" size="sm" variant="secondary" onClick={() => handleActionClick('install-packages', 'Install Packages')} disabled={!!isExecutingAction}>{isExecutingAction === 'install-packages' ? <Loader2 className="animate-spin" /> : 'Install App'}</Button>);
+             actions.push(<Button key="install-req" size="sm" variant="link" onClick={() => handleActionClick('install-requisites', 'Install Requisites')} disabled={!!isExecutingAction}>{isExecutingAction === 'install-requisites' ? <Loader2 className="animate-spin" /> : 'Install Requisites'}</Button>);
+            actions.push(<Button key="install-pkg" size="sm" variant="link" onClick={() => handleActionClick('install-packages', 'Install App')} disabled={!!isExecutingAction}>{isExecutingAction === 'install-packages' ? <Loader2 className="animate-spin" /> : 'Install App'}</Button>);
         }
         if (step.action) {
-            actions.push(<Button key={step.action.commandId} size="sm" variant="secondary" onClick={() => handleActionClick(step.action!.commandId, step.action!.label)} disabled={!!isExecutingAction}>{isExecutingAction === step.action.commandId ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
+            actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(step.action!.commandId, step.action!.label)} disabled={!!isExecutingAction}>{isExecutingAction === step.action.commandId ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
         }
         if (step.name === 'Application Running') {
-             actions.push(<Button key="run-perm" size="sm" variant="secondary" onClick={() => handleActionClick('run-permanently', 'Run Permanently')} disabled={!!isExecutingAction}>{isExecutingAction === 'run-permanently' ? <Loader2 className="animate-spin" /> : 'Run Permanently'}</Button>);
+             actions.push(<Button key="run-perm" size="sm" variant="link" onClick={() => handleActionClick('run-permanently', 'Run Permanently')} disabled={!!isExecutingAction}>{isExecutingAction === 'run-permanently' ? <Loader2 className="animate-spin" /> : 'Run Permanently'}</Button>);
         }
 
-        return <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
+        return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
     }
 
     return (
