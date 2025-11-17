@@ -12,6 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
+import type { Site } from '@/schemas/site';
 import { getPm2Processes, type ProcessManagerInfo } from '@/actions/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
@@ -22,8 +23,7 @@ interface DeploymentStep {
     description: string;
 }
 
-const DeploymentStatusChecker = ({ server, allocation }: { server: Server, allocation: ServerAllocation }) => {
-    const { site } = useProfile();
+const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server, allocation: ServerAllocation, site: Site | null }) => {
     const router = useRouter();
     const { toast } = useToast();
     const [isChecking, setIsChecking] = useState(true);
@@ -50,11 +50,15 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
     };
 
     const runChecks = useCallback(async () => {
+        if (!site) {
+            setSteps(prev => prev.map(s => ({...s, status: 'failure', description: 'Site context not available.'})));
+            return;
+        }
+
         setIsChecking(true);
-        // Reset all to pending before starting
         setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...'})));
 
-        const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site?.id || '') || '';
+        const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site.id) || '';
         
         // Step 1: Check Application Directory
         const appDirCheck = await checkPathExists(server.id, resolvedAppPath);
@@ -78,7 +82,7 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
         
         // Step 3: Check PM2 Status
         const pm2Check = await getPm2Processes(server.id);
-        const expectedProcessName = `${site?.id}.${allocation.port}.production`;
+        const expectedProcessName = `${site.id}.${allocation.port}.production`;
         const isRunning = pm2Check.success && pm2Check.processes?.some(p => p.name === expectedProcessName && p.status === 'online');
         if (!isRunning) {
             updateStep('Application Running', 'failure', `Process "${expectedProcessName}" not found or not online.`);
@@ -89,7 +93,7 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
         updateStep('Application Running', 'success', `Process "${expectedProcessName}" is online.`);
 
         // Step 4: Check Live URL Status
-        if (site?.domains && site.domains.length > 0) {
+        if (site.domains && site.domains.length > 0) {
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
@@ -106,16 +110,17 @@ const DeploymentStatusChecker = ({ server, allocation }: { server: Server, alloc
         }
 
         setIsChecking(false);
-    }, [server.id, server.appPath, site?.id, site?.domains, allocation.port]);
+    }, [server.id, server.appPath, site, allocation.port]);
 
     useEffect(() => {
         runChecks();
     }, [runChecks]);
 
     const handleRebuild = async () => {
+        if (!site) return;
         setIsRebuilding(true);
         toast({ title: "Rebuild Initiated", description: "This may take a few minutes."});
-        const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site?.id || '') || '';
+        const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site.id) || '';
         const result = await rebuildApplication(server.id, resolvedAppPath);
         if (result.success) {
             toast({ title: "Rebuild Successful" });
@@ -190,6 +195,7 @@ export default function StartApplicationPage() {
     const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { site } = useProfile();
 
     useEffect(() => {
         const fetchServers = async () => {
@@ -232,7 +238,7 @@ export default function StartApplicationPage() {
             ) : (
                 <div className="space-y-6">
                     {servers.map(server => (
-                        <DeploymentStatusChecker key={server.id} server={server} allocation={server.allocation} />
+                        <DeploymentStatusChecker key={server.id} server={server} allocation={server.allocation} site={site} />
                     ))}
                 </div>
             )}
