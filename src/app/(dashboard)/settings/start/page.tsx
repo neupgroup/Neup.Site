@@ -65,7 +65,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(true);
-        setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...', action: s.action})));
+        setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...'})));
 
         // Step 0: Check Application Directory
         updateStep(0, 'loading', 'Checking for application directory...');
@@ -155,19 +155,27 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const handleActionClick = async (clickedStepIndex: number) => {
         if (!site) return;
         
+        const step = steps[clickedStepIndex];
+        if (!step.action) return;
+
+        setIsExecutingAction(step.name);
+
         const actionQueue = steps
             .slice(clickedStepIndex)
             .map(step => step.action)
             .filter(Boolean) as { commandId: string; label: string; }[];
             
-        if (actionQueue.length === 0) return;
-
-        setIsExecutingAction(steps[clickedStepIndex].name);
+        if (actionQueue.length === 0) {
+            setIsExecutingAction(null);
+            return;
+        };
 
         for (const action of actionQueue) {
             toast({ title: `Executing: ${action.label}`, description: "This may take a moment..." });
             
-            const result = await runCommand(server.id, action.commandId, {}, action.label);
+            const result = await runCommand(server.id, action.commandId, {
+                'universal.server_reservedPort': allocation.port
+            }, action.label);
             
             if (result.success && result.finalStatus === 'completed') {
                 toast({ title: 'Step Succeeded!', description: `${action.label} completed successfully.`});
@@ -190,7 +198,9 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         toast({ title: `Starting App on ${server.name}`, description: "This may take up to 5 minutes." });
         
         try {
-            const result = await runCommand(server.id, "app-start-prod", {}, "Start Application (Production)");
+            const result = await runCommand(server.id, "app-start-prod", {
+                'universal.server_reservedPort': allocation.port
+            }, "Start Application (Production)");
             if (result && result.success && result.logId) {
                  setTimeout(() => {
                     router.push(`/root/servers/${result.serverId}`);
@@ -206,9 +216,25 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
     };
     
+    const handleRebuild = async () => {
+        setIsExecutingAction("rebuild-app");
+        toast({ title: 'Rebuilding Application...', description: 'This may take a moment.' });
+        const result = await rebuildApplication(server.id);
+        if (result.success) {
+            toast({ title: 'Rebuild Successful' });
+        } else {
+            toast({ variant: 'destructive', title: 'Rebuild Failed', description: result.error });
+        }
+        setIsExecutingAction(null);
+        await runChecks();
+    };
 
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
+
+        if (index === 1) { // Always show rebuild for step 2
+             actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'rebuild-app' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
+        }
 
         if (step.action && step.status === 'failure') {
              actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
