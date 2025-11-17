@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
 import type { Site } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
-import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
+import { checkPathExists } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
 
 interface DeploymentStep {
@@ -66,35 +66,55 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(true);
-        setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...'})));
+        const currentSteps = [...steps].map(s => ({ ...s, status: 'pending', description: 'Checking...' } as DeploymentStep));
+        setSteps(currentSteps);
+
 
         // Step 0: Check Application Directory
-        updateStep(0, 'loading', 'Checking for application directory...');
+        currentSteps[0].status = 'loading';
+        currentSteps[0].description = 'Checking for application directory...';
+        setSteps([...currentSteps]);
         const appDirCheck = await checkPathExists(server.id);
         if (!appDirCheck.exists || appDirCheck.error) {
-            updateStep(0, 'failure', appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
+            currentSteps[0].status = 'failure';
+            currentSteps[0].description = appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`;
+            setSteps([...currentSteps]);
             failSubsequentSteps(1);
             setIsChecking(false);
             return;
         }
-        updateStep(0, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
+        currentSteps[0].status = 'success';
+        currentSteps[0].description = `Directory found at ${appDirCheck.resolvedPath}.`;
+        setSteps([...currentSteps]);
+
 
         // Step 1: Check Build Status
-        updateStep(1, 'loading', 'Checking for .next build folder...');
+        currentSteps[1].status = 'loading';
+        currentSteps[1].description = 'Checking for .next build folder...';
+        setSteps([...currentSteps]);
         const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
         if (!buildCheck.exists) {
-            updateStep(1, 'failure', 'Application not built. The ".next" folder is missing.');
+            currentSteps[1].status = 'failure';
+            currentSteps[1].description = 'Application not built. The ".next" folder is missing.';
+            setSteps([...currentSteps]);
             failSubsequentSteps(2, 'Skipped because application is not built.');
             setIsChecking(false);
             return;
         }
-        updateStep(1, 'success', 'Build folder found.');
+        currentSteps[1].status = 'success';
+        currentSteps[1].description = 'Build folder found.';
+        setSteps([...currentSteps]);
+
         
         // Step 2: Check PM2 Status
-        updateStep(2, 'loading', 'Checking for PM2 process...');
+        currentSteps[2].status = 'loading';
+        currentSteps[2].description = 'Checking for PM2 process...';
+        setSteps([...currentSteps]);
         const pm2Check = await getPm2Processes(server.id);
         if (!pm2Check.success) {
-            updateStep(2, 'failure', `Could not check PM2 processes: ${pm2Check.error}`);
+            currentSteps[2].status = 'failure';
+            currentSteps[2].description = `Could not check PM2 processes: ${pm2Check.error}`;
+            setSteps([...currentSteps]);
             failSubsequentSteps(3);
             setIsChecking(false);
             return;
@@ -103,61 +123,78 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         const siteProcess = pm2Check.processes?.find(p => p.name.startsWith(`${site.id}.`));
 
         if (!siteProcess) {
-            updateStep(2, 'failure', `Process not found or not online.`);
+            currentSteps[2].status = 'failure';
+            currentSteps[2].description = `Process not found or not online.`;
+            setSteps([...currentSteps]);
             failSubsequentSteps(3);
             setIsChecking(false);
             return;
         }
 
         if (siteProcess.status !== 'online') {
-            updateStep(2, 'failure', `Process found in a crashed/stopped state.`);
+            currentSteps[2].status = 'failure';
+            currentSteps[2].description = `Process found in a crashed/stopped state.`;
+            setSteps([...currentSteps]);
             failSubsequentSteps(3);
             setIsChecking(false);
             return;
         }
 
-        updateStep(2, 'success', `Process "${siteProcess.name}" is online.`);
+        currentSteps[2].status = 'success';
+        currentSteps[2].description = `Process "${siteProcess.name}" is online.`;
+        setSteps([...currentSteps]);
 
 
         // Step 3: Check PM2 startup script
-        updateStep(3, 'loading', 'Checking for PM2 startup script...');
-        // This is a simplified check. A real implementation might check `pm2 list` more deeply
-        // or check for the presence of the startup script file.
-        // For now, we assume if it's running, the 'save' step is what's needed.
+        currentSteps[3].status = 'loading';
+        currentSteps[3].description = 'Checking for PM2 startup script...';
+        setSteps([...currentSteps]);
         updateStep(3, 'success', 'Assuming PM2 is ready to be saved.');
 
         // Step 4: Check Nginx Config
-        // A simple check could be to see if the config file exists.
-        updateStep(4, 'loading', 'Checking Nginx configuration...');
+        currentSteps[4].status = 'loading';
+        currentSteps[4].description = 'Checking Nginx configuration...';
+        setSteps([...currentSteps]);
         const nginxConfigPath = `/etc/nginx/sites-enabled/${site.id}.conf`;
         const nginxCheck = await checkPathExists(server.id, nginxConfigPath);
         if (!nginxCheck.exists) {
-             updateStep(4, 'failure', 'Nginx config file not found.');
+             currentSteps[4].status = 'failure';
+             currentSteps[4].description = 'Nginx config file not found.';
+             setSteps([...currentSteps]);
              failSubsequentSteps(5, 'Skipped because Nginx is not configured.');
              setIsChecking(false);
              return;
         }
-        updateStep(4, 'success', 'Nginx config file found.');
+        currentSteps[4].status = 'success';
+        currentSteps[4].description = 'Nginx config file found.';
+        setSteps([...currentSteps]);
 
 
         // Step 5: Check Live URL Status
         if (site.domains && site.domains.length > 0) {
-            updateStep(5, 'loading', `Pinging ${site.domains[0].value}...`);
+            currentSteps[5].status = 'loading';
+            currentSteps[5].description = `Pinging ${site.domains[0].value}...`;
+            setSteps([...currentSteps]);
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    updateStep(5, 'success', `URL is reachable with status ${data.status}.`);
+                    currentSteps[5].status = 'success';
+                    currentSteps[5].description = `URL is reachable with status ${data.status}.`;
                 } else {
-                    updateStep(5, 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`);
+                    currentSteps[5].status = 'failure';
+                    currentSteps[5].description = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
                 }
             } catch (e) {
-                updateStep(5, 'failure', 'Could not reach the website URL.');
+                currentSteps[5].status = 'failure';
+                currentSteps[5].description = 'Could not reach the website URL.';
             }
         } else {
-             updateStep(5, 'failure', 'No domain configured for this site.');
+             currentSteps[5].status = 'failure';
+             currentSteps[5].description = 'No domain configured for this site.';
         }
+        setSteps([...currentSteps]);
 
         setIsChecking(false);
     }, [server.id, site]);
@@ -169,10 +206,10 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const handleActionClick = async (clickedStepIndex: number) => {
         if (!site) return;
         
-        const step = steps[clickedStepIndex];
-        if (!step.action) return;
+        const clickedStep = steps[clickedStepIndex];
+        if (!clickedStep) return;
 
-        setIsExecutingAction(step.name);
+        setIsExecutingAction(clickedStep.name);
 
         const actionQueue = steps
             .slice(clickedStepIndex)
@@ -238,33 +275,28 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     };
     
     const handleRebuild = async () => {
-        setIsExecutingAction("build-app");
-        toast({ title: 'Rebuilding Application...', description: 'This may take a moment.' });
-        const result = await runCommand(server.id, "build-app", {}, "Build App");
-        if (result.success) {
-            toast({ title: 'Rebuild Successful' });
-        } else {
-            toast({ variant: 'destructive', title: 'Rebuild Failed', description: result.error });
-        }
-        setIsExecutingAction(null);
-        await runChecks();
+        handleActionClick(1);
     };
 
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
-        if (index === 1) { // Always show rebuild for step 2
-             actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'build-app' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
+        if (index === 1 && step.status !== 'pending') { // Always show rebuild for step 2 if not pending
+             actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
 
-        if (step.action && step.status === 'failure') {
-             actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
-        }
+        // Only show fix actions if previous steps succeeded and current one failed
+        const canShowFixAction = (index === 0 && step.status === 'failure') || (index > 0 && steps[index-1].status === 'success' && step.status === 'failure');
 
-        if (step.status === 'failure' && step.subActions) {
-            step.subActions.forEach(subAction => {
-                actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
-            });
+        if (canShowFixAction) {
+            if (step.action) {
+                 actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
+            }
+            if (step.subActions) {
+                step.subActions.forEach(subAction => {
+                    actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
+                });
+            }
         }
         
         if (actions.length === 0) return null;
