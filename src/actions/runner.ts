@@ -27,7 +27,7 @@ export async function runCommand(
     commandIdentifier: string,
     processedParams: Record<string, any> = {},
 ) {
-    const isCommandId = !commandIdentifier.includes(' ');
+    const isCommandId = !commandIdentifier.includes(' ') && !commandIdentifier.includes('\n');
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
     let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
     
@@ -45,7 +45,7 @@ export async function runCommand(
             confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
         } else {
              await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
-             return;
+             return { success: false, error: `Command with ID ${commandId} not found.` };
         }
     }
 
@@ -56,7 +56,7 @@ export async function runCommand(
     if (serverError || !server || !server.publicIp || !server.privateKey) {
         const errorMsg = `Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`;
         await logErrorToFirestore({ message: errorMsg, source: 'runCommand.init' });
-        return;
+        return { success: false, error: errorMsg };
     }
 
     const accountId = await getAccountId();
@@ -153,7 +153,7 @@ export async function runCommand(
     const createResult = await createServerLog({
         serverId: serverId,
         commandId,
-        commandName: commandName || 'Custom Command',
+        commandName: commandName || 'Custom Command', 
         command: loggedCommand, 
         output: `Initiating command...`,
         status: 'pending',
@@ -161,7 +161,7 @@ export async function runCommand(
 
     if (!createResult.success || !createResult.id) {
         console.error('Failed to create log entry for command:', loggedCommand, 'Error:', createResult.error);
-        return;
+        return { success: false, error: createResult.error };
     }
     const logId = createResult.id;
     
@@ -221,4 +221,7 @@ BASH_COMMAND_EOF
         }
         revalidatePath(`/root/servers/${serverId}`);
     }
+    
+    return { success: true, logId };
 }
+

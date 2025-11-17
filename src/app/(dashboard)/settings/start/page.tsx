@@ -22,6 +22,7 @@ interface DeploymentStep {
     status: 'pending' | 'success' | 'failure' | 'loading';
     description: string;
     action?: { commandId: string; label: string; params?: Record<string, any> };
+    subActions?: { commandId: string; label: string; }[];
 }
 
 const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server, allocation: ServerAllocation, site: Site | null }) => {
@@ -31,8 +32,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const [isExecutingAction, setIsExecutingAction] = useState<string | null>(null);
     const [steps, setSteps] = useState<DeploymentStep[]>([
         { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...' },
-        { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...' },
-        { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...' },
+        { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
+        { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...', subActions: [{ commandId: 'run-permanently', label: 'Run Permanently'}]},
         { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
     ]);
     
@@ -43,7 +44,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const failSubsequentSteps = (fromStepIndex: number, description: string = 'Skipped because a previous step failed.') => {
         setSteps(prev => prev.map((step, index) => {
             if (index >= fromStepIndex) {
-                return { ...step, status: 'failure', description };
+                return { ...step, status: 'failure', description, action: undefined };
             }
             return step;
         }));
@@ -76,7 +77,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             setIsChecking(false);
             return;
         }
-        updateStep('Application Built', 'success', 'Build folder found.');
+        updateStep('Application Built', 'success', 'Build folder found.', { commandId: `cd ${appDirCheck.resolvedPath} && rm -rf .next && npm run build`, label: 'Rebuild Application'});
         
         // Step 3: Check PM2 Status
         const pm2Check = await getPm2Processes(server.id);
@@ -127,7 +128,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             toast({ variant: 'destructive', title: 'Action Failed', description: result?.error || 'An unknown error occurred.' });
         }
         setIsExecutingAction(null);
-        runChecks(); // Re-run checks after action
+        setTimeout(() => runChecks(), 2000); // Re-run checks after action with a small delay
     };
 
     const handleFullRestart = async () => {
@@ -149,20 +150,19 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     };
 
     const renderStepActions = (step: DeploymentStep) => {
-        if (step.status !== 'failure') return null;
-
         const actions: JSX.Element[] = [];
 
-        if (step.name === 'Application Built') {
-             actions.push(<Button key="install-req" size="sm" variant="link" onClick={() => handleActionClick('install-requisites', 'Install Requisites')} disabled={!!isExecutingAction}>{isExecutingAction === 'install-requisites' ? <Loader2 className="animate-spin" /> : 'Install Requisites'}</Button>);
-            actions.push(<Button key="install-pkg" size="sm" variant="link" onClick={() => handleActionClick('install-packages', 'Install App')} disabled={!!isExecutingAction}>{isExecutingAction === 'install-packages' ? <Loader2 className="animate-spin" /> : 'Install App'}</Button>);
-        }
         if (step.action) {
-            actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(step.action!.commandId, step.action!.label)} disabled={!!isExecutingAction}>{isExecutingAction === step.action.commandId ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
+             actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(step.action!.commandId, step.action!.label)} disabled={!!isExecutingAction}>{isExecutingAction === step.action.commandId ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
         }
-        if (step.name === 'Application Running') {
-             actions.push(<Button key="run-perm" size="sm" variant="link" onClick={() => handleActionClick('run-permanently', 'Run Permanently')} disabled={!!isExecutingAction}>{isExecutingAction === 'run-permanently' ? <Loader2 className="animate-spin" /> : 'Run Permanently'}</Button>);
+
+        if (step.status === 'failure' && step.subActions) {
+            step.subActions.forEach(subAction => {
+                actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => handleActionClick(subAction.commandId, subAction.label)} disabled={!!isExecutingAction}>{isExecutingAction === subAction.commandId ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
+            });
         }
+        
+        if (actions.length === 0) return null;
 
         return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
     }
