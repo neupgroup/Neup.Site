@@ -169,3 +169,39 @@ export async function managePm2Process(
     }
   }
 }
+
+export async function getPm2Logs(serverId: string, processId: number | string): Promise<{ success: boolean, logs?: string, error?: string }> {
+  const ssh = new NodeSSH();
+  try {
+    const { server, error: serverError } = await getPrivateServerDetails(serverId);
+    if (serverError || !server) {
+      throw new Error(`Failed to retrieve server credentials: ${serverError}`);
+    }
+
+    await ssh.connect({
+      host: server.publicIp,
+      username: server.username || 'root',
+      privateKey: server.privateKey,
+    });
+    
+    // Fetch last 100 lines, without streaming
+    const result = await ssh.execCommand(`pm2 logs ${processId} --lines 100 --nostream`);
+
+    // pm2 logs sends output to both stdout and stderr, so we combine them.
+    const logs = (result.stdout || '') + (result.stderr || '');
+
+    return { success: true, logs: logs || "No logs to display." };
+
+  } catch (error: any) {
+    await logErrorToFirestore({
+      message: `Failed to get PM2 logs for server ${serverId}, process ${processId}: ${error.message}`,
+      stack: error.stack,
+      source: 'getPm2Logs',
+    });
+    return { success: false, error: error.message };
+  } finally {
+    if (ssh.isConnected()) {
+      ssh.dispose();
+    }
+  }
+}
