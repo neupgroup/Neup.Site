@@ -58,20 +58,18 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setIsChecking(true);
         setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...'})));
 
-        const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site.id) || '';
-        
         // Step 1: Check Application Directory
-        const appDirCheck = await checkPathExists(server.id, resolvedAppPath);
+        const appDirCheck = await checkPathExists(server.id);
         if (!appDirCheck.exists) {
-            updateStep('Application Exists', 'failure', `Directory not found at ${resolvedAppPath}.`);
+            updateStep('Application Exists', 'failure', `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
             failSubsequentSteps(1);
             setIsChecking(false);
             return;
         }
-        updateStep('Application Exists', 'success', `Directory found at ${resolvedAppPath}.`);
+        updateStep('Application Exists', 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
 
         // Step 2: Check Build Status
-        const buildCheck = await checkPathExists(server.id, `${resolvedAppPath}/.next`);
+        const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
         if (!buildCheck.exists) {
             updateStep('Application Built', 'failure', 'Application not built on server. The ".next" folder is missing.');
             failSubsequentSteps(2);
@@ -110,7 +108,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(false);
-    }, [server.id, server.appPath, site, allocation.port]);
+    }, [server.id, site, allocation.port]);
 
     useEffect(() => {
         runChecks();
@@ -120,8 +118,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (!site) return;
         setIsRebuilding(true);
         toast({ title: "Rebuild Initiated", description: "This may take a few minutes."});
-        const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site.id) || '';
-        const result = await rebuildApplication(server.id, resolvedAppPath);
+        const result = await rebuildApplication(server.id);
         if (result.success) {
             toast({ title: "Rebuild Successful" });
         } else {
