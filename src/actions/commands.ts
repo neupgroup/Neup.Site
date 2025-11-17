@@ -46,10 +46,6 @@ SWAP_FILE="/swapfile"
 cleanup() {
     echo "--- Running Cleanup ---"
     
-    echo "Stopping and deleting any existing PM2 processes for this site..."
-    pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No processes to clean up."
-    pm2 save
-    
     echo "Removing swap file..."
     if [ -f "$SWAP_FILE" ]; then
         sudo swapoff "$SWAP_FILE"
@@ -58,8 +54,8 @@ cleanup() {
     fi
 }
 
-# Trap ERR to call cleanup function on any command failure
-trap cleanup ERR
+# Trap EXIT to call cleanup function on any script exit
+trap cleanup EXIT
 
 echo "--- Step 1: Creating 4GB swap file ---"
 sudo fallocate -l 4G "$SWAP_FILE"
@@ -68,18 +64,23 @@ sudo mkswap "$SWAP_FILE"
 sudo swapon "$SWAP_FILE"
 echo "Swap file created and activated."
 
-echo "--- Step 2: Building application in {{universal.server_appPath}} ---"
+echo "--- Step 2: Navigating to application directory {{universal.server_appPath}} ---"
 cd {{universal.server_appPath}}
+
+echo "--- Step 3: Installing packages ---"
 npm install
+
+echo "--- Step 4: Building application ---"
 npm run build
 
-echo "--- Step 3: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
+echo "--- Step 5: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
+pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete."
 pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "$APP_NAME" --update-env
 
-echo "--- Step 4: Saving PM2 process list ---"
+echo "--- Step 6: Saving PM2 process list ---"
 pm2 save
 
-echo "--- Step 5: Configuring Nginx reverse proxy ---"
+echo "--- Step 7: Configuring Nginx reverse proxy ---"
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
@@ -101,13 +102,10 @@ EOF
 sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 
-echo "--- Step 6: Setting up SSL with Certbot ---"
+echo "--- Step 8: Setting up SSL with Certbot ---"
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 
 sudo systemctl reload nginx
-
-# Final cleanup of swap file on success
-cleanup
 
 echo "--- Deployment Complete ---"
 </server.ubuntuBashProcessor>
@@ -119,9 +117,43 @@ echo "--- Deployment Complete ---"
             }
         },
         { id: 'install-requisites', data: { name: "Install Requisites", description: "Installs Node.js and npm on an Ubuntu server.", commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", type: 'updation', danger: 'mid' } },
-        { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm install", type: 'updation', danger: 'low' } },
-        { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: "cd {{universal.server_appPath}} && npm run build", type: 'updation', danger: 'low' } },
-        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2, removing any old instances first.", commandTemplate: `cd {{universal.server_appPath}} && pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete." && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env`, type: 'updation', danger: 'mid', allocatesPort: true } },
+        { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: `
+<server.ubuntuBashProcessor>
+set -e
+SWAP_FILE="/swapfile_install"
+cleanup() {
+    if [ -f "$SWAP_FILE" ]; then
+        sudo swapoff "$SWAP_FILE"
+        sudo rm -f "$SWAP_FILE"
+    fi
+}
+trap cleanup EXIT
+sudo fallocate -l 4G "$SWAP_FILE"
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE"
+sudo swapon "$SWAP_FILE"
+cd {{universal.server_appPath}} && npm install
+</server.ubuntuBashProcessor>
+        `, type: 'updation', danger: 'low' } },
+        { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: `
+<server.ubuntuBashProcessor>
+set -e
+SWAP_FILE="/swapfile_build"
+cleanup() {
+    if [ -f "$SWAP_FILE" ]; then
+        sudo swapoff "$SWAP_FILE"
+        sudo rm -f "$SWAP_FILE"
+    fi
+}
+trap cleanup EXIT
+sudo fallocate -l 4G "$SWAP_FILE"
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE"
+sudo swapon "$SWAP_FILE"
+cd {{universal.server_appPath}} && npm run build
+</server.ubuntuBashProcessor>
+        `, type: 'updation', danger: 'low' } },
+        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2, removing any old instances first.", commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}" --update-env`, type: 'updation', danger: 'mid', allocatesPort: true } },
         { id: 'run-permanently', data: { name: "Run Permanently", description: "Saves the current PM2 process list to persist after reboots.", commandTemplate: "pm2 save", type: 'updation', danger: 'low' } },
         { id: 'make-config', data: { name: "Make Nginx Config", description: "Creates and enables an Nginx config file for the site.", commandTemplate: `
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
@@ -308,4 +340,5 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
 
 
     
+
 
