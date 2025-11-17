@@ -177,7 +177,7 @@ set -e
 get_available_port() {
     comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
 }
-SERVER_RESERVED_PORT=${processedParams['universal.server_reservedPort'] || (allocatesPort ? "$(get_available_port)" : "''")}
+SERVER_RESERVED_PORT=${allocatesPort ? "$(get_available_port)" : "''"}
 export SERVER_RESERVED_PORT
 export SERVER_AVAILABLE_PORTS=$(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u | tr '\\n' ',' | sed 's/,$//')
 export SERVER_USED_PORTS=$SERVER_AVAILABLE_PORTS

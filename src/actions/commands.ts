@@ -33,7 +33,7 @@ async function createBuiltInCommands() {
         {
             id: 'app-start-prod',
             data: {
-                name: "Start Next.js App (Production)",
+                name: "Start Application (Production)",
                 description: "Builds, starts, and configures a Next.js app on an Ubuntu server using PM2 and Nginx with SSL.",
                 commandTemplate: `
 <server.ubuntuBashProcessor>
@@ -46,6 +46,9 @@ SWAP_FILE="/swapfile"
 cleanup() {
     echo "--- Running Cleanup ---"
     
+    echo "Stopping and deleting previous PM2 process if it exists..."
+    pm2 delete $APP_NAME || echo "No process to delete or already deleted."
+
     echo "Removing swap file..."
     if [ -f "$SWAP_FILE" ]; then
         sudo swapoff "$SWAP_FILE"
@@ -74,7 +77,6 @@ echo "--- Step 4: Building application ---"
 npm run build
 
 echo "--- Step 5: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
-pm2 list | grep -q "{{universal.site_id}}" && pm2 delete "{{universal.site_id}}" || echo "No old processes to delete."
 pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "$APP_NAME" --update-env
 
 echo "--- Step 6: Saving PM2 process list ---"
@@ -153,9 +155,10 @@ sudo swapon "$SWAP_FILE"
 cd {{universal.server_appPath}} && npm run build
 </server.ubuntuBashProcessor>
         `, type: 'updation', danger: 'low' } },
-        { id: 'run-app', data: { name: "Run App", description: "Starts the application with PM2, removing any old instances first.", commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}" --update-env && pm2 save`, type: 'updation', danger: 'mid', allocatesPort: true } },
-        { id: 'make-config', data: { name: "Make Nginx Config", description: "Creates and enables an Nginx config file for the site.", commandTemplate: `
-sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
+        { id: 'start-app-and-configure-proxy', data: { 
+            name: "Start App & Configure Proxy", 
+            description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx.",
+            commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}" --update-env && pm2 save && sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
     server_name {{universal.site_domain}};
@@ -177,7 +180,11 @@ sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/s
 sudo nginx -t
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 sudo systemctl reload nginx
-        `, type: 'updation', danger: 'mid', allocatesPort: true } },
+            `,
+            type: 'updation', 
+            danger: 'mid', 
+            allocatesPort: true } 
+        },
     ];
 
     for (const cmd of commandsToCreate) {

@@ -34,8 +34,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const [steps, setSteps] = useState<DeploymentStep[]>([
         { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
         { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
-        { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...', action: { commandId: 'run-app', label: 'Run App' } },
-        { name: 'Nginx Config', status: 'pending', description: 'Checking for Nginx configuration...', action: { commandId: 'make-config', label: 'Make Config' } },
+        { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Start App & Configure Proxy' } },
         { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
     ]);
     
@@ -105,105 +104,86 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setSteps([...currentSteps]);
 
         
-        // Step 2: Check PM2 Status
+        // Step 2: Check PM2 and Nginx Status
         currentSteps[2].status = 'loading';
-        currentSteps[2].description = 'Checking for PM2 process...';
+        currentSteps[2].description = 'Checking for PM2 process and Nginx config...';
         setSteps([...currentSteps]);
-        const pm2Check = await getPm2Processes(server.id);
-        if (!pm2Check.success) {
-            currentSteps[2].status = 'failure';
-            currentSteps[2].description = `Could not check PM2 processes: ${pm2Check.error}`;
-            setSteps([...currentSteps]);
-            failSubsequentSteps(3);
-            setIsChecking(false);
-            return;
-        }
-
-        const siteProcess = pm2Check.processes?.find(p => p.name.startsWith(`${site.id}`));
-
-        if (!siteProcess) {
-            currentSteps[2].status = 'failure';
-            currentSteps[2].description = `Process not found or not online.`;
-            setSteps([...currentSteps]);
-            failSubsequentSteps(3);
-            setIsChecking(false);
-            return;
-        }
-
-        if (siteProcess.status !== 'online') {
-            currentSteps[2].status = 'failure';
-            currentSteps[2].description = `Process found in a crashed/stopped state.`;
-            setSteps([...currentSteps]);
-            failSubsequentSteps(3);
-            setIsChecking(false);
-            return;
-        }
-
-        currentSteps[2].status = 'success';
-        currentSteps[2].description = `Process "${siteProcess.name}" is online.`;
-        setSteps([...currentSteps]);
-
-
-        // Step 3: Check Nginx Config
-        currentSteps[3].status = 'loading';
-        currentSteps[3].description = 'Checking Nginx configuration...';
-        setSteps([...currentSteps]);
-        const nginxConfigAvailablePath = `/etc/nginx/sites-available/{{universal.site_id}}.conf`;
-        const nginxConfigEnabledPath = `/etc/nginx/sites-enabled/{{universal.site_id}}.conf`;
         
-        const [availableCheck, enabledCheck] = await Promise.all([
-            checkPathExists(server.id, nginxConfigAvailablePath),
-            checkPathExists(server.id, nginxConfigEnabledPath)
+        const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
+            getPm2Processes(server.id),
+            checkPathExists(server.id, `/etc/nginx/sites-available/{{universal.site_id}}.conf`),
+            checkPathExists(server.id, `/etc/nginx/sites-enabled/{{universal.site_id}}.conf`)
         ]);
-        
-        if (!availableCheck.exists) {
-             currentSteps[3].status = 'failure';
-             currentSteps[3].description = 'Nginx config file not found in sites-available.';
-             setSteps([...currentSteps]);
-             failSubsequentSteps(4, 'Skipped because Nginx is not configured.');
-             setIsChecking(false);
-             return;
+
+        let pm2Ok = false;
+        let nginxOk = false;
+        let stepDescription = '';
+
+        if (!pm2Check.success) {
+            stepDescription += `Could not check PM2 processes: ${pm2Check.error}. `;
+        } else {
+            const siteProcess = pm2Check.processes?.find(p => p.name === site.id);
+            if (!siteProcess) {
+                stepDescription += `PM2 process not found. `;
+            } else if (siteProcess.status !== 'online') {
+                stepDescription += `Process found in a crashed/stopped state. `;
+            } else {
+                pm2Ok = true;
+                stepDescription += `PM2 process is online. `;
+            }
         }
-        if (!enabledCheck.exists) {
-            currentSteps[3].status = 'failure';
-            currentSteps[3].description = 'Nginx config found but not enabled (symlink missing).';
+
+        if (!nginxAvailableCheck.exists) {
+            stepDescription += `Nginx config file not found. `;
+        } else if (!nginxEnabledCheck.exists) {
+            stepDescription += `Nginx config not enabled. `;
+        } else {
+            nginxOk = true;
+            stepDescription += 'Nginx config is enabled.';
+        }
+
+        if (pm2Ok && nginxOk) {
+            currentSteps[2].status = 'success';
+            currentSteps[2].description = 'Application is running and Nginx is configured.';
+        } else {
+            currentSteps[2].status = 'failure';
+            currentSteps[2].description = stepDescription.trim();
+            failSubsequentSteps(3, 'Skipped because app/proxy is not configured.');
             setSteps([...currentSteps]);
-            failSubsequentSteps(4, 'Skipped because Nginx is not configured.');
             setIsChecking(false);
             return;
         }
-        currentSteps[3].status = 'success';
-        currentSteps[3].description = 'Nginx config file found and enabled.';
         setSteps([...currentSteps]);
 
 
-        // Step 4: Check Live URL Status
+        // Step 3: Check Live URL Status
         if (site.domains && site.domains.length > 0) {
-            currentSteps[4].status = 'loading';
-            currentSteps[4].description = `Pinging ${site.domains[0].value}...`;
+            currentSteps[3].status = 'loading';
+            currentSteps[3].description = `Pinging ${site.domains[0].value}...`;
             setSteps([...currentSteps]);
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    currentSteps[4].status = 'success';
-                    currentSteps[4].description = `URL is reachable with status ${data.status}.`;
+                    currentSteps[3].status = 'success';
+                    currentSteps[3].description = `URL is reachable with status ${data.status}.`;
                 } else {
-                    currentSteps[4].status = 'failure';
-                    currentSteps[4].description = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
+                    currentSteps[3].status = 'failure';
+                    currentSteps[3].description = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
                 }
             } catch (e) {
-                currentSteps[4].status = 'failure';
-                currentSteps[4].description = 'Could not reach the website URL.';
+                currentSteps[3].status = 'failure';
+                currentSteps[3].description = 'Could not reach the website URL.';
             }
         } else {
-             currentSteps[4].status = 'failure';
-             currentSteps[4].description = 'No domain configured for this site.';
+             currentSteps[3].status = 'failure';
+             currentSteps[3].description = 'No domain configured for this site.';
         }
         setSteps([...currentSteps]);
 
         setIsChecking(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [server.id, site]);
 
     useEffect(() => {
@@ -295,7 +275,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
-        // Always show rebuild action for step 2 if step 1 is a success, regardless of step 2 status.
+        // Always show rebuild action for step 2 if step 1 is a success
         if (index === 1 && steps[0].status === 'success') {
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
