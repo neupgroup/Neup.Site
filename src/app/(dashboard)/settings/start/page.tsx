@@ -292,7 +292,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
 
-        // Only show "Fix" actions if the current step has failed AND the previous step succeeded (or it's the first step).
         const canShowFixAction = (index === 0 || (index > 0 && steps[index-1].status === 'success')) && step.status === 'failure';
         
         if (canShowFixAction) {
