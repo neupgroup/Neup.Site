@@ -36,7 +36,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
         { name: 'Application Running', status: 'pending', description: 'Checking for PM2 process...', action: { commandId: 'run-app', label: 'Run App' } },
         { name: 'Process is Permanent', status: 'pending', description: 'Checking PM2 startup script...', action: { commandId: 'run-permanently', label: 'Run Permanently'}},
-        { name: 'Website Live', status: 'pending', description: 'Pinging public domain...', action: { commandId: 'make-config', label: 'Make Config' } },
+        { name: 'Nginx Config', status: 'pending', description: 'Checking for Nginx configuration...', action: { commandId: 'make-config', label: 'Make Config' } },
+        { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
     ]);
     
     const updateStep = (index: number, status: DeploymentStep['status'], description: string) => {
@@ -103,14 +104,14 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
 
         if (!siteProcess) {
             updateStep(2, 'failure', `Process not found or not online.`);
-            failSubsequentSteps(3, 'Skipped because application is not running.');
+            failSubsequentSteps(3);
             setIsChecking(false);
             return;
         }
 
         if (siteProcess.status !== 'online') {
             updateStep(2, 'failure', `Process found in a crashed/stopped state.`);
-            failSubsequentSteps(3, 'Skipped because application is not online.');
+            failSubsequentSteps(3);
             setIsChecking(false);
             return;
         }
@@ -125,24 +126,37 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         // For now, we assume if it's running, the 'save' step is what's needed.
         updateStep(3, 'success', 'Assuming PM2 is ready to be saved.');
 
+        // Step 4: Check Nginx Config
+        // A simple check could be to see if the config file exists.
+        updateStep(4, 'loading', 'Checking Nginx configuration...');
+        const nginxConfigPath = `/etc/nginx/sites-enabled/${site.id}.conf`;
+        const nginxCheck = await checkPathExists(server.id, nginxConfigPath);
+        if (!nginxCheck.exists) {
+             updateStep(4, 'failure', 'Nginx config file not found.');
+             failSubsequentSteps(5, 'Skipped because Nginx is not configured.');
+             setIsChecking(false);
+             return;
+        }
+        updateStep(4, 'success', 'Nginx config file found.');
 
-        // Step 4: Check Live URL Status
+
+        // Step 5: Check Live URL Status
         if (site.domains && site.domains.length > 0) {
-            updateStep(4, 'loading', `Pinging ${site.domains[0].value}...`);
+            updateStep(5, 'loading', `Pinging ${site.domains[0].value}...`);
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    updateStep(4, 'success', `URL is reachable with status ${data.status}.`);
+                    updateStep(5, 'success', `URL is reachable with status ${data.status}.`);
                 } else {
-                    updateStep(4, 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`);
+                    updateStep(5, 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`);
                 }
             } catch (e) {
-                updateStep(4, 'failure', 'Could not reach the website URL.');
+                updateStep(5, 'failure', 'Could not reach the website URL.');
             }
         } else {
-             updateStep(4, 'failure', 'No domain configured for this site.');
+             updateStep(5, 'failure', 'No domain configured for this site.');
         }
 
         setIsChecking(false);
@@ -162,7 +176,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
 
         const actionQueue = steps
             .slice(clickedStepIndex)
-            .map(step => step.action)
+            .map(s => s.action)
             .filter(Boolean) as { commandId: string; label: string; }[];
             
         if (actionQueue.length === 0) {
@@ -170,22 +184,28 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             return;
         };
 
-        for (const action of actionQueue) {
-            toast({ title: `Executing: ${action.label}`, description: "This may take a moment..." });
+        for (let i = 0; i < actionQueue.length; i++) {
+            const action = actionQueue[i];
+            const currentStepIndex = clickedStepIndex + i;
+            
+            updateStep(currentStepIndex, 'loading', `Executing: ${action.label}...`);
             
             const result = await runCommand(server.id, action.commandId, {
-                'universal.server_reservedPort': allocation.port
+                'universal.server_reservedPort': allocation.port,
+                'universal.site_domain': site.domains?.[0]?.value || ''
             }, action.label);
             
             if (result.success && result.finalStatus === 'completed') {
+                updateStep(currentStepIndex, 'success', `${action.label} completed successfully.`);
                 toast({ title: 'Step Succeeded!', description: `${action.label} completed successfully.`});
             } else {
+                 updateStep(currentStepIndex, 'failure', `Action "${action.label}" failed.`);
                 toast({ variant: 'destructive', title: 'Step Failed', description: `Action "${action.label}" failed. Check server logs.` });
                 if (result.logId) {
                     router.push(`/root/servers/${result.serverId}?log=${result.logId}`);
                 }
                 setIsExecutingAction(null);
-                await runChecks(); // Re-run checks to show new failure state
+                failSubsequentSteps(currentStepIndex + 1, 'Skipped because a previous step failed.');
                 return;
             }
         }
@@ -199,7 +219,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         
         try {
             const result = await runCommand(server.id, "app-start-prod", {
-                'universal.server_reservedPort': allocation.port
+                'universal.server_reservedPort': allocation.port,
+                 'universal.site_domain': site?.domains?.[0]?.value || ''
             }, "Start Application (Production)");
             if (result && result.success && result.logId) {
                  setTimeout(() => {
@@ -217,9 +238,9 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     };
     
     const handleRebuild = async () => {
-        setIsExecutingAction("rebuild-app");
+        setIsExecutingAction("build-app");
         toast({ title: 'Rebuilding Application...', description: 'This may take a moment.' });
-        const result = await rebuildApplication(server.id);
+        const result = await runCommand(server.id, "build-app", {}, "Build App");
         if (result.success) {
             toast({ title: 'Rebuild Successful' });
         } else {
@@ -233,7 +254,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         const actions: JSX.Element[] = [];
 
         if (index === 1) { // Always show rebuild for step 2
-             actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'rebuild-app' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
+             actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'build-app' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
 
         if (step.action && step.status === 'failure') {
