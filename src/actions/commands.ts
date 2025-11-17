@@ -64,7 +64,7 @@ npm run build
 
 # 3. Start with PM2
 echo "--- Step 3: Starting application with PM2 on port {{universal.server_reservedPort}} ---"
-pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}.production"
+pm2 start "npm start -- -p {{universal.server_reservedPort}}" --name "{{universal.site_id}}.{{universal.server_reservedPort}}.production" --update-env
 pm2 save
 
 # 4. Configure Nginx & SSL
