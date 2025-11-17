@@ -147,18 +147,32 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         currentSteps[3].status = 'loading';
         currentSteps[3].description = 'Checking Nginx configuration...';
         setSteps([...currentSteps]);
-        const nginxConfigPath = `/etc/nginx/sites-enabled/${site.id}.conf`;
-        const nginxCheck = await checkPathExists(server.id, nginxConfigPath);
-        if (!nginxCheck.exists) {
+        const nginxConfigAvailablePath = `/etc/nginx/sites-available/${site.id}.conf`;
+        const nginxConfigEnabledPath = `/etc/nginx/sites-enabled/${site.id}.conf`;
+
+        const [availableCheck, enabledCheck] = await Promise.all([
+            checkPathExists(server.id, nginxConfigAvailablePath),
+            checkPathExists(server.id, nginxConfigEnabledPath)
+        ]);
+        
+        if (!availableCheck.exists) {
              currentSteps[3].status = 'failure';
-             currentSteps[3].description = 'Nginx config file not found.';
+             currentSteps[3].description = 'Nginx config file not found in sites-available.';
              setSteps([...currentSteps]);
              failSubsequentSteps(4, 'Skipped because Nginx is not configured.');
              setIsChecking(false);
              return;
         }
+        if (!enabledCheck.exists) {
+            currentSteps[3].status = 'failure';
+            currentSteps[3].description = 'Nginx config found but not enabled (symlink missing).';
+            setSteps([...currentSteps]);
+            failSubsequentSteps(4, 'Skipped because Nginx is not configured.');
+            setIsChecking(false);
+            return;
+        }
         currentSteps[3].status = 'success';
-        currentSteps[3].description = 'Nginx config file found.';
+        currentSteps[3].description = 'Nginx config file found and enabled.';
         setSteps([...currentSteps]);
 
 
@@ -241,7 +255,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setIsExecutingAction(null);
         setTimeout(() => runChecks(), 2000); // Re-run checks after all actions with a small delay
     };
-
+    
     const handleRebuild = async () => {
         handleActionClick(1);
     };
@@ -273,11 +287,12 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
-        if (index === 1 && steps[0].status === 'success' && step.status !== 'pending') { // Always show rebuild for step 2 if not pending
+        // Always show rebuild action for step 2 if step 1 is a success, regardless of step 2 status.
+        if (index === 1 && steps[0].status === 'success') {
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
 
-        // Only show fix actions if previous steps succeeded and current one failed
+        // Only show "Fix" actions if the current step has failed AND the previous step succeeded (or it's the first step).
         const canShowFixAction = (index === 0 || (index > 0 && steps[index-1].status === 'success')) && step.status === 'failure';
         
         if (canShowFixAction) {
