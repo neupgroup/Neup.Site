@@ -15,14 +15,14 @@ import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
 import type { Site } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
-import { checkPathExists } from '@/actions/server/management/check-build';
+import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
 
 interface DeploymentStep {
     name: string;
     status: 'pending' | 'success' | 'failure' | 'loading';
     description: string;
-    action?: { commandId: string; label: string; params?: Record<string, any> };
+    action?: { commandId: string; label: string; };
     subActions?: { commandId: string; label: string; }[];
 }
 
@@ -61,6 +61,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setSteps(prev => prev.map(s => ({...s, status: 'pending', description: 'Checking...', action: undefined})));
 
         // Step 1: Check Application Directory
+        updateStep('Application Exists', 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
         if (!appDirCheck.exists) {
             updateStep('Application Exists', 'failure', `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
@@ -71,6 +72,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         updateStep('Application Exists', 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
 
         // Step 2: Check Build Status
+        updateStep('Application Built', 'loading', 'Checking for .next build folder...');
         const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
         if (!buildCheck.exists) {
             updateStep('Application Built', 'failure', 'Application not built. The ".next" folder is missing.', { commandId: 'build-app', label: 'Build App' });
@@ -81,19 +83,20 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         updateStep('Application Built', 'success', 'Build folder found.', { commandId: `cd ${appDirCheck.resolvedPath} && rm -rf .next && npm run build`, label: 'Rebuild Application'});
         
         // Step 3: Check PM2 Status
+        updateStep('Application Running', 'loading', 'Checking for PM2 process...');
         const pm2Check = await getPm2Processes(server.id);
-        const expectedProcessName = `${site.id}.${allocation.port}.production`;
-        const isRunning = pm2Check.success && pm2Check.processes?.some(p => p.name === expectedProcessName && p.status === 'online');
-        if (!isRunning) {
-            updateStep('Application Running', 'failure', `Process "${expectedProcessName}" not found or not online.`, { commandId: 'run-app', label: 'Run App' });
+        const runningProcess = pm2Check.success ? pm2Check.processes?.find(p => p.name.startsWith(`${site.id}.`) && p.status === 'online') : undefined;
+        if (!runningProcess) {
+            updateStep('Application Running', 'failure', `Process not found or not online.`, { commandId: 'run-app', label: 'Run App' });
             failSubsequentSteps(3, 'Skipped because application is not running.');
             setIsChecking(false);
             return;
         }
-        updateStep('Application Running', 'success', `Process "${expectedProcessName}" is online.`);
+        updateStep('Application Running', 'success', `Process "${runningProcess.name}" is online.`);
 
         // Step 4: Check Live URL Status
         if (site.domains && site.domains.length > 0) {
+            updateStep('Website Live', 'loading', `Pinging ${site.domains[0].value}...`);
             try {
                 const url = `https://${site.domains[0].value}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
@@ -111,7 +114,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(false);
-    }, [server.id, site, allocation.port]);
+    }, [server.id, site]);
 
     useEffect(() => {
         runChecks();
@@ -133,7 +136,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     };
 
     const handleFullRestart = async () => {
-        setIsExecutingAction('full-restart');
+        setIsExecutingAction('app-start-prod');
         toast({ title: `Starting App on ${server.name}`, description: "This may take up to 5 minutes." });
         
         try {
@@ -201,8 +204,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                     Check Status
                 </Button>
                 <Button onClick={handleFullRestart} disabled={isChecking || !!isExecutingAction}>
-                    {isExecutingAction === 'full-restart' ? <Loader2 className="mr-2 animate-spin"/> : <Rocket className="mr-2" />}
-                    {isExecutingAction === 'full-restart' ? 'Restarting...' : 'Restart Application'}
+                    {isExecutingAction === 'app-start-prod' ? <Loader2 className="mr-2 animate-spin"/> : <Rocket className="mr-2" />}
+                    {isExecutingAction === 'app-start-prod' ? 'Restarting...' : 'Restart Application'}
                 </Button>
             </CardFooter>
         </Card>
