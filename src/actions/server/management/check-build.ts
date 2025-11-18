@@ -6,6 +6,7 @@ import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
 import { getSite } from '@/actions/editor/site';
+import { createServerLog, updateServerLog } from '@/actions/server-logs';
 
 async function resolveAppPath(serverId: string): Promise<{ resolvedPath: string, error?: string }> {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -91,6 +92,13 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
 export async function rebuildApplication(serverId: string): Promise<{ success: boolean; error?: string }> {
     const ssh = new NodeSSH();
     let appPath = '';
+    const createLogResult = await createServerLog({ serverId, command: 'Rebuild Application', output: 'Starting rebuild...', status: 'pending' });
+    const logId = createLogResult.id;
+
+    if (!logId) {
+        return { success: false, error: 'Failed to create log entry.' };
+    }
+
     try {
         const { resolvedPath, error: resolveError } = await resolveAppPath(serverId);
         if (resolveError) {
@@ -100,13 +108,14 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
 
         const { server, error: serverError } = await getPrivateServerDetails(serverId);
         if (serverError || !server) {
-        throw new Error(`Failed to retrieve server credentials: ${serverError}`);
+            throw new Error(`Failed to retrieve server credentials: ${serverError}`);
         }
-
+        
+        await updateServerLog(logId, { output: `Connecting to server...` });
         await ssh.connect({
-        host: server.publicIp,
-        username: server.username || 'root',
-        privateKey: server.privateKey,
+            host: server.publicIp,
+            username: server.username || 'root',
+            privateKey: server.privateKey,
         });
 
         const command = `
@@ -136,13 +145,16 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
             npm run build
             echo "--- Rebuild Complete ---"
         `;
-
+        
+        await updateServerLog(logId, { status: 'ongoing', output: `Executing rebuild command in ${appPath}...` });
         const result = await ssh.execCommand(command);
+        const finalOutput = result.stdout + (result.stderr ? `\nSTDERR:\n${result.stderr}` : '');
 
         if (result.code !== 0) {
-            throw new Error(`Rebuild failed: ${result.stderr}`);
+            throw new Error(`Rebuild failed: ${finalOutput}`);
         }
-
+        
+        await updateServerLog(logId, { status: 'completed', output: finalOutput });
         return { success: true };
 
     } catch (error: any) {
@@ -151,10 +163,13 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
             stack: error.stack,
             source: 'rebuildApplication',
         });
+        if (logId) {
+            await updateServerLog(logId, { status: 'failed', output: error.message });
+        }
         return { success: false, error: error.message };
     } finally {
         if (ssh.isConnected()) {
-        ssh.dispose();
+          ssh.dispose();
         }
     }
 }

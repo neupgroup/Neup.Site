@@ -17,6 +17,7 @@ import type { Site } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
+import { createServerLog, updateServerLog } from '@/actions/server-logs';
 
 interface DeploymentStep {
     name: string;
@@ -57,11 +58,17 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }));
     };
 
-    const runChecks = useCallback(async () => {
+    const runChecks = useCallback(async (isManualTrigger = false) => {
         if (!site) {
             setSteps(prev => prev.map(s => ({...s, status: 'failure', description: 'Site context not available.'})));
             setIsChecking(false);
             return;
+        }
+        
+        let logId: string | undefined;
+        if(isManualTrigger) {
+            const logResult = await createServerLog({ serverId: server.id, command: 'Check Application Status', status: 'pending' });
+            logId = logResult.id;
         }
 
         setIsChecking(true);
@@ -73,13 +80,20 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         ];
         setSteps(currentSteps);
 
+        let finalStatus = 'completed';
+        let finalDescription = 'All checks passed.';
+
         // Step 0: Check Application Directory
         updateStep(0, 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
         if (!appDirCheck.exists || appDirCheck.error) {
-            updateStep(0, 'failure', appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
+            const errorMsg = appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`;
+            updateStep(0, 'failure', errorMsg);
+            finalStatus = 'failed';
+            finalDescription = `Check failed at 'Application Exists': ${errorMsg}`;
             failSubsequentSteps(1);
             setIsChecking(false);
+            if(logId) await updateServerLog(logId, { status: 'completed', output: finalDescription });
             return;
         }
         updateStep(0, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
@@ -89,9 +103,13 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         updateStep(1, 'loading', 'Checking for .next build folder...');
         const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
         if (!buildCheck.exists) {
-            updateStep(1, 'failure', 'Application not built. The ".next" folder is missing.');
+            const errorMsg = 'Application not built. The ".next" folder is missing.';
+            updateStep(1, 'failure', errorMsg);
+            finalStatus = 'failed';
+            finalDescription = `Check failed at 'Application Built': ${errorMsg}`;
             failSubsequentSteps(2, 'Skipped because application is not built.');
             setIsChecking(false);
+            if(logId) await updateServerLog(logId, { status: 'completed', output: finalDescription });
             return;
         }
         updateStep(1, 'success', 'Build folder found.');
@@ -102,8 +120,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         
         const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
             getPm2Processes(server.id),
-            checkPathExists(server.id, `/etc/nginx/sites-available/{{universal.site_id}}.conf`),
-            checkPathExists(server.id, `/etc/nginx/sites-enabled/{{universal.site_id}}.conf`)
+            checkPathExists(server.id, `/etc/nginx/sites-available/${site.id}.conf`),
+            checkPathExists(server.id, `/etc/nginx/sites-enabled/${site.id}.conf`)
         ]);
 
         let pm2Ok = false;
@@ -137,8 +155,11 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             updateStep(2, 'success', 'Application is running and Nginx is configured.');
         } else {
             updateStep(2, 'failure', stepDescription.trim());
+            finalStatus = 'failed';
+            finalDescription = `Check failed at 'Start App & Configure Proxy': ${stepDescription.trim()}`;
             failSubsequentSteps(3, 'Skipped because app/proxy is not configured.');
             setIsChecking(false);
+             if(logId) await updateServerLog(logId, { status: 'completed', output: finalDescription });
             return;
         }
 
@@ -152,15 +173,27 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 if (res.ok && data.success) {
                     updateStep(3, 'success', `URL is reachable with status ${data.status}.`);
                 } else {
-                    updateStep(3, 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`);
+                    const errorMsg = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
+                    updateStep(3, 'failure', errorMsg);
+                    finalStatus = 'failed';
+                    finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
                 }
             } catch (e) {
-                updateStep(3, 'failure', 'Could not reach the website URL.');
+                const errorMsg = 'Could not reach the website URL.';
+                updateStep(3, 'failure', errorMsg);
+                finalStatus = 'failed';
+                finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
             }
         } else {
-             updateStep(3, 'failure', 'No domain configured for this site.');
+             const errorMsg = 'No domain configured for this site.';
+             updateStep(3, 'failure', errorMsg);
+             finalStatus = 'failed';
+             finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
         }
-
+        
+        if (logId) {
+             await updateServerLog(logId, { status: 'completed', output: finalDescription });
+        }
         setIsChecking(false);
     }, [server.id, site]);
 
@@ -209,7 +242,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             }
         }
         setIsExecutingAction(null);
-        setTimeout(() => runChecks(), 2000); // Re-run checks after all actions with a small delay
+        setTimeout(() => runChecks(true), 2000); // Re-run checks after all actions with a small delay
     };
     
     const handleRebuild = async () => {
@@ -217,7 +250,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         const result = await rebuildApplication(server.id);
         if (result.success) {
             toast({ title: 'Rebuild Successful' });
-            runChecks();
+            runChecks(true);
         } else {
             toast({ variant: 'destructive', title: 'Rebuild Failed', description: result.error });
         }
@@ -233,7 +266,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             if (result && result.success && result.logId) {
                  setTimeout(() => {
                     router.push(`/root/servers/${result.serverId}`);
-                    runChecks();
+                    runChecks(true);
                 }, 3000);
             } else {
                 throw new Error(result?.error || 'Failed to initiate command.');
@@ -248,6 +281,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
+        // Always show rebuild button if previous step succeeded, regardless of current step's status.
         if (index === 1 && steps[0].status === 'success') {
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
@@ -298,7 +332,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 ))}
             </CardContent>
             <CardFooter className="gap-2">
-                <Button onClick={runChecks} disabled={isChecking || !!isExecutingAction} variant="outline">
+                <Button onClick={() => runChecks(true)} disabled={isChecking || !!isExecutingAction} variant="outline">
                     <RefreshCw className="mr-2"/>
                     Check Status
                 </Button>
