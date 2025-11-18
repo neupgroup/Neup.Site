@@ -171,9 +171,27 @@ export async function runCommand(
     
     revalidatePath(`/root/servers/${serverId}`);
 
-    // --- STAGE 2: Generate wrapper script for Target Server variable resolution ---
-    const runtimeResolutionScript = `
+    // --- STAGE 2: Generate wrapper script for Target Server variable resolution and swap management ---
+    const finalCommand = `
 set -e
+SWAP_FILE="/swapfile_runner"
+
+cleanup() {
+    if [ -f "$SWAP_FILE" ]; then
+        echo "--- Removing temporary swap file ---"
+        sudo swapoff "$SWAP_FILE"
+        sudo rm -f "$SWAP_FILE"
+    fi
+}
+trap cleanup EXIT
+
+echo "--- Creating 4GB temporary swap file ---"
+sudo fallocate -l 4G "$SWAP_FILE"
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE"
+sudo swapon "$SWAP_FILE"
+echo "--- Swap file created ---"
+
 get_available_port() {
     comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
 }
@@ -184,8 +202,6 @@ cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.app_port}}/$APP_PORT/g" | bash
 ${commandToExecute}
 BASH_COMMAND_EOF
         `;
-
-    const finalCommand = runtimeResolutionScript;
 
     const ssh = new NodeSSH();
     let finalOutput = '';
@@ -227,5 +243,6 @@ BASH_COMMAND_EOF
     
     return { success: finalStatus === 'completed', logId, finalStatus };
 }
+
 
 

@@ -41,7 +41,7 @@ set -e
 echo "--- Starting Application Deployment ---"
 
 APP_NAME="{{universal.site_id}}"
-SWAP_FILE="/swapfile"
+SWAP_FILE="/swapfile_prod"
 
 cleanup() {
     echo "--- Running Cleanup ---"
@@ -119,42 +119,8 @@ echo "--- Deployment Complete ---"
             }
         },
         { id: 'install-requisites', data: { name: "Install Requisites", description: "Installs Node.js and npm on an Ubuntu server.", commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", type: 'updation', danger: 'mid' } },
-        { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: `
-<server.ubuntuBashProcessor>
-set -e
-SWAP_FILE="/swapfile_install"
-cleanup() {
-    if [ -f "$SWAP_FILE" ]; then
-        sudo swapoff "$SWAP_FILE"
-        sudo rm -f "$SWAP_FILE"
-    fi
-}
-trap cleanup EXIT
-sudo fallocate -l 4G "$SWAP_FILE"
-sudo chmod 600 "$SWAP_FILE"
-sudo mkswap "$SWAP_FILE"
-sudo swapon "$SWAP_FILE"
-cd {{universal.server_appPath}} && npm install
-</server.ubuntuBashProcessor>
-        `, type: 'updation', danger: 'low' } },
-        { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: `
-<server.ubuntuBashProcessor>
-set -e
-SWAP_FILE="/swapfile_build"
-cleanup() {
-    if [ -f "$SWAP_FILE" ]; then
-        sudo swapoff "$SWAP_FILE"
-        sudo rm -f "$SWAP_FILE"
-    fi
-}
-trap cleanup EXIT
-sudo fallocate -l 4G "$SWAP_FILE"
-sudo chmod 600 "$SWAP_FILE"
-sudo mkswap "$SWAP_FILE"
-sudo swapon "$SWAP_FILE"
-cd {{universal.server_appPath}} && npm run build
-</server.ubuntuBashProcessor>
-        `, type: 'updation', danger: 'low' } },
+        { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: `cd {{universal.server_appPath}} && npm install`, type: 'updation', danger: 'low' } },
+        { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: `cd {{universal.server_appPath}} && npm run build`, type: 'updation', danger: 'low' } },
         { id: 'start-app-and-configure-proxy', data: { 
             name: "Start App & Configure Proxy", 
             description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx.",

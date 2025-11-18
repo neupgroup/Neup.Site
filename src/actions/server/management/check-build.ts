@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
@@ -55,7 +56,7 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
     if (pathToCheck.includes('{{universal.site_id}}')) {
         const { site } = await getSite();
         if (site) {
-            pathToCheck = pathToCheck.replace(/\{\{universal\.site_id\}\}/g, site.id);
+            pathToCheck = pathToCheck.replace(/\{\{universal.site_id\}\}/g, site.id);
         } else {
             throw new Error('Could not resolve {{universal.site_id}} because site context is not available.');
         }
@@ -110,7 +111,24 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
 
         const command = `
             set -e
-            echo "--- Starting Rebuild ---"
+            SWAP_FILE="/swapfile_rebuild"
+            cleanup() {
+                if [ -f "$SWAP_FILE" ]; then
+                    echo "--- Removing temporary swap file ---"
+                    sudo swapoff "$SWAP_FILE"
+                    sudo rm -f "$SWAP_FILE"
+                fi
+            }
+            trap cleanup EXIT
+            
+            echo "--- Creating 4GB temporary swap file ---"
+            sudo fallocate -l 4G "$SWAP_FILE"
+            sudo chmod 600 "$SWAP_FILE"
+            sudo mkswap "$SWAP_FILE"
+            sudo swapon "$SWAP_FILE"
+            echo "--- Swap file created ---"
+
+            echo "--- Starting Rebuild in ${appPath} ---"
             cd '${appPath}'
             echo "Deleting .next folder..."
             rm -rf .next
