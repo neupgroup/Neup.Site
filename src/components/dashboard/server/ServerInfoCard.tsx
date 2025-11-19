@@ -109,10 +109,14 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
                            <p className="font-mono">{server.username || 'N/A'}</p>
                         </DetailItem>
                         <DetailItem icon={Folder} label="Base Path">
-                           <p className="font-mono">{server.basePath || 'N/A'}</p>
+                           <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(server.basePath || '/')}`} className="font-mono hover:underline text-primary">
+                                {server.basePath || 'N/A'}
+                           </Link>
                         </DetailItem>
                          <DetailItem icon={Folder} label="App Path">
-                           <p className="font-mono">{resolvedAppPath}</p>
+                           <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(resolvedAppPath)}`} className="font-mono hover:underline text-primary">
+                                {resolvedAppPath}
+                           </Link>
                         </DetailItem>
                          <DetailItem icon={Clock} label="Uptime">
                            {isRefreshing ? <Skeleton className="h-5 w-32 mt-1"/> : <p>{uptime || 'N/A'}</p>}
