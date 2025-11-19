@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
@@ -92,12 +91,35 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
 export async function rebuildApplication(serverId: string): Promise<{ success: boolean; error?: string, logId?: string }> {
     const ssh = new NodeSSH();
     let appPath = '';
-    const createLogResult = await createServerLog({ serverId, command: 'Rebuild Application', output: 'Starting rebuild...', status: 'pending' });
-    const logId = createLogResult.id;
 
-    if (!logId) {
-        return { success: false, error: 'Failed to create log entry.' };
-    }
+    // Define the command script first
+    const rebuildCommandScript = (path: string) => `
+set -e
+SWAP_FILE="/swapfile_rebuild"
+cleanup() {
+    if [ -f "$SWAP_FILE" ]; then
+        echo "--- Removing temporary swap file ---"
+        sudo swapoff "$SWAP_FILE"
+        sudo rm -f "$SWAP_FILE"
+    fi
+}
+trap cleanup EXIT
+
+echo "--- Creating 4GB temporary swap file ---"
+sudo fallocate -l 4G "$SWAP_FILE"
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE"
+sudo swapon "$SWAP_FILE"
+echo "--- Swap file created ---"
+
+echo "--- Starting Rebuild in ${path} ---"
+cd '${path}'
+echo "Deleting .next folder..."
+rm -rf .next
+echo "Running build..."
+npm run build
+echo "--- Rebuild Complete ---"
+    `.trim();
 
     try {
         const { resolvedPath, error: resolveError } = await resolveAppPath(serverId);
@@ -105,6 +127,22 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
             throw new Error(resolveError);
         }
         appPath = resolvedPath;
+        
+        const command = rebuildCommandScript(appPath);
+
+        const createLogResult = await createServerLog({ 
+            serverId, 
+            commandName: 'Rebuild Application',
+            command: command, 
+            output: 'Starting rebuild...', 
+            status: 'pending' 
+        });
+
+        const logId = createLogResult.id;
+
+        if (!logId) {
+            return { success: false, error: 'Failed to create log entry.' };
+        }
 
         const { server, error: serverError } = await getPrivateServerDetails(serverId);
         if (serverError || !server) {
@@ -117,34 +155,6 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
             username: server.username || 'root',
             privateKey: server.privateKey,
         });
-
-        const command = `
-            set -e
-            SWAP_FILE="/swapfile_rebuild"
-            cleanup() {
-                if [ -f "$SWAP_FILE" ]; then
-                    echo "--- Removing temporary swap file ---"
-                    sudo swapoff "$SWAP_FILE"
-                    sudo rm -f "$SWAP_FILE"
-                fi
-            }
-            trap cleanup EXIT
-            
-            echo "--- Creating 4GB temporary swap file ---"
-            sudo fallocate -l 4G "$SWAP_FILE"
-            sudo chmod 600 "$SWAP_FILE"
-            sudo mkswap "$SWAP_FILE"
-            sudo swapon "$SWAP_FILE"
-            echo "--- Swap file created ---"
-
-            echo "--- Starting Rebuild in ${appPath} ---"
-            cd '${appPath}'
-            echo "Deleting .next folder..."
-            rm -rf .next
-            echo "Running build..."
-            npm run build
-            echo "--- Rebuild Complete ---"
-        `;
         
         await updateServerLog(logId, { status: 'ongoing', output: `Executing rebuild command in ${appPath}...` });
         const result = await ssh.execCommand(command);
@@ -164,10 +174,10 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
             stack: error.stack,
             source: 'rebuildApplication',
         });
-        if (logId) {
-            await updateServerLog(logId, { status: 'failed', output: error.message });
-        }
-        return { success: false, error: error.message, logId };
+        // We can't assume logId exists here if initial createServerLog failed.
+        // The runner.ts example showed a similar issue.
+        // It's safer to just return the error.
+        return { success: false, error: error.message };
     } finally {
         if (ssh.isConnected()) {
           ssh.dispose();
