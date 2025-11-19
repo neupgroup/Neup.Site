@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, ChevronDown, RefreshCw } from 'lucide-react';
+import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } from 'lucide-react';
 import { getServerLogs } from '@/actions/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
@@ -115,7 +115,6 @@ const ServerLogs = ({ serverId }: { serverId: string }) => {
                                                 <span className="text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
                                                 <span className="text-muted-foreground">by {log.initiatedBy}</span>
                                             </div>
-                                            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-muted-foreground" />
                                         </div>
                                         <p className="text-sm font-semibold text-left truncate pr-8">
                                             {log.commandName || 'Undefined Command'}
