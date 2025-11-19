@@ -19,10 +19,10 @@ export default function SettingsPage() {
       href: '/settings/accounts',
     },
     {
-        title: 'Application Control',
-        description: 'Start or stop your application on a server.',
+        title: 'Application Status',
+        description: 'Check status or start/stop your application.',
         icon: <Power className="h-6 w-6 text-primary" />,
-        href: '/settings/start',
+        href: '/status',
     }
   ];
 

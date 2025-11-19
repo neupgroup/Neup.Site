@@ -338,7 +338,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     );
 };
 
-export default function StartApplicationPage() {
+export default function ApplicationStatusPage() {
     const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
