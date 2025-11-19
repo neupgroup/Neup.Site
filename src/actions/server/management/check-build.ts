@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
@@ -7,7 +6,7 @@ import { logErrorToFirestore } from '@/lib/logging';
 import { getSite } from '@/actions/editor/site';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 
-async function resolveAppPath(serverId: string): Promise<{ resolvedPath: string, error?: string }> {
+async function resolveAppPath(serverId: string): Promise<{ resolvedPath: string, error?: string, siteId?: string }> {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
     if (serverError || !server) {
         return { resolvedPath: '', error: 'Could not retrieve server details for path resolution.' };
@@ -29,7 +28,7 @@ async function resolveAppPath(serverId: string): Promise<{ resolvedPath: string,
         resolvedPath = resolvedPath.replace(new RegExp(key.replace(/\{|\}/g, '\\$&'), 'g'), value);
     }
     
-    return { resolvedPath };
+    return { resolvedPath, siteId: site.id };
 }
 
 
@@ -91,9 +90,18 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
 export async function rebuildApplication(serverId: string): Promise<{ success: boolean; error?: string, logId?: string }> {
     const ssh = new NodeSSH();
     let appPath = '';
+    let siteId = '';
+
+    const { resolvedPath, error: resolveError, siteId: resolvedSiteId } = await resolveAppPath(serverId);
+    if (resolveError) {
+        return { success: false, error: resolveError };
+    }
+    appPath = resolvedPath;
+    siteId = resolvedSiteId || '';
+
 
     // Define the command script first
-    const rebuildCommandScript = (path: string) => `
+    const rebuildCommandScript = (path: string, siteIdentifier: string) => `
 set -e
 SWAP_FILE="/swapfile_rebuild"
 cleanup() {
@@ -114,21 +122,29 @@ echo "--- Swap file created ---"
 
 echo "--- Starting Rebuild in ${path} ---"
 cd '${path}'
-echo "Deleting .next folder..."
+
+echo "--- Step 1: Deleting existing PM2 process for ${siteIdentifier} ---"
+(pm2 list | grep -q "${siteIdentifier}" && pm2 delete "${siteIdentifier}" || echo "No old PM2 process to delete.")
+pm2 save
+
+echo "--- Step 2: Deleting old Nginx configs for ${siteIdentifier} ---"
+sudo rm -f /etc/nginx/sites-available/${siteIdentifier}.conf
+sudo rm -f /etc/nginx/sites-enabled/${siteIdentifier}.conf
+sudo systemctl reload nginx
+
+echo "--- Step 3: Deleting .next folder ---"
 rm -rf .next
-echo "Running build..."
+
+echo "--- Step 4: Running npm install ---"
+npm install
+
+echo "--- Step 5: Running build ---"
 npm run build
 echo "--- Rebuild Complete ---"
     `.trim();
 
     try {
-        const { resolvedPath, error: resolveError } = await resolveAppPath(serverId);
-        if (resolveError) {
-            throw new Error(resolveError);
-        }
-        appPath = resolvedPath;
-        
-        const command = rebuildCommandScript(appPath);
+        const command = rebuildCommandScript(appPath, siteId);
 
         const createLogResult = await createServerLog({ 
             serverId, 
