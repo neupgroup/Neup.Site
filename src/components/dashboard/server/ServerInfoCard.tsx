@@ -219,3 +219,5 @@ ServerInfoCard.Skeleton = function ServerInfoCardSkeleton() {
         </Card>
     )
 }
+
+export default ServerInfoCard;
