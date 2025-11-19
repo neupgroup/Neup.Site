@@ -89,7 +89,7 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
   }
 }
 
-export async function rebuildApplication(serverId: string): Promise<{ success: boolean; error?: string }> {
+export async function rebuildApplication(serverId: string): Promise<{ success: boolean; error?: string, logId?: string }> {
     const ssh = new NodeSSH();
     let appPath = '';
     const createLogResult = await createServerLog({ serverId, command: 'Rebuild Application', output: 'Starting rebuild...', status: 'pending' });
@@ -155,18 +155,19 @@ export async function rebuildApplication(serverId: string): Promise<{ success: b
         }
         
         await updateServerLog(logId, { status: 'completed', output: finalOutput });
-        return { success: true };
+        return { success: true, logId };
 
     } catch (error: any) {
+        const errorMessage = `Failed to rebuild application for server ${serverId} at path ${appPath}: ${error.message}`;
         await logErrorToFirestore({
-            message: `Failed to rebuild application for server ${serverId} at path ${appPath}: ${error.message}`,
+            message: errorMessage,
             stack: error.stack,
             source: 'rebuildApplication',
         });
         if (logId) {
             await updateServerLog(logId, { status: 'failed', output: error.message });
         }
-        return { success: false, error: error.message };
+        return { success: false, error: error.message, logId };
     } finally {
         if (ssh.isConnected()) {
           ssh.dispose();

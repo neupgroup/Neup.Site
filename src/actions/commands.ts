@@ -41,6 +41,23 @@ set -e
 echo "--- Starting Application Deployment ---"
 
 APP_NAME="{{universal.site_id}}"
+SWAP_FILE="/swapfile_prod"
+
+cleanup() {
+    if [ -f "$SWAP_FILE" ]; then
+        echo "--- Removing temporary swap file ---"
+        sudo swapoff "$SWAP_FILE"
+        sudo rm -f "$SWAP_FILE"
+    fi
+}
+trap cleanup EXIT
+
+echo "--- Creating 4GB temporary swap file ---"
+sudo fallocate -l 4G "$SWAP_FILE"
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE"
+sudo swapon "$SWAP_FILE"
+echo "--- Swap file created ---"
 
 echo "--- Step 1: Navigating to application directory {{universal.server_appPath}} ---"
 cd {{universal.server_appPath}}
@@ -52,7 +69,7 @@ echo "--- Step 3: Building application ---"
 npm run build
 
 echo "--- Step 4: Starting application with PM2 on port {{universal.app_port}} ---"
-pm2 start "npm start -- -p {{universal.app_port}}" --name "$APP_NAME" --update-env
+pm2 start "npm start -- -p {{universal.app_port}}" --name "$APP_NAME" --update-env --time
 
 echo "--- Step 5: Saving PM2 process list ---"
 pm2 save
@@ -93,7 +110,14 @@ echo "--- Deployment Complete ---"
                 danger: 'high',
             }
         },
-        { id: 'install-requisites', data: { name: "Install Requisites", description: "Installs Node.js and npm on an Ubuntu server.", commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", type: 'updation', danger: 'mid' } },
+        { id: 'install-requisites', data: { 
+            name: "Install Requisites", 
+            description: "Installs Node.js and npm on an Ubuntu server.", 
+            commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", 
+            type: 'updation', 
+            danger: 'mid' 
+          } 
+        },
         {
           id: 'install-packages',
           data: {
@@ -114,10 +138,16 @@ echo "--- Deployment Complete ---"
                 danger: 'low'
             }
         },
-        { id: 'start-app-and-configure-proxy', data: { 
+        { 
+          id: 'start-app-and-configure-proxy', data: { 
             name: "Start App & Configure Proxy", 
             description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx with an SSL redirect.",
-            commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env && pm2 save && sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
+            commandTemplate: `
+cd {{universal.server_appPath}}
+(pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.")
+pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env --time
+pm2 save
+sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
     server_name {{universal.site_domain}};

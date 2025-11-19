@@ -72,15 +72,14 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(true);
-        const currentSteps = [
+        const initialSteps = [
             { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
             { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
             { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Start App & Configure Proxy' } },
             { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
         ];
-        setSteps(currentSteps);
+        setSteps(initialSteps);
 
-        let finalStatus = 'completed';
         let finalDescription = 'All checks passed.';
 
         // Step 0: Check Application Directory
@@ -89,7 +88,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (!appDirCheck.exists || appDirCheck.error) {
             const errorMsg = appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`;
             updateStep(0, 'failure', errorMsg);
-            finalStatus = 'failed';
             finalDescription = `Check failed at 'Application Exists': ${errorMsg}`;
             failSubsequentSteps(1);
             setIsChecking(false);
@@ -105,7 +103,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (!buildCheck.exists) {
             const errorMsg = 'Application not built. The ".next" folder is missing.';
             updateStep(1, 'failure', errorMsg);
-            finalStatus = 'failed';
             finalDescription = `Check failed at 'Application Built': ${errorMsg}`;
             failSubsequentSteps(2, 'Skipped because application is not built.');
             setIsChecking(false);
@@ -155,7 +152,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             updateStep(2, 'success', 'Application is running and Nginx is configured.');
         } else {
             updateStep(2, 'failure', stepDescription.trim());
-            finalStatus = 'failed';
             finalDescription = `Check failed at 'Start App & Configure Proxy': ${stepDescription.trim()}`;
             failSubsequentSteps(3, 'Skipped because app/proxy is not configured.');
             setIsChecking(false);
@@ -175,19 +171,16 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 } else {
                     const errorMsg = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
                     updateStep(3, 'failure', errorMsg);
-                    finalStatus = 'failed';
                     finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
                 }
             } catch (e) {
                 const errorMsg = 'Could not reach the website URL.';
                 updateStep(3, 'failure', errorMsg);
-                finalStatus = 'failed';
                 finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
             }
         } else {
              const errorMsg = 'No domain configured for this site.';
              updateStep(3, 'failure', errorMsg);
-             finalStatus = 'failed';
              finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
         }
         

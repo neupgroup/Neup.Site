@@ -209,8 +209,7 @@ BASH_COMMAND_EOF
 
     try {
         await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
-        revalidatePath(`/root/servers/${serverId}`);
-
+        
         await ssh.connect({ host: server.publicIp, username: server.username || 'root', privateKey: server.privateKey });
         
         await updateServerLog(logId, { output: `Connection successful. Running command...` });
@@ -219,9 +218,9 @@ BASH_COMMAND_EOF
         
         finalOutput += result.stdout ? `STDOUT:\n${result.stdout}\n` : '';
         finalOutput += result.stderr ? `\nSTDERR:\n${result.stderr}\n` : '';
-        finalOutput += `\nExited with code: ${result.code}`;
         
         finalStatus = result.code === 0 ? 'completed' : 'failed';
+        finalOutput += `\nExited with code: ${result.code}`;
         await updateServerLog(logId, { status: finalStatus, output: finalOutput });
 
     } catch (error: any) {
@@ -243,6 +242,7 @@ BASH_COMMAND_EOF
     
     return { success: finalStatus === 'completed', logId, finalStatus };
 }
+
 
 
 
