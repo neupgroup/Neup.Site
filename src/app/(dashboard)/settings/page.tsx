@@ -1,4 +1,3 @@
-
 'use client'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
@@ -18,12 +17,6 @@ export default function SettingsPage() {
       icon: <Users className="h-6 w-6 text-primary" />,
       href: '/settings/accounts',
     },
-    {
-        title: 'Application Status',
-        description: 'Check status or start/stop your application.',
-        icon: <Power className="h-6 w-6 text-primary" />,
-        href: '/status',
-    }
   ];
 
   return (
