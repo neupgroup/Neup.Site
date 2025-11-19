@@ -1,6 +1,6 @@
 
 'use client';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, use } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -13,7 +13,8 @@ import { killProcess } from '@/actions/server/management/kill-process';
 import PM2Status from '@/components/dashboard/server/PM2Status';
 import Link from 'next/link';
 
-export default function ProcessesStatusPage({ params }: { params: { id: string } }) {
+export default function ProcessesStatusPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,14 +24,14 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
   const fetchProcesses = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    const result = await getActiveProcesses(params.id);
+    const result = await getActiveProcesses(id);
     if (result.success) {
       setProcesses(result.processes || []);
     } else {
       setError(result.error || 'Failed to fetch active processes.');
     }
     setIsLoading(false);
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     fetchProcesses();
@@ -38,7 +39,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
 
   const handleKillProcess = async (pid: number) => {
     setKillingPid(pid);
-    const result = await killProcess(params.id, pid);
+    const result = await killProcess(id, pid);
     if (result.success) {
         toast({ title: 'Process Terminated', description: `Successfully sent termination signal to PID ${pid}.` });
         fetchProcesses();
@@ -52,13 +53,13 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
     <div className="space-y-6">
         <div className="mb-4">
             <Button variant="ghost" asChild>
-                <Link href={`/root/servers/${params.id}`}>
+                <Link href={`/root/servers/${id}`}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Server
                 </Link>
             </Button>
         </div>
-        <PM2Status serverId={params.id} />
+        <PM2Status serverId={id} />
         <Card>
         <CardHeader>
             <CardTitle>All Active Processes</CardTitle>
