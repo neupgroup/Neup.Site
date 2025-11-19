@@ -148,8 +148,9 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
                             <Share2 className="mr-2 h-4 w-4" /> Allocate Server
                         </Link>
                     </Button>
-                    <Button variant="destructive" size="sm" onClick={() => setShowRebootConfirm(true)}>
-                        <ServerCrash className="mr-2 h-4 w-4" /> Reboot Server
+                    <Button variant="destructive" size="sm" onClick={() => setShowRebootConfirm(true)} disabled={isPending}>
+                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <ServerCrash className="mr-2 h-4 w-4" />}
+                        Reboot Server
                     </Button>
                 </CardFooter>
             </Card>
