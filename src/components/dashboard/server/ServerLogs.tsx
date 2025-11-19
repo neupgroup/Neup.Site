@@ -69,18 +69,20 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
     };
     
     return (
-        <div>
-            <div className="flex justify-between items-center mb-4">
-                <div>
-                    <h3 className="text-lg font-semibold">Server Logs</h3>
-                    <p className="text-sm text-muted-foreground">History of all commands run on this server.</p>
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Server Logs</CardTitle>
+                        <CardDescription>History of all commands run on this server.</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => fetchLogs(logsPage)} disabled={loadingLogs}>
+                    {loadingLogs ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                    Reload
+                    </Button>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => fetchLogs(logsPage)} disabled={loadingLogs}>
-                   {loadingLogs ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                   Reload
-                </Button>
-            </div>
-            <div>
+            </CardHeader>
+            <CardContent>
                 {loadingLogs && logs.length === 0 ? (
                     <div className="space-y-4">
                         {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
@@ -142,9 +144,9 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                         ))}
                     </Accordion>
                 )}
-            </div>
+            </CardContent>
             {(logsPage > 1 || hasMoreLogs) && (
-                <div className="flex items-center justify-between pt-4">
+                <CardFooter className="flex items-center justify-between pt-4">
                     <div className="flex items-center gap-2">
                         <Button
                             variant="outline"
@@ -168,8 +170,8 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                     <div className="text-sm text-muted-foreground">
                         Page {logsPage}
                     </div>
-                </div>
+                </CardFooter>
             )}
-        </div>
+        </Card>
     );
 }

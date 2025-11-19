@@ -108,57 +108,59 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
-        <div>
-            <div className="mb-4">
-                <h3 className="text-lg font-semibold">Server Management</h3>
-                <p className="text-sm text-muted-foreground">Perform common server maintenance and setup tasks.</p>
-            </div>
-            <div className="space-y-4">
-                 <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search commands..."
-                        className="pl-8"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setCurrentPage(1); // Reset to first page on search
-                        }}
-                    />
-                </div>
-                <Accordion type="single" collapsible className="w-full space-y-2">
-                    {loading || isPending ? (
-                        <div className="space-y-2">
-                            {[...Array(3)].map((_, i) => (
-                            <div key={i} className="p-4 border rounded-lg space-y-2">
-                                <Skeleton className="h-5 w-3/4" />
-                                <Skeleton className="h-4 w-1/2" />
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Management</CardTitle>
+                <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search commands..."
+                            className="pl-8"
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setCurrentPage(1); // Reset to first page on search
+                            }}
+                        />
+                    </div>
+                    <Accordion type="single" collapsible className="w-full space-y-2">
+                        {loading || isPending ? (
+                            <div className="space-y-2">
+                                {[...Array(3)].map((_, i) => (
+                                <div key={i} className="p-4 border rounded-lg space-y-2">
+                                    <Skeleton className="h-5 w-3/4" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                </div>
+                                ))}
                             </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <>
-                            {commands.map((cmd) => (
-                                <AccordionItem value={cmd.id!} key={cmd.id} className="border rounded-lg data-[state=open]:border-primary group">
-                                    <AccordionTrigger className="p-4 hover:no-underline text-left">
-                                        <div className="flex-1 pr-4">
-                                            <h4 className="font-medium text-left">{cmd.name}</h4>
-                                            <p className="text-sm text-muted-foreground text-left">{cmd.description || 'No description'}</p>
-                                        </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent>
-                                        <div className="p-4 border-t transition-colors group-hover:bg-muted/50 data-[state=open]:border-primary">
-                                            <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
-                                        </div>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            ))}
-                        </>
-                    )}
-                </Accordion>
-            </div>
-             {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
+                        ) : (
+                            <>
+                                {commands.map((cmd) => (
+                                    <AccordionItem value={cmd.id!} key={cmd.id} className="border rounded-lg data-[state=open]:border-primary group">
+                                        <AccordionTrigger className="p-4 hover:no-underline text-left">
+                                            <div className="flex-1 pr-4">
+                                                <h4 className="font-medium text-left">{cmd.name}</h4>
+                                                <p className="text-sm text-muted-foreground text-left">{cmd.description || 'No description'}</p>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent>
+                                            <div className="p-4 border-t transition-colors group-hover:bg-muted/50 data-[state=open]:border-primary">
+                                                <SavedCommandForm command={cmd} onRun={handleRunSavedCommand} isPending={isPending} />
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </>
+                        )}
+                    </Accordion>
+                </div>
+            </CardContent>
+            {totalPages > 1 && (
+                <CardFooter className="flex items-center justify-between mt-4">
                     <div className="flex items-center gap-2">
                         <Button
                             variant="outline"
@@ -179,8 +181,8 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                             <ChevronRight className="h-4 w-4" />
                         </Button>
                     </div>
-                </div>
+                </CardFooter>
             )}
-        </div>
+        </Card>
     );
 }
