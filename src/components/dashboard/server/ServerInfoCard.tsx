@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,12 +17,10 @@ import { getUptime } from '@/actions/server/management/get-uptime';
 import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
 import { getMemoryUsage } from '@/actions/server/management/get-memory-usage';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ServerInfoCardProps {
     server: Server;
-    initialUptime: string | null;
-    initialStorage: { used: string, total: string, unit: string } | null;
-    initialMemory: { used: number, total: number, unit: string } | null;
 }
 
 const DetailItem = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
@@ -32,13 +30,13 @@ const DetailItem = ({ icon: Icon, label, children }: { icon: React.ElementType, 
     </div>
 );
 
-export default function ServerInfoCard({ server: initialServer, initialUptime, initialStorage, initialMemory }: ServerInfoCardProps) {
-    const [server, setServer] = useState(initialServer);
-    const [uptime, setUptime] = useState(initialUptime);
-    const [storage, setStorage] = useState(initialStorage);
-    const [memory, setMemory] = useState(initialMemory);
+const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
+    const [server] = useState(initialServer);
+    const [uptime, setUptime] = useState<string | null>(null);
+    const [storage, setStorage] = useState<{ used: string, total: string, unit: string } | null>(null);
+    const [memory, setMemory] = useState<{ used: number, total: number, unit: string } | null>(null);
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(true);
 
     const { site } = useProfile();
     const [isPending, startTransition] = useTransition();
@@ -66,11 +64,16 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
         }
         setIsRefreshing(false);
     }
+    
+    useEffect(() => {
+        handleRefreshAll();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [server.id]);
 
     const handleReboot = async () => {
         setShowRebootConfirm(false);
         startTransition(async () => {
-            await runCommand(server.id, 'sudo reboot');
+            await runCommand(server.id, 'sudo reboot', {}, 'Reboot Server');
             toast({ title: "Reboot Command Sent", description: `The server is now rebooting. This may take a few minutes.` });
         });
     };
@@ -111,17 +114,17 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
                          <DetailItem icon={Folder} label="App Path">
                            <p className="font-mono">{resolvedAppPath}</p>
                         </DetailItem>
-                        <DetailItem icon={Clock} label="Uptime">
-                           <p>{uptime || 'N/A'}</p>
+                         <DetailItem icon={Clock} label="Uptime">
+                           {isRefreshing ? <Skeleton className="h-5 w-32 mt-1"/> : <p>{uptime || 'N/A'}</p>}
                         </DetailItem>
                          <DetailItem icon={HardDrive} label="Storage">
                            <Link href={`/root/servers/${server.id}/storage`} className="hover:underline text-primary">
-                             {storage ? `${storage.used}${storage.unit} / ${storage.total}${storage.unit}` : 'Click to view'}
+                             {isRefreshing ? <Skeleton className="h-5 w-24 mt-1"/> : (storage ? `${storage.used}${storage.unit} / ${storage.total}${storage.unit}` : 'Click to view')}
                            </Link>
                         </DetailItem>
                         <DetailItem icon={Cpu} label="Processes (RAM)">
                            <Link href={`/root/servers/${server.id}/processes`} className="hover:underline text-primary">
-                             {memory ? `${memory.used}${memory.unit} / ${memory.total}${memory.unit}` : 'Click to view'}
+                            {isRefreshing ? <Skeleton className="h-5 w-24 mt-1"/> : (memory ? `${memory.used}${memory.unit} / ${memory.total}${memory.unit}` : 'Click to view')}
                            </Link>
                         </DetailItem>
                          <DetailItem icon={Wifi} label="Network">
@@ -171,4 +174,48 @@ export default function ServerInfoCard({ server: initialServer, initialUptime, i
             </AlertDialog>
         </>
     );
+}
+
+const DetailItemSkeleton = ({ icon: Icon, label, skeletonWidth = 'w-32' }: { icon: React.ElementType, label: string, skeletonWidth?: string }) => (
+    <div>
+        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Icon className="h-4 w-4" />{label}</h4>
+        <Skeleton className={`h-5 mt-1 ${skeletonWidth}`} />
+    </div>
+);
+
+ServerInfoCard.Skeleton = function ServerInfoCardSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <Skeleton className="h-8 w-48 mb-2" />
+                        <Skeleton className="h-4 w-64" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-20" />
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-4 border-t">
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <DetailItemSkeleton icon={Globe} label="Public IP" skeletonWidth="w-36" />
+                    <DetailItemSkeleton icon={Warehouse} label="Provider" />
+                    <DetailItemSkeleton icon={User} label="Default Username" skeletonWidth="w-24"/>
+                    <DetailItemSkeleton icon={Folder} label="Base Path" />
+                    <DetailItemSkeleton icon={Folder} label="App Path" />
+                    <DetailItemSkeleton icon={Clock} label="Uptime" />
+                    <DetailItemSkeleton icon={HardDrive} label="Storage" />
+                    <DetailItemSkeleton icon={Cpu} label="Processes (RAM)" />
+                    <DetailItemSkeleton icon={Wifi} label="Network" />
+                </div>
+            </CardContent>
+            <CardFooter className="flex flex-wrap gap-2">
+                <Skeleton className="h-9 w-36" />
+                <Skeleton className="h-9 w-40" />
+                <Skeleton className="h-9 w-36" />
+            </CardFooter>
+        </Card>
+    )
 }

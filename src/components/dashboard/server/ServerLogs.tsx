@@ -14,7 +14,7 @@ import { logErrorToFirestore } from '@/lib/logging';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-export default function ServerLogs({ serverId }: { serverId: string }) {
+const ServerLogs = ({ serverId }: { serverId: string }) => {
     const [logs, setLogs] = useState<ServerLog[]>([]);
     const [logsPage, setLogsPage] = useState(1);
     const [hasMoreLogs, setHasMoreLogs] = useState(false);
@@ -43,6 +43,7 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
 
     useEffect(() => {
         fetchLogs(logsPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [serverId, logsPage]);
 
     useEffect(() => {
@@ -160,7 +161,7 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setLogsPage(prev => prev + 1)}
+                            onClick={() => setLogsPage(prev => Math.min(5, prev + 1))}
                             disabled={!hasMoreLogs || loadingLogs}
                         >
                             Next
@@ -174,4 +175,22 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
             )}
         </Card>
     );
+};
+
+ServerLogs.Skeleton = function ServerLogsSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Logs</CardTitle>
+                <CardDescription>History of all commands run on this server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
+                </div>
+            </CardContent>
+        </Card>
+    )
 }
+
+export default ServerLogs;

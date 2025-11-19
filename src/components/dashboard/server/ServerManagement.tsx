@@ -72,7 +72,7 @@ const SavedCommandForm = ({ command, onRun, isPending }: { command: ServerComman
 };
 
 
-export default function ServerManagement({ serverId }: { serverId: string }) {
+const ServerManagement = ({ serverId }: { serverId: string }) => {
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
     const [commands, setCommands] = useState<ServerCommand[]>([]);
@@ -185,4 +185,20 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
             )}
         </Card>
     );
+};
+
+ServerManagement.Skeleton = function ServerManagementSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Management</CardTitle>
+                <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-40 w-full" />
+            </CardContent>
+        </Card>
+    )
 }
+
+export default ServerManagement;
