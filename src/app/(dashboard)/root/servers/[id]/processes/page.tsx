@@ -88,7 +88,7 @@ export default function ProcessesStatusPage({ params }: { params: Promise<{ id: 
             <div className="space-y-2 pr-4">
                 {processes.map((proc) => (
                 <div key={proc.pid} className="flex items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted group">
-                    <div>
+                    <div className="flex-1 min-w-0">
                         <p className="font-mono text-sm">PID: {proc.pid} ({proc.user})</p>
                         <p className="font-mono truncate text-muted-foreground">{proc.command}</p>
                     </div>
