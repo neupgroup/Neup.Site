@@ -108,12 +108,12 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Server Management</CardTitle>
-                <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <div>
+            <div className="mb-4">
+                <h3 className="text-lg font-semibold">Server Management</h3>
+                <p className="text-sm text-muted-foreground">Perform common server maintenance and setup tasks.</p>
+            </div>
+            <div className="space-y-4">
                  <div className="relative">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -156,9 +156,9 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                         </>
                     )}
                 </Accordion>
-            </CardContent>
+            </div>
              {totalPages > 1 && (
-                <CardFooter className="justify-start">
+                <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center gap-2">
                         <Button
                             variant="outline"
@@ -179,8 +179,8 @@ export default function ServerManagement({ serverId }: { serverId: string }) {
                             <ChevronRight className="h-4 w-4" />
                         </Button>
                     </div>
-                </CardFooter>
+                </div>
             )}
-        </Card>
+        </div>
     );
 }
