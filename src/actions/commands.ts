@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import {
@@ -68,7 +69,7 @@ echo "--- Step 3: Building application ---"
 npm run build
 
 echo "--- Step 4: Starting application with PM2 on port {{universal.app_port}} ---"
-(pm2 list | grep -q "$APP_NAME" && pm2 delete "$APP_NAME" || echo "No old PM2 process to delete.")
+(pm2 list | grep -q "$APP_NAME" && pm2 delete "$APP_NAME") || echo "No old PM2 process to delete."
 pm2 start "npm start -- -p {{universal.app_port}}" --name "$APP_NAME" --update-env --time
 
 echo "--- Step 5: Saving PM2 process list ---"
@@ -166,7 +167,7 @@ sudo swapon "$SWAP_FILE"
 echo "--- Swap file created ---"
 
 cd {{universal.server_appPath}}
-(pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.")
+(pm2 list | grep -q '{{universal.site_id}}' && pm2 delete '{{universal.site_id}}') || echo "No old processes to delete."
 pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env --time
 pm2 save
 

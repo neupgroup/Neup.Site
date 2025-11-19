@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
@@ -124,7 +125,7 @@ echo "--- Starting Rebuild in ${path} ---"
 cd '${path}'
 
 echo "--- Step 1: Deleting existing PM2 process for ${siteIdentifier} ---"
-(pm2 list | grep -q "${siteIdentifier}" && pm2 delete "${siteIdentifier}" || echo "No old PM2 process to delete.")
+(pm2 list | grep -q "${siteIdentifier}" && pm2 delete "${siteIdentifier}") || echo "No old PM2 process to delete."
 pm2 save
 
 echo "--- Step 2: Deleting old Nginx configs for ${siteIdentifier} ---"
