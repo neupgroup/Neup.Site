@@ -17,8 +17,19 @@ import { logErrorToFirestore } from '@/lib/logging';
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
 import ServerManagement from '@/components/dashboard/server/ServerManagement';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Globe, Warehouse, User, Folder, Clock, HardDrive, Cpu, Wifi, ListTree, Share2, ServerCrash, RefreshCw, Loader2 } from 'lucide-react';
 
-export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+const DetailItemSkeleton = ({ icon: Icon, label, skeletonWidth = 'w-32' }: { icon: React.ElementType, label: string, skeletonWidth?: string }) => (
+    <div>
+        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2"><Icon className="h-4 w-4" />{label}</h4>
+        <Skeleton className={`h-5 mt-1 ${skeletonWidth}`} />
+    </div>
+);
+
+
+export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = use(params);
   const [server, setServer] = useState<Server | null>(null);
   const [uptime, setUptime] = useState<string | null>(null);
@@ -75,46 +86,66 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   if (loading) {
     return (
       <div className="w-full space-y-6">
-        <Skeleton className="h-10 w-48" />
-        <div className="space-y-4 border rounded-lg p-6">
-            <div className="flex justify-between items-start">
-                <div>
-                    <Skeleton className="h-8 w-48 mb-2" />
-                    <Skeleton className="h-4 w-64" />
+        <div className="mb-4">
+            <Button asChild variant="outline">
+            <Link href="/root/servers">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Servers
+            </Link>
+            </Button>
+        </div>
+        <Card>
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <Skeleton className="h-8 w-48 mb-2" />
+                        <Skeleton className="h-4 w-64" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-20" />
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-20" />
-                </div>
-            </div>
-            <div className="space-y-6 pt-6 border-t">
+            </CardHeader>
+            <CardContent className="space-y-6 pt-4 border-t">
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[...Array(9)].map((_, i) => (
-                         <div key={i} className="space-y-2">
-                             <Skeleton className="h-4 w-24" />
-                            <Skeleton className="h-5 w-32" />
-                        </div>
-                    ))}
+                    <DetailItemSkeleton icon={Globe} label="Public IP" skeletonWidth="w-36" />
+                    <DetailItemSkeleton icon={Warehouse} label="Provider" />
+                    <DetailItemSkeleton icon={User} label="Default Username" skeletonWidth="w-24"/>
+                    <DetailItemSkeleton icon={Folder} label="Base Path" />
+                    <DetailItemSkeleton icon={Folder} label="App Path" />
+                    <DetailItemSkeleton icon={Clock} label="Uptime" />
+                    <DetailItemSkeleton icon={HardDrive} label="Storage" />
+                    <DetailItemSkeleton icon={Cpu} label="Processes (RAM)" />
+                    <DetailItemSkeleton icon={Wifi} label="Network" />
                 </div>
-            </div>
-             <div className="pt-6 border-t flex flex-wrap gap-2">
+            </CardContent>
+            <CardFooter className="flex flex-wrap gap-2">
                 <Skeleton className="h-9 w-36" />
                 <Skeleton className="h-9 w-40" />
                 <Skeleton className="h-9 w-36" />
-            </div>
-        </div>
-         <div className="space-y-4">
-             <Skeleton className="h-6 w-48" />
-             <Skeleton className="h-4 w-64" />
-            <div className="space-y-2">
-                {[...Array(3)].map((_, i) => (
-                    <div key={i} className="p-4 border rounded-lg space-y-2">
-                        <Skeleton className="h-5 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                    </div>
-                ))}
-            </div>
-        </div>
+            </CardFooter>
+        </Card>
+         <Card>
+             <CardHeader>
+                 <CardTitle>Server Management</CardTitle>
+                 <CardDescription>Perform common server maintenance and setup tasks.</CardDescription>
+             </CardHeader>
+             <CardContent>
+                 <Skeleton className="h-40 w-full" />
+             </CardContent>
+         </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Logs</CardTitle>
+                <CardDescription>History of all commands run on this server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
+                </div>
+            </CardContent>
+        </Card>
       </div>
     );
   }
