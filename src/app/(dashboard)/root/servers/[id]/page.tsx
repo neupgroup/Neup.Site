@@ -141,7 +141,7 @@ export default function ServerDetailPage({ params }: { params: Promise<{ id: str
   return (
     <div className="w-full space-y-6">
       <div className="mb-4">
-        <Button variant="ghost" asChild>
+        <Button asChild variant="outline">
           <Link href="/root/servers">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Servers
