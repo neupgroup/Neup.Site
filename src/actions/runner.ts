@@ -43,6 +43,7 @@ export async function runCommand(
             const cmd = commandDetails.command;
             rawCommandTemplate = cmd.commandTemplate;
             allocatesPort = cmd.allocatesPort || false;
+            // Prioritize the explicitly passed command name, but fall back to the template's name.
             if (!commandName) {
                 commandName = cmd.name;
             }
@@ -242,6 +243,7 @@ BASH_COMMAND_EOF
     
     return { success: finalStatus === 'completed', logId, finalStatus };
 }
+
 
 
 
