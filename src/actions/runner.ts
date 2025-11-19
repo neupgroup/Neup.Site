@@ -29,7 +29,7 @@ export async function runCommand(
     processedParams: Record<string, any> = {},
     commandNameToLog?: string,
 ): Promise<{ success: boolean; error?: string; logId?: string; finalStatus?: ServerLog['status'] }> {
-    const isCommandId = !commandIdentifier.includes(' ') && !commandIdentifier.includes('\n');
+    const isCommandId = !commandIdentifier.includes(' ') && !commandIdentifier.includes('\n') && !commandIdentifier.includes('<');
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
     let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
     
@@ -43,7 +43,6 @@ export async function runCommand(
             const cmd = commandDetails.command;
             rawCommandTemplate = cmd.commandTemplate;
             allocatesPort = cmd.allocatesPort || false;
-            // Prioritize the explicitly passed command name, but fall back to the template's name.
             if (!commandName) {
                 commandName = cmd.name;
             }
@@ -56,7 +55,6 @@ export async function runCommand(
 
     let { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
     
-    // --- STAGE 1: Pre-computation and Variable Resolution on Application Server ---
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
     if (serverError || !server || !server.publicIp || !server.privateKey) {
         const errorMsg = `Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`;
@@ -101,7 +99,6 @@ export async function runCommand(
     let templateParams = { ...processedParams };
     const allParamsForPreExecution = { ...templateParams, ...appServerVariables };
     
-    // --- Execute Pre-Processor Script ---
     if (preExecutionScript) {
         let scriptWithInjectedParams = preExecutionScript;
         for (const [key, value] of Object.entries(allParamsForPreExecution)) {
@@ -122,22 +119,19 @@ export async function runCommand(
                 templateParams = { ...templateParams, ...scriptResult };
             }
         } catch (scriptError: any) {
-            await logErrorToFirestore({ message: `Pre-execution script failed: ${scriptError.message}`, source: 'runCommand.preExec' });
-            return { success: false, error: 'Pre-execution script failed.'};
+            await logErrorToFirestore({ message: `Failed to run pre-execution script: ${scriptError.message}`, source: 'runCommand.preExec', details: scriptToRun });
+            return { success: false, error: `Pre-execution script failed: ${scriptError.message}`};
         }
     }
     
-    // --- Create final params object AFTER pre-execution ---
     const allFinalParams = { ...templateParams, ...appServerVariables };
     
-    // --- Replace App Server Variables in Bash Command ---
     let commandToExecute = bashCommand;
     for (const [key, value] of Object.entries(allFinalParams)) {
          const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
          commandToExecute = commandToExecute.replace(placeholderRegex, String(value));
     }
     
-    // --- Create a separate command for logging, with confidential data masked ---
     let loggedCommand = bashCommand;
     const allParamsForLogging = { ...allFinalParams };
     confidentialParamKeys.forEach(key => {
@@ -145,7 +139,6 @@ export async function runCommand(
             allParamsForLogging[key] = '********';
         }
     });
-    // Mask GitHub token as well, as it is always confidential
     if(allParamsForLogging['universal.account_githubToken']) {
         allParamsForLogging['universal.account_githubToken'] = '********';
     }
@@ -172,7 +165,6 @@ export async function runCommand(
     
     revalidatePath(`/root/servers/${serverId}`);
 
-    // --- STAGE 2: Generate wrapper script for Target Server variable resolution and swap management ---
     const finalCommand = `
 set -e
 SWAP_FILE="/swapfile_runner"
@@ -243,6 +235,7 @@ BASH_COMMAND_EOF
     
     return { success: finalStatus === 'completed', logId, finalStatus };
 }
+
 
 
 
