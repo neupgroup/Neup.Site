@@ -1,7 +1,8 @@
+
 'use client'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users, Repeat, Power } from 'lucide-react';
+import { ArrowRight, Users, Repeat } from 'lucide-react';
 
 export default function SettingsPage() {
   const settingsOptions = [

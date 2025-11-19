@@ -41,7 +41,7 @@ import {
   Package,
   Mountain,
   UtensilsCrossed,
-  Power,
+  Activity,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -76,7 +76,7 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
         <nav className="flex flex-col gap-2">
             <NavLink href="/" currentPath={currentPath} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
             <NavLink href="/profile" currentPath={currentPath} onClick={onLinkClick}><User className="h-4 w-4" /><span>Profile</span></NavLink>
-            <NavLink href="/status" currentPath={currentPath} onClick={onLinkClick}><Power className="h-4 w-4" /><span>App Status</span></NavLink>
+            <NavLink href="/status" currentPath={currentPath} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></NavLink>
             <NavLink href="/settings" currentPath={currentPath} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></NavLink>
 
             <div className="mt-4 space-y-2">
