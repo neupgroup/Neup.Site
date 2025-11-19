@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { use } from 'react';
 
-export default function ViewArticlePage({ params }: { params: { id: string } }) {
+export default function ViewArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   return (
     <div className="w-full">
         <div className="mb-4">
@@ -22,7 +24,7 @@ export default function ViewArticlePage({ params }: { params: { id: string } }) 
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Article: {params.id}</CardTitle>
+          <CardTitle>Article: {id}</CardTitle>
           <CardDescription>
             Viewing details for a single article.
           </CardDescription>

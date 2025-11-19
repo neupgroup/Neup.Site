@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { getTeams, type Team } from '@/actions/teams';
 import { getMember, updateMember, type Member } from '@/actions/members';
 import { useToast } from '@/hooks/use-toast';
@@ -12,8 +12,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function EditMemberHierarchyPage({ params }: { params: { id: string } }) {
-    const { id } = params;
+export default function EditMemberHierarchyPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const { toast } = useToast();
     const [member, setMember] = useState<Member | null>(null);
     const [allTeams, setAllTeams] = useState<Team[]>([]);

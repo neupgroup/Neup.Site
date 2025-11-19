@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,8 +18,8 @@ import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
 import ServerManagement from '@/components/dashboard/server/ServerManagement';
 
-export default function ServerDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ServerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [server, setServer] = useState<Server | null>(null);
   const [uptime, setUptime] = useState<string | null>(null);
   const [storage, setStorage] = useState<{ used: string, total: string, unit: string } | null>(null);

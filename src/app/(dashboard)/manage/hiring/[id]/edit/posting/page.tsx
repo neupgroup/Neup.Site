@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import Link from 'next/link';
 import {
   Card,
@@ -17,14 +17,15 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ArrowLeft, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-export default function JobPostingOptionsPage({ params }: { params: { id: string } }) {
+export default function JobPostingOptionsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [postingOption, setPostingOption] = useState('company');
   
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
         <Button variant="ghost" asChild>
-          <Link href={`/manage/hiring/${params.id}`}>
+          <Link href={`/manage/hiring/${id}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Job Posting
           </Link>

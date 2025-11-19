@@ -55,7 +55,7 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
         form.reset({
           name: templateResult.template.name,
           description: templateResult.template.description,
-          type: templateResult.template.type,
+          type: templateResult.template.type as 'section' | 'page' | 'element',
           status: templateResult.template.status,
         });
       } else {

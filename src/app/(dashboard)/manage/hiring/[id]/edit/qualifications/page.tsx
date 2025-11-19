@@ -1,3 +1,4 @@
+
 'use client';
 
 import { getJobPostingById, updateJobPosting, type JobPosting } from '@/actions/hiring';
@@ -9,7 +10,7 @@ import { AlertCircle, ArrowLeft, Pencil, Users, Save, X, Loader2, Plus, Trash2 }
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -117,7 +118,8 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
     );
 }
 
-export default function ViewJobPostingPage({ params }: { params: { id: string } }) {
+export default function ViewJobPostingPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [posting, setPosting] = useState<JobPosting | null>(null);
   const [applicants, setApplicants] = useState<Applicant[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -128,8 +130,8 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   const fetchJobData = async () => {
     setLoading(true);
     const [postingResult, applicantsResult] = await Promise.all([
-      getJobPostingById(params.id),
-      getApplicantsForJob(params.id)
+      getJobPostingById(id),
+      getApplicantsForJob(id)
     ]);
     
     if (postingResult.error || !postingResult.posting) {
@@ -147,7 +149,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
   useEffect(() => {
     fetchJobData();
-  }, [params.id]);
+  }, [id]);
 
   const handleSave = async (data: FormValues) => {
     if (!posting) return;
@@ -227,7 +229,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="outline" size="sm"><Link href={`/manage/hiring/${params.id}/applicants`}>View All</Link></Button></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="outline" size="sm"><Link href={`/manage/hiring/${id}/applicants`}>View All</Link></Button></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

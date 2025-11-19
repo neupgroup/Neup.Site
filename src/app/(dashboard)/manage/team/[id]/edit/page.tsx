@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -25,7 +25,8 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function EditTeamPage({ params }: { params: { id: string } }) {
+export default function EditTeamPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const { toast } = useToast();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -34,7 +35,7 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
     });
 
     useEffect(() => {
-        getTeam(params.id).then(({ team, error }) => {
+        getTeam(id).then(({ team, error }) => {
             if (error || !team) {
                 toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch team data.'});
                 router.push('/manage/team');
@@ -46,13 +47,13 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
                 });
             }
         });
-    }, [params.id, form, router, toast]);
+    }, [id, form, router, toast]);
     
     const onSubmit = async (data: FormValues) => {
-        const result = await updateTeam(params.id, data);
+        const result = await updateTeam(id, data);
         if (result.success) {
             toast({ title: 'Team Updated' });
-            router.push(`/manage/team/${params.id}`);
+            router.push(`/manage/team/${id}`);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }
@@ -60,7 +61,7 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
     
     const handleDelete = async () => {
         setShowDeleteConfirm(false);
-        const result = await deleteTeam(params.id);
+        const result = await deleteTeam(id);
         if (result.success) {
             toast({ title: 'Team Deleted'});
             router.push('/manage/team');
@@ -74,7 +75,7 @@ export default function EditTeamPage({ params }: { params: { id: string } }) {
             <div className="w-full max-w-2xl">
                 <div className="mb-4">
                     <Button variant="ghost" asChild>
-                        <Link href={`/manage/team/${params.id}`}>
+                        <Link href={`/manage/team/${id}`}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Team
                         </Link>

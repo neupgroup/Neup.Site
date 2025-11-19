@@ -1,11 +1,14 @@
 
+'use client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { use } from 'react';
 
-export default function EditTeamHierarchyPage({ params }: { params: { id: string } }) {
+export default function EditTeamHierarchyPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     return (
         <div className="w-full">
             <header className="flex items-center justify-between mb-8">
-                <h1 className="font-headline text-2xl font-semibold tracking-tight">Edit Team Hierarchy: {params.id}</h1>
+                <h1 className="font-headline text-2xl font-semibold tracking-tight">Edit Team Hierarchy: {id}</h1>
             </header>
             <Card>
                 <CardHeader>
