@@ -41,48 +41,23 @@ set -e
 echo "--- Starting Application Deployment ---"
 
 APP_NAME="{{universal.site_id}}"
-SWAP_FILE="/swapfile_prod"
 
-cleanup() {
-    echo "--- Running Cleanup ---"
-    
-    echo "Stopping and deleting previous PM2 process for {{universal.site_id}} if it exists..."
-    pm2 list | grep -q "{{universal.site_id}}" && pm2 delete $(pm2 list | grep "{{universal.site_id}}" | awk '{print $2}') || echo "No existing processes to delete."
-
-    echo "Removing swap file..."
-    if [ -f "$SWAP_FILE" ]; then
-        sudo swapoff "$SWAP_FILE"
-        sudo rm -f "$SWAP_FILE"
-        echo "Swap file removed."
-    fi
-}
-
-# Trap EXIT to call cleanup function on any script exit
-trap cleanup EXIT
-
-echo "--- Step 1: Creating 4GB swap file ---"
-sudo fallocate -l 4G "$SWAP_FILE"
-sudo chmod 600 "$SWAP_FILE"
-sudo mkswap "$SWAP_FILE"
-sudo swapon "$SWAP_FILE"
-echo "Swap file created and activated."
-
-echo "--- Step 2: Navigating to application directory {{universal.server_appPath}} ---"
+echo "--- Step 1: Navigating to application directory {{universal.server_appPath}} ---"
 cd {{universal.server_appPath}}
 
-echo "--- Step 3: Installing packages ---"
+echo "--- Step 2: Installing packages ---"
 npm install
 
-echo "--- Step 4: Building application ---"
+echo "--- Step 3: Building application ---"
 npm run build
 
-echo "--- Step 5: Starting application with PM2 on port {{universal.app_port}} ---"
+echo "--- Step 4: Starting application with PM2 on port {{universal.app_port}} ---"
 pm2 start "npm start -- -p {{universal.app_port}}" --name "$APP_NAME" --update-env
 
-echo "--- Step 6: Saving PM2 process list ---"
+echo "--- Step 5: Saving PM2 process list ---"
 pm2 save
 
-echo "--- Step 7: Configuring Nginx reverse proxy ---"
+echo "--- Step 6: Configuring Nginx reverse proxy ---"
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
@@ -104,7 +79,7 @@ EOF
 sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 
-echo "--- Step 8: Setting up SSL with Certbot ---"
+echo "--- Step 7: Setting up SSL with Certbot and enabling auto-redirect ---"
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 
 sudo systemctl reload nginx
@@ -119,11 +94,29 @@ echo "--- Deployment Complete ---"
             }
         },
         { id: 'install-requisites', data: { name: "Install Requisites", description: "Installs Node.js and npm on an Ubuntu server.", commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", type: 'updation', danger: 'mid' } },
-        { id: 'install-packages', data: { name: "Install Packages", description: "Runs 'npm install' in the application directory.", commandTemplate: `cd {{universal.server_appPath}} && npm install`, type: 'updation', danger: 'low' } },
-        { id: 'build-app', data: { name: "Build App", description: "Runs 'npm run build' in the application directory.", commandTemplate: `cd {{universal.server_appPath}} && npm run build`, type: 'updation', danger: 'low' } },
+        {
+          id: 'install-packages',
+          data: {
+              name: "Install Packages",
+              description: "Runs 'npm install' in the application directory.",
+              commandTemplate: `cd {{universal.server_appPath}} && npm install`,
+              type: 'updation',
+              danger: 'low'
+          }
+        },
+        {
+            id: 'build-app',
+            data: {
+                name: "Build App",
+                description: "Runs 'npm run build' in the application directory.",
+                commandTemplate: `cd {{universal.server_appPath}} && npm run build`,
+                type: 'updation',
+                danger: 'low'
+            }
+        },
         { id: 'start-app-and-configure-proxy', data: { 
             name: "Start App & Configure Proxy", 
-            description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx.",
+            description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx with an SSL redirect.",
             commandTemplate: `cd {{universal.server_appPath}} && (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete $(pm2 list | grep '{{universal.site_id}}' | awk '{print $2}') || echo "No old processes to delete.") && pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env && pm2 save && sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
