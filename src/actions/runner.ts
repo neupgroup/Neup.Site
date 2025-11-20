@@ -38,15 +38,21 @@ export async function runCommand(
     let allocatesPort = false;
     let commandName: string | undefined = commandNameToLog;
 
-    // Create the log entry first, so we have an ID to update.
-    const createResult = await createServerLog({
+    // Build the initial log data object carefully.
+    const initialLogData: Omit<ServerLog, 'id' | 'initiatedAt' | 'completedAt'> = {
         serverId: serverId,
-        commandId,
         commandName: commandName || (commandId ? 'Loading Command...' : 'Custom Command'),
         command: 'Preparing to execute...', // Placeholder
         output: `Initiating command...`,
         status: 'pending',
-    });
+    };
+
+    if (commandId) {
+        initialLogData.commandId = commandId;
+    }
+
+    // Create the log entry first, so we have an ID to update.
+    const createResult = await createServerLog(initialLogData);
 
     if (!createResult.success || !createResult.id) {
         console.error('Failed to create initial log entry for command:', commandIdentifier, 'Error:', createResult.error);
