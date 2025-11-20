@@ -48,17 +48,17 @@ export default function PM2Status({ serverId }: { serverId: string }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>PM2 Processes</CardTitle>
-        <CardDescription>
+    <div>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold">PM2 Processes</h2>
+        <p className="text-sm text-muted-foreground">
           Status of applications managed by PM2. Logs are typically stored in the{' '}
           <Link href={`/root/servers/${serverId}/files?path=%2Froot%2F.pm2%2Flogs`} className="underline hover:text-primary">
             PM2 logs directory
           </Link>.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div>
         {isLoading ? (
             <div className="space-y-4">
                 {[...Array(2)].map((_, i) => (
@@ -100,7 +100,7 @@ export default function PM2Status({ serverId }: { serverId: string }) {
               <p>No PM2 processes found or PM2 is not installed.</p>
             </div>
           )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
