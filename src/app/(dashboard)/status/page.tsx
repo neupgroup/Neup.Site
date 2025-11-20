@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback, use } from 'react';
@@ -75,7 +74,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         const initialSteps = [
             { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
             { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
-            { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Start App & Configure Proxy' } },
+            { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
             { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
         ];
         setSteps(initialSteps);
@@ -250,27 +249,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setIsExecutingAction(null);
     };
 
-    const handleFullRestart = async () => {
-        setIsExecutingAction('app-start-prod');
-        toast({ title: `Starting App on ${server.name}`, description: "This may take up to 5 minutes." });
-        
-        try {
-            const result = await runCommand(server.id, "app-start-prod", {}, "Start Application (Production)");
-            if (result && result.success && result.logId) {
-                 setTimeout(() => {
-                    router.push(`/root/servers/${result.serverId}`);
-                    runChecks(true);
-                }, 3000);
-            } else {
-                throw new Error(result?.error || 'Failed to initiate command.');
-            }
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: 'Error', description: `Failed to start application: ${e.message}` });
-        } finally {
-            setIsExecutingAction(null);
-        }
-    };
-    
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
@@ -278,6 +256,12 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (index === 1 && steps[0].status === 'success') {
              actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
+        
+        // Show restart button on step 2 if step 1 succeeded
+        if (index === 2 && steps[1].status === 'success') {
+            actions.push(<Button key="restart-app" size="sm" variant="link" onClick={() => handleActionClick(2)} disabled={!!isExecutingAction}>{isExecutingAction === 'Start App & Configure Proxy' ? <Loader2 className="animate-spin" /> : 'Restart App & Proxy'}</Button>);
+        }
+
 
         const canShowFixAction = (index === 0 || (index > 0 && steps[index - 1].status === 'success')) && step.status === 'failure';
         
@@ -300,10 +284,16 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <ServerIcon className="h-5 w-5"/>
-                    {server.name}
-                </CardTitle>
+                <div className="flex justify-between items-center">
+                    <CardTitle className="flex items-center gap-2">
+                        <ServerIcon className="h-5 w-5"/>
+                        {server.name}
+                    </CardTitle>
+                     <Button onClick={() => runChecks(true)} disabled={isChecking || !!isExecutingAction} variant="ghost" size="sm">
+                        {isChecking ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                        Check Status
+                    </Button>
+                </div>
                 <CardDescription>{server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -324,16 +314,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                     </div>
                 ))}
             </CardContent>
-            <CardFooter className="gap-2">
-                <Button onClick={() => runChecks(true)} disabled={isChecking || !!isExecutingAction} variant="outline">
-                    <RefreshCw className="mr-2"/>
-                    Check Status
-                </Button>
-                <Button onClick={handleFullRestart} disabled={isChecking || !!isExecutingAction}>
-                    {isExecutingAction === 'app-start-prod' ? <Loader2 className="mr-2 animate-spin"/> : <Rocket className="mr-2" />}
-                    {isExecutingAction === 'app-start-prod' ? 'Restarting...' : 'Restart Application'}
-                </Button>
-            </CardFooter>
         </Card>
     );
 };
@@ -391,7 +371,3 @@ export default function ApplicationStatusPage() {
         </div>
     );
 }
-
-
-
-    
