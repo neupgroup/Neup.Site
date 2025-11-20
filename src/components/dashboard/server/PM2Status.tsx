@@ -169,7 +169,7 @@ export default function PM2Status({ serverId }: { serverId: string }) {
           ) : processes && processes.length > 0 ? (
             <div className="space-y-2">
                 {processes.map((proc) => (
-                  <div key={proc.id} className="p-2 bg-muted/50 rounded-md hover:bg-muted flex justify-between items-center">
+                  <div key={proc.id} className="p-2 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 text-sm">
                           <span className="font-semibold truncate">{proc.name}</span>
@@ -181,7 +181,7 @@ export default function PM2Status({ serverId }: { serverId: string }) {
                           <span> Restarts: {proc.restarts}</span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 self-end sm:self-center">
                         <LogViewer serverId={serverId} processId={proc.id} processName={proc.name} />
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
