@@ -56,7 +56,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
           </div>
           <div className="mt-4">
             {isLoading ? (
-                <div className="space-y-4">
+                <div className="space-y-2 pr-0 sm:pr-4">
                   {[...Array(5)].map((_, i) => (
                     <div key={i} className="flex justify-between items-center p-2 border-b">
                       <div className="space-y-1">
@@ -76,10 +76,10 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
             ) : processes && processes.length > 0 ? (
                 <div className="space-y-2 pr-0 sm:pr-4">
                     {processes.map((proc) => (
-                      <div key={proc.pid} className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted gap-2">
+                      <div key={proc.pid} className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted gap-2 w-full overflow-hidden">
                         <div className="flex-1 min-w-0">
                             <p className="font-mono text-sm">PID: {proc.pid} ({proc.user})</p>
-                            <p className="font-mono text-muted-foreground break-all">{proc.command}</p>
+                            <p className="font-mono text-muted-foreground truncate whitespace-nowrap">{proc.command}</p>
                         </div>
                         <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-2 mt-2 sm:mt-0">
                             <p className="font-mono text-right flex-shrink-0">{proc.cpu}% CPU / {proc.mem.toFixed(2)} MB</p>
@@ -98,4 +98,3 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
     </div>
   );
 };
-
