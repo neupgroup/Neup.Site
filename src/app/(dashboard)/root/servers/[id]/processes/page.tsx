@@ -4,16 +4,14 @@ import { useCallback, useState, useEffect, use } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Trash2, Loader2, ArrowLeft } from 'lucide-react';
+import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { killProcess } from '@/actions/server/management/kill-process';
 import PM2Status from '@/components/dashboard/server/PM2Status';
 import Link from 'next/link';
 
 export default function ProcessesStatusPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = use(params);
   const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,12 +43,12 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
             </Button>
         </div>
         <PM2Status serverId={id} />
-        <Card>
-        <CardHeader>
+        <div>
+          <CardHeader className="px-0">
             <CardTitle>All Active Processes</CardTitle>
             <CardDescription>A list of all running processes on the server, sorted by memory usage.</CardDescription>
-        </CardHeader>
-        <CardContent>
+          </CardHeader>
+          <CardContent className="px-0">
         {isLoading ? (
             <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
@@ -89,7 +87,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
             </div>
         )}
         </CardContent>
-        </Card>
+        </div>
     </div>
   );
 };
