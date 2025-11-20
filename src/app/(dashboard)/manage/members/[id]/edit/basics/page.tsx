@@ -75,7 +75,7 @@ export default function EditMemberBasicsPage({ params }: { params: Promise<{ id:
          <>
             <div className="w-full max-w-2xl">
                 <div className="mb-4">
-                    <Button variant="ghost" asChild>
+                    <Button variant="outline" asChild>
                         <Link href={`/manage/members/${id}`}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Member

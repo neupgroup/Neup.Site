@@ -12,7 +12,7 @@ export default function ViewArticlePage({ params }: { params: Promise<{ id: stri
   return (
     <div className="w-full">
         <div className="mb-4">
-            <Button variant="ghost" asChild>
+            <Button variant="outline" asChild>
                 <Link href="/article">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Articles

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -79,7 +80,7 @@ export default function CreateJobPostingPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="ghost" asChild>
+        <Button variant="outline" asChild>
           <Link href="/manage/hiring">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Hiring
