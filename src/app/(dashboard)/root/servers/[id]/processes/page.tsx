@@ -53,7 +53,7 @@ export default function ProcessesStatusPage({ params: paramsPromise }: { params:
   return (
     <div className="space-y-6">
         <div className="mb-4">
-            <Button variant="ghost" asChild>
+            <Button variant="outline" asChild>
                 <Link href={`/root/servers/${id}`}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Server
@@ -88,12 +88,12 @@ export default function ProcessesStatusPage({ params: paramsPromise }: { params:
         ) : processes && processes.length > 0 ? (
             <div className="space-y-2 pr-4">
                 {processes.map((proc) => (
-                  <div key={proc.pid} className="flex items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted group">
+                  <div key={proc.pid} className="flex flex-col md:flex-row items-start md:items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted group gap-2">
                     <div className="flex-1 min-w-0">
                         <p className="font-mono text-sm truncate">PID: {proc.pid} ({proc.user})</p>
                         <p className="font-mono truncate text-muted-foreground">{proc.command}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between w-full md:w-auto md:justify-end gap-2">
                         <p className="font-mono text-right flex-shrink-0">{proc.cpu}% CPU / {proc.mem.toFixed(2)} MB</p>
                             <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -130,5 +130,3 @@ export default function ProcessesStatusPage({ params: paramsPromise }: { params:
     </div>
   );
 };
-
-    
