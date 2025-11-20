@@ -1,9 +1,11 @@
 
+
 'use client';
 
 import { useState, useTransition } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { runCommand } from '@/actions/runner';
+import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +19,7 @@ const ServerManagement = ({ serverId }: { serverId: string }) => {
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
     const [customCommand, setCustomCommand] = useState('');
+    const router = useRouter();
 
     const handleRunCustomCommand = () => {
         if (!customCommand.trim()) {
@@ -29,8 +32,13 @@ const ServerManagement = ({ serverId }: { serverId: string }) => {
         }
 
         startTransition(async () => {
-            await runCommand(serverId, customCommand, {}, 'Custom Command');
-            toast({ title: "Custom Command Sent", description: "Check the server logs for output." });
+            const result = await runCommand(serverId, customCommand, {}, 'Custom Command');
+            if(result.success) {
+                toast({ title: "Custom Command Sent", description: "Check the server logs for output." });
+            } else {
+                toast({ variant: "destructive", title: "Command Failed", description: result.error || "An unknown error occurred."});
+            }
+            // We might want to clear the command on success or failure
             setCustomCommand('');
         });
     };

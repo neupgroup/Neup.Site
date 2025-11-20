@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, setDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
@@ -43,7 +44,9 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
   } catch (e: any) {
      // Cannot log to Firestore here as it might cause an infinite loop if logging itself fails
     console.error(`CRITICAL: Failed to update server log ${id}.`, e);
-    return { success: false, error: 'Failed to update server log.' };
+    // Don't return an error here, as this is often called in a non-critical path
+    // and we don't want to stop the main flow for a logging error.
+    return { success: false, error: e.message };
   }
 }
 
