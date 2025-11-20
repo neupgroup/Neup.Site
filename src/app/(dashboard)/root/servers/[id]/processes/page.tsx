@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { Button } from '@/components/ui/button';
 import PM2Status from '@/components/dashboard/server/PM2Status';
@@ -76,7 +76,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
             ) : processes && processes.length > 0 ? (
                 <div className="space-y-2 pr-0 sm:pr-4">
                     {processes.map((proc) => (
-                      <div key={proc.pid} className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted gap-2 w-full overflow-hidden">
+                       <div key={proc.pid} className="flex flex-col sm:flex-row sm:items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted gap-2 w-full overflow-hidden">
                         <div className="flex-1 min-w-0">
                             <p className="font-mono text-sm">PID: {proc.pid} ({proc.user})</p>
                             <p className="font-mono text-muted-foreground truncate whitespace-nowrap">{proc.command}</p>
@@ -98,3 +98,4 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
     </div>
   );
 };
+
