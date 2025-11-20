@@ -3,9 +3,9 @@
 
 import { useState, useEffect, useCallback, use } from 'react';
 import { getSiteServers, type Server } from '@/actions/servers';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Server as ServerIcon, CheckCircle, XCircle, RefreshCw, AlertCircle, Rocket } from 'lucide-react';
+import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { runCommand } from '@/actions/runner';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -33,7 +33,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const [isExecutingAction, setIsExecutingAction] = useState<string | null>(null);
     const [steps, setSteps] = useState<DeploymentStep[]>([
         { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
-        { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
+        { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Rebuild App' } },
         { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
         { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
     ]);
@@ -73,7 +73,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setIsChecking(true);
         const initialSteps = [
             { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
-            { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
+            { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Rebuild App' } },
             { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
             { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
         ];
@@ -236,32 +236,17 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setIsExecutingAction(null);
         setTimeout(() => runChecks(true), 2000); // Re-run checks after all actions with a small delay
     };
-    
-    const handleRebuild = async () => {
-        setIsExecutingAction('Application Built');
-        const result = await rebuildApplication(server.id);
-        if (result.success) {
-            toast({ title: 'Rebuild Successful' });
-            runChecks(true);
-        } else {
-            toast({ variant: 'destructive', title: 'Rebuild Failed', description: result.error });
-        }
-        setIsExecutingAction(null);
-    };
 
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
-
-        // Always show rebuild button if previous step succeeded, regardless of current step's status.
+        
         if (index === 1 && steps[0].status === 'success') {
-             actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={handleRebuild} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
+            actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={() => handleActionClick(1)} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
         }
         
-        // Show restart button on step 2 if step 1 succeeded
         if (index === 2 && steps[1].status === 'success') {
             actions.push(<Button key="restart-app" size="sm" variant="link" onClick={() => handleActionClick(2)} disabled={!!isExecutingAction}>{isExecutingAction === 'Start App & Configure Proxy' ? <Loader2 className="animate-spin" /> : 'Restart App & Proxy'}</Button>);
         }
-
 
         const canShowFixAction = (index === 0 || (index > 0 && steps[index - 1].status === 'success')) && step.status === 'failure';
         
@@ -287,14 +272,10 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 <div className="flex justify-between items-center">
                     <CardTitle className="flex items-center gap-2">
                         <ServerIcon className="h-5 w-5"/>
-                        {server.name}
+                        <span className="truncate">{server.name}</span>
                     </CardTitle>
-                     <Button onClick={() => runChecks(true)} disabled={isChecking || !!isExecutingAction} variant="ghost" size="sm">
-                        {isChecking ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                        Check Status
-                    </Button>
                 </div>
-                <CardDescription>{server.publicIp}</CardDescription>
+                <CardDescription className="truncate">{server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {steps.map((step, index) => (
@@ -371,5 +352,3 @@ export default function ApplicationStatusPage() {
         </div>
     );
 }
-
-    
