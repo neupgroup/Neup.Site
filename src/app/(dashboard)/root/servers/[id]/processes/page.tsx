@@ -4,7 +4,6 @@ import { useCallback, useState, useEffect, use } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
 import { AlertCircle, Trash2, Loader2, ArrowLeft } from 'lucide-react';
 import { getActiveProcesses, type ProcessInfo } from '@/actions/server/management/get-active-processes';
 import { Button } from '@/components/ui/button';
@@ -18,9 +17,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
   const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [killingPid, setKillingPid] = useState<number | null>(null);
-  const { toast } = useToast();
-
+  
   const fetchProcesses = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -36,18 +33,6 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
   useEffect(() => {
     fetchProcesses();
   }, [fetchProcesses]);
-
-  const handleKillProcess = async (pid: number) => {
-    setKillingPid(pid);
-    const result = await killProcess(id, pid);
-    if (result.success) {
-        toast({ title: 'Process Terminated', description: `Successfully sent termination signal to PID ${pid}.` });
-        fetchProcesses();
-    } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
-    }
-    setKillingPid(null);
-  }
 
   return (
     <div className="space-y-6">
@@ -94,27 +79,6 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
                     </div>
                     <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-2 mt-2 sm:mt-0">
                         <p className="font-mono text-right flex-shrink-0">{proc.cpu}% CPU / {proc.mem.toFixed(2)} MB</p>
-                            <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    {killingPid === proc.pid ? <Loader2 className="h-4 w-4 animate-spin"/> : <Trash2 className="h-4 w-4 text-destructive" />}
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will attempt to terminate process {proc.pid} ({proc.command}). This could have unintended consequences.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleKillProcess(proc.pid)}>
-                                        Terminate
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
                     </div>
                 </div>
                 ))}
