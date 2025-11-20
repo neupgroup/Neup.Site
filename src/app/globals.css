@@ -132,7 +132,9 @@
   body {
     @apply bg-background text-foreground font-body;
     font-weight: 400;
-    overflow-y: scroll;
+    width: 100vw;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
     transition: background-color 300ms ease, color 300ms ease;
   }
    /* Apply smooth transitions to common elements */
