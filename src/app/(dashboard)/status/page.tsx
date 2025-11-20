@@ -34,7 +34,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const [steps, setSteps] = useState<DeploymentStep[]>([
         { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
         { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
-        { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Start App & Configure Proxy' } },
+        { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
         { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
     ]);
     
@@ -371,3 +371,5 @@ export default function ApplicationStatusPage() {
         </div>
     );
 }
+
+    

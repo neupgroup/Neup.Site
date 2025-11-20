@@ -175,7 +175,7 @@ export default function PM2Status({ serverId }: { serverId: string }) {
                           <span className="font-semibold truncate">{proc.name}</span>
                           {getStatusBadge(proc.status)}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">
+                        <div className="text-xs text-muted-foreground mt-1 truncate">
                           <span>{proc.cpu}% CPU / {proc.memory}</span> | 
                           <span> Uptime: {proc.uptime}</span> |
                           <span> Restarts: {proc.restarts}</span>
@@ -224,3 +224,5 @@ export default function PM2Status({ serverId }: { serverId: string }) {
     </Card>
   );
 };
+
+    

@@ -78,18 +78,18 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
         });
     };
 
-    const resolvedAppPath = server.appPath?.replace(/\{\{universal\.site_id\}\}/g, site?.id || '') || 'N/A';
+    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || 'N/A';
 
     return (
         <>
             <Card>
                 <CardHeader>
                     <div className="flex justify-between items-start">
-                        <div>
-                            <CardTitle>{server.name}</CardTitle>
-                            <CardDescription>ID: {server.id}</CardDescription>
+                        <div className="min-w-0">
+                            <CardTitle className="truncate">{server.name}</CardTitle>
+                            <CardDescription className="truncate">ID: {server.id}</CardDescription>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                             {server.isPrivate && <Badge variant="secondary">Private</Badge>}
                             {server.serverType && <Badge variant="outline" className="capitalize">{server.serverType}</Badge>}
                         </div>
@@ -103,23 +103,23 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
                             </a>
                         </DetailItem>
                         <DetailItem icon={Warehouse} label="Provider">
-                            <p>{server.provider || 'N/A'}</p>
+                            <p className="truncate">{server.provider || 'N/A'}</p>
                         </DetailItem>
                         <DetailItem icon={User} label="Default Username">
-                           <p className="font-mono">{server.username || 'N/A'}</p>
+                           <p className="font-mono truncate">{server.username || 'N/A'}</p>
                         </DetailItem>
                         <DetailItem icon={Folder} label="Base Path">
-                           <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(server.basePath || '/')}`} className="font-mono hover:underline text-primary">
+                           <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(server.basePath || '/')}`} className="font-mono hover:underline text-primary truncate block">
                                 {server.basePath || 'N/A'}
                            </Link>
                         </DetailItem>
                          <DetailItem icon={Folder} label="App Path">
-                           <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(resolvedAppPath)}`} className="font-mono hover:underline text-primary">
+                           <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(resolvedAppPath)}`} className="font-mono hover:underline text-primary truncate block">
                                 {resolvedAppPath}
                            </Link>
                         </DetailItem>
                          <DetailItem icon={Clock} label="Uptime">
-                           {isRefreshing ? <Skeleton className="h-5 w-32 mt-1"/> : <p>{uptime || 'N/A'}</p>}
+                           {isRefreshing ? <Skeleton className="h-5 w-32 mt-1"/> : <p className="truncate">{uptime || 'N/A'}</p>}
                         </DetailItem>
                          <DetailItem icon={HardDrive} label="Storage">
                            <Link href={`/root/servers/${server.id}/storage`} className="hover:underline text-primary">
@@ -225,3 +225,5 @@ ServerInfoCard.Skeleton = function ServerInfoCardSkeleton() {
 }
 
 export default ServerInfoCard;
+
+    

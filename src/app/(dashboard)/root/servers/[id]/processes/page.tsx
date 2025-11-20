@@ -13,8 +13,9 @@ import { killProcess } from '@/actions/server/management/kill-process';
 import PM2Status from '@/components/dashboard/server/PM2Status';
 import Link from 'next/link';
 
-export default function ProcessesStatusPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ProcessesStatusPage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
+  const params = use(paramsPromise);
+  const id = params.id;
   const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,9 +88,9 @@ export default function ProcessesStatusPage({ params }: { params: Promise<{ id: 
         ) : processes && processes.length > 0 ? (
             <div className="space-y-2 pr-4">
                 {processes.map((proc) => (
-                <div key={proc.pid} className="flex items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted group">
+                  <div key={proc.pid} className="flex items-center justify-between text-xs p-2 bg-muted/50 rounded-md hover:bg-muted group">
                     <div className="flex-1 min-w-0">
-                        <p className="font-mono text-sm">PID: {proc.pid} ({proc.user})</p>
+                        <p className="font-mono text-sm truncate">PID: {proc.pid} ({proc.user})</p>
                         <p className="font-mono truncate text-muted-foreground">{proc.command}</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -129,3 +130,5 @@ export default function ProcessesStatusPage({ params }: { params: Promise<{ id: 
     </div>
   );
 };
+
+    
