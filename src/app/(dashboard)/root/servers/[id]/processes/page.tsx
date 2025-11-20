@@ -1,7 +1,7 @@
 
 'use client';
-import { useCallback, useState, useEffect, use } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCallback, useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
@@ -11,7 +11,7 @@ import PM2Status from '@/components/dashboard/server/PM2Status';
 import Link from 'next/link';
 
 export default function ProcessesStatusPage({ params }: { params: { id: string } }) {
-  const { id } = use(params);
+  const { id } = params;
   const [processes, setProcesses] = useState<ProcessInfo[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,11 +48,11 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
             <CardTitle>All Active Processes</CardTitle>
             <CardDescription>A list of all running processes on the server, sorted by memory usage.</CardDescription>
           </CardHeader>
-          <CardContent className="px-0">
+          <div className="px-0">
         {isLoading ? (
             <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex justify-between p-2">
+                <div key={i} className="flex justify-between items-center p-2 border-b">
                         <div className="space-y-1">
                             <Skeleton className="h-4 w-24" />
                             <Skeleton className="h-3 w-48" />
@@ -86,7 +86,7 @@ export default function ProcessesStatusPage({ params }: { params: { id: string }
             <p>No active processes found.</p>
             </div>
         )}
-        </CardContent>
+        </div>
         </div>
     </div>
   );

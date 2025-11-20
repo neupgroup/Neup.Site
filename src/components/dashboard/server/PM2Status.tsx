@@ -1,7 +1,6 @@
 
 'use client';
 import { useCallback, useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -62,7 +61,7 @@ export default function PM2Status({ serverId }: { serverId: string }) {
         {isLoading ? (
             <div className="space-y-4">
                 {[...Array(2)].map((_, i) => (
-                    <div key={i} className="flex justify-between p-2">
+                    <div key={i} className="flex justify-between p-2 border-b">
                         <div className="space-y-1">
                             <Skeleton className="h-4 w-24" />
                             <Skeleton className="h-3 w-48" />
