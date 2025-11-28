@@ -20,7 +20,7 @@ import { createServerLog, updateServerLog } from '@/actions/server-logs';
 
 interface DeploymentStep {
     name: string;
-    status: 'pending' | 'success' | 'failure' | 'loading';
+    status: 'pending' | 'success' | 'failure' | 'loading' | 'warning';
     description: string;
     action?: { commandId: string; label: string; };
     subActions?: { commandId: string; label: string; }[];
@@ -166,7 +166,12 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    updateStep(3, 'success', `URL is reachable with status ${data.status}.`);
+                    if (data.status === 200) {
+                        updateStep(3, 'success', `URL is reachable with status 200 (OK).`);
+                    } else {
+                        updateStep(3, 'warning', `URL is reachable but returned status ${data.status}.`);
+                        finalDescription = `Check finished with a warning at 'Website Live': Status ${data.status}.`;
+                    }
                 } else {
                     const errorMsg = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
                     updateStep(3, 'failure', errorMsg);
@@ -265,6 +270,21 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
 
         return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
     }
+    
+    const getStatusIcon = (status: DeploymentStep['status']) => {
+        switch (status) {
+            case 'loading':
+            case 'pending':
+                return <Loader2 className="h-5 w-5 animate-spin" />;
+            case 'success':
+                return <CheckCircle className="h-5 w-5 text-green-500" />;
+            case 'warning':
+                return <AlertCircle className="h-5 w-5 text-amber-500" />;
+            case 'failure':
+            default:
+                return <XCircle className="h-5 w-5 text-destructive" />;
+        }
+    };
 
     return (
         <Card>
@@ -282,9 +302,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                     <div key={step.name}>
                         <div className="flex items-start gap-4">
                             <div className="flex-shrink-0 pt-1">
-                                {step.status === 'loading' || (isChecking && step.status === 'pending') ? <Loader2 className="h-5 w-5 animate-spin" /> : 
-                                step.status === 'success' ? <CheckCircle className="h-5 w-5 text-green-500" /> : 
-                                <XCircle className="h-5 w-5 text-destructive" />}
+                                {getStatusIcon(step.status)}
                             </div>
                             <div>
                                 <p className="font-medium">{step.name}</p>
