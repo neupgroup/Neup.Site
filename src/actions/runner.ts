@@ -174,9 +174,26 @@ export async function runCommand(
         // Update the log with the actual command to be executed
         await updateServerLog(logId, { command: loggedCommand });
 
-
         const finalCommand = `
 set -e
+SWAP_FILE="/command_swapfile"
+
+cleanup() {
+    if [ -f "$SWAP_FILE" ]; then
+        echo "--- Removing temporary swap file ---"
+        sudo swapoff "$SWAP_FILE"
+        sudo rm -f "$SWAP_FILE"
+    fi
+}
+trap cleanup EXIT
+
+echo "--- Creating 4GB temporary swap file ---"
+sudo fallocate -l 4G "$SWAP_FILE" > /dev/null
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE" > /dev/null
+sudo swapon "$SWAP_FILE"
+echo "--- Swap file created and active ---"
+
 get_available_port() {
     comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
 }
