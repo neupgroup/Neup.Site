@@ -88,6 +88,38 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
         setSelectedElementId(null);
     }, [initialPageId, initialElements]);
 
+    useEffect(() => {
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.error = (...args) => {
+            if (
+                typeof args[0] === 'string' &&
+                (args[0].includes('cannot be a descendant of') ||
+                    args[0].includes('Hydration failed') ||
+                    args[0].includes('There was an error while hydrating'))
+            ) {
+                return;
+            }
+            originalError.apply(console, args);
+        };
+
+        console.warn = (...args) => {
+            if (
+                typeof args[0] === 'string' &&
+                (args[0].includes('validateDOMNesting'))
+            ) {
+                return;
+            }
+            originalWarn.apply(console, args);
+        };
+
+        return () => {
+            console.error = originalError;
+            console.warn = originalWarn;
+        };
+    }, []);
+
 
     const findElementRecursive = (elements: CanvasElementData[], id: string): { element: CanvasElementData, parent?: CanvasElementData } | null => {
         for (const el of elements) {

@@ -376,8 +376,8 @@ const LeftSidebar: FC<LeftSidebarProps> = ({ elements, selectedElement, onSelect
     <aside className="w-72 border-r bg-card">
       <Tabs defaultValue="add" className="flex h-full flex-col">
         <TabsList className="grid w-full grid-cols-3 rounded-none border-b">
-          <TabsTrigger value="add">Add</TabsTrigger>
-          <TabsTrigger value="layers"><Layers className="h-4 w-4" /></TabsTrigger>
+          <TabsTrigger value="add">Elements</TabsTrigger>
+          <TabsTrigger value="layers">Layers</TabsTrigger>
           <TabsTrigger value="pages">Pages</TabsTrigger>
         </TabsList>
         <ScrollArea className="flex-1">

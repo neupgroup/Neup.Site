@@ -16,9 +16,10 @@ interface EditableTextProps {
     currentTag?: string;
     className?: string;
     style?: React.CSSProperties;
+    as?: string;
 }
 
-export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, onTagChange, currentTag, className, style }) => {
+export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, onTagChange, currentTag, className, style, as = 'div' }) => {
     const [isEditing, setIsEditing] = useState(false);
     const editorRef = useRef<HTMLDivElement>(null);
 
@@ -59,14 +60,16 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
     const tagOptions = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 
+    const Wrapper = as as keyof JSX.IntrinsicElements;
+
     return (
         <>
             {isEditing && (
-                 <div 
+                <div
                     className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 flex items-center gap-1 bg-background p-1 rounded-md border shadow-md"
                     onMouseDown={handleToolbarInteraction}
                 >
-                     {onTagChange && currentTag && (
+                    {onTagChange && currentTag && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button type="button" variant="ghost" className="h-7 w-auto px-2 text-xs font-bold">
@@ -82,17 +85,17 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                                 ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                     )}
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('bold')}>
-                         <Bold className="h-4 w-4" />
-                     </Button>
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('italic')}>
-                         <Italic className="h-4 w-4" />
-                     </Button>
-                     <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('strikeThrough')}>
-                         <Strikethrough className="h-4 w-4" />
-                     </Button>
-                     <Popover>
+                    )}
+                    <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('bold')}>
+                        <Bold className="h-4 w-4" />
+                    </Button>
+                    <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('italic')}>
+                        <Italic className="h-4 w-4" />
+                    </Button>
+                    <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('strikeThrough')}>
+                        <Strikethrough className="h-4 w-4" />
+                    </Button>
+                    <Popover>
                         <PopoverTrigger asChild>
                             <Button type="button" size="icon" variant="ghost" className="h-7 w-7">
                                 <LinkIcon className="h-4 w-4" />
@@ -113,20 +116,20 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                                 />
                             </div>
                         </PopoverContent>
-                     </Popover>
-                 </div>
+                    </Popover>
+                </div>
             )}
-            <div 
+            <Wrapper
                 ref={editorRef}
                 contentEditable={true}
                 suppressContentEditableWarning={true}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 className={cn(
-                    "w-full whitespace-pre-wrap outline-none relative",
+                    "w-full whitespace-pre-wrap outline-none relative block", // added block
                     "focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background rounded-sm",
                     className
-                )} 
+                )}
                 style={style}
                 dangerouslySetInnerHTML={{ __html: initialValue || ' ' }}
             />
