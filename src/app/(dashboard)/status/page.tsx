@@ -220,14 +220,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
         
-        if (index === 1 && steps[0].status === 'success') {
-            actions.push(<Button key="rebuild-app" size="sm" variant="link" onClick={() => handleActionClick(1)} disabled={!!isExecutingAction}>{isExecutingAction === 'Application Built' ? <Loader2 className="animate-spin" /> : 'Rebuild App'}</Button>);
-        }
-        
-        if (index === 2 && steps[1].status === 'success') {
-            actions.push(<Button key="restart-app" size="sm" variant="link" onClick={() => handleActionClick(2)} disabled={!!isExecutingAction}>{isExecutingAction === 'Start App & Configure Proxy' ? <Loader2 className="animate-spin" /> : 'Restart App & Proxy'}</Button>);
-        }
-
         const canShowFixAction = (index === 0 || (index > 0 && steps[index - 1].status === 'success')) && step.status === 'failure';
         
         if (canShowFixAction) {
