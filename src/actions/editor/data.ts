@@ -11,7 +11,7 @@ import { initializeFirebase } from '@/lib/firebase';
  * Sets or updates the data source binding for a specific page.
  */
 export async function setPageDataSource(pageId: string, sourceId: string, methodName: string): Promise<{ success: boolean; id?: string; error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -19,7 +19,7 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
         const { firestore } = initializeFirebase();
         const bindingId = `${pageId}_${sourceId}`; // Create a deterministic ID
         const bindingRef = doc(firestore, 'page_data_sources', bindingId);
-        
+
         await setDoc(bindingRef, {
             siteId,
             pageId,
@@ -38,7 +38,7 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
  * Fetches the data source binding for a specific page.
  */
 export async function getPageDataSource(pageId: string): Promise<{ success: boolean; binding?: PageDataSourceBinding; error?: string }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 

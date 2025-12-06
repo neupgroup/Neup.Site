@@ -9,6 +9,9 @@ import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
 import type { CodeFile } from '@/schemas/codebase';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 async function getAllFiles(siteId: string): Promise<CodeFile[]> {
     const { firestore } = initializeFirebase();
@@ -19,7 +22,7 @@ async function getAllFiles(siteId: string): Promise<CodeFile[]> {
 }
 
 export async function deployCodebase(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -37,7 +40,7 @@ export async function deployCodebase(): Promise<{ success: boolean; error?: stri
     }
     const allocation = allocationsSnapshot.docs[0].data();
     const serverId = allocation.serverId;
-    
+
     const deploymentPath = allocation.deploymentPath || '/var/www/app';
 
     // 2. Get server credentials
@@ -54,6 +57,7 @@ export async function deployCodebase(): Promise<{ success: boolean; error?: stri
         command: `CODEBASE DEPLOYMENT for site: ${siteId}`,
         output: 'Starting deployment...',
         status: 'pending',
+        initiatedBy: 'system',
     });
 
     if (!createLogResult.success || !createLogResult.id) {
@@ -94,7 +98,7 @@ async function runDeploymentInBackground(logId: string, serverId: string, siteId
             const file = files[i];
             const remotePath = `${deploymentPath}/${file.filePath}`;
             const remoteDir = remotePath.substring(0, remotePath.lastIndexOf('/'));
-            
+
             // This is slow if done for every file. A better approach would be to collect all dirs first.
             if (remoteDir !== deploymentPath) {
                 await ssh.execCommand(`mkdir -p ${remoteDir}`);
@@ -102,11 +106,20 @@ async function runDeploymentInBackground(logId: string, serverId: string, siteId
 
             // The content is already base64 encoded in the database
             const fileContent = Buffer.from(file.content, 'base64');
-            await ssh.putFile(fileContent, remotePath);
+            const tempFilePath = path.join(os.tmpdir(), `deploy-${file.id}-${Date.now()}`);
+            fs.writeFileSync(tempFilePath, fileContent);
+
+            try {
+                await ssh.putFile(tempFilePath, remotePath);
+            } finally {
+                if (fs.existsSync(tempFilePath)) {
+                    fs.unlinkSync(tempFilePath);
+                }
+            }
 
             const progress = `(${(i + 1)}/${files.length}) Uploaded: ${file.filePath}\n`;
             finalOutput += progress;
-            
+
             // Only update log periodically to avoid spamming Firestore
             if (i % 5 === 0 || i === files.length - 1) {
                 await updateServerLog(logId, { output: finalOutput });

@@ -21,7 +21,7 @@ export interface LinkedAccount {
 }
 
 export async function getAccountId(): Promise<string | undefined> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     return cookieStore.get('account_id')?.value;
 }
 
@@ -60,7 +60,7 @@ export async function deleteLinkedAccount(id: string): Promise<{ success: boolea
     if (!accountId) {
         return { success: false, error: 'User not authenticated.' };
     }
-     try {
+    try {
         const { firestore } = initializeFirebase();
         const docRef = doc(firestore, 'linked_accounts', id);
         // Optional: You might want to verify ownership before deleting
@@ -71,7 +71,7 @@ export async function deleteLinkedAccount(id: string): Promise<{ success: boolea
         await deleteDoc(docRef);
         return { success: true };
     } catch (e: any) {
-         await logErrorToFirestore({
+        await logErrorToFirestore({
             message: `Failed to delete linked account ${id} for user ${accountId}: ${e.message}`,
             stack: e.stack,
             source: 'deleteLinkedAccount',

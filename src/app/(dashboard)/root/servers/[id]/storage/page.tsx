@@ -1,7 +1,7 @@
 
 'use client';
 import { useCallback, useState, useEffect } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams, useParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { getFileList, type FileInfo } from '@/actions/server/management/get-file-list';
+import { createFile } from '@/actions/server/management/create-file';
 import { readFileContent } from '@/actions/server/management/read-file-content';
 import { saveFileContent } from '@/actions/server/management/save-file-content';
 import { deletePath } from '@/actions/server/management/delete-path';
@@ -96,7 +97,7 @@ const FileEditorDialog = ({ file, serverId, onClose, onSaveSuccess }: { file: { 
                     <DialogDescription className="font-mono">{file.path}</DialogDescription>
                 </DialogHeader>
                 <div className="flex-1 overflow-hidden">
-                    <Textarea 
+                    <Textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         className="h-full w-full font-mono text-xs resize-none"
@@ -119,7 +120,7 @@ const FileManager = ({ serverId }: { serverId: string }) => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { toast } = useToast();
-    
+
     const currentPath = searchParams.get('path') || '/';
 
     const [files, setFiles] = useState<FileInfo[]>([]);
@@ -134,19 +135,19 @@ const FileManager = ({ serverId }: { serverId: string }) => {
         params.set('path', newPath);
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }, [pathname, router, searchParams]);
-    
+
     const fetchFiles = useCallback(async (path: string) => {
         setIsLoading(true);
         setError(null);
         const result = await getFileList(serverId, path);
-        if(result.success && result.files) {
+        if (result.success && result.files) {
             setFiles(result.files);
         } else {
             setError(result.error || 'Failed to list files.');
         }
         setIsLoading(false);
     }, [serverId]);
-    
+
     useEffect(() => {
         fetchFiles(currentPath);
         setPathInputValue(currentPath);
@@ -157,7 +158,7 @@ const FileManager = ({ serverId }: { serverId: string }) => {
         if (file.type === 'd') {
             navigate(fullPath);
         } else if (file.type === 'l' && file.targetPath) {
-            if(file.targetPath.startsWith('/')) {
+            if (file.targetPath.startsWith('/')) {
                 navigate(file.targetPath);
             } else {
                 navigate(`${currentPath}/${file.targetPath}`);
@@ -165,7 +166,7 @@ const FileManager = ({ serverId }: { serverId: string }) => {
         } else if (file.type === '-') {
             toast({ title: "Loading file..." });
             const result = await readFileContent(serverId, fullPath);
-            if(result.success && result.content !== null) {
+            if (result.success && result.content !== null) {
                 setEditingFile({ path: fullPath, content: result.content || '' });
             } else {
                 toast({ variant: 'destructive', title: 'Error Reading File', description: result.error });
@@ -184,7 +185,7 @@ const FileManager = ({ serverId }: { serverId: string }) => {
     const handleDelete = async () => {
         if (!deletingFile) return;
         const fullPath = `${currentPath === '/' ? '' : currentPath}/${deletingFile.name}`;
-        
+
         const result = await deletePath(serverId, fullPath);
         if (result.success) {
             toast({ title: 'Deleted', description: `${deletingFile.name} has been deleted.` });
@@ -194,25 +195,25 @@ const FileManager = ({ serverId }: { serverId: string }) => {
         }
         setDeletingFile(null);
     }
-    
+
     const handlePathInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPathInputValue(e.target.value);
     }
-    
+
     const handlePathInputSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             navigate(pathInputValue);
         }
     };
-    
+
     const getFileIcon = (type: FileInfo['type']) => {
-        switch(type) {
-            case 'd': return <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
-            case 'l': return <LinkIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
-            default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+        switch (type) {
+            case 'd': return <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
+            case 'l': return <LinkIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
+            default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
         }
     }
-    
+
     const formatFileSize = (size: string): string => {
         if (/^[0-9.]+$/.test(size)) {
             const bytes = parseInt(size, 10);
@@ -228,11 +229,11 @@ const FileManager = ({ serverId }: { serverId: string }) => {
     return (
         <Card>
             {editingFile && (
-                <FileEditorDialog 
+                <FileEditorDialog
                     file={editingFile}
-                    serverId={serverId} 
+                    serverId={serverId}
                     onClose={() => setEditingFile(null)}
-                    onSaveSuccess={() => fetchFiles(currentPath)} 
+                    onSaveSuccess={() => fetchFiles(currentPath)}
                 />
             )}
             <AlertDialog open={!!deletingFile} onOpenChange={(open) => !open && setDeletingFile(null)}>
@@ -256,11 +257,11 @@ const FileManager = ({ serverId }: { serverId: string }) => {
             </CardHeader>
             <CardContent>
                 <div className="flex items-center gap-2 mb-4">
-                    <Input 
-                      value={pathInputValue}
-                      onChange={handlePathInputChange}
-                      onKeyDown={handlePathInputSubmit}
-                      className="font-mono" 
+                    <Input
+                        value={pathInputValue}
+                        onChange={handlePathInputChange}
+                        onKeyDown={handlePathInputSubmit}
+                        className="font-mono"
                     />
                 </div>
                 {isLoading ? (
@@ -268,7 +269,7 @@ const FileManager = ({ serverId }: { serverId: string }) => {
                         {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
                     </div>
                 ) : error ? (
-                     <Alert variant="destructive">
+                    <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error</AlertTitle>
                         <AlertDescription>{error}</AlertDescription>
@@ -277,8 +278,8 @@ const FileManager = ({ serverId }: { serverId: string }) => {
                     <div className="space-y-1">
                         {currentPath !== '/' && (
                             <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
-                               <ArrowLeft className="h-4 w-4 text-primary" />
-                               <span className="font-mono flex-1 truncate text-primary">Go back</span>
+                                <ArrowLeft className="h-4 w-4 text-primary" />
+                                <span className="font-mono flex-1 truncate text-primary">Go back</span>
                             </div>
                         )}
                         {files.map(file => (
@@ -331,20 +332,20 @@ const StorageAnalysis = ({ serverId }: { serverId: string }) => {
         setError(null);
         const result = await getDetailedStorageForServer(serverId);
         if (result.success && result.data) {
-          setStorageInfo(result.data);
+            setStorageInfo(result.data);
         } else {
-          setError(result.error || 'Failed to fetch storage info.');
+            setError(result.error || 'Failed to fetch storage info.');
         }
         setIsLoading(false);
     }, [serverId]);
-    
+
     useEffect(() => {
         fetchStorage();
     }, [fetchStorage]);
 
     if (isLoading) {
         return (
-             <Card>
+            <Card>
                 <CardHeader>
                     <CardTitle>Storage Analysis</CardTitle>
                     <CardDescription>A detailed breakdown of disk usage.</CardDescription>
@@ -361,7 +362,7 @@ const StorageAnalysis = ({ serverId }: { serverId: string }) => {
             </Card>
         );
     }
-    
+
     if (error) {
         return (
             <Alert variant="destructive">
@@ -373,7 +374,7 @@ const StorageAnalysis = ({ serverId }: { serverId: string }) => {
     }
 
     if (!storageInfo) return null;
-    
+
     return (
         <Card>
             <CardHeader>
@@ -381,7 +382,7 @@ const StorageAnalysis = ({ serverId }: { serverId: string }) => {
                 <CardDescription>A detailed breakdown of disk usage.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                 <div className="space-y-2">
+                <div className="space-y-2">
                     <div className="flex justify-between items-baseline">
                         <p className="text-sm font-medium">{storageInfo.total.usePercentage} Used</p>
                         <p className="text-sm text-muted-foreground">{storageInfo.total.used} of {storageInfo.total.size}</p>
@@ -395,12 +396,12 @@ const StorageAnalysis = ({ serverId }: { serverId: string }) => {
                         <p className="text-2xl font-bold">{storageInfo.system.used}</p>
                         <p className="text-xs text-muted-foreground">OS & other files</p>
                     </div>
-                     <div className="p-4 rounded-lg border bg-muted/30">
+                    <div className="p-4 rounded-lg border bg-muted/30">
                         <h4 className="font-semibold flex items-center gap-2"><FolderIcon className="h-4 w-4" /> Swap</h4>
                         <p className="text-2xl font-bold">{storageInfo.swap.used}</p>
                         <p className="text-xs text-muted-foreground">{storageInfo.swap.total} Total</p>
                     </div>
-                     {storageInfo.users.map(user => (
+                    {storageInfo.users.map(user => (
                         <div key={user.name} className="p-4 rounded-lg border bg-muted/30">
                             <h4 className="font-semibold flex items-center gap-2"><User className="h-4 w-4" /> {user.name}</h4>
                             <p className="text-2xl font-bold">{user.used}</p>
@@ -414,33 +415,34 @@ const StorageAnalysis = ({ serverId }: { serverId: string }) => {
 };
 
 
-export default function StoragePage({ params }: { params: { id: string } }) {
-  const [isCreateFileDialogOpen, setIsCreateFileDialogOpen] = useState(false);
-  const searchParams = useSearchParams();
-  const currentPath = searchParams.get('path') || '/';
+export default function StoragePage() {
+    const params = useParams<{ id: string }>();
+    const [isCreateFileDialogOpen, setIsCreateFileDialogOpen] = useState(false);
+    const searchParams = useSearchParams();
+    const currentPath = searchParams.get('path') || '/';
 
-  return (
-    <div className="space-y-6">
-        <CreateFileDialog 
-            serverId={params.id}
-            currentPath={currentPath}
-            open={isCreateFileDialogOpen}
-            onOpenChange={setIsCreateFileDialogOpen}
-            onCreateSuccess={() => { /* The FileManagerPage will need to be re-rendered */ location.reload(); }}
-        />
-        <div className="flex justify-between items-start">
-             <div>
-                <h1 className="font-headline text-2xl font-semibold tracking-tight">Storage & File Manager</h1>
-                <p className="text-muted-foreground">Manage files and view disk usage for this server.</p>
+    return (
+        <div className="space-y-6">
+            <CreateFileDialog
+                serverId={params.id}
+                currentPath={currentPath}
+                open={isCreateFileDialogOpen}
+                onOpenChange={setIsCreateFileDialogOpen}
+                onCreateSuccess={() => { /* The FileManagerPage will need to be re-rendered */ location.reload(); }}
+            />
+            <div className="flex justify-between items-start">
+                <div>
+                    <h1 className="font-headline text-2xl font-semibold tracking-tight">Storage & File Manager</h1>
+                    <p className="text-muted-foreground">Manage files and view disk usage for this server.</p>
+                </div>
+                <Button variant="outline" onClick={() => setIsCreateFileDialogOpen(true)}>
+                    <FilePlus className="mr-2 h-4 w-4" />
+                    Create File
+                </Button>
             </div>
-            <Button variant="outline" onClick={() => setIsCreateFileDialogOpen(true)}>
-                <FilePlus className="mr-2 h-4 w-4" />
-                Create File
-            </Button>
+            <FileManager serverId={params.id} />
+            <Separator />
+            <StorageAnalysis serverId={params.id} />
         </div>
-        <FileManager serverId={params.id} />
-        <Separator />
-        <StorageAnalysis serverId={params.id} />
-    </div>
-  );
+    );
 };

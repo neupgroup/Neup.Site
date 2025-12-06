@@ -35,24 +35,24 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
     const q = query(collection(firestore, 'servers'));
     const querySnapshot = await getDocs(q);
     const servers = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        const createdOn = data.createdOn;
-        const expiresOn = data.expiresOn;
-        // Exclude privateIp and privateKey for security
-        return {
-            id: doc.id,
-            name: data.name,
-            publicIp: data.publicIp,
-            serverType: data.serverType,
-            platform: data.platform,
-            provider: data.provider,
-            isPrivate: data.isPrivate,
-            username: data.username,
-            basePath: data.basePath,
-            appPath: data.appPath,
-            createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-            expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
-        } as Server
+      const data = doc.data();
+      const createdOn = data.createdOn;
+      const expiresOn = data.expiresOn;
+      // Exclude privateIp and privateKey for security
+      return {
+        id: doc.id,
+        name: data.name,
+        publicIp: data.publicIp,
+        serverType: data.serverType,
+        platform: data.platform,
+        provider: data.provider,
+        isPrivate: data.isPrivate,
+        username: data.username,
+        basePath: data.basePath,
+        appPath: data.appPath,
+        createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+        expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
+      } as Server
     });
     return { success: true, servers };
   } catch (e: any) {
@@ -65,7 +65,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  * Fetches servers relevant to the current siteId by checking the serverAllocations collection.
  */
 export async function getSiteServers(): Promise<{ success: boolean; servers?: (Server & { allocation: ServerAllocation })[]; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -75,37 +75,37 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
     const allocationsSnapshot = await getDocs(allocationsQuery);
 
     if (allocationsSnapshot.empty) {
-        return { success: true, servers: [] };
+      return { success: true, servers: [] };
     }
 
     const serverPromises = allocationsSnapshot.docs.map(async (allocDoc) => {
-        const allocationData = allocDoc.data() as Omit<ServerAllocation, 'id'>;
-        const serverDoc = await getDoc(doc(firestore, 'servers', allocationData.serverId));
-        
-        if (serverDoc.exists()) {
-            const serverData = serverDoc.data();
-            const createdOn = serverData.createdOn;
-            
-            const serverInfo: Server = {
-                id: serverDoc.id,
-                name: serverData.name,
-                publicIp: serverData.publicIp,
-                createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-            };
+      const allocationData = allocDoc.data() as Omit<ServerAllocation, 'id'>;
+      const serverDoc = await getDoc(doc(firestore, 'servers', allocationData.serverId));
 
-            const allocation: ServerAllocation = {
-                id: allocDoc.id,
-                ...allocationData,
-                allocatedOn: allocationData.allocatedOn instanceof Timestamp ? allocationData.allocatedOn.toDate().toISOString() : null,
-            }
-            
-            return { ...serverInfo, allocation };
+      if (serverDoc.exists()) {
+        const serverData = serverDoc.data();
+        const createdOn = serverData.createdOn;
+
+        const serverInfo: Server = {
+          id: serverDoc.id,
+          name: serverData.name,
+          publicIp: serverData.publicIp,
+          createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+        };
+
+        const allocation: ServerAllocation = {
+          id: allocDoc.id,
+          ...allocationData,
+          allocatedOn: (allocationData.allocatedOn as any) instanceof Timestamp ? (allocationData.allocatedOn as any).toDate().toISOString() : null,
         }
-        return null;
+
+        return { ...serverInfo, allocation };
+      }
+      return null;
     });
 
     const servers = (await Promise.all(serverPromises)).filter(s => s !== null) as (Server & { allocation: ServerAllocation })[];
-    
+
     return { success: true, servers };
   } catch (e: any) {
     await logErrorToFirestore({ message: `Failed to get site servers: ${e.message}`, stack: e.stack, source: 'getSiteServers' });
@@ -118,39 +118,39 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
  * Fetches a single server by its ID, excluding private fields.
  */
 export async function getServer(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
-    try {
-        const { firestore } = initializeFirebase();
-        const serverRef = doc(firestore, 'servers', id);
-        const docSnap = await getDoc(serverRef);
+  try {
+    const { firestore } = initializeFirebase();
+    const serverRef = doc(firestore, 'servers', id);
+    const docSnap = await getDoc(serverRef);
 
-        if (!docSnap.exists) {
-            return { success: false, error: 'Server not found or unauthorized.' };
-        }
-        
-        const data = docSnap.data()!;
-        const createdOn = data.createdOn;
-        const expiresOn = data.expiresOn;
-        // Exclude privateIp and privateKey for security
-        const server: Server = { 
-            id: docSnap.id, 
-            name: data.name,
-            publicIp: data.publicIp,
-            privateIp: data.privateIp,
-            serverType: data.serverType,
-            platform: data.platform,
-            provider: data.provider,
-            isPrivate: data.isPrivate,
-            username: data.username,
-            basePath: data.basePath,
-            appPath: data.appPath,
-            createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-            expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
-        };
-        return { success: true, server };
-    } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get server ${id}: ${e.message}`, stack: e.stack, source: 'getServer' });
-        return { success: false, error: 'Failed to fetch server.' };
+    if (!docSnap.exists) {
+      return { success: false, error: 'Server not found or unauthorized.' };
     }
+
+    const data = docSnap.data()!;
+    const createdOn = data.createdOn;
+    const expiresOn = data.expiresOn;
+    // Exclude privateIp and privateKey for security
+    const server: Server = {
+      id: docSnap.id,
+      name: data.name,
+      publicIp: data.publicIp,
+      privateIp: data.privateIp,
+      serverType: data.serverType,
+      platform: data.platform,
+      provider: data.provider,
+      isPrivate: data.isPrivate,
+      username: data.username,
+      basePath: data.basePath,
+      appPath: data.appPath,
+      createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+      expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
+    };
+    return { success: true, server };
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to get server ${id}: ${e.message}`, stack: e.stack, source: 'getServer' });
+    return { success: false, error: 'Failed to fetch server.' };
+  }
 }
 
 /**
@@ -158,40 +158,40 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
  * This should only be used in server-side actions where credentials are required.
  */
 export async function getPrivateServerDetails(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
-    try {
-        const { firestore } = initializeFirebase();
-        const serverRef = doc(firestore, 'servers', id);
-        const docSnap = await getDoc(serverRef);
+  try {
+    const { firestore } = initializeFirebase();
+    const serverRef = doc(firestore, 'servers', id);
+    const docSnap = await getDoc(serverRef);
 
-        if (!docSnap.exists()) {
-            return { success: false, error: 'Server not found.' };
-        }
-        
-        const data = docSnap.data();
-        const createdOn = data.createdOn;
-        const expiresOn = data.expiresOn;
-        
-        const server: Server = { 
-            id: docSnap.id, 
-            name: data.name,
-            publicIp: data.publicIp,
-            privateIp: data.privateIp,
-            privateKey: data.privateKey,
-            serverType: data.serverType,
-            platform: data.platform,
-            provider: data.provider,
-            isPrivate: data.isPrivate,
-            username: data.username,
-            basePath: data.basePath,
-            appPath: data.appPath,
-            createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-            expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
-        };
-        return { success: true, server };
-    } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get private server details for ${id}: ${e.message}`, stack: e.stack, source: 'getPrivateServerDetails' });
-        return { success: false, error: 'Failed to fetch server details.' };
+    if (!docSnap.exists()) {
+      return { success: false, error: 'Server not found.' };
     }
+
+    const data = docSnap.data();
+    const createdOn = data.createdOn;
+    const expiresOn = data.expiresOn;
+
+    const server: Server = {
+      id: docSnap.id,
+      name: data.name,
+      publicIp: data.publicIp,
+      privateIp: data.privateIp,
+      privateKey: data.privateKey,
+      serverType: data.serverType,
+      platform: data.platform,
+      provider: data.provider,
+      isPrivate: data.isPrivate,
+      username: data.username,
+      basePath: data.basePath,
+      appPath: data.appPath,
+      createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+      expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
+    };
+    return { success: true, server };
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to get private server details for ${id}: ${e.message}`, stack: e.stack, source: 'getPrivateServerDetails' });
+    return { success: false, error: 'Failed to fetch server details.' };
+  }
 }
 
 /**
@@ -203,15 +203,15 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     const serverRef = doc(firestore, 'servers', id);
 
     const dataToUpdate: Record<string, any> = { ...serverData };
-    
+
     // Only include private fields if they are explicitly provided and not empty
     if (!serverData.privateIp) {
-        delete dataToUpdate.privateIp;
+      delete dataToUpdate.privateIp;
     }
     if (!serverData.privateKey) {
-        delete dataToUpdate.privateKey;
+      delete dataToUpdate.privateKey;
     }
-    
+
     await setDoc(serverRef, dataToUpdate, { merge: true });
     return { success: true, id };
   } catch (e: any) {

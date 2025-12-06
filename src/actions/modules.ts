@@ -8,20 +8,20 @@ import { initializeFirebase } from '@/lib/firebase';
 import { logErrorToFirestore } from '@/lib/logging';
 
 export interface SiteModule {
-    active: boolean;
-    enabledOn?: string | null;
-    expiresOn?: string | null;
+  active: boolean;
+  enabledOn?: string | null;
+  expiresOn?: string | null;
 }
 
 export interface SiteModules {
-    [key: string]: SiteModule;
+  [key: string]: SiteModule;
 }
 
 /**
  * Fetches the modules for the current site.
  */
 export async function getSiteModules(): Promise<{ success: boolean; modules?: SiteModules; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -34,18 +34,18 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
       // If the site document doesn't exist, we can't get modules.
       return { success: true, modules: {} };
     }
-    
+
     const data = docSnap.data() as Site;
     const modules = (data as any).modules || {};
 
     // Ensure date fields are serialized correctly
     for (const key in modules) {
-        if (modules[key].enabledOn instanceof Timestamp) {
-            modules[key].enabledOn = modules[key].enabledOn.toDate().toISOString();
-        }
-        if (modules[key].expiresOn instanceof Timestamp) {
-            modules[key].expiresOn = modules[key].expiresOn.toDate().toISOString();
-        }
+      if (modules[key].enabledOn instanceof Timestamp) {
+        modules[key].enabledOn = modules[key].enabledOn.toDate().toISOString();
+      }
+      if (modules[key].expiresOn instanceof Timestamp) {
+        modules[key].expiresOn = modules[key].expiresOn.toDate().toISOString();
+      }
     }
 
     return { success: true, modules };
@@ -59,7 +59,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
  * Updates a specific module's status for the current site.
  */
 export async function updateSiteModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -67,21 +67,21 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
     const { firestore } = initializeFirebase();
     const siteRef = doc(firestore, 'sites', siteId);
     const key = `modules.${moduleId}`;
-    
+
     let updateData: any = {
-        active: isActive,
+      active: isActive,
     };
 
     if (isActive) {
-        updateData.enabledOn = new Date().toISOString();
-        // You can add logic for expiresOn here if needed
-        updateData.expiresOn = null;
+      updateData.enabledOn = new Date().toISOString();
+      // You can add logic for expiresOn here if needed
+      updateData.expiresOn = null;
     }
 
-    await setDoc(siteRef, { 
-        modules: {
-            [moduleId]: updateData
-        }
+    await setDoc(siteRef, {
+      modules: {
+        [moduleId]: updateData
+      }
     }, { merge: true });
 
     return { success: true };

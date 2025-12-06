@@ -11,7 +11,7 @@ import type { CodeFile } from '@/schemas/codebase';
  * Creates a new code file entry in Firestore.
  */
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'siteId'>) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -33,7 +33,7 @@ export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt'
  * Fetches code files for the current site with pagination.
  */
 export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number, pageSize?: number }): Promise<{ success: boolean; files?: CodeFile[]; error?: string; totalCount?: number }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -41,7 +41,7 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
     const { firestore } = initializeFirebase();
     const filesRef = collection(firestore, 'codeFiles');
     const siteQuery = query(filesRef, where('siteId', '==', siteId));
-    
+
     const countSnapshot = await getCountFromServer(siteQuery);
     const totalCount = countSnapshot.data().count;
 
@@ -49,22 +49,22 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
 
     let finalQuery;
     if (page > 1) {
-        const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
-        const prevPageSnapshot = await getDocs(prevPageQuery);
-        const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
-        finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
+      const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
+      const prevPageSnapshot = await getDocs(prevPageQuery);
+      const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
+      finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
     } else {
-        finalQuery = query(baseQuery, limit(pageSize));
+      finalQuery = query(baseQuery, limit(pageSize));
     }
 
     const querySnapshot = await getDocs(finalQuery);
     const files = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null,
-        } as CodeFile;
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null,
+      } as CodeFile;
     });
 
     return { success: true, files, totalCount };
@@ -79,17 +79,17 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
  * Deletes a code file from Firestore.
  */
 export async function deleteCodeFile(id: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
-  
+
   try {
     const { firestore } = initializeFirebase();
     const fileRef = doc(firestore, 'codeFiles', id);
     const fileSnap = await getDoc(fileRef);
 
     if (!fileSnap.exists() || fileSnap.data().siteId !== siteId) {
-        return { success: false, error: 'File not found or unauthorized.' };
+      return { success: false, error: 'File not found or unauthorized.' };
     }
 
     await deleteDoc(fileRef);

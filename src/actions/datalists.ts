@@ -10,7 +10,7 @@ import type { Datalist } from '@/schemas/datalist';
  * Creates a new datalist.
  */
 export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'createdAt' | 'updatedAt' | 'siteId'>): Promise<{ success: boolean; id?: string; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -32,7 +32,7 @@ export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'create
  * Fetches all datalists for the current site.
  */
 export async function getDatalists(): Promise<{ success: boolean; datalists?: Datalist[]; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -57,7 +57,7 @@ export async function getDatalists(): Promise<{ success: boolean; datalists?: Da
  * Fetches a single datalist by its ID.
  */
 export async function getDatalist(id: string): Promise<{ success: boolean; datalist?: Datalist; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -89,7 +89,7 @@ export async function getDatalist(id: string): Promise<{ success: boolean; datal
  * Updates a datalist.
  */
 export async function updateDatalist(id: string, datalistData: Partial<Omit<Datalist, 'id' | 'siteId' | 'createdAt'>>): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -117,7 +117,7 @@ export async function updateDatalist(id: string, datalistData: Partial<Omit<Data
  * Deletes a datalist.
  */
 export async function deleteDatalist(id: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 

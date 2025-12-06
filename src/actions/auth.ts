@@ -4,12 +4,12 @@
 import { cookies } from 'next/headers'
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
- 
+
 export async function setSiteIdCookie(siteId: string) {
   if (!siteId) {
     throw new Error('Site ID cannot be empty.');
   }
-  
+
   try {
     const { firestore } = initializeFirebase();
     const siteRef = doc(firestore, 'sites', siteId);
@@ -26,9 +26,9 @@ export async function setSiteIdCookie(siteId: string) {
         updatedAt: serverTimestamp(),
       });
     }
-    
+
     // Set the cookie after ensuring the site document exists
-    cookies().set('siteId', siteId, {
+    (await cookies()).set('siteId', siteId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 7, // One week

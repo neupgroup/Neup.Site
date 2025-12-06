@@ -2,7 +2,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, use } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams, useParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -43,7 +43,7 @@ const FileEditorDialog = ({ file, serverId, onClose, onSaveSuccess }: { file: { 
                     <DialogDescription className="font-mono">{file.path}</DialogDescription>
                 </DialogHeader>
                 <div className="flex-1 overflow-hidden">
-                    <Textarea 
+                    <Textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         className="h-full w-full font-mono text-xs resize-none"
@@ -61,13 +61,14 @@ const FileEditorDialog = ({ file, serverId, onClose, onSaveSuccess }: { file: { 
     );
 };
 
-export default function FileManagerPage({ params }: { params: { id: string } }) {
+export default function FileManagerPage() {
+    const params = useParams<{ id: string }>();
     const serverId = params.id;
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { toast } = useToast();
-    
+
     const currentPath = searchParams.get('path') || '/';
 
     const [files, setFiles] = useState<FileInfo[]>([]);
@@ -81,19 +82,19 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
         params.set('path', newPath);
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }, [pathname, router, searchParams]);
-    
+
     const fetchFiles = useCallback(async (path: string) => {
         setIsLoading(true);
         setError(null);
         const result = await getFileList(serverId, path);
-        if(result.success && result.files) {
+        if (result.success && result.files) {
             setFiles(result.files);
         } else {
             setError(result.error || 'Failed to list files.');
         }
         setIsLoading(false);
     }, [serverId]);
-    
+
     useEffect(() => {
         fetchFiles(currentPath);
         setPathInputValue(currentPath);
@@ -104,7 +105,7 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
         if (file.type === 'd') {
             navigate(fullPath);
         } else if (file.type === 'l' && file.targetPath) {
-            if(file.targetPath.startsWith('/')) {
+            if (file.targetPath.startsWith('/')) {
                 navigate(file.targetPath);
             } else {
                 navigate(`${currentPath}/${file.targetPath}`);
@@ -112,7 +113,7 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
         } else if (file.type === '-') {
             toast({ title: "Loading file..." });
             const result = await readFileContent(serverId, fullPath);
-            if(result.success && result.content !== null) {
+            if (result.success && result.content !== null) {
                 setEditingFile({ path: fullPath, content: result.content || '' });
             } else {
                 toast({ variant: 'destructive', title: 'Error Reading File', description: result.error });
@@ -127,25 +128,25 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
         const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
         navigate(newPath);
     };
-    
+
     const handlePathInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPathInputValue(e.target.value);
     }
-    
+
     const handlePathInputSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             navigate(pathInputValue);
         }
     };
-    
+
     const getFileIcon = (type: FileInfo['type']) => {
-        switch(type) {
-            case 'd': return <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
-            case 'l': return <LinkIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
-            default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground"/>;
+        switch (type) {
+            case 'd': return <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
+            case 'l': return <LinkIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
+            default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
         }
     }
-    
+
     const formatFileSize = (size: string): string => {
         if (/^[0-9.]+$/.test(size)) {
             const bytes = parseInt(size, 10);
@@ -161,11 +162,11 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
     return (
         <Card>
             {editingFile && (
-                <FileEditorDialog 
+                <FileEditorDialog
                     file={editingFile}
-                    serverId={serverId} 
+                    serverId={serverId}
                     onClose={() => setEditingFile(null)}
-                    onSaveSuccess={() => fetchFiles(currentPath)} 
+                    onSaveSuccess={() => fetchFiles(currentPath)}
                 />
             )}
             <CardHeader>
@@ -174,11 +175,11 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
             </CardHeader>
             <CardContent>
                 <div className="flex items-center gap-2 mb-4">
-                    <Input 
-                      value={pathInputValue}
-                      onChange={handlePathInputChange}
-                      onKeyDown={handlePathInputSubmit}
-                      className="font-mono" 
+                    <Input
+                        value={pathInputValue}
+                        onChange={handlePathInputChange}
+                        onKeyDown={handlePathInputSubmit}
+                        className="font-mono"
                     />
                 </div>
                 {isLoading ? (
@@ -186,7 +187,7 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
                         {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
                     </div>
                 ) : error ? (
-                     <Alert variant="destructive">
+                    <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error</AlertTitle>
                         <AlertDescription>{error}</AlertDescription>
@@ -195,8 +196,8 @@ export default function FileManagerPage({ params }: { params: { id: string } }) 
                     <div className="space-y-1">
                         {currentPath !== '/' && (
                             <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
-                               <ArrowLeft className="h-4 w-4 text-primary" />
-                               <span className="font-mono flex-1 truncate text-primary">Go back</span>
+                                <ArrowLeft className="h-4 w-4 text-primary" />
+                                <span className="font-mono flex-1 truncate text-primary">Go back</span>
                             </div>
                         )}
                         {files.map(file => (

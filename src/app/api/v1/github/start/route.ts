@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
-export function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const state = crypto.randomBytes(16).toString('hex');
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.set('github_oauth_state', state, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -15,7 +15,7 @@ export function GET(req: NextRequest) {
 
   const clientId = process.env.GITHUB_CLIENT_ID;
   const redirectUri = process.env.GITHUB_REDIRECT_URI;
-  
+
   if (!clientId || !redirectUri) {
     return new Response("GitHub OAuth app is not configured.", { status: 500 });
   }

@@ -9,11 +9,11 @@ import { logErrorToFirestore } from '@/lib/logging';
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 
 export interface SourceMethod {
-    methodName: string;
-    path: string;
-    httpMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    headers?: Record<string, string>;
-    // We can add more method-specific details here later
+  methodName: string;
+  path: string;
+  httpMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  headers?: Record<string, string>;
+  // We can add more method-specific details here later
 }
 
 export interface BaseSource {
@@ -42,8 +42,8 @@ export interface StaticSource extends BaseSource {
 }
 
 export interface DatalistSource extends BaseSource {
-    type: 'datalist';
-    datalistId: string;
+  type: 'datalist';
+  datalistId: string;
 }
 
 
@@ -54,7 +54,7 @@ export type Source = ApiSource | DatabaseSource | StaticSource | DatalistSource;
  * Creates a new data source.
  */
 export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'siteId'>) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -75,7 +75,7 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
  * Fetches all data sources for the current siteId.
  */
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -84,14 +84,14 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
     const q = query(collection(firestore, 'sources'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sources = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        const createdAt = data.createdAt;
-        return {
-            id: doc.id,
-            ...data,
-            methods: data.methods || [],
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-        } as Source
+      const data = doc.data();
+      const createdAt = data.createdAt;
+      return {
+        id: doc.id,
+        ...data,
+        methods: data.methods || [],
+        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+      } as Source
     });
     return { success: true, sources };
   } catch (error: any) {
@@ -104,42 +104,42 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
  * Fetches a single data source by its ID.
  */
 export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
-    const cookieStore = cookies();
-    const siteId = cookieStore.get('siteId')?.value;
-    if (!siteId) return { success: false, error: 'Site ID not found.' };
-    
-    try {
-        const { firestore } = initializeFirebase();
-        const sourceRef = doc(firestore, 'sources', id);
-        const docSnap = await getDoc(sourceRef);
+  const cookieStore = await cookies();
+  const siteId = cookieStore.get('siteId')?.value;
+  if (!siteId) return { success: false, error: 'Site ID not found.' };
 
-        if (!docSnap.exists()) {
-            return { success: false, error: 'Source not found.' };
-        }
-        
-        const data = docSnap.data();
-        if (data.siteId !== siteId) {
-            return { success: false, error: 'Unauthorized.' };
-        }
+  try {
+    const { firestore } = initializeFirebase();
+    const sourceRef = doc(firestore, 'sources', id);
+    const docSnap = await getDoc(sourceRef);
 
-        const createdAt = data.createdAt;
-        const source = { 
-            id: docSnap.id, 
-            ...data,
-            methods: data.methods || [],
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-        } as Source;
-        return { success: true, source };
-    } catch (error: any) {
-        return { success: false, error: error.message || 'Failed to fetch source.' };
+    if (!docSnap.exists()) {
+      return { success: false, error: 'Source not found.' };
     }
+
+    const data = docSnap.data();
+    if (data.siteId !== siteId) {
+      return { success: false, error: 'Unauthorized.' };
+    }
+
+    const createdAt = data.createdAt;
+    const source = {
+      id: docSnap.id,
+      ...data,
+      methods: data.methods || [],
+      createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+    } as Source;
+    return { success: true, source };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Failed to fetch source.' };
+  }
 }
 
 /**
  * Updates a data source.
  */
 export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'siteId'>>) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
@@ -148,7 +148,7 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
     const sourceRef = doc(firestore, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
-        return { success: false, error: 'Unauthorized' };
+      return { success: false, error: 'Unauthorized' };
     }
 
     await setDoc(sourceRef, sourceData, { merge: true });
@@ -163,10 +163,10 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
  * Deletes a data source and its associated credentials.
  */
 export async function deleteSource(id: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return { success: false, error: 'Site ID not found.' };
-  
+
   try {
     const { firestore } = initializeFirebase();
     const batch = writeBatch(firestore);
@@ -174,7 +174,7 @@ export async function deleteSource(id: string) {
     const sourceSnap = await getDoc(sourceRef);
 
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
-        return { success: false, error: 'Unauthorized' };
+      return { success: false, error: 'Unauthorized' };
     }
     batch.delete(sourceRef);
 
@@ -189,48 +189,48 @@ export async function deleteSource(id: string) {
  * Tests an API method by executing a request.
  */
 export async function testApiMethod(sourceId: string, method: SourceMethod, params: Record<string, string>): Promise<{ success: boolean; data?: any; error?: string }> {
-    const { success, source, error } = await getSource(sourceId);
+  const { success, source, error } = await getSource(sourceId);
 
-    if (!success || !source) {
-        return { success: false, error: `Failed to find source: ${error}` };
+  if (!success || !source) {
+    return { success: false, error: `Failed to find source: ${error}` };
+  }
+
+  if (source.type !== 'api') {
+    return { success: false, error: 'This action is only valid for API sources.' };
+  }
+
+  let endpoint = method.path;
+  for (const key in params) {
+    endpoint = endpoint.replace(`[${key}]`, encodeURIComponent(params[key]));
+  }
+
+  const fullUrl = `${source.url}${endpoint}`;
+
+  const headers = {
+    ...(source.headers || {}),
+    ...(method.headers || {}),
+    'Content-Type': 'application/json',
+  };
+
+  try {
+    const response = await fetch(fullUrl, {
+      method: method.httpMethod || 'GET',
+      headers: headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API returned status ${response.status}: ${errorText}`);
     }
 
-    if (source.type !== 'api') {
-        return { success: false, error: 'This action is only valid for API sources.' };
-    }
-
-    let endpoint = method.path;
-    for (const key in params) {
-        endpoint = endpoint.replace(`[${key}]`, encodeURIComponent(params[key]));
-    }
-
-    const fullUrl = `${source.url}${endpoint}`;
-
-    const headers = {
-        ...(source.headers || {}),
-        ...(method.headers || {}),
-        'Content-Type': 'application/json',
-    };
-
-    try {
-        const response = await fetch(fullUrl, {
-            method: method.httpMethod || 'GET',
-            headers: headers,
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`API returned status ${response.status}: ${errorText}`);
-        }
-
-        const data = await response.json();
-        return { success: true, data };
-    } catch (e: any) {
-        await logErrorToFirestore({
-            message: `API Test Failed for ${fullUrl}: ${e.message}`,
-            source: 'testApiMethod',
-            details: JSON.stringify({ sourceId, method, params }),
-        });
-        return { success: false, error: e.message };
-    }
+    const data = await response.json();
+    return { success: true, data };
+  } catch (e: any) {
+    await logErrorToFirestore({
+      message: `API Test Failed for ${fullUrl}: ${e.message}`,
+      source: 'testApiMethod',
+      details: JSON.stringify({ sourceId, method, params }),
+    });
+    return { success: false, error: e.message };
+  }
 }
