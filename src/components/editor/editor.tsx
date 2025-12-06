@@ -681,17 +681,24 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
     };
   }, [selectedElementId, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
 
-  const handleSaveFlow = async () => {
+  const handleSaveFlow = async (): Promise<string | undefined> => {
     let currentPageId = pageId;
     if (!currentPageId) {
         const createResult = await createPage();
         if (createResult.success && createResult.id) {
             currentPageId = createResult.id;
             setPageId(currentPageId);
+            // This reloads the page with the new ID in the URL.
+            // A more seamless way would be to just update the URL without a full reload,
+            // which is what router.push with scroll:false does.
             router.push(`/site/editor/dragger?id=${currentPageId}`, { scroll: false });
         } else {
             throw new Error(createResult.error || 'Failed to create a new page entry.');
         }
+    }
+
+    if (!currentPageId) {
+        throw new Error('Could not obtain a page ID to save.');
     }
 
     const result = await savePage(currentPageId, { elements });
@@ -749,7 +756,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         onUndo={undo}
         onRedo={redo}
         canUndo={historyIndex > 0}
-        canRedo={historyIndex < history.length - 1}
+        canRedo={history.length - 1 > historyIndex}
         onViewCode={() => {}}
         onPublish={handlePublish}
         onPreview={handlePreview}
