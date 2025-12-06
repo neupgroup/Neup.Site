@@ -688,10 +688,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         if (createResult.success && createResult.id) {
             currentPageId = createResult.id;
             setPageId(currentPageId);
-            // This reloads the page with the new ID in the URL.
-            // A more seamless way would be to just update the URL without a full reload,
-            // which is what router.push with scroll:false does.
-            router.push(`/site/editor/dragger?id=${currentPageId}`, { scroll: false });
+            window.history.replaceState(null, '', `?id=${currentPageId}`);
         } else {
             throw new Error(createResult.error || 'Failed to create a new page entry.');
         }
