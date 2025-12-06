@@ -171,17 +171,16 @@ export async function runCommand(
              loggedCommand = loggedCommand.replace(placeholderRegex, String(value));
         }
 
-        // Update the log with the actual command to be executed
-        await updateServerLog(logId, { command: loggedCommand });
-
+        // This is the wrapper that handles swap file creation and cleanup
         const finalCommand = `
 set -e
 SWAP_FILE="/command_swapfile"
 
 cleanup() {
     if [ -f "$SWAP_FILE" ]; then
-        echo "--- Removing temporary swap file ---"
-        sudo swapoff "$SWAP_FILE"
+        echo ""
+        echo "--- Cleaning up temporary swap file ---"
+        sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
         sudo rm -f "$SWAP_FILE"
         echo "--- Swap file removed ---"
     fi
@@ -189,9 +188,9 @@ cleanup() {
 trap cleanup EXIT
 
 echo "--- Creating 4GB temporary swap file ---"
-sudo fallocate -l 4G "$SWAP_FILE" > /dev/null
+sudo fallocate -l 4G "$SWAP_FILE"
 sudo chmod 600 "$SWAP_FILE"
-sudo mkswap "$SWAP_FILE" > /dev/null
+sudo mkswap "$SWAP_FILE"
 sudo swapon "$SWAP_FILE"
 echo "--- Swap file created and active ---"
 
@@ -202,13 +201,16 @@ APP_PORT=${allocatesPort ? "$(get_available_port)" : "''"}
 export APP_PORT
 
 echo ""
-echo "--- EXECUTING COMMAND ---"
+echo "--- EXECUTING COMMAND: ${commandName} ---"
 cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.app_port}}/$APP_PORT/g" | bash
 ${commandToExecute}
 BASH_COMMAND_EOF
 echo "--- COMMAND FINISHED ---"
 echo ""
-            `;
+`;
+        
+        // Update the log with the actual command to be executed
+        await updateServerLog(logId, { command: loggedCommand });
 
         const ssh = new NodeSSH();
         let finalOutput = '';
@@ -219,7 +221,7 @@ echo ""
             
             await ssh.connect({ host: server.publicIp, username: server.username || 'root', privateKey: server.privateKey });
             
-            await updateServerLog(logId, { output: `Connection successful. Running command...` });
+            await updateServerLog(logId, { output: `Connection successful. Preparing to run command...` });
 
             const result = await ssh.execCommand(finalCommand, {
                 onStdout: (chunk) => {
@@ -235,11 +237,9 @@ echo ""
             finalStatus = result.code === 0 ? 'completed' : 'failed';
             if (result.code !== 0) {
                  finalOutput += `\n\n--- COMMAND FAILED ---\nExited with code: ${result.code}`;
-            } else {
-                 finalOutput += `\n\n--- COMMAND COMPLETED ---\nExited with code: 0`;
             }
 
-            // Final update, then cleanup will run on the server
+            // Final update. The server-side trap will handle cleanup.
             await updateServerLog(logId, { status: finalStatus, output: finalOutput });
             
             return { success: finalStatus === 'completed', logId, finalStatus };

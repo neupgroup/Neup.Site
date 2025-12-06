@@ -41,23 +41,6 @@ set -e
 echo "--- Starting Application Deployment ---"
 
 APP_NAME="{{universal.site_id}}"
-SWAP_FILE="/swapfile_prod"
-
-cleanup() {
-    if [ -f "$SWAP_FILE" ]; then
-        echo "--- Removing temporary swap file ---"
-        sudo swapoff "$SWAP_FILE"
-        sudo rm -f "$SWAP_FILE"
-    fi
-}
-trap cleanup EXIT
-
-echo "--- Creating 4GB temporary swap file ---"
-sudo fallocate -l 4G "$SWAP_FILE"
-sudo chmod 600 "$SWAP_FILE"
-sudo mkswap "$SWAP_FILE"
-sudo swapon "$SWAP_FILE"
-echo "--- Swap file created ---"
 
 echo "--- Step 1: Navigating to application directory {{universal.server_appPath}} ---"
 cd {{universal.server_appPath}}
@@ -148,24 +131,6 @@ echo "--- Deployment Complete ---"
             name: "Start App & Configure Proxy", 
             description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx with an SSL redirect.",
             commandTemplate: `
-SWAP_FILE="/swapfile_start_proxy"
-
-cleanup() {
-    if [ -f "$SWAP_FILE" ]; then
-        echo "--- Removing temporary swap file ---"
-        sudo swapoff "$SWAP_FILE"
-        sudo rm -f "$SWAP_FILE"
-    fi
-}
-trap cleanup EXIT
-
-echo "--- Creating 4GB temporary swap file ---"
-sudo fallocate -l 4G "$SWAP_FILE"
-sudo chmod 600 "$SWAP_FILE"
-sudo mkswap "$SWAP_FILE"
-sudo swapon "$SWAP_FILE"
-echo "--- Swap file created ---"
-
 cd {{universal.server_appPath}}
 (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete '{{universal.site_id}}') || echo "No old processes to delete."
 pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env --time
