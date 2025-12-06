@@ -54,22 +54,20 @@ const WebsiteBuilderPage: FC<WebsiteBuilderPageProps> = async (props) => {
   const { id } = searchParams;
   let pageElements: CanvasElementData[] = initialElements;
   let pageId: string | undefined = id;
+  let pageNotFound = false;
 
   if (id) {
     const { success, page } = await getPage(id);
-    if (success && page && page.elements?.length > 0) {
+    if (success && page) {
       pageElements = page.elements;
     } else {
-      // Handle case where page is not found or empty
-      console.warn(`Page with id ${id} not found or is empty. Starting new editor session.`);
-      pageElements = initialElements;
-      pageId = undefined; // Start as a new page
+      pageNotFound = true;
     }
   }
 
   return (
     <Suspense fallback={<EditorLoadingSkeleton />}>
-      <Editor initialElements={pageElements} pageId={pageId} />
+      <Editor initialElements={pageElements} pageId={pageId} pageNotFound={pageNotFound} />
     </Suspense>
   );
 };
