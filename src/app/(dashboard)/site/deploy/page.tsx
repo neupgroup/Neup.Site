@@ -5,7 +5,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket } from 'lucide-react';
-import { getStructure, buildStructure, createDeployment, getLastDeployment, type Structure, type Deployment } from '@/actions/structure';
+import { getStructure, buildStructure, createDeployment, getLastDeployment } from '@/actions/structure';
+import type { Structure, Deployment } from '@/schemas/site';
+import { getSiteServers } from '@/actions/servers';
 import { deployCodebase } from '@/actions/deploy';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -21,14 +23,16 @@ export default function DeployPage() {
     const [isDeploying, setIsDeploying] = useState(false);
     const [isDeployingCodebase, setIsDeployingCodebase] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [hasServer, setHasServer] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
 
     const fetchDeploymentData = async () => {
         setLoading(true);
-        const [structureResult, deploymentResult] = await Promise.all([
+        const [structureResult, deploymentResult, serverResult] = await Promise.all([
             getStructure(),
-            getLastDeployment()
+            getLastDeployment(),
+            getSiteServers()
         ]);
 
         if (structureResult.success) {
@@ -44,6 +48,12 @@ export default function DeployPage() {
             console.warn("Could not fetch last deployment:", deploymentResult.error);
         }
 
+        if (serverResult.success && serverResult.servers && serverResult.servers.length > 0) {
+            setHasServer(true);
+        } else {
+            setHasServer(false);
+        }
+
         setLoading(false);
     };
 
@@ -55,19 +65,19 @@ export default function DeployPage() {
         setIsBuilding(true);
         const result = await buildStructure();
         if (result.success) {
-            toast({ title: "Build Complete", description: "The site structure has been built."});
+            toast({ title: "Build Complete", description: "The site structure has been built." });
             await fetchDeploymentData(); // Refresh the data
         } else {
             toast({ variant: "destructive", title: "Build Failed", description: result.error });
         }
         setIsBuilding(false);
     }
-    
+
     const handleDeploy = async () => {
         setIsDeploying(true);
         const result = await createDeployment();
         if (result.success) {
-            toast({ title: "Deployment Successful", description: "Your changes have been deployed."});
+            toast({ title: "Deployment Successful", description: "Your changes have been deployed." });
             await fetchDeploymentData(); // Refresh the data
         } else {
             toast({ variant: "destructive", title: "Deployment Failed", description: result.error });
@@ -79,7 +89,7 @@ export default function DeployPage() {
         setIsDeployingCodebase(true);
         const result = await deployCodebase();
         if (result.success && result.logId) {
-            toast({ title: 'Deployment Started', description: 'Check server logs for progress.'});
+            toast({ title: 'Deployment Started', description: 'Check server logs for progress.' });
             router.push(`/root/servers/${result.serverId}`);
         } else {
             toast({ variant: 'destructive', title: 'Codebase Deployment Failed', description: result.error });
@@ -116,28 +126,28 @@ export default function DeployPage() {
                                     <p className="text-sm text-muted-foreground">Last deployed: {lastDeployment?.attemptedOn ? new Date(lastDeployment.attemptedOn).toLocaleString() : 'Never'}</p>
                                 )}
                             </div>
-                             {loading ? <Loader2 className="animate-spin" /> :
-                             hasPendingChanges || isNeverDeployed ? (
-                                 <Badge variant="outline" className="text-amber-600 border-amber-500">
-                                    <Clock className="mr-2 h-4 w-4" />
-                                    Pending Deployment
-                                </Badge>
-                             ) : (
-                                <Badge variant="outline" className="text-green-600 border-green-500">
-                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                    Deployed
-                                </Badge>
-                             )
+                            {loading ? <Loader2 className="animate-spin" /> :
+                                hasPendingChanges || isNeverDeployed ? (
+                                    <Badge variant="outline" className="text-amber-600 border-amber-500">
+                                        <Clock className="mr-2 h-4 w-4" />
+                                        Pending Deployment
+                                    </Badge>
+                                ) : (
+                                    <Badge variant="outline" className="text-green-600 border-green-500">
+                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                        Deployed
+                                    </Badge>
+                                )
                             }
                         </CardHeader>
                     </Card>
 
                     {structure && structure.structure.length > 0 && (
                         <Card>
-                             <CardHeader>
+                            <CardHeader>
                                 <CardTitle className="text-lg">Changed Paths</CardTitle>
-                             </CardHeader>
-                             <CardContent>
+                            </CardHeader>
+                            <CardContent>
                                 <ScrollArea className="h-48">
                                     <div className="space-y-2">
                                         {structure.structure.filter(s => s.changesMade).map(s => (
@@ -148,7 +158,7 @@ export default function DeployPage() {
                                         )}
                                     </div>
                                 </ScrollArea>
-                             </CardContent>
+                            </CardContent>
                         </Card>
                     )}
 
@@ -162,20 +172,32 @@ export default function DeployPage() {
 
                 </CardContent>
                 <CardFooter className="flex-col sm:flex-row gap-4">
-                    <Button onClick={handleBuild} disabled={isBuilding || isDeploying}>
-                        {isBuilding ? <Loader2 className="animate-spin mr-2" /> : <GitBranch className="mr-2 h-4 w-4" />}
-                        {isBuilding ? 'Building...' : 'Build Structure'}
-                    </Button>
-                    {(hasPendingChanges || isNeverDeployed) && (
-                        <Button onClick={handleDeploy} disabled={isDeploying || isBuilding}>
-                            {isDeploying ? <Loader2 className="animate-spin mr-2" /> : null}
-                            Deploy Structure
-                        </Button>
+                    {hasServer ? (
+                        <>
+                            <Button onClick={handleBuild} disabled={isBuilding || isDeploying}>
+                                {isBuilding ? <Loader2 className="animate-spin mr-2" /> : <GitBranch className="mr-2 h-4 w-4" />}
+                                {isBuilding ? 'Building...' : 'Build Structure'}
+                            </Button>
+                            {(hasPendingChanges || isNeverDeployed) && (
+                                <Button onClick={handleDeploy} disabled={isDeploying || isBuilding}>
+                                    {isDeploying ? <Loader2 className="animate-spin mr-2" /> : null}
+                                    Deploy Structure
+                                </Button>
+                            )}
+                        </>
+                    ) : (
+                        <Alert variant="destructive" className="w-full">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>No Server Assigned</AlertTitle>
+                            <AlertDescription>
+                                You must assign a server to this site in the server management settings before you can deploy.
+                            </AlertDescription>
+                        </Alert>
                     )}
                 </CardFooter>
             </Card>
 
-             <Card className="mt-6">
+            <Card className="mt-6">
                 <CardHeader>
                     <CardTitle>Codebase Deployment</CardTitle>
                     <CardDescription>
@@ -192,12 +214,16 @@ export default function DeployPage() {
                     </Alert>
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleDeployCodebase} disabled={isDeployingCodebase || isDeploying || isBuilding}>
-                        {isDeployingCodebase ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2" />}
-                        {isDeployingCodebase ? 'Deploying Codebase...' : 'Deploy Codebase'}
-                    </Button>
+                    {hasServer ? (
+                        <Button onClick={handleDeployCodebase} disabled={isDeployingCodebase || isDeploying || isBuilding}>
+                            {isDeployingCodebase ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2" />}
+                            {isDeployingCodebase ? 'Deploying Codebase...' : 'Deploy Codebase'}
+                        </Button>
+                    ) : (
+                        <p className="text-sm text-destructive">Server assignment required.</p>
+                    )}
                 </CardFooter>
             </Card>
-        </div>
+        </div >
     );
 }

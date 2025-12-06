@@ -8,6 +8,12 @@ import type { Structure, PathStructure, Deployment, Site } from '@/schemas/site'
 import { logErrorToFirestore } from '@/lib/logging';
 import { getPages } from './editor/pages';
 import { getSite } from './editor/site';
+import { getPrivateServerDetails } from '@/actions/servers';
+import { NodeSSH } from 'node-ssh';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import { createServerLog, updateServerLog } from '@/actions/server-logs';
 
 
 /**
@@ -162,6 +168,9 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
       attemptedOn: serverTimestamp(),
     });
 
+    // Upload structure to the server
+    await uploadStructureToServer(siteId, currentStructure.structure, site?.theme || {});
+
     // Reset the staging structure
     const updatedPaths = currentStructure.structure.map(p => ({ ...p, changesMade: false }));
     await setDoc(structureRef, {
@@ -174,6 +183,116 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
   } catch (error: any) {
     await logErrorToFirestore({ message: `Failed to create deployment: ${error.message}`, stack: error.stack, source: 'createDeployment' });
     return { success: false, error: 'Failed to create deployment record.' };
+  }
+}
+
+async function uploadStructureToServer(siteId: string, structure: any, theme: any): Promise<{ success: boolean; error?: string }> {
+  let logId: string | undefined;
+
+  try {
+    const { firestore } = initializeFirebase();
+
+    // 1. Find the server allocated to this site
+    // Try 'allocations' first (used by servers.ts)
+    let allocationsQuery = query(
+      collection(firestore, 'allocations'),
+      where('siteId', '==', siteId),
+      limit(1)
+    );
+    let allocationsSnapshot = await getDocs(allocationsQuery);
+
+    // If not found, try 'serverAllocations' (used by deploy.ts)
+    if (allocationsSnapshot.empty) {
+      allocationsQuery = query(
+        collection(firestore, 'serverAllocations'),
+        where('siteId', '==', siteId),
+        limit(1)
+      );
+      allocationsSnapshot = await getDocs(allocationsQuery);
+    }
+
+    if (allocationsSnapshot.empty) {
+      console.warn(`No server allocated for site ${siteId}. Structure not uploaded.`);
+      return { success: true };
+    }
+
+    const allocation = allocationsSnapshot.docs[0].data();
+    const serverId = allocation.serverId;
+
+    // 2. Get credentials
+    const { server, error } = await getPrivateServerDetails(serverId);
+    if (error || !server || !server.publicIp || !server.privateKey) {
+      console.error(`Server details not found for ${serverId}: ${error}`);
+      return { success: false, error: error || 'Server details not found' };
+    }
+
+    // 3. Create Deployment Log
+    const logResult = await createServerLog({
+      serverId: serverId,
+      commandName: 'Deploy Structure',
+      command: 'Uploading site structure to server...',
+      output: 'Starting deployment process...',
+      status: 'pending',
+      initiatedBy: 'system'
+    });
+
+    if (logResult.success && logResult.id) {
+      logId = logResult.id;
+    }
+
+    // 4. Resolve appPath (logic matches runner.ts)
+    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
+    const structurePath = `${resolvedAppPath}/structure`;
+
+    // 5. Connect and Upload
+    const ssh = new NodeSSH();
+    console.log(`Connecting to ${server.publicIp} to upload structure...`);
+    if (logId) await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
+
+    try {
+      await ssh.connect({
+        host: server.publicIp,
+        username: server.username || 'root',
+        privateKey: server.privateKey
+      });
+
+      // Create temp files
+      const tempStructurePath = path.join(os.tmpdir(), `structure-${siteId}-${Date.now()}.json`);
+      const tempThemePath = path.join(os.tmpdir(), `theme-${siteId}-${Date.now()}.json`);
+
+      fs.writeFileSync(tempStructurePath, JSON.stringify(structure, null, 2));
+      fs.writeFileSync(tempThemePath, JSON.stringify(theme, null, 2));
+
+      try {
+        if (logId) await updateServerLog(logId, { output: `Connected. Uploading structure to ${structurePath}...` });
+        await ssh.execCommand(`mkdir -p ${structurePath}`);
+        await ssh.putFile(tempStructurePath, `${structurePath}/structure.json`);
+        await ssh.putFile(tempThemePath, `${structurePath}/theme.json`);
+
+        const successMsg = 'Structure uploaded successfully.';
+        console.log(successMsg);
+        if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
+
+      } finally {
+        if (fs.existsSync(tempStructurePath)) fs.unlinkSync(tempStructurePath);
+        if (fs.existsSync(tempThemePath)) fs.unlinkSync(tempThemePath);
+      }
+
+    } catch (sshError: any) {
+      console.error('SSH Error uploading structure:', sshError);
+      const errMsg = `Failed to upload structure to server: ${sshError.message}`;
+      if (logId) await updateServerLog(logId, { status: 'failed', output: errMsg });
+      throw new Error(errMsg);
+    } finally {
+      ssh.dispose();
+    }
+
+    return { success: true };
+
+  } catch (e: any) {
+    if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
+    await logErrorToFirestore({ message: `Failed to upload structure: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
+    return { success: false, error: e.message };
   }
 }
 
