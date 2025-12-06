@@ -1,4 +1,5 @@
 
+
 {
   "entities": {
     "Site": {
@@ -197,18 +198,6 @@
         "privateKey": { "type": "string", "description": "The SSH private key for accessing the server." },
         "serverType": { "type": "string", "enum": ["vps", "dedicated", "cloud"], "description": "The type of the server." },
         "provider": { "type": "string", "description": "The hosting provider (e.g., AWS, DigitalOcean)." },
-        "usedPorts": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "port": { "type": "number" },
-                    "description": { "type": "string" }
-                },
-                "required": ["port", "description"]
-            },
-            "description": "A list of ports that are currently in use."
-        },
         "storageUsed": { "type": "string", "description": "Used storage space (e.g., '5.2')." },
         "storageTotal": { "type": "string", "description": "Total storage space (e.g., '25')." },
         "storageUnit": { "type": "string", "description": "The unit for storage space (e.g., 'G', 'T')." },
@@ -278,6 +267,22 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "name", "commandTemplate"]
+    },
+     "Allocation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Allocation",
+      "type": "object",
+      "description": "Represents an allocation of server resources to a site.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the allocation." },
+        "serverId": { "type": "string", "description": "The ID of the server being allocated." },
+        "siteId": { "type": "string", "description": "The ID of the site receiving the allocation." },
+        "port": { "type": "number", "description": "The network port allocated to the site on this server." },
+        "allocatedStorage": { "type": "number", "description": "The amount of storage in MB allocated." },
+        "status": { "type": "string", "enum": ["active", "inactive", "pending", "error"], "description": "The status of the allocation." },
+        "allocatedOn": { "type": "string", "format": "date-time", "description": "Timestamp of when the allocation was made." }
+      },
+      "required": ["serverId", "siteId", "port", "allocatedStorage"]
     },
     "CodeFile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -477,6 +482,22 @@
         }
       },
       {
+        "path": "/allocations/{allocationId}",
+        "definition": {
+          "entityName": "Allocation",
+          "schema": {
+            "$ref": "#/backend/entities/Allocation"
+          },
+          "description": "Stores server resource allocation data.",
+          "params": [
+            {
+              "name": "allocationId",
+              "description": "The unique identifier for the allocation."
+            }
+          ]
+        }
+      },
+      {
         "path": "/serverLogs/{logId}",
         "definition": {
           "entityName": "ServerLog",
@@ -576,5 +597,3 @@
     "reasoning": "This design prioritizes security and scalability by adhering to the principles of Authorization Independence, Structural Segregation, Access Modeling, and Data Clarity. \n\nThe `sites` collection stores site data. The `pages` subcollection stores page data related to the site.\n\n**Authorization Independence**: No `get()` calls are needed in the security rules because access control is based on the `status` field in the `sites` collection and `requiresPendingSite` field in the `pages` collection. All required attributes for pages authorization are denormalized into the page document itself, removing the need for hierarchical dependencies.\n\n**Structural Segregation**: The `sites` collection is dedicated solely to site data, ensuring a homogeneous security posture. Similarly, the `pages` subcollection only contains page documents associated to a specific site.\n\n**Access Modeling**: The structure uses path-based ownership (`/sites/{siteId}/pages/{pageId}`).\n\n**QAPs**: The segregation of sites and pages based on the site ID supports efficient and secure list operations, as queries can be scoped to a specific site.\n\n**Invariants**: The structure supports invariants by associating pages to sites via the `siteId` field in the `pages` subcollection. This ensures the integrity of the 1:N relationship between sites and pages."
   }
 }
-
-    

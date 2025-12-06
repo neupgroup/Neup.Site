@@ -9,7 +9,7 @@ export interface ProcessInfo {
   user: string;
   pid: number;
   cpu: string;
-  mem: string;
+  mem: number; // Changed to number to store MB
   vsz: string;
   rss: string;
   tty: string;
@@ -24,13 +24,15 @@ function parsePsOutput(output: string): ProcessInfo[] {
   const processes: ProcessInfo[] = [];
 
   for (const line of lines) {
-    const parts = line.split(/\s+/);
+    const parts = line.trim().split(/\s+/);
     if (parts.length < 11) continue;
 
     const user = parts[0];
     const pid = parseInt(parts[1], 10);
     const cpu = parts[2];
-    const mem = parts[3];
+    const rssInKb = parseInt(parts[5], 10); // RSS is column 6
+    const memInMb = !isNaN(rssInKb) ? rssInKb / 1024 : 0;
+
     const vsz = parts[4];
     const rss = parts[5];
     const tty = parts[6];
@@ -40,7 +42,7 @@ function parsePsOutput(output: string): ProcessInfo[] {
     const command = parts.slice(10).join(' ');
 
     if (!isNaN(pid)) {
-      processes.push({ user, pid, cpu, mem, vsz, rss, tty, stat, start, time, command });
+      processes.push({ user, pid, cpu, mem: memInMb, vsz, rss, tty, stat, start, time, command });
     }
   }
   
@@ -62,7 +64,8 @@ export async function getActiveProcesses(serverId: string): Promise<{ success: b
       privateKey: server.privateKey,
     });
 
-    const result = await ssh.execCommand("ps aux --no-headers");
+    // Use --sort=-rss to sort by memory usage descending
+    const result = await ssh.execCommand("ps aux --no-headers --sort=-rss");
     if (result.code !== 0) {
       throw new Error(`Command failed: ${result.stderr}`);
     }

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, setDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
@@ -43,8 +44,46 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
   } catch (e: any) {
      // Cannot log to Firestore here as it might cause an infinite loop if logging itself fails
     console.error(`CRITICAL: Failed to update server log ${id}.`, e);
-    return { success: false, error: 'Failed to update server log.' };
+    // Don't return an error here, as this is often called in a non-critical path
+    // and we don't want to stop the main flow for a logging error.
+    return { success: false, error: e.message };
   }
+}
+
+/**
+ * Fetches a single server log by its ID.
+ */
+export async function getServerLog(id: string): Promise<{ success: boolean; log?: ServerLog; error?: string }> {
+    try {
+        const { firestore } = initializeFirebase();
+        const docRef = doc(firestore, 'serverLogs', id);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+            return { success: false, error: 'Log not found.' };
+        }
+
+        const data = docSnap.data();
+        const log: ServerLog = {
+            id: docSnap.id,
+            serverId: data.serverId,
+            command: data.command,
+            commandId: data.commandId,
+            commandName: data.commandName,
+            output: data.output,
+            status: data.status,
+            initiatedBy: data.initiatedBy,
+            initiatedAt: data.initiatedAt instanceof Timestamp ? data.initiatedAt.toDate().toISOString() : null,
+            completedAt: data.completedAt instanceof Timestamp ? data.completedAt.toDate().toISOString() : null,
+        };
+        return { success: true, log };
+
+    } catch (e: any) {
+        // This action is used for polling, so logging to Firestore might be too noisy.
+        // Console error is sufficient for developers to debug.
+        console.error(`Failed to get server log ${id}:`, e);
+        return { success: false, error: 'Failed to fetch log.' };
+    }
 }
 
 
@@ -81,6 +120,8 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
                 id: doc.id,
                 serverId: data.serverId,
                 command: data.command,
+                commandId: data.commandId,
+                commandName: data.commandName,
                 output: data.output,
                 status: data.status,
                 initiatedBy: data.initiatedBy,

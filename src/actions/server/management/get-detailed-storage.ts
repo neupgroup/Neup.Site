@@ -2,7 +2,6 @@
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
-import { updateServerAllocation } from '@/actions/allocations';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
 import type { ServerAllocationStorage } from '@/schemas/server';
@@ -78,8 +77,8 @@ export async function getDetailedStorage(
       unit: unit,
     };
     
-    // Save the calculated data to the allocation document
-    await updateServerAllocation(allocationId, { storage: storageData });
+    // The responsibility to save this data has been removed from this function
+    // as it's no longer part of the allocation schema.
 
     return { success: true, data: storageData };
 

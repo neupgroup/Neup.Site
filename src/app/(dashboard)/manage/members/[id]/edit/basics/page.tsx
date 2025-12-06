@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -25,7 +25,8 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function EditMemberBasicsPage({ params }: { params: { id: string } }) {
+export default function EditMemberBasicsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const { toast } = useToast();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -34,7 +35,7 @@ export default function EditMemberBasicsPage({ params }: { params: { id: string 
     });
 
     useEffect(() => {
-        getMember(params.id).then(({ member, error }) => {
+        getMember(id).then(({ member, error }) => {
             if (error || !member) {
                 toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch member data.'});
                 router.push('/manage/members');
@@ -47,13 +48,13 @@ export default function EditMemberBasicsPage({ params }: { params: { id: string 
                 });
             }
         });
-    }, [params.id, form, router, toast]);
+    }, [id, form, router, toast]);
     
     const onSubmit = async (data: FormValues) => {
-        const result = await updateMember(params.id, data);
+        const result = await updateMember(id, data);
         if (result.success) {
             toast({ title: 'Member Updated' });
-            router.push(`/manage/members/${params.id}`);
+            router.push(`/manage/members/${id}`);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }
@@ -61,7 +62,7 @@ export default function EditMemberBasicsPage({ params }: { params: { id: string 
     
     const handleDelete = async () => {
         setShowDeleteConfirm(false);
-        const result = await deleteMember(params.id);
+        const result = await deleteMember(id);
         if (result.success) {
             toast({ title: 'Member Deleted'});
             router.push('/manage/members');
@@ -74,8 +75,8 @@ export default function EditMemberBasicsPage({ params }: { params: { id: string 
          <>
             <div className="w-full max-w-2xl">
                 <div className="mb-4">
-                    <Button variant="ghost" asChild>
-                        <Link href={`/manage/members/${params.id}`}>
+                    <Button variant="outline" asChild>
+                        <Link href={`/manage/members/${id}`}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Member
                         </Link>

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -77,7 +78,7 @@ export default function ServersPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>Public IP</TableHead>
                   <TableHead>Provider</TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead>Platform</TableHead>
                   <TableHead>Username</TableHead>
                   <TableHead>Created On</TableHead>
                 </TableRow>
@@ -97,7 +98,7 @@ export default function ServersPage() {
                         </a>
                     </TableCell>
                      <TableCell>{server.provider || 'N/A'}</TableCell>
-                    <TableCell className="capitalize">{server.serverType || 'N/A'}</TableCell>
+                    <TableCell className="capitalize">{server.platform || 'N/A'}</TableCell>
                     <TableCell>{server.username || 'N/A'}</TableCell>
                     <TableCell>{server.createdOn ? new Date(server.createdOn).toLocaleDateString() : 'N/A'}</TableCell>
                   </TableRow>

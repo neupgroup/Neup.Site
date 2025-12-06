@@ -24,12 +24,14 @@ function parseSsOutput(output: string): ActivePortInfo[] {
     const protocol = parts[0].toUpperCase().startsWith('UDP') ? 'UDP' : 'TCP';
     const localAddressPort = parts[4];
     
-    // Updated regex to handle various address formats and extract port
-    const addressMatch = localAddressPort.match(/(?:[\[\w\:\.\]]+):(\d+)$/);
-    if (!addressMatch) continue;
+    const lastColonIndex = localAddressPort.lastIndexOf(':');
+    if (lastColonIndex === -1) continue;
 
-    const port = parseInt(addressMatch[1], 10);
-    const address = localAddressPort.substring(0, localAddressPort.lastIndexOf(':'));
+    const portStr = localAddressPort.substring(lastColonIndex + 1);
+    const port = parseInt(portStr, 10);
+    if (isNaN(port)) continue;
+    
+    const address = localAddressPort.substring(0, lastColonIndex);
     
     const portKey = `${port}/${protocol}`;
     if (seenPorts.has(portKey)) continue;
@@ -64,7 +66,7 @@ export async function getActivePorts(serverId: string): Promise<{ success: boole
       privateKey: server.privateKey,
     });
 
-    const result = await ssh.execCommand("ss -tunp");
+    const result = await ssh.execCommand("ss -ltunp");
     if (result.code !== 0) {
       throw new Error(`Command failed: ${result.stderr}`);
     }
@@ -86,4 +88,3 @@ export async function getActivePorts(serverId: string): Promise<{ success: boole
     }
   }
 }
-

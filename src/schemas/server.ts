@@ -15,11 +15,8 @@ export interface ServerAllocation {
   serverId: string;
   username?: string;
   deploymentPath?: string;
-  allocatedPorts?: number[];
   storageAllocation: string; // e.g., "1024" for 1024MB
   allocatedOn?: string | null;
-  expiresOn?: string | null;
-  storage?: ServerAllocationStorage;
 }
 
 export interface UsedPort {
@@ -34,11 +31,12 @@ export interface Server {
   privateIp?: string;
   privateKey?: string;
   serverType?: 'vps' | 'dedicated' | 'cloud';
+  platform?: 'ubuntu' | 'windows';
   provider?: string;
-  usedPorts?: UsedPort[];
   isPrivate?: boolean;
   username?: string;
   basePath?: string;
+  appPath?: string;
   storageUsed?: string;
   storageTotal?: string;
   storageUnit?: string;
@@ -49,6 +47,8 @@ export interface Server {
 export interface ServerLog {
   id: string;
   serverId: string;
+  commandId?: string;
+  commandName?: string;
   command: string;
   output: string;
   status: 'pending' | 'ongoing' | 'completed' | 'failed' | 'cancelled';

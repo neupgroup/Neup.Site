@@ -12,7 +12,6 @@ import { savePage, createPage } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { elementDefinitions } from '@/elements';
-import { temp_element } from '@/elements/html';
 import HighlightBox from './HighlightBox'; // Import HighlightBox
 
 interface EditorProps {
@@ -33,6 +32,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const [dropZone, setDropZone] = useState<{ parentId: string | null; elementId: string | null; }>({ parentId: null, elementId: null });
 
   const setElements = (updater: (prev: CanvasElementData[]) => CanvasElementData[], recordHistory = true) => {
     try {
@@ -118,35 +118,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const handleDragOver = (e: DragEvent, targetParentId?: string | null, targetElementId?: string | null) => {
       e.preventDefault();
       e.stopPropagation();
-
-      setElements(prev => {
-          let [cleanedElements] = removeElementRecursive(prev, 'temp_element');
-          
-          if (targetElementId === 'temp_element') return cleanedElements;
-
-          const insertPlaceholder = (els: CanvasElementData[]): CanvasElementData[] => {
-              if (targetParentId) {
-                  return els.map(el => {
-                      if (el.id === targetParentId) {
-                          const newChildren = el.children ? [...el.children] : [];
-                          const dropIndex = targetElementId ? newChildren.findIndex(c => c.id === targetElementId) : newChildren.length;
-                          newChildren.splice(dropIndex, 0, temp_element);
-                          return {...el, children: newChildren};
-                      }
-                      if (el.children) {
-                          return {...el, children: insertPlaceholder(el.children)};
-                      }
-                      return el;
-                  });
-              } else {
-                  const dropIndex = targetElementId ? els.findIndex(c => c.id === targetElementId) : els.length;
-                  const newEls = [...els];
-                  newEls.splice(dropIndex, 0, temp_element);
-                  return newEls;
-              }
-          };
-          return insertPlaceholder(cleanedElements);
-      }, false);
+      setDropZone({ parentId: targetParentId || null, elementId: targetElementId || null });
   };
   
   const handleDragLeave = (e: DragEvent) => {
@@ -154,7 +126,8 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       e.stopPropagation();
       const editorContainer = (e.currentTarget as HTMLElement).closest('.h-screen.w-full');
       if (editorContainer && !editorContainer.contains(e.relatedTarget as Node)) {
-          setElements(prev => removeElementRecursive(prev, 'temp_element')[0], false);
+          setDraggedId(null);
+          setDropZone({parentId: null, elementId: null});
           console.log('Drag state exited.');
       }
   }
@@ -162,6 +135,8 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const handleDrop = (e: DragEvent, parentId?: string, dropZoneId?: string) => {
       e.preventDefault();
       e.stopPropagation();
+      setDraggedId(null);
+      setDropZone({parentId: null, elementId: null});
       console.log('Drag state exited.');
 
       const dataStr = e.dataTransfer.getData('application/json');
@@ -169,26 +144,38 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
       const data = JSON.parse(dataStr);
 
       setElements(prev => {
-          const [elementsWithoutPlaceholder] = removeElementRecursive(prev, 'temp_element');
-          let [elementsWithoutDragged, draggedElement] = removeElementRecursive(elementsWithoutPlaceholder, data.id);
-
-          if (!draggedElement) {
+          let elementsWithoutDragged = prev;
+          let draggedElement: CanvasElementData | null = null;
+          
+          if(data.id) { // Moving an existing element
+             [elementsWithoutDragged, draggedElement] = removeElementRecursive(prev, data.id);
+          } else if (data.type === 'sidebar-element') { // Adding a new element from sidebar
               const definition = elementDefinitions[data.elementType as CanvasElementData['type']];
+              if (definition) {
+                  draggedElement = {
+                      ...JSON.parse(JSON.stringify(definition)), // Deep copy to prevent reference issues
+                      id: `${data.elementType}-${Date.now()}`,
+                  };
+              }
+          } else if (data.type === 'template-element') { // Adding a template
               draggedElement = {
-                  ...JSON.parse(JSON.stringify(definition)),
-                  id: `${data.elementType}-${Date.now()}`,
-                  properties: definition.properties || {},
+                  ...JSON.parse(JSON.stringify(data.element)), // Deep copy
+                  id: `${data.element.type}-${Date.now()}`
               };
           }
 
-          if (!draggedElement) return elementsWithoutPlaceholder;
+
+          if (!draggedElement) return prev;
 
           const insertElement = (els: CanvasElementData[]): CanvasElementData[] => {
-              if (parentId) {
+              const targetParentId = parentId || dropZone.parentId;
+              const targetElementId = dropZoneId || dropZone.elementId;
+
+              if (targetParentId) {
                   return els.map(el => {
-                      if (el.id === parentId) {
+                      if (el.id === targetParentId) {
                           const newChildren = el.children ? [...el.children] : [];
-                          const dropIndex = dropZoneId ? newChildren.findIndex(c => c.id === dropZoneId) : newChildren.length;
+                          const dropIndex = targetElementId ? newChildren.findIndex(c => c.id === targetElementId) : newChildren.length;
                           newChildren.splice(dropIndex, 0, draggedElement!);
                           return {...el, children: newChildren};
                       }
@@ -199,7 +186,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                   });
               } else {
                   const newEls = [...els];
-                  const dropIndex = dropZoneId ? newEls.findIndex(c => c.id === dropZoneId) : newEls.length;
+                  const dropIndex = targetElementId ? newEls.findIndex(c => c.id === targetElementId) : newEls.length;
                   newEls.splice(dropIndex, 0, draggedElement!);
                   return newEls;
               }
@@ -207,7 +194,6 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
           return insertElement(elementsWithoutDragged);
       });
 
-      setDraggedId(null);
   };
 
 
@@ -536,16 +522,19 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
   const pasteElement = useCallback(() => {
     try {
         if (!clipboard) return;
+        
+        const newElement = JSON.parse(JSON.stringify(clipboard));
+        newElement.id = `${newElement.type}-${Date.now()}`;
+        
         setElements(prev => {
             const clonedPrev = JSON.parse(JSON.stringify(prev));
-            const newClipboard = { ...clipboard, id: `${clipboard.type}-${Date.now()}` };
 
             if (!selectedElementId) {
-                return [...clonedPrev, newClipboard];
+                return [...clonedPrev, newElement];
             }
 
             const result = findElementRecursive(clonedPrev, selectedElementId);
-            if (!result) return [...clonedPrev, newClipboard];
+            if (!result) return [...clonedPrev, newElement];
 
             const { element: selectedEl, parent } = result;
 
@@ -553,7 +542,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                 const addInside = (els: CanvasElementData[]): CanvasElementData[] => {
                     return els.map(el => {
                         if (el.id === selectedEl.id) {
-                            return { ...el, children: [...(el.children || []), newClipboard] };
+                            return { ...el, children: [...(el.children || []), newElement] };
                         }
                         if (el.children) {
                             return { ...el, children: addInside(el.children) };
@@ -569,7 +558,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                             if (els[i].id === parentId && els[i].children) {
                                 const targetIdx = els[i].children!.findIndex(c => c.id === targetId);
                                 if (targetIdx !== -1) {
-                                    els[i].children!.splice(targetIdx + 1, 0, newClipboard);
+                                    els[i].children!.splice(targetIdx + 1, 0, newElement);
                                 }
                                 return els;
                             }
@@ -580,7 +569,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
                     } else { 
                         const rootIndex = els.findIndex(c => c.id === targetId);
                         if (rootIndex !== -1) {
-                        els.splice(rootIndex + 1, 0, newClipboard);
+                        els.splice(rootIndex + 1, 0, newElement);
                         }
                     }
                     return els;
@@ -692,17 +681,21 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
     };
   }, [selectedElementId, deleteElement, copyElement, cutElement, pasteElement, undo, redo]);
 
-  const handleSaveFlow = async () => {
+  const handleSaveFlow = async (): Promise<string | undefined> => {
     let currentPageId = pageId;
     if (!currentPageId) {
         const createResult = await createPage();
         if (createResult.success && createResult.id) {
             currentPageId = createResult.id;
             setPageId(currentPageId);
-            router.push(`/site/editor/dragger?id=${currentPageId}`, { scroll: false });
+            window.history.replaceState(null, '', `?id=${currentPageId}`);
         } else {
             throw new Error(createResult.error || 'Failed to create a new page entry.');
         }
+    }
+
+    if (!currentPageId) {
+        throw new Error('Could not obtain a page ID to save.');
     }
 
     const result = await savePage(currentPageId, { elements });
@@ -760,7 +753,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
         onUndo={undo}
         onRedo={redo}
         canUndo={historyIndex > 0}
-        canRedo={historyIndex < history.length - 1}
+        canRedo={history.length - 1 > historyIndex}
         onViewCode={() => {}}
         onPublish={handlePublish}
         onPreview={handlePreview}
@@ -791,6 +784,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId }) => 
             draggedId={draggedId}
             hoveredElementId={hoveredElementId}
             setHoveredElementId={setHoveredElementId}
+            dropZone={dropZone}
             />
             <HighlightBox 
                 hoveredElementId={hoveredElementId} 

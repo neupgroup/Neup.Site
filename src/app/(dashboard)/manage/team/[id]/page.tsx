@@ -22,7 +22,7 @@ export default async function ViewTeamPage({ params }: { params: { id: string } 
     return (
         <div className="w-full max-w-2xl">
             <div className="mb-4">
-                <Button variant="ghost" asChild>
+                <Button variant="outline" asChild>
                     <Link href="/manage/team">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Teams

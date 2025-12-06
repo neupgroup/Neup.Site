@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { type FC, useRef, DragEvent, Fragment } from 'react';
@@ -8,7 +9,7 @@ import { useElementResizing } from '@/hooks/useElementResizing';
 
 import CanvasElement from './CanvasElement';
 import SectionDropZone from './SectionDropZone';
-// Removed HighlightBox import
+import DropIndicator from './DropIndicator';
 
 interface CanvasProps {
   elements: CanvasElementData[];
@@ -21,6 +22,7 @@ interface CanvasProps {
   draggedId: string | null;
   hoveredElementId: string | null;
   setHoveredElementId: (id: string | null) => void;
+  dropZone: { parentId: string | null; elementId: string | null; };
 }
 
 const Canvas: FC<CanvasProps> = ({ 
@@ -34,6 +36,7 @@ const Canvas: FC<CanvasProps> = ({
     draggedId,
     hoveredElementId,
     setHoveredElementId,
+    dropZone,
 }) => {
     const canvasRef = useRef<HTMLDivElement>(null);
     const isDraggingSection = !!(draggedId && elements.find(el => el.id === draggedId && el.type === 'section'));
@@ -67,6 +70,7 @@ const Canvas: FC<CanvasProps> = ({
                     onDrop={(e) => onDrop(e, undefined, el.id)} 
                     isDraggingSection={isDraggingSection} 
                 />
+                 {dropZone.parentId === null && dropZone.elementId === el.id && <DropIndicator />}
                 <CanvasElement 
                     key={el.id}
                     element={el}
@@ -79,6 +83,7 @@ const Canvas: FC<CanvasProps> = ({
                     resizingState={resizingState}
                     onResizeStart={handleResizeStart}
                     draggedId={draggedId}
+                    hoveredElementId={hoveredElementId}
                     setHoveredElementId={setHoveredElementId}
                 />
             </Fragment>
@@ -97,9 +102,7 @@ const Canvas: FC<CanvasProps> = ({
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onDragOver(e) }}
             >
               {draggedId ? (
-                 <div className="w-full h-2 border-2 border-dashed border-primary rounded-lg flex items-center justify-center text-primary bg-primary/10 my-2 transition-all p-4 mx-4">
-                    {/* Removed text content */}
-                </div>
+                 <DropIndicator />
               ) : (
                 <div className="w-full h-full flex items-center justify-center p-4">
                     <p className="text-muted-foreground text-center">Drag elements here to start building your page.</p>
@@ -107,7 +110,6 @@ const Canvas: FC<CanvasProps> = ({
               )}
             </div>
         )}
-        {/* HighlightBox is now rendered in editor.tsx */}
       </div>
     </div>
   );

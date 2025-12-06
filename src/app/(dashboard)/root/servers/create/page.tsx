@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -29,17 +30,19 @@ export default function CreateServerPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm<FormValues>({
+  const { register, control, handleSubmit, formState: { isSubmitting }, setValue } = useForm<FormValues>({
     defaultValues: {
       name: '',
       publicIp: '',
       privateIp: '',
       privateKey: '',
       serverType: 'vps',
+      platform: 'ubuntu',
       provider: '',
       isPrivate: false,
       username: 'root',
-      basePath: '/var/www'
+      basePath: '/home/{{username}}',
+      appPath: '/var/www/{{universal.site_id}}'
     }
   });
 
@@ -92,7 +95,7 @@ export default function CreateServerPage() {
              <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="server-type">Server Type</Label>
-                    <Select onValueChange={(value) => register('serverType').onChange({ target: { value } })} defaultValue="vps">
+                    <Select onValueChange={(value) => setValue('serverType', value as any)} defaultValue="vps">
                         <SelectTrigger id="server-type">
                             <SelectValue placeholder="Select type" />
                         </SelectTrigger>
@@ -104,18 +107,36 @@ export default function CreateServerPage() {
                     </Select>
                 </div>
                 <div className="space-y-2">
+                    <Label htmlFor="platform">Platform (OS)</Label>
+                    <Select onValueChange={(value) => setValue('platform', value as any)} defaultValue="ubuntu">
+                        <SelectTrigger id="platform">
+                            <SelectValue placeholder="Select platform" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                            <SelectItem value="windows">Windows</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+             <div className="grid sm:grid-cols-2 gap-4">
+                 <div className="space-y-2">
                     <Label htmlFor="provider">Provider</Label>
                     <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
                 </div>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="username">Default Username</Label>
                     <Input id="username" {...register('username')} placeholder="e.g., root" />
                 </div>
+            </div>
+             <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="basePath">Default Base Path</Label>
-                    <Input id="basePath" {...register('basePath')} placeholder="e.g., /var/www" />
+                    <Label htmlFor="basePath">Base Path</Label>
+                    <Input id="basePath" {...register('basePath')} placeholder="e.g., /home/{{username}}" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="appPath">Application Path Template</Label>
+                    <Input id="appPath" {...register('appPath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
                 </div>
             </div>
              <div className="flex items-center space-x-2">

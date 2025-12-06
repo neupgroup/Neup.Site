@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Command, ArrowRight, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { AlertCircle, Plus, Command, ArrowRight, ChevronLeft, ChevronRight, Search, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 
@@ -85,11 +85,18 @@ export default function CommandsPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Command Templates</h1>
-        <Button asChild>
-          <Link href="/root/command/create">
-            <Plus className="mr-2 h-4 w-4" /> Create Command
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+            <Button asChild variant="outline">
+              <Link href="/root/command/guide">
+                <BookOpen className="mr-2 h-4 w-4" /> View Guide
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/root/command/create">
+                <Plus className="mr-2 h-4 w-4" /> Create Command
+              </Link>
+            </Button>
+        </div>
       </header>
       <Card>
         <CardHeader>

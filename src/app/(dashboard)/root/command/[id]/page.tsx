@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { AlertCircle, ArrowLeft, Trash2, Command as CommandIcon } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Trash2, Command as CommandIcon, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -111,7 +111,7 @@ export default function CommandDetailPage({ params }: { params: { id: string } }
   }
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full max-w-4xl">
         <div className="mb-4">
             <Button variant="ghost" asChild>
                 <Link href="/root/command">
@@ -149,6 +149,8 @@ export default function CommandDetailPage({ params }: { params: { id: string } }
                                     <TableHead>Key</TableHead>
                                     <TableHead>Label</TableHead>
                                     <TableHead>Type</TableHead>
+                                    <TableHead>Default</TableHead>
+                                    <TableHead>Confidential</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -157,12 +159,14 @@ export default function CommandDetailPage({ params }: { params: { id: string } }
                                         <TableCell className="font-mono">{p.key}</TableCell>
                                         <TableCell>{p.label}</TableCell>
                                         <TableCell className="capitalize">{p.type}</TableCell>
+                                        <TableCell className="font-mono">{p.defaultValue || 'N/A'}</TableCell>
+                                        <TableCell>{p.confidential ? <KeyRound className="h-4 w-4 text-amber-500" /> : 'No'}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                     ) : (
-                        <p className="text-sm text-muted-foreground mt-2">No parameters defined.</p>
+                        <p className="text-sm text-muted-foreground mt-2">No user-defined parameters.</p>
                     )}
                 </div>
             </CardContent>

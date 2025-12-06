@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { getApplicantsForJob, type Applicant } from '@/actions/applicants';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,8 @@ import { AlertCircle, Plus, Users, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
-export default function ApplicantsPage({ params }: { params: { id: string } }) {
+export default function ApplicantsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +35,7 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchApplicants = async () => {
       setLoading(true);
-      const result = await getApplicantsForJob(params.id);
+      const result = await getApplicantsForJob(id);
       if (result.success && result.applicants) {
         setApplicants(result.applicants);
       } else {
@@ -43,13 +45,13 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
     };
 
     fetchApplicants();
-  }, [params.id]);
+  }, [id]);
 
   return (
     <div className="w-full">
         <div className="mb-4">
-            <Button variant="ghost" asChild>
-            <Link href={`/manage/hiring/${params.id}`}>
+            <Button variant="outline" asChild>
+            <Link href={`/manage/hiring/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Job Posting
             </Link>
@@ -61,7 +63,7 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
             <p className="text-muted-foreground">Review candidates for this job posting.</p>
         </div>
         <Button asChild>
-          <Link href={`/manage/hiring/${params.id}/applicants/add`}>
+          <Link href={`/manage/hiring/${id}/applicants/add`}>
             <Plus className="mr-2 h-4 w-4" /> Add Applicant
           </Link>
         </Button>
@@ -109,7 +111,7 @@ export default function ApplicantsPage({ params }: { params: { id: string } }) {
                     <TableCell>{applicant.appliedAt ? format(new Date(applicant.appliedAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="ghost" size="icon">
-                        <Link href={`/manage/hiring/${params.id}/applicants/${applicant.id}`}>
+                        <Link href={`/manage/hiring/${id}/applicants/${applicant.id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </Link>
                       </Button>

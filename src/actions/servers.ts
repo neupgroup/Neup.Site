@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
@@ -43,11 +44,12 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
             name: data.name,
             publicIp: data.publicIp,
             serverType: data.serverType,
+            platform: data.platform,
             provider: data.provider,
-            usedPorts: data.usedPorts,
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
+            appPath: data.appPath,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         } as Server
@@ -69,7 +71,7 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
 
   try {
     const { firestore } = initializeFirebase();
-    const allocationsQuery = query(collection(firestore, 'serverAllocations'), where('siteId', '==', siteId));
+    const allocationsQuery = query(collection(firestore, 'allocations'), where('siteId', '==', siteId));
     const allocationsSnapshot = await getDocs(allocationsQuery);
 
     if (allocationsSnapshot.empty) {
@@ -88,7 +90,6 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
                 id: serverDoc.id,
                 name: serverData.name,
                 publicIp: serverData.publicIp,
-                usedPorts: serverData.usedPorts,
                 createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             };
 
@@ -96,7 +97,6 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
                 id: allocDoc.id,
                 ...allocationData,
                 allocatedOn: allocationData.allocatedOn instanceof Timestamp ? allocationData.allocatedOn.toDate().toISOString() : null,
-                expiresOn: allocationData.expiresOn instanceof Timestamp ? allocationData.expiresOn.toDate().toISOString() : null,
             }
             
             return { ...serverInfo, allocation };
@@ -137,11 +137,12 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
             publicIp: data.publicIp,
             privateIp: data.privateIp,
             serverType: data.serverType,
+            platform: data.platform,
             provider: data.provider,
-            usedPorts: data.usedPorts,
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
+            appPath: data.appPath,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };
@@ -177,11 +178,12 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
             privateIp: data.privateIp,
             privateKey: data.privateKey,
             serverType: data.serverType,
+            platform: data.platform,
             provider: data.provider,
-            usedPorts: data.usedPorts,
             isPrivate: data.isPrivate,
             username: data.username,
             basePath: data.basePath,
+            appPath: data.appPath,
             createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
             expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
         };

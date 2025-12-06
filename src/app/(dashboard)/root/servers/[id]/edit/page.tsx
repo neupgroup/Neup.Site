@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,7 +32,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 
 
-type FormValues = Omit<Server, 'id' | 'createdOn' | 'portsOpen'>;
+type FormValues = Omit<Server, 'id' | 'createdOn' | 'portsOpen' | 'usedPorts'>;
 
 export default function EditServerPage({ params }: { params: Promise<{ id:string }> }) {
   const { id } = use(params);
@@ -52,18 +53,14 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
       privateIp: '',
       privateKey: '', 
       serverType: 'vps',
+      platform: 'ubuntu',
       provider: '',
-      usedPorts: [],
       isPrivate: false,
       username: '',
       basePath: '',
+      appPath: '',
       expiresOn: null,
     }
-  });
-  
-  const { fields: usedPortFields, append: appendUsedPort, remove: removeUsedPort } = useFieldArray({
-    control,
-    name: 'usedPorts',
   });
 
   const expiresOn = watch('expiresOn');
@@ -80,11 +77,12 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
           privateIp: '', // Leave blank for security
           privateKey: '', // Keep private key field blank for security
           serverType: result.server.serverType || 'vps',
+          platform: result.server.platform || 'ubuntu',
           provider: result.server.provider || '',
-          usedPorts: result.server.usedPorts || [],
           isPrivate: result.server.isPrivate || false,
           username: result.server.username || '',
           basePath: result.server.basePath || '',
+          appPath: result.server.appPath || '',
           expiresOn: result.server.expiresOn || null,
         });
       } else {
@@ -195,35 +193,36 @@ export default function EditServerPage({ params }: { params: Promise<{ id:string
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="provider">Provider</Label>
-                        <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
+                     <div className="space-y-2">
+                        <Label htmlFor="platform">Platform (OS)</Label>
+                        <Select onValueChange={(value) => setValue('platform', value as any)} defaultValue={watch('platform')}>
+                            <SelectTrigger id="platform">
+                                <SelectValue placeholder="Select platform" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                                <SelectItem value="windows">Windows</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="provider">Provider</Label>
+                    <Input id="provider" {...register('provider')} placeholder="e.g., AWS, DigitalOcean" />
                 </div>
                  <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="username">Default Username</Label>
                         <Input id="username" {...register('username')} />
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="basePath">Default Base Path</Label>
-                        <Input id="basePath" {...register('basePath')} />
+                     <div className="space-y-2">
+                        <Label htmlFor="basePath">Base Path</Label>
+                        <Input id="basePath" {...register('basePath')} placeholder="e.g., /home/{{username}}"/>
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label>Used Ports</Label>
-                     {usedPortFields.map((field, index) => (
-                        <div key={field.id} className="flex items-start gap-2">
-                            <Input type="number" {...register(`usedPorts.${index}.port`)} placeholder="e.g., 8080" className="w-24" />
-                            <Input {...register(`usedPorts.${index}.description`)} placeholder="e.g., Nginx for myapp.com" />
-                            <Button type="button" variant="destructive" size="icon" onClick={() => removeUsedPort(index)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                    <Button type="button" variant="outline" className="w-full" onClick={() => appendUsedPort({ port: 0, description: '' })}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Used Port
-                    </Button>
+                    <Label htmlFor="appPath">Application Path Template</Label>
+                    <Input id="appPath" {...register('appPath')} placeholder="e.g., /var/www/{{universal.site_id}}" />
                 </div>
                  <div className="flex items-center space-x-2">
                     <Switch id="is-private" checked={watch('isPrivate')} onCheckedChange={(checked) => setValue('isPrivate', checked)} />

@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, ChevronDown } from 'lucide-react'; // Import ChevronDown
+import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } from 'lucide-react';
 import { getServerLogs } from '@/actions/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
@@ -13,7 +14,7 @@ import { logErrorToFirestore } from '@/lib/logging';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-export default function ServerLogs({ serverId }: { serverId: string }) {
+const ServerLogs = ({ serverId }: { serverId: string }) => {
     const [logs, setLogs] = useState<ServerLog[]>([]);
     const [logsPage, setLogsPage] = useState(1);
     const [hasMoreLogs, setHasMoreLogs] = useState(false);
@@ -42,6 +43,7 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
 
     useEffect(() => {
         fetchLogs(logsPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [serverId, logsPage]);
 
     useEffect(() => {
@@ -70,13 +72,21 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Server Logs</CardTitle>
-                <CardDescription>History of all commands run on this server.</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Server Logs</CardTitle>
+                        <CardDescription>History of all commands run on this server.</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => fetchLogs(logsPage)} disabled={loadingLogs}>
+                    {loadingLogs ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                    Reload
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent>
                 {loadingLogs && logs.length === 0 ? (
                     <div className="space-y-4">
-                        {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+                        {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
                     </div>
                 ) : logsError ? (
                     <Alert variant="destructive">
@@ -93,38 +103,38 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                 ) : (
                     <Accordion type="single" collapsible className="w-full space-y-2">
                         {logs.map(log => (
-                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 cursor-pointer hover:bg-muted/50">
-                                {/* Hide the default chevron that lives outside our content area */}
-                                <AccordionTrigger className="hover:no-underline text-left py-3 [&>svg]:hidden">
-                                    {/* Component Container */}
-                                    <div className='w-full'>
-                                        {/* Container 1: flex, space-between */}
-                                        <div className="flex justify-between items-center w-full mb-2">
-                                            {/* Container 2: status and executor */}
+                            <AccordionItem value={log.id} key={log.id} className="border rounded-md px-4 data-[state=open]:border-primary">
+                                <AccordionTrigger className="hover:no-underline text-left py-3">
+                                    <div className='w-full space-y-2'>
+                                        <div className="flex justify-between items-center w-full">
                                             <div className="flex items-center gap-2 text-sm">
-                                                <Badge variant={getStatusVariant(log.status)} className={cn(log.status === 'completed' && 'bg-green-600')}>
+                                                <Badge variant={getStatusVariant(log.status)} className={cn('capitalize', log.status === 'completed' && 'bg-green-600')}>
                                                     {log.status === 'ongoing' && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
                                                     {log.status}
                                                 </Badge>
                                                 <span className="text-muted-foreground">{log.initiatedAt ? formatDistanceToNow(new Date(log.initiatedAt), { addSuffix: true }) : 'Just now'}</span>
                                                 <span className="text-muted-foreground">by {log.initiatedBy}</span>
                                             </div>
-                                            {/* Element 1: The Chevron */}
-                                            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 text-muted-foreground" />
                                         </div>
-
-                                        {/* Container 3: The command block */}
-                                        <pre className="text-xs bg-muted p-3 rounded-md whitespace-pre-wrap font-mono w-full text-left break-all">
-                                            {log.command || 'No command specified.'}
-                                        </pre>
+                                        <p className="text-sm font-semibold text-left truncate pr-8">
+                                            {log.commandName || 'Undefined Command'}
+                                        </p>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="overflow-hidden data-[state=open]:animate-[accordion-down_300ms_ease-out] data-[state=closed]:animate-[accordion-up_300ms_ease-out]">
-                                    <div className="space-y-2">
-                                        <h4 className="font-semibold text-sm mt-4">Output:</h4>
-                                        <pre className="text-xs bg-black text-white p-3 mt-2 rounded-md whitespace-pre-wrap font-mono break-all">
-                                            {log.output || 'No output from server.'}
-                                        </pre>
+                                    <div className="space-y-4 pt-2">
+                                        <div>
+                                            <h4 className="font-semibold text-sm">Command</h4>
+                                            <pre className="text-xs bg-muted p-3 mt-1 rounded-md whitespace-pre-wrap break-all font-mono w-full text-left">
+                                                {log.command || 'No command specified.'}
+                                            </pre>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-sm">Output:</h4>
+                                            <pre className="text-xs bg-black text-white p-3 mt-1 rounded-md whitespace-pre-wrap break-all font-mono">
+                                                {log.output || 'No output from server.'}
+                                            </pre>
+                                        </div>
                                         {log.completedAt && (
                                             <p className="text-xs text-muted-foreground mt-2 text-right">Completed: {new Date(log.completedAt).toLocaleString()}</p>
                                         )}
@@ -150,7 +160,7 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setLogsPage(prev => prev + 1)}
+                            onClick={() => setLogsPage(prev => Math.min(5, prev + 1))}
                             disabled={!hasMoreLogs || loadingLogs}
                         >
                             Next
@@ -164,4 +174,22 @@ export default function ServerLogs({ serverId }: { serverId: string }) {
             )}
         </Card>
     );
+};
+
+ServerLogs.Skeleton = function ServerLogsSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Server Logs</CardTitle>
+                <CardDescription>History of all commands run on this server.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
+                </div>
+            </CardContent>
+        </Card>
+    )
 }
+
+export default ServerLogs;

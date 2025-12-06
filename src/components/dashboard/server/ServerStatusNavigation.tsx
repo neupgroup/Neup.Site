@@ -1,0 +1,35 @@
+
+'use client';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { HardDrive, Wifi, ListTree } from 'lucide-react';
+import Link from 'next/link';
+
+const statusSections = [
+    { title: 'Storage & Files', href: 'storage', description: 'View disk usage and browse files.', icon: HardDrive },
+    { title: 'Network', href: 'network', description: 'See active ports and listening services.', icon: Wifi },
+    { title: 'Processes', href: 'processes', description: 'Browse system processes and PM2 apps.', icon: ListTree },
+];
+
+export default function ServerStatusNavigation({ serverId }: { serverId: string }) {
+  return (
+    <Card>
+        <CardHeader>
+            <CardTitle>Server Status & Management</CardTitle>
+            <CardDescription>Select a category to view detailed real-time information about the server.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {statusSections.map(section => (
+                <Link key={section.href} href={`/root/servers/${serverId}/${section.href}`} className="block">
+                    <div className="p-4 border rounded-lg hover:bg-muted/50 hover:border-primary transition-all h-full">
+                        <div className="flex items-center gap-2">
+                            <section.icon className="h-5 w-5 text-muted-foreground" />
+                            <h4 className="font-semibold">{section.title}</h4>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">{section.description}</p>
+                    </div>
+                </Link>
+            ))}
+        </CardContent>
+    </Card>
+  );
+}

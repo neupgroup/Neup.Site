@@ -14,6 +14,24 @@ export interface StorageInfo {
   mountedOn: string;
 }
 
+export interface UserStorageInfo {
+    name: string;
+    used: string;
+}
+
+export interface SwapInfo {
+    total: string;
+    used: string;
+    free: string;
+}
+
+export interface DetailedStorageInfo {
+    total: StorageInfo;
+    system: { used: string };
+    users: UserStorageInfo[];
+    swap: SwapInfo;
+}
+
 function parseDfOutput(output: string): StorageInfo | null {
   const lines = output.trim().split('\n');
   if (lines.length < 2) return null;
@@ -31,7 +49,28 @@ function parseDfOutput(output: string): StorageInfo | null {
   };
 }
 
-export async function getDetailedStorageForServer(serverId: string): Promise<{ success: boolean; data?: StorageInfo; error?: string }> {
+function parseDuOutput(output: string): UserStorageInfo[] {
+    return output.trim().split('\n').map(line => {
+        const [size, path] = line.split(/\s+/);
+        const name = path.split('/').pop() || 'unknown';
+        return { name, used: size };
+    });
+}
+
+function parseFreeOutput(output: string): SwapInfo | null {
+    const lines = output.trim().split('\n');
+    const swapLine = lines.find(line => line.startsWith('Swap:'));
+    if (!swapLine) return null;
+
+    const parts = swapLine.split(/\s+/);
+    return {
+        total: `${parts[1]}M`,
+        used: `${parts[2]}M`,
+        free: `${parts[3]}M`,
+    };
+}
+
+export async function getDetailedStorageForServer(serverId: string): Promise<{ success: boolean; data?: DetailedStorageInfo; error?: string }> {
   const ssh = new NodeSSH();
   try {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -45,17 +84,34 @@ export async function getDetailedStorageForServer(serverId: string): Promise<{ s
       privateKey: server.privateKey,
     });
 
-    const result = await ssh.execCommand("df -h /");
-    if (result.code !== 0) {
-      throw new Error(`df command failed: ${result.stderr}`);
-    }
+    const [dfResult, duResult, freeResult] = await Promise.all([
+        ssh.execCommand("df -h /"),
+        ssh.execCommand("du -sh /home/*"),
+        ssh.execCommand("free -m"),
+    ]);
 
-    const storageData = parseDfOutput(result.stdout);
-    if (!storageData) {
-        throw new Error('Failed to parse df output.');
-    }
+    if (dfResult.code !== 0) throw new Error(`df command failed: ${dfResult.stderr}`);
+    const total = parseDfOutput(dfResult.stdout);
+    if (!total) throw new Error('Failed to parse df output.');
+    
+    const users = duResult.code === 0 ? parseDuOutput(duResult.stdout) : [];
+    const swap = freeResult.code === 0 ? parseFreeOutput(freeResult.stdout) : { total: '0M', used: '0M', free: '0M' };
+    if (!swap) throw new Error('Failed to parse free output.');
 
-    return { success: true, data: storageData };
+    // Calculate system usage
+    const totalUsedBytes = parseFloat(total.used) * (total.used.includes('G') ? 1024*1024*1024 : 1024*1024);
+    const usersUsedBytes = users.reduce((acc, user) => {
+        const size = parseFloat(user.used);
+        const unit = user.used.slice(-1);
+        const multiplier = unit === 'G' ? 1024*1024*1024 : unit === 'M' ? 1024*1024 : 1024;
+        return acc + (size * multiplier);
+    }, 0);
+
+    const systemUsedBytes = totalUsedBytes - usersUsedBytes;
+    const systemUsedGb = (systemUsedBytes / (1024*1024*1024)).toFixed(2);
+
+
+    return { success: true, data: { total, users, swap, system: { used: `${systemUsedGb}G` } } };
 
   } catch (error: any) {
     await logErrorToFirestore({

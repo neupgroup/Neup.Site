@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getServerAllocation, deleteServerAllocation, type ServerAllocation } from '@/actions/allocations';
+import { getAllocation, deleteAllocation, type Allocation } from '@/actions/allocations';
 import {
   Card,
   CardContent,
@@ -28,10 +28,11 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function AllocationDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const [allocation, setAllocation] = useState<ServerAllocation | null>(null);
+  const [allocation, setAllocation] = useState<Allocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -41,7 +42,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
   useEffect(() => {
     const fetchAllocation = async () => {
       setLoading(true);
-      const result = await getServerAllocation(id);
+      const result = await getAllocation(id);
       if (result.success && result.allocation) {
         setAllocation(result.allocation);
       } else {
@@ -55,7 +56,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
   
   const handleDelete = async () => {
     setShowDeleteConfirm(false);
-    const result = await deleteServerAllocation(id);
+    const result = await deleteAllocation(id);
     if(result.success) {
         toast({ title: 'Allocation Deleted', description: 'The server allocation has been removed.'});
         router.push('/root/servers/allocations');
@@ -64,6 +65,15 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
     }
   }
   
+  const getStatusVariant = (status: Allocation['status']) => {
+    switch(status) {
+        case 'active': return 'default';
+        case 'pending': return 'secondary';
+        case 'error': return 'destructive';
+        default: return 'outline';
+    }
+  }
+
   if (loading) {
     return (
         <Card className="w-full max-w-2xl">
@@ -112,8 +122,13 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
         </div>
         <Card>
             <CardHeader>
-                <CardTitle>Allocation Details</CardTitle>
-                <CardDescription>ID: {allocation.id}</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Allocation Details</CardTitle>
+                        <CardDescription>ID: {allocation.id}</CardDescription>
+                    </div>
+                    <Badge variant={getStatusVariant(allocation.status)} className={cn('capitalize', allocation.status === 'active' && 'bg-green-600')}>{allocation.status}</Badge>
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -128,37 +143,17 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <h4 className="font-semibold text-sm text-muted-foreground">Username</h4>
-                        <p className="font-mono text-sm">{allocation.username || 'N/A'}</p>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Allocated Port</h4>
+                        <p className="text-sm">{allocation.port}</p>
                     </div>
                     <div>
-                        <h4 className="font-semibold text-sm text-muted-foreground">Deployment Path</h4>
-                        <p className="font-mono text-sm">{allocation.deploymentPath || 'N/A'}</p>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Allocated Storage</h4>
+                        <p className="text-sm">{allocation.allocatedStorage} MB</p>
                     </div>
                 </div>
                 <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground">Storage Allocation</h4>
-                    <p className="text-sm">{allocation.storageAllocation ? `${allocation.storageAllocation} MB` : 'Not set'}</p>
-                </div>
-                <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground">Allocated Ports</h4>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                        {allocation.allocatedPorts && allocation.allocatedPorts.length > 0 ? (
-                            allocation.allocatedPorts.map(port => <Badge key={port} variant="secondary">{port}</Badge>)
-                        ) : (
-                            <p className="text-sm text-muted-foreground">No ports allocated.</p>
-                        )}
-                    </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <h4 className="font-semibold text-sm text-muted-foreground">Allocated On</h4>
-                        <p className="text-sm">{allocation.allocatedOn ? new Date(allocation.allocatedOn).toLocaleString() : 'N/A'}</p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-sm text-muted-foreground">Expires On</h4>
-                        <p className="text-sm">{allocation.expiresOn ? new Date(allocation.expiresOn).toLocaleString() : 'N/A'}</p>
-                    </div>
+                    <h4 className="font-semibold text-sm text-muted-foreground">Allocated On</h4>
+                    <p className="text-sm">{allocation.allocatedOn ? new Date(allocation.allocatedOn).toLocaleString() : 'N/A'}</p>
                 </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { getJobPostingById, updateJobPosting, type JobPosting } from '@/actions/hiring';
@@ -176,7 +177,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   if (error || !posting) {
     return (
       <div className="w-full max-w-4xl mx-auto space-y-4">
-        <Button variant="ghost" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <Button variant="outline" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
         <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'Job posting not found'}</AlertDescription></Alert>
       </div>
     );
@@ -185,7 +186,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   return (
     <div className="w-full max-w-4xl space-y-6">
       <div className="mb-4">
-        <Button variant="ghost" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <Button variant="outline" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
       </div>
 
       <div className="space-y-6">

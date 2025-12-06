@@ -47,6 +47,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
           id: docSnap.id,
           name: data.name || '',
           url: data.url,
+          domains: data.domains || [],
           tier: data.tier,
           logoUrl: data.logoUrl,
           hideSitename: data.hideSitename || false,

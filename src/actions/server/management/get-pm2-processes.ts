@@ -53,7 +53,7 @@ function parsePm2List(output: string): ProcessManagerInfo[] {
 
     for (const line of lines) {
         // Regex to handle potential color codes and split the line
-        const parts = line.replace(/\\u001b\[\d+m/g, '').split(/\s*│\s*/).map(p => p.trim());
+        const parts = line.replace(/\u001b\[\d+m/g, '').split(/\s*│\s*/).map(p => p.trim());
         if (parts.length > 8) {
             processes.push({
                 id: parseInt(parts[1], 10),
@@ -111,6 +111,92 @@ export async function getPm2Processes(serverId: string): Promise<{ success: bool
       message: `Failed to get PM2 processes for server ${serverId}: ${error.message}`,
       stack: error.stack,
       source: 'getPm2Processes',
+    });
+    return { success: false, error: error.message };
+  } finally {
+    if (ssh.isConnected()) {
+      ssh.dispose();
+    }
+  }
+}
+
+export async function managePm2Process(
+    serverId: string,
+    action: 'delete' | 'save',
+    processId?: number | string
+): Promise<{ success: boolean, error?: string }> {
+  const ssh = new NodeSSH();
+  try {
+    const { server, error: serverError } = await getPrivateServerDetails(serverId);
+    if (serverError || !server) {
+      throw new Error(`Failed to retrieve server credentials: ${serverError}`);
+    }
+
+    await ssh.connect({
+      host: server.publicIp,
+      username: server.username || 'root',
+      privateKey: server.privateKey,
+    });
+
+    let command = '';
+    if (action === 'delete') {
+      if (!processId && processId !== 0) throw new Error('Process ID is required for delete action.');
+      command = `pm2 delete ${processId}`;
+    } else if (action === 'save') {
+      command = `pm2 save`;
+    } else {
+      throw new Error('Invalid PM2 action.');
+    }
+    
+    const result = await ssh.execCommand(command);
+
+    if (result.code !== 0) {
+      throw new Error(result.stderr || `PM2 command "${action}" failed.`);
+    }
+
+    return { success: true };
+
+  } catch (error: any) {
+    await logErrorToFirestore({
+      message: `Failed to ${action} PM2 process on server ${serverId}: ${error.message}`,
+      stack: error.stack,
+      source: 'managePm2Process',
+    });
+    return { success: false, error: error.message };
+  } finally {
+    if (ssh.isConnected()) {
+      ssh.dispose();
+    }
+  }
+}
+
+export async function getPm2Logs(serverId: string, processId: number | string): Promise<{ success: boolean, logs?: string, error?: string }> {
+  const ssh = new NodeSSH();
+  try {
+    const { server, error: serverError } = await getPrivateServerDetails(serverId);
+    if (serverError || !server) {
+      throw new Error(`Failed to retrieve server credentials: ${serverError}`);
+    }
+
+    await ssh.connect({
+      host: server.publicIp,
+      username: server.username || 'root',
+      privateKey: server.privateKey,
+    });
+    
+    // Fetch last 100 lines, without streaming
+    const result = await ssh.execCommand(`pm2 logs ${processId} --lines 100 --nostream`);
+
+    // pm2 logs sends output to both stdout and stderr, so we combine them.
+    const logs = (result.stdout || '') + (result.stderr || '');
+
+    return { success: true, logs: logs || "No logs to display." };
+
+  } catch (error: any) {
+    await logErrorToFirestore({
+      message: `Failed to get PM2 logs for server ${serverId}, process ${processId}: ${error.message}`,
+      stack: error.stack,
+      source: 'getPm2Logs',
     });
     return { success: false, error: error.message };
   } finally {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -36,6 +37,11 @@ import {
   Menu,
   X,
   Shield,
+  User,
+  Package,
+  Mountain,
+  UtensilsCrossed,
+  Activity,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -69,7 +75,8 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
     return (
         <nav className="flex flex-col gap-2">
             <NavLink href="/" currentPath={currentPath} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
-            <NavLink href="/profile" currentPath={currentPath} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Profile</span></NavLink>
+            <NavLink href="/profile" currentPath={currentPath} onClick={onLinkClick}><User className="h-4 w-4" /><span>Profile</span></NavLink>
+            <NavLink href="/status" currentPath={currentPath} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></NavLink>
             <NavLink href="/settings" currentPath={currentPath} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></NavLink>
 
             <div className="mt-4 space-y-2">
@@ -80,6 +87,11 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
             <NavLink href="/manage/team" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Teams</span></NavLink>
             <NavLink href="/manage/hiring" currentPath={currentPath} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></NavLink>
             <NavLink href="/manage/permissions" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
+            <NavLink href="/manage/contacts" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>
+            <NavLink href="/manage/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
+            <NavLink href="/manage/products" currentPath={currentPath} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></NavLink>
+            <NavLink href="/manage/articles" currentPath={currentPath} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></NavLink>
+            <NavLink href="/manage/referrals" currentPath={currentPath} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></NavLink>
             </div>
 
             <div className="mt-4 space-y-2">
@@ -90,6 +102,14 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
             <NavLink href="/news/create" currentPath={currentPath} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
             <NavLink href="/news/category" currentPath={currentPath} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
             <NavLink href="/news/featured" currentPath={currentPath} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
+            </div>
+
+            <div className="mt-4 space-y-2">
+            <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+                Tourio
+            </div>
+            <NavLink href="/tourio/experience" currentPath={currentPath} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></NavLink>
+            <NavLink href="/tourio/dish" currentPath={currentPath} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></NavLink>
             </div>
 
             {/* Site Section */}
@@ -170,7 +190,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
   );
 }
 
-export function Dashboard({ children }: { children: React.ReactNode }) {
+export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: SiteTheme }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getServerAllocations, type ServerAllocation } from '@/actions/allocations';
+import { getAllocations, type Allocation } from '@/actions/allocations';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -16,16 +16,18 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Share2, ArrowRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 export default function AllocationsPage() {
-  const [allocations, setAllocations] = useState<ServerAllocation[]>([]);
+  const [allocations, setAllocations] = useState<Allocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAllocations = async () => {
       setLoading(true);
-      const result = await getServerAllocations();
+      const result = await getAllocations();
       if (result.success && result.allocations) {
         setAllocations(result.allocations);
       } else {
@@ -36,6 +38,15 @@ export default function AllocationsPage() {
 
     fetchAllocations();
   }, []);
+
+  const getStatusVariant = (status: Allocation['status']) => {
+    switch(status) {
+        case 'active': return 'default';
+        case 'pending': return 'secondary';
+        case 'error': return 'destructive';
+        default: return 'outline';
+    }
+  }
 
   return (
     <div className="w-full">
@@ -75,6 +86,8 @@ export default function AllocationsPage() {
                 <TableRow>
                   <TableHead>Site ID</TableHead>
                   <TableHead>Server ID</TableHead>
+                  <TableHead>Port</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Allocated On</TableHead>
                   <TableHead className="text-right">Details</TableHead>
                 </TableRow>
@@ -84,6 +97,10 @@ export default function AllocationsPage() {
                   <TableRow key={alloc.id}>
                     <TableCell className="font-mono">{alloc.siteId}</TableCell>
                     <TableCell className="font-mono">{alloc.serverId}</TableCell>
+                    <TableCell>{alloc.port}</TableCell>
+                    <TableCell>
+                        <Badge variant={getStatusVariant(alloc.status)} className={cn('capitalize', alloc.status === 'active' && 'bg-green-600')}>{alloc.status}</Badge>
+                    </TableCell>
                     <TableCell>{alloc.allocatedOn ? new Date(alloc.allocatedOn).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
                          <Button asChild variant="ghost" size="icon">

@@ -1,276 +1,262 @@
 
+
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
-import { getPrivateServerDetails, updateServer } from '@/actions/servers';
+import { getPrivateServerDetails } from '@/actions/servers';
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
-import { getFirestore, collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
 import { logErrorToFirestore } from '@/lib/logging';
 import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
+import { getSite } from './editor/site';
+import type { ServerLog } from '@/schemas/server';
 
-async function getAllocationUsername(serverId: string): Promise<string | null> {
-    const { firestore } = initializeFirebase();
-    const allocationsQuery = query(
-        collection(firestore, 'serverAllocations'), 
-        where('serverId', '==', serverId),
-        limit(1)
-    );
-    const snapshot = await getDocs(allocationsQuery);
-    if (snapshot.empty) {
-        return null;
-    }
-    return snapshot.docs[0].data().username || null;
+
+function parseCommandTemplate(template: string): { preExecutionScript?: string; bashCommand: string; } {
+    const preProcessorMatch = template.match(/<javascript.preProcessor>([\s\S]*?)<\/javascript.preProcessor>/);
+    const bashMatch = template.match(/<server.ubuntuBashProcessor>([\s\S]*?)<\/server.ubuntuBashProcessor>/);
+
+    const preExecutionScript = preProcessorMatch ? preProcessorMatch[1].trim() : undefined;
+    const bashCommand = bashMatch ? bashMatch[1].trim() : template;
+
+    return { preExecutionScript, bashCommand };
 }
-
-const getAvailablePorts = (usedPorts: number[]): number[] => {
-    const allPorts = Array.from({ length: 65535 - 1024 + 1 }, (_, i) => 1024 + i);
-    const usedPortsSet = new Set(usedPorts);
-    return allPorts.filter(port => !usedPortsSet.has(port));
-};
-
 
 export async function runCommand(
     serverId: string,
-    commandIdentifier: string, // This can be a command ID or a raw command string
+    commandIdentifier: string,
     processedParams: Record<string, any> = {},
-) {
-    const isCommandId = !commandIdentifier.includes(' '); // Simple check if it's an ID or a command string
+    commandNameToLog?: string,
+): Promise<{ success: boolean; error?: string; logId?: string; finalStatus?: ServerLog['status'] }> {
+    const isCommandId = !commandIdentifier.includes(' ') && !commandIdentifier.includes('\n') && !commandIdentifier.includes('<');
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
-    let commandTemplate: string = isCommandId ? '' : commandIdentifier;
-    let loggedCommand = commandTemplate;
-    let confidentialParamKeys: string[] = [];
-    let preprocess = false;
-    let allocatesPort = false;
-    let portToReserve: string | undefined = undefined;
-
-    if (commandId) {
-        const commandDetails = await getServerCommand(commandId);
-        if (commandDetails.success && commandDetails.command) {
-            const cmd = commandDetails.command;
-            commandTemplate = cmd.commandTemplate;
-            loggedCommand = cmd.commandTemplate; // Log the template initially
-            preprocess = cmd.preprocess || false;
-            allocatesPort = cmd.allocatesPort || false;
-            portToReserve = cmd.portToReserve;
-            confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
-        } else {
-             await logErrorToFirestore({ message: `Could not find command with ID: ${commandId}`, source: 'runCommand' });
-             return; // Exit if command not found
-        }
-    }
+    let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
     
-    // Mask confidential parameters for logging
-    for (const key of confidentialParamKeys) {
-        if (processedParams[key]) {
-            const maskedValue = '*'.repeat(String(processedParams[key]).length);
-            loggedCommand = loggedCommand.replace(new RegExp(`{{${key}}}`, 'g'), maskedValue);
-        }
-    }
+    let confidentialParamKeys: string[] = [];
+    let allocatesPort = false;
+    let commandName: string | undefined = commandNameToLog;
 
-    const createResult = await createServerLog({
+    // Build the initial log data object carefully.
+    const initialLogData: Omit<ServerLog, 'id' | 'initiatedAt' | 'completedAt'> = {
         serverId: serverId,
-        command: loggedCommand, 
+        commandName: commandName || (commandId ? 'Loading Command...' : 'Custom Command'),
+        command: 'Preparing to execute...', // Placeholder
         output: `Initiating command...`,
         status: 'pending',
-    });
+    };
+
+    if (commandId) {
+        initialLogData.commandId = commandId;
+    }
+
+    // Create the log entry first, so we have an ID to update.
+    const createResult = await createServerLog(initialLogData);
 
     if (!createResult.success || !createResult.id) {
-        console.error('Failed to create log entry for command:', loggedCommand, 'Error:', createResult.error);
-        return;
+        console.error('Failed to create initial log entry for command:', commandIdentifier, 'Error:', createResult.error);
+        return { success: false, error: createResult.error };
     }
     const logId = createResult.id;
-    
     revalidatePath(`/root/servers/${serverId}`);
 
-    const ssh = new NodeSSH();
-    let finalOutput = ''; 
-    let finalCommand = commandTemplate;
-    let actualReservedPort: number | undefined;
 
     try {
+        if (commandId) {
+            const commandDetails = await getServerCommand(commandId);
+            if (commandDetails.success && commandDetails.command) {
+                const cmd = commandDetails.command;
+                rawCommandTemplate = cmd.commandTemplate;
+                allocatesPort = cmd.allocatesPort || false;
+                if (!commandName) {
+                    commandName = cmd.name;
+                }
+                confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
+                // Update the log with the correct command name now that we have it
+                await updateServerLog(logId, { commandName });
+            } else {
+                 throw new Error(`Command with ID ${commandId} not found.`);
+            }
+        }
+
+        let { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
+        
         const { server, error: serverError } = await getPrivateServerDetails(serverId);
         if (serverError || !server || !server.publicIp || !server.privateKey) {
             throw new Error(`Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`);
         }
-        
+
         const accountId = await getAccountId();
         
         let githubAccessToken = '';
-        try {
-            const accountsResult = await getLinkedAccounts();
-            if (accountsResult.success && accountsResult.accounts) {
-                const githubAccount = accountsResult.accounts.find(acc => acc.platform === 'github');
-                if (githubAccount) {
-                    githubAccessToken = githubAccount.authorization_info.access_token;
+        if (accountId) {
+            try {
+                const accountsResult = await getLinkedAccounts();
+                if (accountsResult.success && accountsResult.accounts) {
+                    const githubAccount = accountsResult.accounts.find(acc => acc.platform === 'github');
+                    if (githubAccount) {
+                        githubAccessToken = githubAccount.authorization_info.access_token;
+                    }
                 }
+            } catch (e: any) {
+                 console.warn('Failed to fetch GitHub token for universal variable.', e);
             }
-        } catch (e: any) {
-             console.error('Failed to fetch GitHub token for universal variable.', e);
         }
-
-        const usedPorts = (server.usedPorts || []).map(p => p.port);
-        const availablePorts = getAvailablePorts(usedPorts);
         
-        // Default to first available port if we're not explicitly allocating one
-        actualReservedPort = availablePorts[0];
-        
-        if (allocatesPort && portToReserve) {
-            let portToUse: number;
-            if (portToReserve === '{{universal.available_port}}') {
-                if (availablePorts.length === 0) {
-                    throw new Error("Port allocation failed: No available ports on the server.");
-                }
-                portToUse = availablePorts[0];
-            } else {
-                portToUse = parseInt(portToReserve, 10);
-                if (isNaN(portToUse) || usedPorts.includes(portToUse)) {
-                    throw new Error(`Port allocation failed: Port ${portToReserve} is invalid or already in use.`);
-                }
-            }
-            actualReservedPort = portToUse;
+        const siteResult = await getSite();
+        const site = siteResult.success ? siteResult.site : null;
 
-            finalOutput += `Attempting to reserve port ${actualReservedPort}...\n`;
-            await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
-             
-             const updateResult = await updateServer(serverId, {
-                 usedPorts: [...(server.usedPorts || []), { port: actualReservedPort, description: `Reserved by command: ${commandId || 'Custom'}` }]
-             });
+        const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || `/var/www/${site?.id}`;
 
-             if (!updateResult.success) {
-                 throw new Error(`Failed to update server with new port allocation: ${updateResult.error}`);
-             }
-             finalOutput += `Successfully reserved port ${actualReservedPort}.\n\n`;
-             await updateServerLog(logId, { output: finalOutput });
-             revalidatePath(`/root/servers/${serverId}`);
-        }
-
-        const universal = {
-            name: server.name,
-            public_ip: server.publicIp,
-            provider: server.provider || '',
-            username: server.username || '',
-            base_path: server.basePath || '',
-            available_port: availablePorts[0]?.toString() || '',
-            reserved_port: actualReservedPort?.toString() || '',
-            used_ports: usedPorts.join(','),
-            linked_account_github: githubAccessToken,
-            account_id: accountId,
+        const appServerVariables = {
+            'universal.server_name': server.name,
+            'universal.server_publicIp': server.publicIp,
+            'universal.server_basePath': server.basePath || `/home/${server.username || 'root'}`,
+            'universal.server_appPath': resolvedAppPath,
+            'universal.site_id': site?.id || '',
+            'universal.site_name': site?.name || '',
+            'universal.site_domain': site?.domains?.map(d => d.value).join(' ') || '',
+            'universal.account_id': accountId || '',
+            'universal.account_githubToken': githubAccessToken,
         };
         
-        if (preprocess) {
-            finalOutput += 'Running pre-execution script on server...\n';
-            await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
+        let templateParams = { ...processedParams };
+        const allParamsForPreExecution = { ...templateParams, ...appServerVariables };
+        
+        if (preExecutionScript) {
+            let scriptWithInjectedParams = preExecutionScript;
+            for (const [key, value] of Object.entries(allParamsForPreExecution)) {
+                const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+                scriptWithInjectedParams = scriptWithInjectedParams.replace(placeholderRegex, JSON.stringify(value));
+            }
             
+            const sandbox = {};
+            vm.createContext(sandbox);
+
             try {
-                // The sandbox only gets user-provided parameters
-                const sandbox = { params: processedParams, result: '' };
-                vm.createContext(sandbox);
+                const scriptToRun = `(() => { ${scriptWithInjectedParams} })();`;
+                const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
                 
-                const scriptToRun = `result = (() => { ${commandTemplate} })();`;
-                vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
-                
-                if (typeof sandbox.result !== 'string') {
-                    throw new Error('Pre-execution script must return a string.');
+                if (typeof scriptResult === 'string') {
+                    bashCommand = scriptResult;
+                } else if (typeof scriptResult === 'object' && scriptResult !== null) {
+                    templateParams = { ...templateParams, ...scriptResult };
                 }
-                finalCommand = sandbox.result;
-                finalOutput += `Pre-execution script completed. Final command generated.\n\n`;
-                await updateServerLog(logId, { output: finalOutput });
             } catch (scriptError: any) {
                 throw new Error(`Pre-execution script failed: ${scriptError.message}`);
             }
-        } else {
-             // Substitute user parameters directly if not pre-processing
-            for (const [key, value] of Object.entries(processedParams)) {
-                finalCommand = finalCommand.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
-            }
         }
         
-        // Loop to substitute all placeholders until none are left or an iteration changes nothing.
-        let lastCommand = '';
-        let loopCount = 0;
-        const MAX_LOOPS = 5; // Safety break
-        while (finalCommand !== lastCommand && loopCount < MAX_LOOPS) {
-            lastCommand = finalCommand;
+        const allFinalParams = { ...templateParams, ...appServerVariables };
+        
+        let commandToExecute = bashCommand;
+        for (const [key, value] of Object.entries(allFinalParams)) {
+             const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+             commandToExecute = commandToExecute.replace(placeholderRegex, String(value));
+        }
+        
+        let loggedCommand = bashCommand;
+        const allParamsForLogging = { ...allFinalParams };
+        confidentialParamKeys.forEach(key => {
+            if (allParamsForLogging[key]) {
+                allParamsForLogging[key] = '********';
+            }
+        });
+        if(allParamsForLogging['universal.account_githubToken']) {
+            allParamsForLogging['universal.account_githubToken'] = '********';
+        }
+         for (const [key, value] of Object.entries(allParamsForLogging)) {
+             const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+             loggedCommand = loggedCommand.replace(placeholderRegex, String(value));
+        }
+
+        // This is the wrapper that handles swap file creation and cleanup
+        const finalCommand = `
+set -e
+SWAP_FILE="/command_swapfile"
+
+cleanup() {
+    if [ -f "$SWAP_FILE" ]; then
+        echo ""
+        echo "--- Cleaning up temporary swap file ---"
+        sudo swapoff "$SWAP_FILE" >/dev/null 2>&1
+        sudo rm -f "$SWAP_FILE"
+        echo "--- Swap file removed ---"
+    fi
+}
+trap cleanup EXIT
+
+echo "--- Creating 4GB temporary swap file ---"
+sudo fallocate -l 4G "$SWAP_FILE"
+sudo chmod 600 "$SWAP_FILE"
+sudo mkswap "$SWAP_FILE"
+sudo swapon "$SWAP_FILE"
+echo "--- Swap file created and active ---"
+
+get_available_port() {
+    comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
+}
+APP_PORT=${allocatesPort ? "$(get_available_port)" : "''"}
+export APP_PORT
+
+echo ""
+echo "--- EXECUTING COMMAND: ${commandName} ---"
+cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.app_port}}/$APP_PORT/g" | bash
+${commandToExecute}
+BASH_COMMAND_EOF
+echo "--- COMMAND FINISHED ---"
+echo ""
+`;
+        
+        // Update the log with the actual command to be executed
+        await updateServerLog(logId, { command: loggedCommand });
+
+        const ssh = new NodeSSH();
+        let finalOutput = '';
+        let finalStatus: ServerLog['status'] = 'failed';
+
+        try {
+            await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
             
-            // Substitute universal variables
-            for (const [key, value] of Object.entries(universal)) {
-                if (value) {
-                    finalCommand = finalCommand.replace(new RegExp(`{{universal.${key}}}`, 'g'), String(value));
+            await ssh.connect({ host: server.publicIp, username: server.username || 'root', privateKey: server.privateKey });
+            
+            await updateServerLog(logId, { output: `Connection successful. Preparing to run command...` });
+
+            const result = await ssh.execCommand(finalCommand, {
+                onStdout: (chunk) => {
+                    finalOutput += chunk.toString('utf8');
+                    updateServerLog(logId, { output: finalOutput });
+                },
+                onStderr: (chunk) => {
+                    finalOutput += chunk.toString('utf8');
+                    updateServerLog(logId, { output: finalOutput });
                 }
+            });
+            
+            finalStatus = result.code === 0 ? 'completed' : 'failed';
+            if (result.code !== 0) {
+                 finalOutput += `\n\n--- COMMAND FAILED ---\nExited with code: ${result.code}`;
             }
-            loopCount++;
-        }
-        
-        const remainingPlaceholders = finalCommand.match(/\{\{([^}]+)\}\}/g);
-        if (remainingPlaceholders) {
-            throw new Error(`Unresolved placeholders remaining: ${remainingPlaceholders.join(', ')}`);
-        }
 
-        const username = await getAllocationUsername(serverId) || server.username || 'root';
+            // Final update. The server-side trap will handle cleanup.
+            await updateServerLog(logId, { status: finalStatus, output: finalOutput });
+            
+            return { success: finalStatus === 'completed', logId, finalStatus };
 
-        await updateServerLog(logId, { status: 'ongoing', output: `${finalOutput}Connecting to ${server.publicIp}...` });
-        revalidatePath(`/root/servers/${serverId}`);
-
-        await ssh.connect({
-            host: server.publicIp,
-            username: username,
-            privateKey: server.privateKey
-        });
-
-        // Log the final command, masking any confidential parameters
-        const loggedFinalCommand = confidentialParamKeys.reduce((cmd, key) => {
-            if (processedParams[key]) {
-                const valueToMask = String(processedParams[key]);
-                 // Escape special regex characters in the value to be masked
-                const escapedValue = valueToMask.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const maskedValue = '*'.repeat(valueToMask.length);
-                return cmd.replace(new RegExp(escapedValue, 'g'), maskedValue);
+        } catch (sshError: any) {
+            finalOutput = `${finalOutput}\n\n--- SSH ERROR ---\n${sshError.message || String(sshError)}`; 
+            throw new Error(finalOutput);
+        } finally {
+            if(ssh.isConnected()) {
+                ssh.dispose();
             }
-            return cmd;
-        }, finalCommand);
-
-
-        await updateServerLog(logId, { output: `${finalOutput}Connection successful as '${username}'. Running command...\n\n$ ${loggedFinalCommand}` });
-        revalidatePath(`/root/servers/${serverId}`);
-
-        const result = await ssh.execCommand(finalCommand);
-        
-        if (result.stdout) {
-            finalOutput += `\n\nSTDOUT:\n${result.stdout}\n`;
+            revalidatePath(`/root/servers/${serverId}`);
         }
-        if (result.stderr) {
-            finalOutput += `\nSTDERR:\n${result.stderr}\n`;
-        }
-        finalOutput += `\nExited with code: ${result.code}`;
-
-        await updateServerLog(logId, {
-            status: result.code === 0 ? 'completed' : 'failed',
-            output: finalOutput,
-            completedAt: new Date().toISOString(), 
-        });
 
     } catch (error: any) {
-        finalOutput = `${finalOutput}\n\n--- ERROR ---\nAn unexpected error occurred: ${error.message || String(error)}`; 
-        if (error.message.includes('All configured authentication methods failed')) {
-            finalOutput = `SSH Authentication Failed. Please check server credentials and username. Error: ${error.message}`;
-        } else if (error.message.includes('Connection timed out')) {
-            finalOutput = `SSH Connection Timed Out. Server might be unreachable or IP is incorrect. Error: ${error.message}`;
-        }
-
-        await updateServerLog(logId, {
-            status: 'failed',
-            output: `Error during command execution: ${finalOutput}`,
-            completedAt: new Date().toISOString(),
-        });
+        await updateServerLog(logId, { status: 'failed', output: error.message });
         await logErrorToFirestore({ message: `Runner Error for server ${serverId}, log ${logId}:`, stack: error.stack, source: 'runCommand.main' });
-    } finally {
-        if(ssh.isConnected()) {
-            ssh.dispose();
-        }
-        revalidatePath(`/root/servers/${serverId}`);
+        return { success: false, error: error.message, logId, finalStatus: 'failed' };
     }
 }
