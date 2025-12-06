@@ -16,7 +16,6 @@ import type { Site } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
-import { createServerLog, updateServerLog } from '@/actions/server-logs';
 
 interface DeploymentStep {
     name: string;
@@ -57,19 +56,13 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }));
     };
 
-    const runChecks = useCallback(async (isManualTrigger = false) => {
+    const runChecks = useCallback(async () => {
         if (!site) {
             setSteps(prev => prev.map(s => ({...s, status: 'failure', description: 'Site context not available.'})));
             setIsChecking(false);
             return;
         }
         
-        let logId: string | undefined;
-        if(isManualTrigger) {
-            const logResult = await createServerLog({ serverId: server.id, command: 'Check Application Status', status: 'pending' });
-            logId = logResult.id;
-        }
-
         setIsChecking(true);
         const initialSteps = [
             { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites'}, { commandId: 'install-packages', label: 'Install App'}] },
@@ -79,18 +72,14 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         ];
         setSteps(initialSteps);
 
-        let finalDescription = 'All checks passed.';
-
         // Step 0: Check Application Directory
         updateStep(0, 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
         if (!appDirCheck.exists || appDirCheck.error) {
             const errorMsg = appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`;
             updateStep(0, 'failure', errorMsg);
-            finalDescription = `Check failed at 'Application Exists': ${errorMsg}`;
             failSubsequentSteps(1);
             setIsChecking(false);
-            if(logId) await updateServerLog(logId, { status: 'completed', output: finalDescription });
             return;
         }
         updateStep(0, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
@@ -102,10 +91,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (!buildCheck.exists) {
             const errorMsg = 'Application not built. The ".next" folder is missing.';
             updateStep(1, 'failure', errorMsg);
-            finalDescription = `Check failed at 'Application Built': ${errorMsg}`;
             failSubsequentSteps(2, 'Skipped because application is not built.');
             setIsChecking(false);
-            if(logId) await updateServerLog(logId, { status: 'completed', output: finalDescription });
             return;
         }
         updateStep(1, 'success', 'Build folder found.');
@@ -151,10 +138,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             updateStep(2, 'success', 'Application is running and Nginx is configured.');
         } else {
             updateStep(2, 'failure', stepDescription.trim());
-            finalDescription = `Check failed at 'Start App & Configure Proxy': ${stepDescription.trim()}`;
             failSubsequentSteps(3, 'Skipped because app/proxy is not configured.');
             setIsChecking(false);
-             if(logId) await updateServerLog(logId, { status: 'completed', output: finalDescription });
             return;
         }
 
@@ -170,27 +155,17 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                         updateStep(3, 'success', `URL is reachable with status 200 (OK).`);
                     } else {
                         updateStep(3, 'warning', `URL is reachable but returned status ${data.status}.`);
-                        finalDescription = `Check finished with a warning at 'Website Live': Status ${data.status}.`;
                     }
                 } else {
-                    const errorMsg = `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`;
-                    updateStep(3, 'failure', errorMsg);
-                    finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
+                    updateStep(3, 'failure', `URL returned status ${data.status || 'Error'}. Nginx may not be configured correctly.`);
                 }
             } catch (e) {
-                const errorMsg = 'Could not reach the website URL.';
-                updateStep(3, 'failure', errorMsg);
-                finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
+                updateStep(3, 'failure', 'Could not reach the website URL.');
             }
         } else {
-             const errorMsg = 'No domain configured for this site.';
-             updateStep(3, 'failure', errorMsg);
-             finalDescription = `Check failed at 'Website Live': ${errorMsg}`;
+            updateStep(3, 'failure', 'No domain configured for this site.');
         }
         
-        if (logId) {
-             await updateServerLog(logId, { status: 'completed', output: finalDescription });
-        }
         setIsChecking(false);
     }, [server.id, site]);
 
@@ -239,7 +214,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             }
         }
         setIsExecutingAction(null);
-        setTimeout(() => runChecks(true), 2000); // Re-run checks after all actions with a small delay
+        setTimeout(() => runChecks(), 2000); // Re-run checks after all actions with a small delay
     };
 
     const renderStepActions = (step: DeploymentStep, index: number) => {
