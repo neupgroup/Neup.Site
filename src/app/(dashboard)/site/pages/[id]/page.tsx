@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import Link from 'next/link';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2, Settings, X, Save } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2, Settings, X, Save, Layers } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -221,6 +221,30 @@ export default function ViewPage({ params }: { params: { id: string } }) {
                 </Button>
             </div>
 
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Page Sections</CardTitle>
+          <CardDescription>The sections and elements that make up this page.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {page.elements.map((element, index) => (
+              <div key={element.id || index} className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+                <div className="flex items-center gap-3">
+                  <Layers className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-mono text-sm">{element.id} ({element.type})</span>
+                </div>
+              </div>
+            ))}
+            {page.elements.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                <p>This page has no content yet. Edit the page to add sections.</p>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
       
