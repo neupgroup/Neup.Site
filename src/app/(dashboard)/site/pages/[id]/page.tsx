@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPage, savePage, deletePage, type Page } from '@/actions/editor/pages';
 import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/actions/paths';
+import { convertJsonToHtml } from '@/lib/json-to-html';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,7 @@ export default function ViewPage({ params }: { params: { id: string } }) {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(true);
 
   const fetchPageData = useCallback(async () => {
     setLoading(true);
@@ -120,6 +122,8 @@ export default function ViewPage({ params }: { params: { id: string } }) {
       toast({ variant: "destructive", title: "Error", description: result.error });
     }
   }
+  
+  const htmlContent = page ? convertJsonToHtml(page.elements) : '';
 
   if (loading) {
       return (
@@ -220,16 +224,43 @@ export default function ViewPage({ params }: { params: { id: string } }) {
         </CardContent>
       </Card>
       
-       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+       <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Live Preview</CardTitle>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="preview-mode"
+              checked={isPreviewVisible}
+              onCheckedChange={setIsPreviewVisible}
+            />
+            <Label htmlFor="preview-mode">
+              {isPreviewVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </Label>
+          </div>
+        </CardHeader>
+        {isPreviewVisible && (
+          <CardContent>
+            <div className="relative w-full h-[60vh] border rounded-md">
+              <iframe
+                srcDoc={htmlContent}
+                title="Page Preview"
+                className="w-full h-full"
+              />
+            </div>
+          </CardContent>
+        )}
+      </Card>
+      
+       <AlertDialog open={showDeleteConfirm} onOpenChange={(open) => !open && setShowDeleteConfirm(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This will delete the page and all its data. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel onClick={() => setShowDeleteConfirm(null)}>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
