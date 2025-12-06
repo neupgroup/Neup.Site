@@ -6,6 +6,7 @@ import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
 import { getSite } from '@/actions/editor/site';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
+import { runCommand } from '@/actions/runner';
 
 async function resolveAppPath(serverId: string): Promise<{ resolvedPath: string, error?: string, siteId?: string }> {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -89,48 +90,24 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
 }
 
 export async function rebuildApplication(serverId: string): Promise<{ success: boolean; error?: string, logId?: string }> {
-    const ssh = new NodeSSH();
-    let appPath = '';
-    let siteId = '';
-
-    const { resolvedPath, error: resolveError, siteId: resolvedSiteId } = await resolveAppPath(serverId);
-    if (resolveError) {
-        return { success: false, error: resolveError };
+    const { resolvedPath, error: resolveError, siteId } = await resolveAppPath(serverId);
+    if (resolveError || !siteId) {
+        return { success: false, error: resolveError || "Could not resolve application path or site ID." };
     }
-    appPath = resolvedPath;
-    siteId = resolvedSiteId || '';
-
-
-    // Define the command script first
-    const rebuildCommandScript = (path: string, siteIdentifier: string) => `
+    
+    const rebuildCommandTemplate = `
+<server.ubuntuBashProcessor>
 set -e
-SWAP_FILE="/swapfile_rebuild"
-cleanup() {
-    if [ -f "$SWAP_FILE" ]; then
-        echo "--- Removing temporary swap file ---"
-        sudo swapoff "$SWAP_FILE"
-        sudo rm -f "$SWAP_FILE"
-    fi
-}
-trap cleanup EXIT
+echo "--- Starting Rebuild in ${resolvedPath} ---"
+cd '${resolvedPath}'
 
-echo "--- Creating 4GB temporary swap file ---"
-sudo fallocate -l 4G "$SWAP_FILE"
-sudo chmod 600 "$SWAP_FILE"
-sudo mkswap "$SWAP_FILE"
-sudo swapon "$SWAP_FILE"
-echo "--- Swap file created ---"
-
-echo "--- Starting Rebuild in ${path} ---"
-cd '${path}'
-
-echo "--- Step 1: Deleting existing PM2 process for ${siteIdentifier} ---"
-(pm2 list | grep -q "${siteIdentifier}" && pm2 delete "${siteIdentifier}") || echo "No old PM2 process to delete."
+echo "--- Step 1: Deleting existing PM2 process for ${siteId} ---"
+(pm2 list | grep -q "${siteId}" && pm2 delete "${siteId}") || echo "No old PM2 process to delete."
 pm2 save
 
-echo "--- Step 2: Deleting old Nginx configs for ${siteIdentifier} ---"
-sudo rm -f /etc/nginx/sites-available/${siteIdentifier}.conf
-sudo rm -f /etc/nginx/sites-enabled/${siteIdentifier}.conf
+echo "--- Step 2: Deleting old Nginx configs for ${siteId} ---"
+sudo rm -f /etc/nginx/sites-available/${siteId}.conf
+sudo rm -f /etc/nginx/sites-enabled/${siteId}.conf
 sudo systemctl reload nginx
 
 echo "--- Step 3: Deleting .next folder ---"
@@ -142,62 +119,19 @@ npm install
 echo "--- Step 5: Running build ---"
 npm run build
 echo "--- Rebuild Complete ---"
+</server.ubuntuBashProcessor>
     `.trim();
 
     try {
-        const command = rebuildCommandScript(appPath, siteId);
-
-        const createLogResult = await createServerLog({ 
-            serverId, 
-            commandName: 'Rebuild Application',
-            command: command, 
-            output: 'Starting rebuild...', 
-            status: 'pending' 
-        });
-
-        const logId = createLogResult.id;
-
-        if (!logId) {
-            return { success: false, error: 'Failed to create log entry.' };
-        }
-
-        const { server, error: serverError } = await getPrivateServerDetails(serverId);
-        if (serverError || !server) {
-            throw new Error(`Failed to retrieve server credentials: ${serverError}`);
-        }
-        
-        await updateServerLog(logId, { output: `Connecting to server...` });
-        await ssh.connect({
-            host: server.publicIp,
-            username: server.username || 'root',
-            privateKey: server.privateKey,
-        });
-        
-        await updateServerLog(logId, { status: 'ongoing', output: `Executing rebuild command in ${appPath}...` });
-        const result = await ssh.execCommand(command);
-        const finalOutput = result.stdout + (result.stderr ? `\nSTDERR:\n${result.stderr}` : '');
-
-        if (result.code !== 0) {
-            throw new Error(`Rebuild failed: ${finalOutput}`);
-        }
-        
-        await updateServerLog(logId, { status: 'completed', output: finalOutput });
-        return { success: true, logId };
-
+        const result = await runCommand(serverId, rebuildCommandTemplate, {}, 'Rebuild Application');
+        return { success: result.success, error: result.error, logId: result.logId };
     } catch (error: any) {
-        const errorMessage = `Failed to rebuild application for server ${serverId} at path ${appPath}: ${error.message}`;
+        const errorMessage = `Failed to rebuild application for server ${serverId}: ${error.message}`;
         await logErrorToFirestore({
             message: errorMessage,
             stack: error.stack,
             source: 'rebuildApplication',
         });
-        // We can't assume logId exists here if initial createServerLog failed.
-        // The runner.ts example showed a similar issue.
-        // It's safer to just return the error.
         return { success: false, error: error.message };
-    } finally {
-        if (ssh.isConnected()) {
-          ssh.dispose();
-        }
     }
 }

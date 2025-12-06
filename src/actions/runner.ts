@@ -183,6 +183,7 @@ cleanup() {
         echo "--- Removing temporary swap file ---"
         sudo swapoff "$SWAP_FILE"
         sudo rm -f "$SWAP_FILE"
+        echo "--- Swap file removed ---"
     fi
 }
 trap cleanup EXIT
@@ -200,9 +201,13 @@ get_available_port() {
 APP_PORT=${allocatesPort ? "$(get_available_port)" : "''"}
 export APP_PORT
 
+echo ""
+echo "--- EXECUTING COMMAND ---"
 cat <<'BASH_COMMAND_EOF' | sed "s/{{universal.app_port}}/$APP_PORT/g" | bash
 ${commandToExecute}
 BASH_COMMAND_EOF
+echo "--- COMMAND FINISHED ---"
+echo ""
             `;
 
         const ssh = new NodeSSH();
@@ -234,6 +239,7 @@ BASH_COMMAND_EOF
                  finalOutput += `\n\n--- COMMAND COMPLETED ---\nExited with code: 0`;
             }
 
+            // Final update, then cleanup will run on the server
             await updateServerLog(logId, { status: finalStatus, output: finalOutput });
             
             return { success: finalStatus === 'completed', logId, finalStatus };
