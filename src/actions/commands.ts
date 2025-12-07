@@ -3,21 +3,21 @@
 'use server';
 
 import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  Timestamp,
-  deleteDoc,
-  serverTimestamp,
-  addDoc,
-  query,
-  orderBy,
-  limit,
-  startAfter,
-  getCountFromServer,
-  where,
+    collection,
+    doc,
+    setDoc,
+    getDoc,
+    getDocs,
+    Timestamp,
+    deleteDoc,
+    serverTimestamp,
+    addDoc,
+    query,
+    orderBy,
+    limit,
+    startAfter,
+    getCountFromServer,
+    where,
 } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
@@ -98,39 +98,40 @@ echo "--- Deployment Complete ---"
                 danger: 'high',
             }
         },
-        { id: 'install-requisites', data: { 
-            name: "Install Requisites", 
-            description: "Installs Node.js and npm on an Ubuntu server.", 
-            commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm", 
-            type: 'updation', 
-            danger: 'mid' 
-          } 
+        {
+            id: 'install-requisites', data: {
+                name: "Install Requisites",
+                description: "Installs Node.js and npm on an Ubuntu server.",
+                commandTemplate: "sudo apt-get update && sudo apt-get install -y nodejs npm",
+                type: 'updation',
+                danger: 'mid'
+            }
         },
         {
-          id: 'install-packages',
-          data: {
-              name: "Install Packages",
-              description: "Runs 'npm install' in the application directory.",
-              commandTemplate: `cd {{universal.server_appPath}} && npm install`,
-              type: 'updation',
-              danger: 'low'
-          }
+            id: 'install-packages',
+            data: {
+                name: "Install Packages",
+                description: "Runs 'npm install' in the application directory.",
+                commandTemplate: `cd {{universal.server_appPath}} && npm install`,
+                type: 'updation',
+                danger: 'low'
+            }
         },
         {
             id: 'build-app',
             data: {
                 name: "Build App",
-                description: "Runs 'npm run build' in the application directory.",
-                commandTemplate: `cd {{universal.server_appPath}} && rm -rf .next && npm run build`,
+                description: "Clean build: removes node_modules and .next, then runs npm install and build.",
+                commandTemplate: `cd {{universal.server_appPath}} && echo "Cleaning old build..." && rm -rf .next node_modules && echo "Installing dependencies..." && npm install && echo "Building application..." && npm run build`,
                 type: 'updation',
                 danger: 'low'
             }
         },
-        { 
-          id: 'start-app-and-configure-proxy', data: { 
-            name: "Start App & Configure Proxy", 
-            description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx with an SSL redirect.",
-            commandTemplate: `
+        {
+            id: 'start-app-and-configure-proxy', data: {
+                name: "Start App & Configure Proxy",
+                description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx with an SSL redirect.",
+                commandTemplate: `
 cd {{universal.server_appPath}}
 (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete '{{universal.site_id}}') || echo "No old processes to delete."
 pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env --time
@@ -164,9 +165,10 @@ sudo nginx -t
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 sudo systemctl reload nginx
             `,
-            type: 'updation', 
-            danger: 'mid', 
-            allocatesPort: true } 
+                type: 'updation',
+                danger: 'mid',
+                allocatesPort: true
+            }
         },
     ];
 
@@ -177,7 +179,7 @@ sudo systemctl reload nginx
                 ...cmd.data,
                 createdAt: serverTimestamp(),
             }, { merge: true });
-        } catch(e) {
+        } catch (e) {
             console.error(`Failed to upsert built-in command "${cmd.id}"`, e);
         }
     }
@@ -189,75 +191,75 @@ sudo systemctl reload nginx
 createBuiltInCommands();
 
 export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'createdAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
-  try {
-    const validatedData = serverCommandSchema.omit({ id: true, createdAt: true }).safeParse(data);
-    if (!validatedData.success) {
-      const errorDetails = validatedData.error.flatten().fieldErrors;
-      return { success: false, error: JSON.stringify(errorDetails) };
-    }
+    try {
+        const validatedData = serverCommandSchema.omit({ id: true, createdAt: true }).safeParse(data);
+        if (!validatedData.success) {
+            const errorDetails = validatedData.error.flatten().fieldErrors;
+            return { success: false, error: JSON.stringify(errorDetails) };
+        }
 
-    const { firestore } = initializeFirebase();
-    const docRef = await addDoc(collection(firestore, 'serverCommands'), {
-      ...validatedData.data,
-      createdAt: serverTimestamp(),
-    });
-    revalidatePath('/root/command');
-    return { success: true, id: docRef.id };
-  } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
-    return { success: false, error: 'Failed to create command.' };
-  }
+        const { firestore } = initializeFirebase();
+        const docRef = await addDoc(collection(firestore, 'serverCommands'), {
+            ...validatedData.data,
+            createdAt: serverTimestamp(),
+        });
+        revalidatePath('/root/command');
+        return { success: true, id: docRef.id };
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
+        return { success: false, error: 'Failed to create command.' };
+    }
 }
 
 export async function getServerCommands({
-  searchQuery,
-  page = 1,
-  pageSize = 10
+    searchQuery,
+    page = 1,
+    pageSize = 10
 }: {
-  searchQuery?: string;
-  page?: number;
-  pageSize?: number;
+    searchQuery?: string;
+    page?: number;
+    pageSize?: number;
 }): Promise<{ success: boolean; commands?: ServerCommand[]; error?: string; totalCount?: number }> {
-  try {
-    const { firestore } = initializeFirebase();
-    const commandsRef = collection(firestore, 'serverCommands');
-    
-    const allDocsQuery = query(commandsRef, orderBy('name'));
-    const allDocsSnapshot = await getDocs(allDocsQuery);
-    
-    let allCommands = allDocsSnapshot.docs.map(docSnap => {
-        const data = docSnap.data();
-        const createdAt = data.createdAt;
-        return {
-            id: docSnap.id,
-            name: data.name,
-            description: data.description,
-            commandTemplate: data.commandTemplate,
-            parameters: data.parameters || [],
-            preExecutionScript: data.preExecutionScript,
-            type: data.type || 'view',
-            danger: data.danger || 'low',
-            allocatesPort: data.allocatesPort ?? false,
-            portToReserve: data.portToReserve,
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-        } as ServerCommand;
-    });
+    try {
+        const { firestore } = initializeFirebase();
+        const commandsRef = collection(firestore, 'serverCommands');
 
-    if (searchQuery) {
-        allCommands = allCommands.filter(command =>
-            command.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (command.description && command.description.toLowerCase().includes(searchQuery.toLowerCase()))
-        );
+        const allDocsQuery = query(commandsRef, orderBy('name'));
+        const allDocsSnapshot = await getDocs(allDocsQuery);
+
+        let allCommands = allDocsSnapshot.docs.map(docSnap => {
+            const data = docSnap.data();
+            const createdAt = data.createdAt;
+            return {
+                id: docSnap.id,
+                name: data.name,
+                description: data.description,
+                commandTemplate: data.commandTemplate,
+                parameters: data.parameters || [],
+                preExecutionScript: data.preExecutionScript,
+                type: data.type || 'view',
+                danger: data.danger || 'low',
+                allocatesPort: data.allocatesPort ?? false,
+                portToReserve: data.portToReserve,
+                createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+            } as ServerCommand;
+        });
+
+        if (searchQuery) {
+            allCommands = allCommands.filter(command =>
+                command.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (command.description && command.description.toLowerCase().includes(searchQuery.toLowerCase()))
+            );
+        }
+
+        const totalCount = allCommands.length;
+        const paginatedCommands = allCommands.slice((page - 1) * pageSize, page * pageSize);
+
+        return { success: true, commands: paginatedCommands, totalCount };
+    } catch (e: any) {
+        await logErrorToFirestore({ message: `Failed to get server commands: ${e.message}`, stack: e.stack, source: 'getServerCommands' });
+        return { success: false, error: 'Failed to fetch commands.' };
     }
-
-    const totalCount = allCommands.length;
-    const paginatedCommands = allCommands.slice((page - 1) * pageSize, page * pageSize);
-
-    return { success: true, commands: paginatedCommands, totalCount };
-  } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get server commands: ${e.message}`, stack: e.stack, source: 'getServerCommands' });
-    return { success: false, error: 'Failed to fetch commands.' };
-  }
 }
 
 export async function getServerCommand(id: string): Promise<{ success: boolean; command?: ServerCommand; error?: string }> {
@@ -298,7 +300,7 @@ export async function updateServerCommand(id: string, data: Partial<Omit<ServerC
     try {
         const validatedData = serverCommandSchema.partial().safeParse(data);
         if (!validatedData.success) {
-             const errorDetails = validatedData.error.flatten().fieldErrors;
+            const errorDetails = validatedData.error.flatten().fieldErrors;
             return { success: false, error: JSON.stringify(errorDetails) };
         }
 
@@ -328,4 +330,4 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
 
 
 
-    
+
