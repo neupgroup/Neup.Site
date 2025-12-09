@@ -8,6 +8,9 @@ import { initializeFirebase } from '@/lib/firebase';
 import { cookies } from 'next/headers';
 import { logErrorToFirestore } from '@/lib/logging';
 
+// Re-export types for convenience
+export type { Server, ServerAllocation };
+
 /**
  * Creates a new server.
  */
