@@ -94,14 +94,14 @@ sudo rm -f /etc/nginx/sites-available/${siteId}.conf
 sudo rm -f /etc/nginx/sites-enabled/${siteId}.conf
 sudo systemctl reload nginx
 
-echo "--- Step 3: Deleting .next folder ---"
-rm -rf .next
+echo "--- Step 3: Deleting .next and node_modules folders ---"
+rm -rf .next node_modules
 
 echo "--- Step 4: Running npm install ---"
 npm install
 
 echo "--- Step 5: Running build ---"
-npm run build
+NODE_OPTIONS="--max_old_space_size=4096" npm run build
 echo "--- Rebuild Complete ---"
 </server.ubuntuBashProcessor>
     `.trim();

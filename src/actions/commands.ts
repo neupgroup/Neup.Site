@@ -45,20 +45,23 @@ APP_NAME="{{universal.site_id}}"
 echo "--- Step 1: Navigating to application directory {{universal.server_appPath}} ---"
 cd {{universal.server_appPath}}
 
-echo "--- Step 2: Installing packages ---"
+echo "--- Step 2: Cleaning old dependencies ---"
+rm -rf node_modules
+
+echo "--- Step 3: Installing packages ---"
 npm install
 
-echo "--- Step 3: Building application ---"
-npm run build
+echo "--- Step 4: Building application ---"
+NODE_OPTIONS="--max_old_space_size=4096" npm run build
 
-echo "--- Step 4: Starting application with PM2 on port {{universal.app_port}} ---"
+echo "--- Step 5: Starting application with PM2 on port {{universal.app_port}} ---"
 (pm2 list | grep -q "$APP_NAME" && pm2 delete "$APP_NAME") || echo "No old PM2 process to delete."
 pm2 start "npm start -- -p {{universal.app_port}}" --name "$APP_NAME" --update-env --time
 
-echo "--- Step 5: Saving PM2 process list ---"
+echo "--- Step 6: Saving PM2 process list ---"
 pm2 save
 
-echo "--- Step 6: Configuring Nginx reverse proxy ---"
+echo "--- Step 7: Configuring Nginx reverse proxy ---"
 echo "--- Deleting old Nginx configs if they exist ---"
 sudo rm -f /etc/nginx/sites-available/{{universal.site_id}}.conf
 sudo rm -f /etc/nginx/sites-enabled/{{universal.site_id}}.conf
@@ -84,7 +87,7 @@ EOF
 sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 
-echo "--- Step 7: Setting up SSL with Certbot and enabling auto-redirect ---"
+echo "--- Step 8: Setting up SSL with Certbot and enabling auto-redirect ---"
 sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
 
 sudo systemctl reload nginx
@@ -122,7 +125,7 @@ echo "--- Deployment Complete ---"
             data: {
                 name: "Build App",
                 description: "Clean build: removes node_modules and .next, then runs npm install and build.",
-                commandTemplate: `cd {{universal.server_appPath}} && echo "Cleaning old build..." && rm -rf .next node_modules && echo "Installing dependencies..." && npm install && echo "Building application..." && npm run build`,
+                commandTemplate: `cd {{universal.server_appPath}} && echo "Cleaning old build..." && rm -rf .next node_modules && echo "Installing dependencies..." && npm install && echo "Building application..." && NODE_OPTIONS="--max_old_space_size=4096" npm run build`,
                 type: 'updation',
                 danger: 'low'
             }
