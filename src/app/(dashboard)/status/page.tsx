@@ -15,7 +15,6 @@ import type { Site } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
-import { getAppStatus, updateAppStatus, type AppStatus } from '@/actions/server/management/app-status';
 
 interface DeploymentStep {
     name: string;
@@ -31,10 +30,10 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const [isChecking, setIsChecking] = useState(true);
     const [isExecutingAction, setIsExecutingAction] = useState<string | null>(null);
     const [steps, setSteps] = useState<DeploymentStep[]>([
-        { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
-        { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
-        { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Rebuild App' } },
-        { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
+        { name: 'Website Live', status: 'loading', description: 'Checking if website is reachable...' },
+        { name: 'Application Exists', status: 'loading', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
+        { name: 'Application Built', status: 'loading', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
+        { name: 'Start App & Configure Proxy', status: 'loading', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
     ]);
 
     const updateStep = (index: number, status: DeploymentStep['status'], description: string) => {
@@ -47,15 +46,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         });
     };
 
-    const markStepsAsSuccess = (fromIndex: number, toIndex: number, description: string = 'Implicitly successful.') => {
-        setSteps(prev => prev.map((step, index) => {
-            if (index >= fromIndex && index <= toIndex) {
-                return { ...step, status: 'success', description };
-            }
-            return step;
-        }));
-    };
-
     const runChecks = useCallback(async () => {
         if (!site) {
             setSteps(prev => prev.map(s => ({ ...s, status: 'failure', description: 'Site context not available.' })));
@@ -64,239 +54,69 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(true);
-        const initialSteps: DeploymentStep[] = [
-            { name: 'Website Live', status: 'pending', description: 'Pinging public domain...' },
-            { name: 'Start App & Configure Proxy', status: 'pending', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
-            { name: 'Application Built', status: 'pending', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Rebuild App' } },
-            { name: 'Application Exists', status: 'pending', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
-        ];
 
-        // 1. Try to read from status file
-        const statusFile = await getAppStatus(server.id);
-        if (statusFile.success && statusFile.status) {
-            const s = statusFile.status;
-
-            // Map status file to steps (in reverse order)
-            const mappedSteps = [...initialSteps];
-
-            // Step 0 (Website Live)
-            if (s.websiteLive.status === 'success') {
-                mappedSteps[0] = { ...mappedSteps[0], status: 'success', description: s.websiteLive.description || 'Website is live.' };
-                // If website is live, all previous steps are implicitly successful
-                mappedSteps[1] = { ...mappedSteps[1], status: 'success', description: 'Application is running and Nginx is configured.' };
-                mappedSteps[2] = { ...mappedSteps[2], status: 'success', description: 'Build folder found.', action: { commandId: 'build-app', label: 'Rebuild App' } };
-                mappedSteps[3] = { ...mappedSteps[3], status: 'success', description: 'Application directory found.' };
-            } else if (s.websiteLive.status === 'failure' || s.websiteLive.status === 'warning') {
-                mappedSteps[0] = { ...mappedSteps[0], status: s.websiteLive.status, description: s.websiteLive.description || 'Website unreachable.' };
-
-                // Need to check previous steps
-                // Step 1 (Proxy)
-                if (s.proxyConfigured.status === 'success') {
-                    mappedSteps[1] = { ...mappedSteps[1], status: 'success', description: s.proxyConfigured.description || 'Proxy configured.' };
-                    // If proxy is configured, previous steps are successful
-                    mappedSteps[2] = { ...mappedSteps[2], status: 'success', description: 'Build folder found.', action: { commandId: 'build-app', label: 'Rebuild App' } };
-                    mappedSteps[3] = { ...mappedSteps[3], status: 'success', description: 'Application directory found.' };
-                } else if (s.proxyConfigured.status === 'failure') {
-                    mappedSteps[1] = { ...mappedSteps[1], status: 'failure', description: s.proxyConfigured.description || 'Proxy configuration failed.' };
-
-                    // Check build status
-                    const isBuilt = s.applicationBuilt.status === 'built' || s.applicationBuilt.status === 'success';
-                    const isBuilding = s.applicationBuilt.status === 'building' || s.applicationBuilt.status === 'loading';
-                    const isFailed = s.applicationBuilt.status === 'failure' || s.applicationBuilt.status === 'notBuilt';
-
-                    let isStuck = false;
-                    if (isBuilding && s.applicationBuilt.recordedAt) {
-                        const recordedTime = new Date(s.applicationBuilt.recordedAt).getTime();
-                        const now = new Date().getTime();
-                        const minutesElapsed = (now - recordedTime) / (1000 * 60);
-                        isStuck = minutesElapsed > 15;
-                    }
-
-                    let buildStatus: DeploymentStep['status'] = 'pending';
-                    let buildActionLabel = 'Build App';
-
-                    if (isStuck) {
-                        buildStatus = 'failure';
-                        buildActionLabel = 'Rebuild App';
-                    } else if (isBuilding) {
-                        buildStatus = 'loading';
-                        buildActionLabel = 'Rebuild App';
-                    } else if (isBuilt) {
-                        buildStatus = 'success';
-                        buildActionLabel = 'Rebuild App';
-                    } else if (isFailed) {
-                        buildStatus = 'failure';
-                        buildActionLabel = s.applicationBuilt.status === 'notBuilt' ? 'Build App' : 'Rebuild App';
-                    }
-
-                    mappedSteps[2] = {
-                        ...mappedSteps[2],
-                        status: buildStatus,
-                        description: isStuck ? 'Build appears stuck (>15 min). Please rebuild.' : (s.applicationBuilt.description || (isBuilt ? 'Build folder found.' : 'Application not built.')),
-                        action: { commandId: 'build-app', label: buildActionLabel }
-                    };
-
-                    if (buildStatus === 'success') {
-                        // If built, app exists
-                        mappedSteps[3] = { ...mappedSteps[3], status: 'success', description: s.applicationExists.description || 'Application directory found.' };
-                    } else if (buildStatus === 'failure') {
-                        // Check app exists
-                        if (s.applicationExists.status === 'success') {
-                            mappedSteps[3] = { ...mappedSteps[3], status: 'success', description: s.applicationExists.description || 'Application directory found.' };
-                        } else {
-                            mappedSteps[3] = { ...mappedSteps[3], status: 'failure', description: s.applicationExists.description || 'Application directory failure.' };
-                        }
-                    }
-                }
-            }
-
-            setSteps(mappedSteps);
-            setIsChecking(false);
-            return;
-        }
-
-        // 2. Fallback to Deep Checks (Reverse Order - Start from Website Live)
-        setSteps(initialSteps);
-
-        let collectedStatus: Partial<AppStatus> = {};
-
-        // Get app path first
-        const appDirCheck = await checkPathExists(server.id);
-        if (!appDirCheck.exists || appDirCheck.error) {
-            // Can't proceed with any checks
-            updateStep(0, 'failure', 'Cannot check - application directory not found.');
-            updateStep(1, 'failure', 'Cannot check - application directory not found.');
-            updateStep(2, 'failure', 'Cannot check - application directory not found.');
-            updateStep(3, 'failure', appDirCheck.error || `Directory not found at ${appDirCheck.resolvedPath || 'the expected path'}.`);
-
-            collectedStatus.applicationExists = {
-                status: 'failure',
-                recordedAt: new Date().toISOString(),
-                exists: false
-            };
-            await updateAppStatus(server.id, collectedStatus);
-            setIsChecking(false);
-            return;
-        }
-
-        // Step 0 (Reverse): Check if Website is Live
-        if (site.domains && site.domains.length > 0) {
-            updateStep(0, 'loading', `Pinging ${site.domains[0].value}...`);
-            try {
-                const url = `https://${site.domains[0].value}`;
-                const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
-                const data = await res.json();
-
-                let liveStatus: 'success' | 'warning' | 'failure' = 'failure';
-
-                if (res.ok && data.success) {
-                    if (data.status === 200) {
-                        liveStatus = 'success';
-                        updateStep(0, 'success', `URL is reachable with status 200 (OK).`);
-
-                        // Website is live! All previous steps are implicitly successful
-                        updateStep(1, 'success', 'Application is running and Nginx is configured.');
-                        updateStep(2, 'success', 'Build folder exists.');
-                        updateStep(3, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
-
-                        collectedStatus.websiteLive = { status: 'success', recordedAt: new Date().toISOString(), statusCode: 200 };
-                        collectedStatus.proxyConfigured = { status: 'success', recordedAt: new Date().toISOString(), description: 'Implicitly successful - website is live.' };
-                        collectedStatus.applicationBuilt = { status: 'built', recordedAt: new Date().toISOString() };
-                        collectedStatus.applicationExists = { status: 'success', recordedAt: new Date().toISOString(), exists: true };
-
-                        await updateAppStatus(server.id, collectedStatus);
-                        setIsChecking(false);
-                        return; // Done! No need to check further
-                    } else {
-                        liveStatus = 'warning';
-                        updateStep(0, 'warning', `URL is reachable but returned status ${data.status}.`);
-                    }
-                } else {
-                    updateStep(0, 'failure', `URL returned status ${data.status || 'Error'}. Checking previous steps...`);
-                }
-
-                collectedStatus.websiteLive = {
-                    status: liveStatus,
-                    recordedAt: new Date().toISOString(),
-                    statusCode: data.status
-                };
-
-            } catch (e) {
-                updateStep(0, 'failure', 'Could not reach the website URL. Checking previous steps...');
-                collectedStatus.websiteLive = { status: 'failure', recordedAt: new Date().toISOString() };
-            }
-        } else {
-            updateStep(0, 'failure', 'No domain configured for this site.');
-            collectedStatus.websiteLive = { status: 'failure', recordedAt: new Date().toISOString(), description: 'No domain' };
-        }
-
-        // Step 1 (Reverse): Check PM2 and Nginx Status
-        updateStep(1, 'loading', 'Checking for PM2 process and Nginx config...');
-
-        const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
-            getPm2Processes(server.id),
-            checkPathExists(server.id, `/etc/nginx/sites-available/${site.id}.conf`),
-            checkPathExists(server.id, `/etc/nginx/sites-enabled/${site.id}.conf`)
+        // Initialize all steps with loading state
+        setSteps([
+            { name: 'Website Live', status: 'loading', description: 'Checking if website is reachable...' },
+            { name: 'Application Exists', status: 'loading', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
+            { name: 'Application Built', status: 'loading', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
+            { name: 'Start App & Configure Proxy', status: 'loading', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
         ]);
 
-        let pm2Ok = false;
-        let nginxOk = false;
-        let stepDescription = '';
-
-        if (!pm2Check.success) {
-            stepDescription += `Could not check PM2 processes: ${pm2Check.error}. `;
-        } else {
-            const siteProcess = pm2Check.processes?.find(p => p.name === site.id);
-            if (!siteProcess) {
-                stepDescription += `PM2 process not found. `;
-            } else if (siteProcess.status !== 'online') {
-                stepDescription += `Process found in a crashed/stopped state. `;
-            } else {
-                pm2Ok = true;
-                stepDescription += `PM2 process is online. `;
-            }
-        }
-
-        if (!nginxAvailableCheck.exists) {
-            stepDescription += `Nginx config file not found. `;
-        } else if (!nginxEnabledCheck.exists) {
-            stepDescription += `Nginx config not enabled. `;
-        } else {
-            nginxOk = true;
-            stepDescription += 'Nginx config is enabled.';
-        }
-
-        collectedStatus.proxyConfigured = {
-            status: (pm2Ok && nginxOk) ? 'success' : 'failure',
-            recordedAt: new Date().toISOString(),
-            description: stepDescription.trim()
-        };
-
-        if (pm2Ok && nginxOk) {
-            updateStep(1, 'success', 'Application is running and Nginx is configured.');
-            // If proxy is configured, previous steps are implicitly successful
-            updateStep(2, 'success', 'Build folder exists.');
-            updateStep(3, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
-
-            collectedStatus.applicationBuilt = { status: 'built', recordedAt: new Date().toISOString() };
-            collectedStatus.applicationExists = { status: 'success', recordedAt: new Date().toISOString(), exists: true };
-
-            await updateAppStatus(server.id, collectedStatus);
+        // STEP 1: Check if Website is Live
+        if (!site.domains || site.domains.length === 0) {
+            updateStep(0, 'failure', 'No domain configured for this site.');
+            updateStep(1, 'failure', 'Cannot proceed without domain.');
+            updateStep(2, 'failure', 'Cannot proceed without domain.');
+            updateStep(3, 'failure', 'Cannot proceed without domain.');
             setIsChecking(false);
-            return; // Done!
-        } else {
-            updateStep(1, 'failure', stepDescription.trim());
+            return;
         }
 
-        // Step 2 (Reverse): Check Build Status
+        updateStep(0, 'loading', `Pinging ${site.domains[0].value}...`);
+        try {
+            const url = `https://${site.domains[0].value}`;
+            const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
+            const data = await res.json();
+
+            if (res.ok && data.success && data.status === 200) {
+                // Website is LIVE! All checks pass
+                updateStep(0, 'success', `Website is live and reachable (Status 200).`);
+                updateStep(1, 'success', 'Application directory exists.');
+                updateStep(2, 'success', 'Application is built.');
+                updateStep(3, 'success', 'Application is running and proxy is configured.');
+                setIsChecking(false);
+                return; // Done!
+            } else {
+                // Website is NOT live - continue checking
+                const statusCode = data.status || 'Unknown';
+                updateStep(0, 'failure', `Website is not reachable (Status ${statusCode}).`);
+            }
+        } catch (e) {
+            updateStep(0, 'failure', 'Could not reach the website URL.');
+        }
+
+        // STEP 2: Check if Application Exists
+        updateStep(1, 'loading', 'Checking for application directory...');
+        const appDirCheck = await checkPathExists(server.id);
+
+        if (!appDirCheck.exists || appDirCheck.error) {
+            // Application does NOT exist - steps 3 and 4 are false
+            updateStep(1, 'failure', appDirCheck.error || 'Application directory not found.');
+            updateStep(2, 'failure', 'Cannot check - application directory not found.');
+            updateStep(3, 'failure', 'Cannot check - application directory not found.');
+            setIsChecking(false);
+            return;
+        }
+
+        // Application EXISTS
+        updateStep(1, 'success', `Application directory found at ${appDirCheck.resolvedPath}.`);
+
+        // STEP 3: Check if Application is Built
         updateStep(2, 'loading', 'Checking for .next build folder...');
         const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
 
-        collectedStatus.applicationBuilt = {
-            status: buildCheck.exists ? 'built' : 'notBuilt',
-            recordedAt: new Date().toISOString(),
-        };
-
+        // Update action label based on build status
         setSteps(prev => {
             const newSteps = [...prev];
             if (newSteps[2]) {
@@ -309,28 +129,61 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             return newSteps;
         });
 
-        if (buildCheck.exists) {
-            updateStep(2, 'success', 'Build folder found.');
-            // If built, app directory exists
-            updateStep(3, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
-            collectedStatus.applicationExists = { status: 'success', recordedAt: new Date().toISOString(), exists: true };
-            await updateAppStatus(server.id, collectedStatus);
-            setIsChecking(false);
-            return; // Done!
-        } else {
+        if (!buildCheck.exists) {
+            // Application is NOT built - step 4 is false
             updateStep(2, 'failure', 'Application not built. The ".next" folder is missing.');
+            updateStep(3, 'failure', 'Cannot check - application not built.');
+            setIsChecking(false);
+            return;
         }
 
-        // Step 3 (Reverse): Check Application Directory (already checked at start)
-        updateStep(3, 'success', `Directory found at ${appDirCheck.resolvedPath}.`);
-        collectedStatus.applicationExists = {
-            status: 'success',
-            recordedAt: new Date().toISOString(),
-            exists: true
-        };
+        // Application IS built
+        updateStep(2, 'success', 'Build folder found.');
 
-        // Final Save of Full Status
-        await updateAppStatus(server.id, collectedStatus);
+        // STEP 4: Check if App is Started and Proxy is Configured
+        updateStep(3, 'loading', 'Checking PM2 process and Nginx configuration...');
+
+        const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
+            getPm2Processes(server.id),
+            checkPathExists(server.id, `/etc/nginx/sites-available/${site.id}.conf`),
+            checkPathExists(server.id, `/etc/nginx/sites-enabled/${site.id}.conf`)
+        ]);
+
+        let pm2Ok = false;
+        let nginxOk = false;
+        let stepDescription = '';
+
+        // Check PM2 status
+        if (!pm2Check.success) {
+            stepDescription += `Could not check PM2 processes: ${pm2Check.error}. `;
+        } else {
+            const siteProcess = pm2Check.processes?.find(p => p.name === site.id);
+            if (!siteProcess) {
+                stepDescription += `PM2 process not found. `;
+            } else if (siteProcess.status !== 'online') {
+                stepDescription += `PM2 process is ${siteProcess.status}. `;
+            } else {
+                pm2Ok = true;
+                stepDescription += `PM2 process is online. `;
+            }
+        }
+
+        // Check Nginx status
+        if (!nginxAvailableCheck.exists) {
+            stepDescription += `Nginx config file not found. `;
+        } else if (!nginxEnabledCheck.exists) {
+            stepDescription += `Nginx config not enabled. `;
+        } else {
+            nginxOk = true;
+            stepDescription += 'Nginx config is enabled.';
+        }
+
+        // Final result for step 4
+        if (pm2Ok && nginxOk) {
+            updateStep(3, 'success', stepDescription.trim());
+        } else {
+            updateStep(3, 'failure', stepDescription.trim());
+        }
 
         setIsChecking(false);
     }, [server.id, site]);
@@ -379,15 +232,27 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const renderStepActions = (step: DeploymentStep, index: number) => {
         const actions: JSX.Element[] = [];
 
-        // In reverse order: show action if next step (higher index) is successful OR if this is the last step
-        // Also show if step is failed or if it's a rebuildable success step
-        const isLastStep = index === steps.length - 1;
-        const nextStep = !isLastStep ? steps[index + 1] : null;
-        const nextStepOk = isLastStep || (nextStep && nextStep.status === 'success');
+        // New sequential flow: show action if step failed and all previous steps are successful
+        // Step 0 (Website Live) - no actions
+        // Step 1 (Application Exists) - show actions if failed
+        // Step 2 (Application Built) - show actions if failed and step 1 is successful
+        // Step 3 (Start App & Configure Proxy) - show actions if failed and steps 1-2 are successful
 
-        const canShowFixAction = nextStepOk && (step.status === 'failure' || (step.status === 'success' && (step.name === 'Application Built' || step.name === 'Start App & Configure Proxy')));
+        let canShowAction = false;
 
-        if (canShowFixAction) {
+        if (index === 0) {
+            // Website Live - no actions available
+            canShowAction = false;
+        } else if (index === 1) {
+            // Application Exists - show if failed
+            canShowAction = step.status === 'failure';
+        } else {
+            // For steps 2 and 3, check if all previous steps are successful
+            const allPreviousSuccessful = steps.slice(1, index).every(s => s.status === 'success');
+            canShowAction = (step.status === 'failure' || (step.status === 'success' && (step.name === 'Application Built' || step.name === 'Start App & Configure Proxy'))) && allPreviousSuccessful;
+        }
+
+        if (canShowAction) {
             if (step.action) {
                 actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
             }
@@ -430,40 +295,20 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 <CardDescription className="truncate">{server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {steps.map((step, index) => {
-                    // In reverse order: Hide steps if next step (higher index) is not checked yet
-                    if (index < steps.length - 1) {
-                        const nextStep = steps[index + 1];
-                        if (nextStep.status === 'pending' || nextStep.status === 'loading') {
-                            // Only show if current step has meaningful status (not just default pending)
-                            if (step.status === 'pending' && !step.description.includes('Waiting') && !step.description.includes('Cannot')) {
-                                return null;
-                            }
-                        }
-                        // Show failed/success steps even if next step failed (to show the cascade)
-                        if (nextStep.status === 'failure' && step.status !== 'failure' && step.status !== 'success') {
-                            // Hide if not explicitly marked as failed or successful
-                            if (step.status === 'pending' && !step.description.includes('Cannot')) {
-                                return null;
-                            }
-                        }
-                    }
-
-                    return (
-                        <div key={step.name}>
-                            <div className="flex items-start gap-4">
-                                <div className="flex-shrink-0 pt-1">
-                                    {getStatusIcon(step.status)}
-                                </div>
-                                <div>
-                                    <p className="font-medium">{step.name}</p>
-                                    <p className="text-sm text-muted-foreground">{step.description}</p>
-                                    {renderStepActions(step, index)}
-                                </div>
+                {steps.map((step, index) => (
+                    <div key={step.name}>
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 pt-1">
+                                {getStatusIcon(step.status)}
+                            </div>
+                            <div className="flex-1">
+                                <p className="font-medium">{step.name}</p>
+                                <p className="text-sm text-muted-foreground">{step.description}</p>
+                                {renderStepActions(step, index)}
                             </div>
                         </div>
-                    );
-                })}
+                    </div>
+                ))}
             </CardContent>
         </Card>
     );
