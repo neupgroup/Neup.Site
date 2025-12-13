@@ -129,6 +129,8 @@ const FileManager = ({ serverId }: { serverId: string }) => {
     const [editingFile, setEditingFile] = useState<{ path: string; content: string; } | null>(null);
     const [deletingFile, setDeletingFile] = useState<FileInfo | null>(null);
     const [pathInputValue, setPathInputValue] = useState(currentPath);
+    const [isCreateFileDialogOpen, setIsCreateFileDialogOpen] = useState(false);
+
 
     const navigate = useCallback((newPath: string) => {
         const params = new URLSearchParams(searchParams);
@@ -228,6 +230,13 @@ const FileManager = ({ serverId }: { serverId: string }) => {
 
     return (
         <Card>
+             <CreateFileDialog
+                serverId={serverId}
+                currentPath={currentPath}
+                open={isCreateFileDialogOpen}
+                onOpenChange={setIsCreateFileDialogOpen}
+                onCreateSuccess={() => fetchFiles(currentPath)}
+            />
             {editingFile && (
                 <FileEditorDialog
                     file={editingFile}
@@ -252,8 +261,16 @@ const FileManager = ({ serverId }: { serverId: string }) => {
             </AlertDialog>
 
             <CardHeader>
-                <CardTitle>File Manager</CardTitle>
-                <CardDescription>Browse and edit files on your server.</CardDescription>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>File Manager</CardTitle>
+                        <CardDescription>Browse and edit files on your server.</CardDescription>
+                    </div>
+                     <Button variant="outline" onClick={() => setIsCreateFileDialogOpen(true)}>
+                        <FilePlus className="mr-2 h-4 w-4" />
+                        Create File
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent>
                 <div className="flex items-center gap-2 mb-4">
@@ -417,29 +434,13 @@ const StorageAnalysis = ({ serverId }: { serverId: string }) => {
 
 export default function StoragePage() {
     const params = useParams<{ id: string }>();
-    const [isCreateFileDialogOpen, setIsCreateFileDialogOpen] = useState(false);
-    const searchParams = useSearchParams();
-    const currentPath = searchParams.get('path') || '/';
 
     return (
         <div className="space-y-6">
-            <CreateFileDialog
-                serverId={params.id}
-                currentPath={currentPath}
-                open={isCreateFileDialogOpen}
-                onOpenChange={setIsCreateFileDialogOpen}
-                onCreateSuccess={() => { /* The FileManagerPage will need to be re-rendered */ location.reload(); }}
-            />
-            <div className="flex justify-between items-start">
-                <div>
-                    <h1 className="font-headline text-2xl font-semibold tracking-tight">Storage & File Manager</h1>
-                    <p className="text-muted-foreground">Manage files and view disk usage for this server.</p>
-                </div>
-                <Button variant="outline" onClick={() => setIsCreateFileDialogOpen(true)}>
-                    <FilePlus className="mr-2 h-4 w-4" />
-                    Create File
-                </Button>
-            </div>
+             <header className="flex items-center justify-between mb-8">
+                <h1 className="font-headline text-2xl font-semibold tracking-tight">Storage & File Manager</h1>
+                <p className="text-muted-foreground">Manage files and view disk usage for this server.</p>
+            </header>
             <FileManager serverId={params.id} />
             <Separator />
             <StorageAnalysis serverId={params.id} />
