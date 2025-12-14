@@ -30,6 +30,7 @@ import {
   AlertCircle,
   Loader2,
   ArrowLeft,
+  CheckCircle,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -80,7 +81,7 @@ export default function SiteUploadsPage() {
     setUploadingFiles(prev => [...prev, ...newFiles]);
   }, []);
   
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true, noKeyboard: true });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   
   const handleUpload = async () => {
     const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
@@ -155,16 +156,16 @@ export default function SiteUploadsPage() {
         <p className="text-muted-foreground">Manage your site's public assets.</p>
       </header>
       
-      <Card {...getRootProps({ className: `outline-none` })}>
-        <input {...getInputProps()} />
+      <Card>
         <CardHeader>
           <CardTitle>Upload Files</CardTitle>
           <CardDescription>Drag and drop files here to upload them to the current directory: <code className="font-mono bg-muted px-1 rounded">{currentPath}</code></CardDescription>
         </CardHeader>
         <CardContent>
-          <div className={cn("p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors", isDragActive ? "border-primary bg-primary/10" : "border-border")}>
+          <div {...getRootProps({ className: cn("p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors", isDragActive ? "border-primary bg-primary/10" : "border-border hover:border-primary/50") })}>
+            <input {...getInputProps()} />
             <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <p>{isDragActive ? "Drop to upload" : "Drag files here"}</p>
+            <p>{isDragActive ? "Drop to upload" : "Drag 'n' drop files here, or click to select"}</p>
           </div>
           {uploadingFiles.length > 0 && (
             <div className="mt-6 space-y-4">
