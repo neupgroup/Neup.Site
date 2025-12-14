@@ -1,4 +1,3 @@
-
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Path } from '@/actions/paths';
 
@@ -20,6 +19,10 @@ export interface Site {
   name: string;
   url: string;
   domains?: { value: string }[];
+  domainSettings?: {
+    forceHttps?: boolean;
+    redirectToNonWww?: boolean;
+  };
   tier: 'free' | 'premium';
   logoUrl?: string;
   hideSitename?: boolean;

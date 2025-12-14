@@ -1,9 +1,7 @@
-
-
 'use server';
 
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
-import { getPrivateServerDetails } from '@/actions/servers';
+import { getPrivateServerDetails, updateServer } from '@/actions/servers'; // Make sure updateServer is imported
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
@@ -38,7 +36,6 @@ export async function runCommand(
     let allocatesPort = false;
     let commandName: string | undefined = commandNameToLog;
 
-    // Build the initial log data object carefully.
     const initialLogData: Omit<ServerLog, 'id' | 'initiatedAt' | 'completedAt'> = {
         serverId: serverId,
         commandName: commandName || (commandId ? 'Loading Command...' : 'Custom Command'),
@@ -51,7 +48,6 @@ export async function runCommand(
         initialLogData.commandId = commandId;
     }
 
-    // Create the log entry first, so we have an ID to update.
     const createResult = await createServerLog(initialLogData);
 
     if (!createResult.success || !createResult.id) {
@@ -73,7 +69,6 @@ export async function runCommand(
                     commandName = cmd.name;
                 }
                 confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
-                // Update the log with the correct command name now that we have it
                 await updateServerLog(logId, { commandName });
             } else {
                  throw new Error(`Command with ID ${commandId} not found.`);
@@ -86,6 +81,11 @@ export async function runCommand(
         if (serverError || !server || !server.publicIp || !server.privateKey) {
             throw new Error(`Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`);
         }
+
+        if (commandId === 'initial-server-setup') {
+            await updateServer(serverId, { serverConfigured: true });
+        }
+
 
         const accountId = await getAccountId();
         
@@ -209,7 +209,6 @@ echo "--- COMMAND FINISHED ---"
 echo ""
 `;
         
-        // Update the log with the actual command to be executed
         await updateServerLog(logId, { command: loggedCommand });
 
         const ssh = new NodeSSH();
@@ -239,7 +238,6 @@ echo ""
                  finalOutput += `\n\n--- COMMAND FAILED ---\nExited with code: ${result.code}`;
             }
 
-            // Final update. The server-side trap will handle cleanup.
             await updateServerLog(logId, { status: finalStatus, output: finalOutput });
             
             return { success: finalStatus === 'completed', logId, finalStatus };

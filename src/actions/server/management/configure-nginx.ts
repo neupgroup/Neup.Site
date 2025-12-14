@@ -1,5 +1,7 @@
 "use server";
 
+import { getSite } from "@/actions/editor/site";
+
 interface NginxConfigParams {
   urls: string[];
   proxyUrl: string;
@@ -7,31 +9,28 @@ interface NginxConfigParams {
 }
 
 export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxConfigParams): Promise<string> {
-  if (urls.length === 0) {
-    throw new Error('At least one URL is required.');
-  }
+    if (urls.length === 0) {
+        throw new Error('At least one URL is required.');
+    }
 
-  // --- 1. Process and build the complete Nginx configuration string first ---
+    const { site } = await getSite();
+    const forceHttps = site?.domainSettings?.forceHttps ?? true;
+    const redirectToNonWww = site?.domainSettings?.redirectToNonWww ?? true;
 
-  const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
-  const primaryDomain = firstUrl.hostname.replace(/\./g, '_');
-  const primaryPath = firstUrl.pathname.replace(/\//g, '_').replace(/^_/, '');
-  const safeDomain = primaryPath ? `${primaryDomain}_${primaryPath}` : primaryDomain;
-  const configFileName = `${safeDomain}.conf`;
+    const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
+    const primaryDomain = firstUrl.hostname.replace('www.', ''); // Get non-www version
+    const safeDomain = primaryDomain.replace(/\./g, '_');
+    const configFileName = `${safeDomain}.conf`;
 
-  const allDomains = new Set<string>();
-  const locations = new Map<string, string>();
+    const allDomains = new Set<string>();
+    urls.forEach(urlStr => {
+        const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
+        allDomains.add(url.hostname);
+    });
+    const serverName = Array.from(allDomains).join(' ');
 
-  // Process all URLs to gather unique domains and create location blocks
-  urls.forEach(urlStr => {
-    const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
-    allDomains.add(url.hostname);
-    const path = url.pathname === '/' && urlStr.endsWith('/') ? '/' : (url.pathname || '/');
-
-    // Create a location block for each unique path
-    if (!locations.has(path)) {
-      locations.set(path, `
-    location ${path} {
+    const locationBlock = `
+    location / {
         proxy_pass ${proxyUrl};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -41,30 +40,47 @@ export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: N
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-    }`);
-    }
-  });
+    }`;
 
-  const serverName = Array.from(allDomains).join(' ');
-  const locationBlocks = Array.from(locations.values()).join('');
+    let nginxConfig = '';
 
-  // The final Nginx configuration string is now complete
-  const nginxConfig = `server {
-    listen ${listenPort};
+    // Main HTTPS server block
+    let httpsServerBlock = `
+server {
+    listen ${listenPort} ssl;
     server_name ${serverName};
-${locationBlocks}
+
+    ssl_certificate /etc/letsencrypt/live/${primaryDomain}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${primaryDomain}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    ${redirectToNonWww ? `
+    if ($host = www.${primaryDomain}) {
+        return 301 https://${primaryDomain}$request_uri;
+    }` : ''}
+    ${locationBlock}
 }
 `;
 
-  // --- 2. Create the shell command to save the finalized string to a file ---
+    // HTTP redirect block (if forcing HTTPS)
+    if (forceHttps) {
+        const httpRedirectBlock = `
+server {
+    listen 80;
+    server_name ${serverName};
+    return 301 https://$host$request_uri;
+}
+`;
+        nginxConfig += httpRedirectBlock;
+    }
 
-  const configFilePath = `/etc/nginx/sites-available/${configFileName}`;
-  const enabledConfigPath = `/etc/nginx/sites-enabled/${configFileName}`;
+    nginxConfig += httpsServerBlock;
+    
+    const configFilePath = `/etc/nginx/sites-available/${configFileName}`;
+    const enabledConfigPath = `/etc/nginx/sites-enabled/${configFileName}`;
 
-  // Use a 'here-document' (cat <<'EOF') to write the string.
-  // Quoting 'EOF' prevents the shell from expanding variables (like $http_upgrade) inside the block.
-  // This is a much safer way to write multi-line content with special characters.
-  const command = `
+    const command = `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled && \\
 sudo bash -c "cat > ${configFilePath}" <<'EOF'
 ${nginxConfig}
@@ -74,5 +90,5 @@ sudo nginx -t && \\
 sudo systemctl reload nginx
 `.trim();
 
-  return command;
+    return command;
 }

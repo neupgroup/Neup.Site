@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -26,22 +25,12 @@ export const SocialProfileSchema = z.object({
   url: z.string().min(1, 'URL is required'),
 });
 
-const domainSchema = z.object({
-    value: z.string().min(1, 'Domain is required.').refine(val => {
-        // Very basic validation: allows domain, domain with path, or subdomain.
-        // Does not validate TLDs or complex path structures.
-        const pattern = /^[a-zA-Z0-9.-]+(\/[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$/;
-        return pattern.test(val);
-    }, 'Invalid domain or path format.'),
-});
-
 export const ProfileFormSchema = z.object({
   name: z.string().min(1, 'Profile Name is required'),
   hideSitename: z.boolean().default(false),
   logoUrl: z.string().optional(),
   hideLogo: z.boolean().default(false),
   description: z.string().optional(),
-  domains: z.array(domainSchema).optional(),
   socialProfiles: z.array(SocialProfileSchema).max(9, 'You can add a maximum of 9 social profiles.'),
   contactEmail: z.array(z.object({ value: z.string().email() })).max(9, 'You can add a maximum of 9 emails.'),
   contactPhone: z.array(z.object({ value: z.string() })).max(9, 'You can add a maximum of 9 phone numbers.'),
@@ -65,16 +54,10 @@ export default function ProfilePage() {
             logoUrl: '',
             hideLogo: false,
             description: '',
-            domains: [],
             socialProfiles: [],
             contactEmail: [],
             contactPhone: [],
         },
-    });
-    
-    const { fields: domainFields, append: appendDomain, remove: removeDomain } = useFieldArray({
-        control: form.control,
-        name: 'domains',
     });
 
     const { fields: socialFields, append: appendSocial, remove: removeSocial } = useFieldArray({
@@ -105,7 +88,6 @@ export default function ProfilePage() {
                 logoUrl: removeUrlPrefix(site.logoUrl),
                 hideLogo: site.hideLogo || false,
                 description: site.description || '',
-                domains: site.domains || [],
                 socialProfiles: site.socialProfiles?.map(p => ({...p, url: removeUrlPrefix(p.url)})) || [],
                 contactEmail: site.contactEmail || [],
                 contactPhone: site.contactPhone || [],
@@ -117,7 +99,6 @@ export default function ProfilePage() {
                 hideSitename: false,
                 hideLogo: false,
                 description: 'A brief description of my new site.',
-                domains: [],
                 socialProfiles: [],
                 contactEmail: [],
                 contactPhone: [],
@@ -235,26 +216,6 @@ export default function ProfilePage() {
                             <FormMessage />
                         </FormItem>
                     )} />
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Domains</CardTitle>
-                    <CardDescription>Domains and paths associated with this site.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        {domainFields.map((field, index) => (
-                            <div key={field.id} className="flex items-center gap-2">
-                                <FormField control={form.control} name={`domains.${index}.value`} render={({ field }) => (
-                                    <FormItem className="flex-1"><FormControl><Input {...field} placeholder="e.g., yourdomain.com or my.site/path" /></FormControl><FormMessage /></FormItem>
-                                )} />
-                                <Button type="button" variant="destructive" size="icon" onClick={() => removeDomain(index)}><Trash2/></Button>
-                            </div>
-                        ))}
-                         <Button type="button" variant="outline" onClick={() => appendDomain({ value: '' })}><Plus className="mr-2" /> Add Domain</Button>
-                    </div>
                 </CardContent>
             </Card>
 
