@@ -37,6 +37,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 import { getPublicFiles, uploadPublicFile, deletePublicFile, PublicFile } from '@/actions/uploads';
+import { Input } from '@/components/ui/input';
 
 interface UploadingFile {
   file: File;
@@ -51,6 +52,7 @@ export default function SiteUploadsPage() {
   const { toast } = useToast();
 
   const currentPath = searchParams.get('path') || '/';
+  const [pathInputValue, setPathInputValue] = useState(currentPath);
 
   const [files, setFiles] = useState<PublicFile[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
@@ -71,6 +73,7 @@ export default function SiteUploadsPage() {
 
   useEffect(() => {
     fetchFiles(currentPath);
+    setPathInputValue(currentPath);
   }, [currentPath, fetchFiles]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -81,7 +84,7 @@ export default function SiteUploadsPage() {
     setUploadingFiles(prev => [...prev, ...newFiles]);
   }, []);
   
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: false });
   
   const handleUpload = async () => {
     const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
@@ -122,6 +125,17 @@ export default function SiteUploadsPage() {
     params.set('path', newPath);
     router.push(`${pathname}?${params.toString()}`);
   };
+  
+  const handlePathInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPathInputValue(e.target.value);
+  }
+
+  const handlePathInputSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+          navigate(pathInputValue);
+      }
+  };
+
 
   const goUp = () => {
     if (currentPath === '/') return;
@@ -159,7 +173,7 @@ export default function SiteUploadsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Upload Files</CardTitle>
-          <CardDescription>Drag and drop files here to upload them to the current directory: <code className="font-mono bg-muted px-1 rounded">{currentPath}</code></CardDescription>
+          <CardDescription>Drag and drop files here to upload them to the current directory.</CardDescription>
         </CardHeader>
         <CardContent>
           <div {...getRootProps({ className: cn("p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors", isDragActive ? "border-primary bg-primary/10" : "border-border hover:border-primary/50") })}>
@@ -187,10 +201,15 @@ export default function SiteUploadsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Uploaded Files</CardTitle>
-          <div className="flex items-center gap-2">
-            {currentPath !== '/' && <Button variant="ghost" size="sm" onClick={goUp}><ArrowLeft className="mr-2 h-4 w-4"/> Go Up</Button>}
-            <p className="text-sm text-muted-foreground font-mono bg-muted px-2 py-1 rounded-md">{currentPath}</p>
-          </div>
+           <div className="flex items-center gap-2 pt-2">
+                {currentPath !== '/' && <Button variant="ghost" size="icon" onClick={goUp} className="h-9 w-9"><ArrowLeft className="h-4 w-4"/></Button>}
+                <Input
+                    value={pathInputValue}
+                    onChange={handlePathInputChange}
+                    onKeyDown={handlePathInputSubmit}
+                    className="font-mono"
+                />
+            </div>
         </CardHeader>
         <CardContent>
           {loading ? (
