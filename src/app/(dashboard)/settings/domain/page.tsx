@@ -97,65 +97,75 @@ export default function DomainPage() {
                 <p className="text-muted-foreground">Manage your site's domains and redirection rules.</p>
             </header>
 
-            <Card>
+            {domainFields.map((field, index) => (
+              <Card key={field.id}>
                 <CardHeader>
-                    <CardTitle>Domains</CardTitle>
-                    <CardDescription>Domains and paths associated with this site.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        {domainFields.map((field, index) => (
-                            <div key={field.id} className="flex items-center gap-2">
-                                <FormField control={form.control} name={`domains.${index}.value`} render={({ field }) => (
-                                    <FormItem className="flex-1"><FormControl><Input {...field} placeholder="e.g., yourdomain.com or my.site/path" /></FormControl><FormMessage /></FormItem>
-                                )} />
-                                <Button type="button" variant="destructive" size="icon" onClick={() => removeDomain(index)}><Trash2/></Button>
-                            </div>
-                        ))}
-                         <Button type="button" variant="outline" onClick={() => appendDomain({ value: '' })}><Plus className="mr-2" /> Add Domain</Button>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>Domain</CardTitle>
+                      <CardDescription>Enter the domain name or path.</CardDescription>
                     </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Redirection Rules</CardTitle>
-                    <CardDescription>Configure how traffic is routed to your primary domain.</CardDescription>
+                     <Button type="button" variant="destructive" size="icon" onClick={() => removeDomain(index)}><Trash2 /></Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name={`domains.${index}.value`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g., yourdomain.com" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="space-y-4 pt-4 border-t">
                     <FormField
-                        control={form.control}
-                        name="domainSettings.forceHttps"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                <div className="space-y-0.5">
-                                    <FormLabel>Force HTTPS</FormLabel>
-                                    <FormDescription>Redirect all HTTP traffic to HTTPS.</FormDescription>
-                                </div>
-                                <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                            </FormItem>
-                        )}
-                        />
+                      control={form.control}
+                      name="domainSettings.forceHttps"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                            <FormLabel>Force HTTPS</FormLabel>
+                            <FormDescription>Redirect all HTTP traffic to HTTPS.</FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                     <FormField
-                        control={form.control}
-                        name="domainSettings.redirectToNonWww"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                <div className="space-y-0.5">
-                                    <FormLabel>Redirect 'www' to non-'www'</FormLabel>
-                                    <FormDescription>Ensure all traffic goes to your bare domain (e.g., example.com).</FormDescription>
-                                </div>
-                                <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                            </FormItem>
-                        )}
-                        />
+                      control={form.control}
+                      name="domainSettings.redirectToNonWww"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                            <FormLabel>Redirect 'www' to non-'www'</FormLabel>
+                            <FormDescription>Ensure all traffic goes to your bare domain.</FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </CardContent>
-            </Card>
+              </Card>
+            ))}
+
+            <Button type="button" variant="outline" onClick={() => appendDomain({ value: '' })}>
+              <Plus className="mr-2" /> Add Domain
+            </Button>
+
 
             <CardFooter>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
-                    Save Domain Settings
+                    Save All Domain Settings
                 </Button>
             </CardFooter>
         </form>
