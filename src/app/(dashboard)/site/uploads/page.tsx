@@ -1,32 +1,19 @@
 
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import {
-  UploadCloud,
-  FileText,
-  AlertCircle,
-  Loader2,
-  CheckCircle,
-} from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-
-import { uploadPublicFile, type PublicFile } from '@/actions/uploads';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, ArrowLeft, Link as LinkIcon } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { uploadPublicFile, getPublicFiles, deletePublicFile, type PublicFile } from '@/actions/uploads';
 
 interface UploadingFile {
   file: File;
@@ -34,14 +21,143 @@ interface UploadingFile {
   error?: string;
 }
 
+const FileManager = () => {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const { toast } = useToast();
+
+    const currentPath = searchParams.get('path') || '/';
+    
+    const [files, setFiles] = useState<PublicFile[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [deletingFile, setDeletingFile] = useState<PublicFile | null>(null);
+    const [pathInputValue, setPathInputValue] = useState(currentPath);
+
+    const fetchFiles = useCallback(async (path: string) => {
+        setLoading(true);
+        setError(null);
+        const result = await getPublicFiles(path);
+        if (result.success && result.files) {
+            setFiles(result.files);
+        } else {
+            setError(result.error || 'Failed to list files.');
+        }
+        setLoading(false);
+    }, []);
+
+    useEffect(() => {
+        fetchFiles(currentPath);
+        setPathInputValue(currentPath);
+    }, [currentPath, fetchFiles]);
+
+    const navigate = (newPath: string) => {
+        const params = new URLSearchParams(searchParams);
+        params.set('path', newPath);
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
+    const handleFileClick = (file: PublicFile) => {
+        if (file.type === 'directory') {
+            navigate(file.path);
+        } else {
+            window.open(file.path, '_blank');
+        }
+    };
+    
+    const goUp = () => {
+        if (currentPath === '/') return;
+        const pathParts = currentPath.split('/').filter(p => p);
+        pathParts.pop();
+        const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
+        navigate(newPath);
+    };
+
+    const handleDelete = async () => {
+        if (!deletingFile) return;
+        const result = await deletePublicFile(deletingFile.path);
+        if (result.success) {
+            toast({ title: 'Deleted', description: `${deletingFile.name} has been deleted.` });
+            fetchFiles(currentPath); // Refresh list
+        } else {
+            toast({ variant: 'destructive', title: 'Error Deleting', description: result.error });
+        }
+        setDeletingFile(null);
+    };
+    
+    const getFileIcon = (type: PublicFile['type']) => {
+        switch (type) {
+            case 'directory': return <Folder className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
+            default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
+        }
+    };
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>File Browser</CardTitle>
+                <CardDescription>Browse files in your site's public directory.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center gap-2 mb-4">
+                    <Input value={pathInputValue} readOnly className="font-mono bg-muted" />
+                </div>
+                 {loading ? (
+                    <div className="space-y-2">
+                        {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+                    </div>
+                 ) : error ? (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                 ) : (
+                     <div className="space-y-1">
+                        {currentPath !== '/' && (
+                            <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
+                                <ArrowLeft className="h-4 w-4 text-primary" />
+                                <span className="font-mono flex-1 truncate text-primary">Go back</span>
+                            </div>
+                        )}
+                        {files.map(file => (
+                            <div key={file.name} className="flex items-center gap-2 text-sm p-1 rounded-md group">
+                                <div className="flex-1 flex items-center gap-2 cursor-pointer hover:bg-muted/50" onClick={() => handleFileClick(file)}>
+                                    {getFileIcon(file.type)}
+                                    <span className="font-mono truncate">{file.name}</span>
+                                </div>
+                                <span className="font-mono text-xs text-muted-foreground text-right">
+                                    {file.size ? `${(file.size / 1024).toFixed(2)} KB` : ''}
+                                </span>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => setDeletingFile(file)}>
+                                    <Trash2 className="h-3 w-3 text-destructive" />
+                                </Button>
+                            </div>
+                        ))}
+                         {files.length === 0 && (
+                            <div className="text-center text-muted-foreground py-4">
+                                <p>Directory is empty.</p>
+                            </div>
+                        )}
+                    </div>
+                 )}
+            </CardContent>
+        </Card>
+    );
+}
+
 export default function SiteUploadsPage() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const currentPath = searchParams.get('path') || '/';
 
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
-  const [uploadPath, setUploadPath] = useState('');
+  const [uploadPath, setUploadPath] = useState(currentPath);
+
+   useEffect(() => {
+    setUploadPath(currentPath);
+  }, [currentPath]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
@@ -84,7 +200,8 @@ export default function SiteUploadsPage() {
     setTimeout(() => {
         setUploadingFiles([]);
         toast({ title: 'Uploads Finished', description: 'Files have been processed.'});
-        // We no longer have a file list on this page, so no need to refetch
+        // This is a bit of a hack to force the FileManager to re-render
+        window.location.reload();
     }, 2000);
   };
 
@@ -98,7 +215,7 @@ export default function SiteUploadsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Upload Files</CardTitle>
-          <CardDescription>Drag and drop files here to upload them to your public directory.</CardDescription>
+          <CardDescription>Drag and drop files here to upload them to the specified directory.</CardDescription>
         </CardHeader>
         <CardContent>
           <div {...getRootProps({ className: cn("p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors", isDragActive ? "border-primary bg-primary/10" : "border-border hover:border-primary/50") })}>
@@ -111,13 +228,13 @@ export default function SiteUploadsPage() {
               <Label htmlFor="upload-path">Location</Label>
               <div className="flex items-center">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground sm:text-sm h-10">
-                      /public/
+                      /public
                   </span>
                   <Input
                       id="upload-path"
                       value={uploadPath}
                       onChange={(e) => setUploadPath(e.target.value)}
-                      placeholder="e.g., assets/images"
+                      placeholder="/"
                       className="rounded-l-none"
                   />
               </div>
@@ -141,6 +258,9 @@ export default function SiteUploadsPage() {
           )}
         </CardContent>
       </Card>
+      
+      <FileManager />
     </div>
   );
 }
+

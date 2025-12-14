@@ -30,6 +30,7 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
     }
     
     try {
+        await fs.access(sanitizedPath); // Check if directory exists
         const items = await fs.readdir(sanitizedPath, { withFileTypes: true });
         const files: PublicFile[] = await Promise.all(
             items.map(async item => {
