@@ -12,32 +12,21 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import {
   UploadCloud,
   FileText,
-  Folder,
-  Trash2,
   AlertCircle,
   Loader2,
-  ArrowLeft,
   CheckCircle,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
-import { getPublicFiles, uploadPublicFile, deletePublicFile, PublicFile } from '@/actions/uploads';
+import { uploadPublicFile, type PublicFile } from '@/actions/uploads';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface UploadingFile {
   file: File;
@@ -51,30 +40,8 @@ export default function SiteUploadsPage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const currentPath = searchParams.get('path') || '/';
-  const [pathInputValue, setPathInputValue] = useState(currentPath);
-
-  const [files, setFiles] = useState<PublicFile[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchFiles = useCallback(async (path: string) => {
-    setLoading(true);
-    setError(null);
-    const result = await getPublicFiles(path);
-    if (result.success && result.files) {
-      setFiles(result.files);
-    } else {
-      setError(result.error || 'Failed to fetch files.');
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    fetchFiles(currentPath);
-    setPathInputValue(currentPath);
-  }, [currentPath, fetchFiles]);
+  const [uploadPath, setUploadPath] = useState('');
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
@@ -98,7 +65,7 @@ export default function SiteUploadsPage() {
         reader.readAsDataURL(fileToUpload.file);
         reader.onload = async (e) => {
             const content = (e.target?.result as string).split(',')[1];
-            const result = await uploadPublicFile(currentPath, content, fileToUpload.file.name);
+            const result = await uploadPublicFile(uploadPath, content, fileToUpload.file.name);
             
             if (result.success) {
                 setUploadingFiles(prev => prev.map(f => f.file.name === fileToUpload.file.name ? { ...f, status: 'success' } : f));
@@ -116,51 +83,9 @@ export default function SiteUploadsPage() {
 
     setTimeout(() => {
         setUploadingFiles([]);
-        fetchFiles(currentPath);
+        toast({ title: 'Uploads Finished', description: 'Files have been processed.'});
+        // We no longer have a file list on this page, so no need to refetch
     }, 2000);
-  };
-
-  const navigate = (newPath: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('path', newPath);
-    router.push(`${pathname}?${params.toString()}`);
-  };
-  
-  const handlePathInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPathInputValue(e.target.value);
-  }
-
-  const handlePathInputSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-          navigate(pathInputValue);
-      }
-  };
-
-
-  const goUp = () => {
-    if (currentPath === '/') return;
-    const parentPath = currentPath.substring(0, currentPath.lastIndexOf('/')) || '/';
-    navigate(parentPath);
-  };
-  
-  const handleDelete = async (file: PublicFile) => {
-    const isConfirmed = window.confirm(`Are you sure you want to delete "${file.name}"?`);
-    if (isConfirmed) {
-      const result = await deletePublicFile(file.path);
-      if (result.success) {
-        toast({ title: 'Deleted', description: `${file.name} has been deleted.` });
-        fetchFiles(currentPath);
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.error });
-      }
-    }
-  };
-
-  const formatFileSize = (sizeInBytes?: number) => {
-    if (typeof sizeInBytes !== 'number') return 'N/A';
-    if (sizeInBytes === 0) return '0 B';
-    const i = Math.floor(Math.log(sizeInBytes) / Math.log(1024));
-    return `${parseFloat((sizeInBytes / Math.pow(1024, i)).toFixed(2))} ${['B', 'KB', 'MB', 'GB'][i]}`;
   };
 
   return (
@@ -173,7 +98,7 @@ export default function SiteUploadsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Upload Files</CardTitle>
-          <CardDescription>Drag and drop files here to upload them to the current directory.</CardDescription>
+          <CardDescription>Drag and drop files here to upload them to your public directory.</CardDescription>
         </CardHeader>
         <CardContent>
           <div {...getRootProps({ className: cn("p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors", isDragActive ? "border-primary bg-primary/10" : "border-border hover:border-primary/50") })}>
@@ -181,6 +106,23 @@ export default function SiteUploadsPage() {
             <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <p>{isDragActive ? "Drop to upload" : "Drag 'n' drop files here, or click to select"}</p>
           </div>
+          
+           <div className="mt-4 space-y-2">
+              <Label htmlFor="upload-path">Location</Label>
+              <div className="flex items-center">
+                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground sm:text-sm h-10">
+                      /public/
+                  </span>
+                  <Input
+                      id="upload-path"
+                      value={uploadPath}
+                      onChange={(e) => setUploadPath(e.target.value)}
+                      placeholder="e.g., assets/images"
+                      className="rounded-l-none"
+                  />
+              </div>
+          </div>
+
           {uploadingFiles.length > 0 && (
             <div className="mt-6 space-y-4">
               {uploadingFiles.map((uf, index) => (
@@ -192,58 +134,10 @@ export default function SiteUploadsPage() {
                     </div>
                 </div>
               ))}
-              <Button onClick={handleUpload} disabled={uploadingFiles.every(f => f.status !== 'pending')}>Upload Files</Button>
+              <Button onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
+                Upload {uploadingFiles.filter(f => f.status === 'pending').length} file(s)
+              </Button>
             </div>
-          )}
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Uploaded Files</CardTitle>
-           <div className="flex items-center gap-2 pt-2">
-                {currentPath !== '/' && <Button variant="ghost" size="icon" onClick={goUp} className="h-9 w-9"><ArrowLeft className="h-4 w-4"/></Button>}
-                <Input
-                    value={pathInputValue}
-                    onChange={handlePathInputChange}
-                    onKeyDown={handlePathInputSubmit}
-                    className="font-mono"
-                />
-            </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
-          ) : error ? (
-            <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
-          ) : (
-            <Table>
-              <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Size</TableHead><TableHead>Last Modified</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-              <TableBody>
-                {files.length === 0 ? (
-                  <TableRow><TableCell colSpan={4} className="h-24 text-center">No files in this directory.</TableCell></TableRow>
-                ) : (
-                  files.map(file => (
-                    <TableRow key={file.path}>
-                      <TableCell>
-                        <div 
-                          className="flex items-center gap-2 cursor-pointer hover:underline"
-                          onClick={() => file.type === 'directory' && navigate(file.path)}
-                        >
-                          {file.type === 'directory' ? <Folder className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
-                          {file.name}
-                        </div>
-                      </TableCell>
-                      <TableCell>{formatFileSize(file.size)}</TableCell>
-                      <TableCell>{file.modified ? format(file.modified, 'PPp') : 'N/A'}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(file)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
           )}
         </CardContent>
       </Card>
