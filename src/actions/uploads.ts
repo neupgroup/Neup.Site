@@ -66,7 +66,10 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
  * Uploads a file to a specific path within the public folder.
  */
 export async function uploadPublicFile(relativePath: string, content: string, fileName: string): Promise<{ success: boolean; error?: string }> {
-    const fullPath = path.join(PUBLIC_DIR, relativePath, fileName);
+    // Sanitize the relative path: remove leading/trailing slashes
+    const cleanRelativePath = relativePath.replace(/^\/|\/$/g, '');
+
+    const fullPath = path.join(PUBLIC_DIR, cleanRelativePath, fileName);
 
     // Security Check
     if (!fullPath.startsWith(PUBLIC_DIR)) {
