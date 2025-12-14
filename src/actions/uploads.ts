@@ -1,53 +1,94 @@
 
 'use server';
 
+import { getSiteServers } from '@/actions/servers';
+import { getPrivateServerDetails } from '@/actions/servers';
+import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
+import * as os from 'os';
 import * as path from 'path';
-import { revalidatePath } from 'next/cache';
 import { logErrorToFirestore } from '@/lib/logging';
+import { getSite } from './editor/site';
 
 export interface PublicFile {
   name: string;
-  path: string; // Relative path from /public
-  fullPath: string; // Absolute server path
+  path: string; // Relative path from the app's public folder
   type: 'file' | 'directory';
   size?: number; // in bytes
   modified?: Date;
 }
 
-// Ensure the base directory is the `public` directory of the project
-const PUBLIC_DIR = path.join(process.cwd(), 'public');
+async function getRemoteServerConnection(siteId: string) {
+    const serverResult = await getSiteServers();
+    if (!serverResult.success || !serverResult.servers || serverResult.servers.length === 0) {
+        throw new Error('No server is allocated to this site.');
+    }
+    const serverId = serverResult.servers[0].id;
+    const { server, error } = await getPrivateServerDetails(serverId);
+    if (error || !server) {
+        throw new Error(`Failed to get server credentials: ${error}`);
+    }
+
+    const { site } = await getSite();
+    if (!site) {
+        throw new Error('Could not resolve site context.');
+    }
+
+    const appPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site.id) || `/var/www/${site.id}`;
+    const publicPath = `${appPath}/public`;
+
+    const ssh = new NodeSSH();
+    await ssh.connect({
+        host: server.publicIp,
+        username: server.username || 'root',
+        privateKey: server.privateKey,
+    });
+
+    return { ssh, publicPath, serverId };
+}
+
 
 /**
- * Gets the list of files and directories within a given path inside the public folder.
+ * Gets the list of files and directories within a given path inside the public folder on the remote server.
  */
 export async function getPublicFiles(directoryPath: string = '/'): Promise<{ success: boolean; files?: PublicFile[]; error?: string }> {
-    const sanitizedPath = path.join(PUBLIC_DIR, directoryPath).replace(/\\/g, '/');
+    let ssh: NodeSSH | undefined;
+    const siteId = 'current-site'; // Placeholder, as getRemoteServerConnection will use the cookie
 
-    // Security: Ensure the resolved path is still within the PUBLIC_DIR
-    if (!sanitizedPath.startsWith(PUBLIC_DIR)) {
-        return { success: false, error: 'Access denied. Path is outside the public directory.' };
-    }
-    
     try {
-        await fs.access(sanitizedPath); // Check if directory exists
-        const items = await fs.readdir(sanitizedPath, { withFileTypes: true });
-        const files: PublicFile[] = await Promise.all(
-            items.map(async item => {
-                const fullPath = path.join(sanitizedPath, item.name);
-                const stats = await fs.stat(fullPath);
-                return {
-                    name: item.name,
-                    path: path.join(directoryPath, item.name).replace(/\\/g, '/'),
-                    fullPath: fullPath,
-                    type: item.isDirectory() ? 'directory' : 'file',
-                    size: stats.size,
-                    modified: stats.mtime,
-                };
-            })
-        );
+        const connection = await getRemoteServerConnection(siteId);
+        ssh = connection.ssh;
+        const remoteBaseDir = connection.publicPath;
         
-        files.sort((a, b) => {
+        // Sanitize path to prevent directory traversal attacks
+        const sanitizedRelativePath = path.posix.normalize(directoryPath).replace(/^(\.\.[\/\\])+/, '');
+        const remoteFullPath = path.posix.join(remoteBaseDir, sanitizedRelativePath);
+
+
+        const result = await ssh.execCommand(`ls -la --full-time ${remoteFullPath}`);
+        if (result.code !== 0) {
+            throw new Error(`Failed to list files: ${result.stderr}`);
+        }
+
+        const files: PublicFile[] = result.stdout.trim().split('\n').slice(1).map(line => {
+            const parts = line.split(/\s+/);
+            const type = parts[0][0] === 'd' ? 'directory' : 'file';
+            const name = parts.slice(8).join(' ');
+            const size = parseInt(parts[4], 10);
+            
+             if (name === '.' || name === '..') {
+                return null;
+            }
+
+            return {
+                name,
+                path: path.posix.join(sanitizedRelativePath, name),
+                type,
+                size,
+                modified: new Date(`${parts[5]} ${parts[6]}`),
+            };
+        }).filter((file): file is PublicFile => file !== null)
+        .sort((a, b) => {
             if (a.type === 'directory' && b.type !== 'directory') return -1;
             if (a.type !== 'directory' && b.type === 'directory') return 1;
             return a.name.localeCompare(b.name);
@@ -55,62 +96,79 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
 
         return { success: true, files };
     } catch (e: any) {
-        if (e.code === 'ENOENT') {
-             return { success: true, files: [] }; // Directory doesn't exist, return empty
-        }
-        await logErrorToFirestore({ message: `Failed to read public directory at ${directoryPath}: ${e.message}`, source: 'getPublicFiles' });
+        await logErrorToFirestore({ message: `Failed to read remote public directory at ${directoryPath}: ${e.message}`, source: 'getPublicFiles' });
         return { success: false, error: `Could not read directory. ${e.message}` };
+    } finally {
+        ssh?.dispose();
     }
 }
 
 /**
- * Uploads a file to a specific path within the public folder.
+ * Uploads a file to a specific path within the public folder on the remote server.
  */
 export async function uploadPublicFile(relativePath: string, content: string, fileName: string): Promise<{ success: boolean; error?: string }> {
-    // Sanitize the relative path: remove leading/trailing slashes
-    const cleanRelativePath = relativePath.replace(/^\/|\/$/g, '');
-
-    const fullPath = path.join(PUBLIC_DIR, cleanRelativePath, fileName);
-
-    // Security Check
-    if (!fullPath.startsWith(PUBLIC_DIR)) {
-        return { success: false, error: 'Access denied. Invalid file path.' };
-    }
+    let ssh: NodeSSH | undefined;
+     const siteId = 'current-site'; // Placeholder
 
     try {
+        const { ssh: sshConnection, publicPath: remoteBaseDir, serverId } = await getRemoteServerConnection(siteId);
+        ssh = sshConnection;
+
+        const cleanRelativePath = relativePath.replace(/^\/|\/$/g, '');
+        const remoteDir = path.posix.join(remoteBaseDir, cleanRelativePath);
+        const remoteFullPath = path.posix.join(remoteDir, fileName);
+
+        // Ensure remote directory exists
+        await ssh.execCommand(`mkdir -p ${remoteDir}`);
+
         const fileContent = Buffer.from(content, 'base64');
-        await fs.mkdir(path.dirname(fullPath), { recursive: true });
-        await fs.writeFile(fullPath, fileContent);
-        revalidatePath('/site/uploads');
+        
+        // Write to a temporary local file before putting it on the server
+        const tempFilePath = path.join(os.tmpdir(), `upload-${Date.now()}-${fileName}`);
+        await fs.writeFile(tempFilePath, fileContent);
+        
+        try {
+            await ssh.putFile(tempFilePath, remoteFullPath);
+        } finally {
+            // Clean up the temporary file
+            await fs.unlink(tempFilePath);
+        }
+
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to upload file to ${fullPath}: ${e.message}`, source: 'uploadPublicFile' });
-        return { success: false, error: 'File upload failed.' };
+        await logErrorToFirestore({ message: `Failed to upload file to ${relativePath}: ${e.message}`, source: 'uploadPublicFile' });
+        return { success: false, error: `File upload failed: ${e.message}` };
+    } finally {
+        ssh?.dispose();
     }
 }
 
 
 /**
- * Deletes a file or directory from the public folder.
+ * Deletes a file or directory from the public folder on the remote server.
  */
 export async function deletePublicFile(relativePath: string): Promise<{ success: boolean; error?: string }> {
-    const fullPath = path.join(PUBLIC_DIR, relativePath);
-
-    if (!fullPath.startsWith(PUBLIC_DIR) || fullPath === PUBLIC_DIR) {
-        return { success: false, error: 'Access denied. Cannot delete root public folder.' };
-    }
-
+     let ssh: NodeSSH | undefined;
+     const siteId = 'current-site'; // Placeholder
+    
     try {
-        const stats = await fs.stat(fullPath);
-        if (stats.isDirectory()) {
-            await fs.rm(fullPath, { recursive: true, force: true });
-        } else {
-            await fs.unlink(fullPath);
+        const { ssh: sshConnection, publicPath: remoteBaseDir } = await getRemoteServerConnection(siteId);
+        ssh = sshConnection;
+
+        const remoteFullPath = path.posix.join(remoteBaseDir, relativePath);
+
+        // Basic safety check
+        if (!remoteFullPath.startsWith(remoteBaseDir) || remoteFullPath === remoteBaseDir) {
+            return { success: false, error: 'Access denied. Cannot delete root public folder.' };
         }
-        revalidatePath('/site/uploads');
+        
+        await ssh.execCommand(`rm -rf ${remoteFullPath}`);
+
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to delete path ${relativePath}: ${e.message}`, source: 'deletePublicFile' });
+        await logErrorToFirestore({ message: `Failed to delete remote path ${relativePath}: ${e.message}`, source: 'deletePublicFile' });
         return { success: false, error: 'Failed to delete path.' };
+    } finally {
+        ssh?.dispose();
     }
 }
