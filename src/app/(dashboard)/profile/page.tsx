@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -107,13 +108,23 @@ export default function ProfilePage() {
     }, [loading, site, form, toast]);
 
     const onSubmit = async (data: ProfileFormData) => {
-        const result = await saveSite(data);
+        // Keep existing domains, don't overwrite them from this form
+        const currentDomains = site?.domains || [];
+        const currentDomainSettings = site?.domainSettings || { forceHttps: true, redirectToNonWww: true };
+        
+        const dataToSave = {
+            ...data,
+            domains: currentDomains,
+            domainSettings: currentDomainSettings,
+        }
+
+        const result = await saveSite(dataToSave);
 
         if (result.success && result.id) {
             toast({ title: 'Profile Saved', description: 'Your site information has been updated.' });
             const newSiteData = {
                 ...(site || { id: result.id, tier: 'free', url: '' }),
-                ...data,
+                ...dataToSave,
                 logoUrl: data.logoUrl ? (data.logoUrl.startsWith('http') ? data.logoUrl : `https://${data.logoUrl}`) : undefined,
             };
             setSite(newSiteData as Site);
