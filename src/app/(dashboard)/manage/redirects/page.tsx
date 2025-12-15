@@ -19,6 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Redo, AlertCircle, Plus, Loader2, Save, Trash2, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { useProfile } from '@/context/ProfileContext';
 
 const formSchema = z.object({
   from: z.string().min(1, 'From path is required.').refine(p => p.startsWith('/'), "Path must start with a '/'"),
@@ -33,6 +34,8 @@ export default function RedirectsPage() {
   const [redirects, setRedirects] = useState<Redirect[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { site } = useProfile();
+  const displayDomain = site?.domains?.[0]?.value || 'yourdomain.com';
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -109,7 +112,7 @@ export default function RedirectsPage() {
                                 <FormLabel>From</FormLabel>
                                 <div className="flex items-center">
                                     <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground sm:text-sm h-10">
-                                        yourdomain.com
+                                        {displayDomain}
                                     </span>
                                     <FormControl>
                                         <Input {...field} placeholder="/old-page" className="rounded-l-none" />
