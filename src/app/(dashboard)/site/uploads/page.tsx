@@ -223,33 +223,46 @@ export default function SiteUploadsPage() {
     const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
     if (filesToUpload.length === 0) return;
 
+    // Calculate average file size to determine starting concurrency
+    const avgFileSize = filesToUpload.reduce((sum, f) => sum + f.file.size, 0) / filesToUpload.length;
+    const isSmallFiles = avgFileSize < 2 * 1024 * 1024; // < 2 MB = small files
+
     // Dynamic adaptive concurrency settings
-    let concurrency = 1; // Start with 1
-    const maxConcurrency = 8; // Max 8 concurrent uploads
+    let concurrency = isSmallFiles ? 8 : 1; // Start with 8x for small files, 1x for large files
+    const maxConcurrency = 32; // Max 32 concurrent uploads
     const minConcurrency = 1; // Min 1 concurrent upload
 
-    // Performance tracking with sliding window (last 10 seconds of data)
-    const performanceWindow = 10000; // 10 seconds
+    console.log(`🎯 Starting with ${concurrency}x concurrency (avg file size: ${(avgFileSize / 1024).toFixed(2)} KB, ${isSmallFiles ? 'small' : 'large'} files)`);
+    setCurrentConcurrency(concurrency);
+
+    // Performance tracking - recent uploads for analysis
     const recentUploads: {
       fileName: string;
       speed: number; // bytes per second
       duration: number;
       fileSize: number;
-      timestamp: number;
+      completedAt: number;
     }[] = [];
 
     const uploadQueue = [...filesToUpload];
     const activeUploads = new Set<string>();
     let totalCompleted = 0;
-    let lastAdjustmentTime = Date.now();
-    const adjustmentInterval = 10000; // Adjust every 10 seconds
+    let uploadsAtLastAdjustment = 0;
+    let baselineThroughput: number | null = null; // Track baseline for degradation detection
+
+    // Check every 5-8 uploads (randomized to avoid patterns)
+    const getNextAdjustmentThreshold = () => {
+      return uploadsAtLastAdjustment + Math.floor(Math.random() * 4) + 5; // 5-8 uploads
+    };
+
+    let nextAdjustmentAt = getNextAdjustmentThreshold();
 
     // Calculate performance metrics from recent uploads
     const getPerformanceMetrics = () => {
-      const now = Date.now();
-      const recentData = recentUploads.filter(u => now - u.timestamp < performanceWindow);
+      if (recentUploads.length === 0) return null;
 
-      if (recentData.length === 0) return null;
+      // Use all recent uploads for analysis
+      const recentData = recentUploads;
 
       // Calculate weighted average speed (larger files have more weight)
       const totalSize = recentData.reduce((sum, u) => sum + u.fileSize, 0);
@@ -278,11 +291,11 @@ export default function SiteUploadsPage() {
       if (!metrics || metrics.sampleCount < 2) {
         // Not enough data yet, try doubling if we have queue
         if (uploadQueue.length > 0 && concurrency < maxConcurrency) {
-          const newConcurrency = Math.min(maxConcurrency, concurrency * 2); // Double: 1→2→4→8
+          const newConcurrency = Math.min(maxConcurrency, concurrency * 2);
           if (newConcurrency !== concurrency) {
             concurrency = newConcurrency;
             setCurrentConcurrency(concurrency);
-            console.log(`🚀 Doubling concurrency to ${concurrency} (exploring capacity)`);
+            console.log(`🚀 Doubling concurrency to ${concurrency} (exploring capacity, completed: ${totalCompleted})`);
           }
         }
         return;
@@ -290,35 +303,55 @@ export default function SiteUploadsPage() {
 
       const { weightedSpeed, throughput, avgFileSize } = metrics;
 
+      // Set baseline on first adjustment
+      if (baselineThroughput === null) {
+        baselineThroughput = throughput;
+        console.log(`📍 Baseline throughput set: ${(baselineThroughput / 1024).toFixed(2)} KB/s at ${concurrency}x concurrency`);
+      }
+
+      // Calculate performance degradation percentage
+      const degradation = baselineThroughput > 0
+        ? ((baselineThroughput - throughput) / baselineThroughput) * 100
+        : 0;
+
       // Dynamic thresholds based on file size
-      // Smaller files: lower speed threshold (50 KB/s)
-      // Larger files: higher speed threshold (200 KB/s)
       const baseThreshold = 50 * 1024; // 50 KB/s
       const maxThreshold = 200 * 1024; // 200 KB/s
       const sizeThreshold = Math.min(maxThreshold, baseThreshold + (avgFileSize / 1024) * 1024);
 
-      console.log(`📊 Metrics: Speed=${(weightedSpeed / 1024).toFixed(2)} KB/s, Throughput=${(throughput / 1024).toFixed(2)} KB/s, AvgSize=${(avgFileSize / 1024).toFixed(2)} KB, Threshold=${(sizeThreshold / 1024).toFixed(2)} KB/s, Concurrency=${concurrency}`);
+      console.log(`📊 Metrics after ${totalCompleted} uploads: Speed=${(weightedSpeed / 1024).toFixed(2)} KB/s, Throughput=${(throughput / 1024).toFixed(2)} KB/s, Degradation=${degradation.toFixed(1)}%, AvgSize=${(avgFileSize / 1024).toFixed(2)} KB, Threshold=${(sizeThreshold / 1024).toFixed(2)} KB/s, Concurrency=${concurrency}`);
 
-      // Decision logic
-      if (throughput > sizeThreshold && concurrency < maxConcurrency) {
-        // Performance is good, double concurrency: 1→2→4→8
-        const newConcurrency = Math.min(maxConcurrency, concurrency * 2);
-        if (newConcurrency !== concurrency) {
-          concurrency = newConcurrency;
-          setCurrentConcurrency(concurrency);
-          console.log(`📈 Doubling concurrency to ${concurrency} (good performance: ${(throughput / 1024).toFixed(2)} KB/s)`);
-        }
-      } else if (throughput < sizeThreshold * 0.5 && concurrency > minConcurrency) {
-        // Performance is poor, halve concurrency: 8→4→2→1
+      // Decision logic with 30% degradation threshold
+      if (degradation > 30 && concurrency > minConcurrency) {
+        // Performance degraded by more than 30%, decrease concurrency
         const newConcurrency = Math.max(minConcurrency, Math.floor(concurrency / 2));
         if (newConcurrency !== concurrency) {
           concurrency = newConcurrency;
           setCurrentConcurrency(concurrency);
-          console.log(`📉 Halving concurrency to ${concurrency} (poor performance: ${(throughput / 1024).toFixed(2)} KB/s)`);
+          console.log(`� Halving concurrency to ${concurrency} (performance degraded by ${degradation.toFixed(1)}%, throughput: ${(throughput / 1024).toFixed(2)} KB/s, completed: ${totalCompleted})`);
+          // Reset baseline after decrease
+          baselineThroughput = null;
         }
+      } else if (throughput > sizeThreshold && concurrency < maxConcurrency && degradation < 10) {
+        // Performance is good and not degrading, increase to test capacity
+        const newConcurrency = Math.min(maxConcurrency, concurrency * 2);
+        if (newConcurrency !== concurrency) {
+          concurrency = newConcurrency;
+          setCurrentConcurrency(concurrency);
+          console.log(`� Doubling concurrency to ${concurrency} (good performance: ${(throughput / 1024).toFixed(2)} KB/s, degradation: ${degradation.toFixed(1)}%, completed: ${totalCompleted})`);
+          // Update baseline when increasing
+          baselineThroughput = throughput;
+        }
+      } else if (degradation <= 30 && degradation > 10) {
+        // Performance degraded but not enough to decrease, maintain and monitor
+        console.log(`➡️ Maintaining concurrency at ${concurrency} (degradation ${degradation.toFixed(1)}% is acceptable, monitoring, completed: ${totalCompleted})`);
       } else {
-        console.log(`➡️ Maintaining concurrency at ${concurrency} (stable performance)`);
+        // Stable performance, maintain current level
+        console.log(`➡️ Maintaining concurrency at ${concurrency} (stable performance, degradation: ${degradation.toFixed(1)}%, completed: ${totalCompleted})`);
       }
+
+      // Clear recent uploads after adjustment to start fresh analysis
+      recentUploads.length = 0;
     };
 
     const uploadFile = async (fileToUpload: UploadingFile) => {
@@ -372,15 +405,17 @@ export default function SiteUploadsPage() {
             speed,
             duration,
             fileSize: fileToUpload.file.size,
-            timestamp: endTime
+            completedAt: endTime
           });
 
           totalCompleted++;
 
-          // Clean up old data outside the window
-          const now = Date.now();
-          while (recentUploads.length > 0 && now - recentUploads[0].timestamp > performanceWindow) {
-            recentUploads.shift();
+          // Check if it's time to adjust concurrency (every 5-8 uploads)
+          if (totalCompleted >= nextAdjustmentAt) {
+            adjustConcurrency();
+            uploadsAtLastAdjustment = totalCompleted;
+            nextAdjustmentAt = getNextAdjustmentThreshold();
+            console.log(`🔄 Next adjustment scheduled at ${nextAdjustmentAt} uploads`);
           }
         } else {
           throw new Error(result.error);
@@ -399,13 +434,6 @@ export default function SiteUploadsPage() {
     // Process queue with dynamic adaptive concurrency
     const processQueue = async () => {
       while (uploadQueue.length > 0 || activeUploads.size > 0) {
-        // Check if it's time to adjust concurrency
-        const now = Date.now();
-        if (now - lastAdjustmentTime >= adjustmentInterval) {
-          adjustConcurrency();
-          lastAdjustmentTime = now;
-        }
-
         // Start new uploads up to current concurrency limit
         while (uploadQueue.length > 0 && activeUploads.size < concurrency) {
           const nextFile = uploadQueue.shift();
@@ -454,7 +482,7 @@ export default function SiteUploadsPage() {
             Drag and drop files here to upload them to the specified directory.
             {uploadingCount > 0 && (
               <span className="block mt-1 text-primary font-medium">
-                ⚡ Uploading {uploadingCount} file(s) • Concurrency: {currentConcurrency}x
+                ⚡ Uploading {uploadingCount} file(s) • Concurrency: {currentConcurrency}x (max 32x)
               </span>
             )}
           </CardDescription>
