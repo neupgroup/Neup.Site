@@ -16,6 +16,7 @@ import { getUptime } from '@/actions/server/management/get-uptime';
 import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
 import { getMemoryUsage } from '@/actions/server/management/get-memory-usage';
 import { configureDefaultNginx, checkDefaultNginxStatus } from '@/actions/server/management/configure-default-nginx';
+import { generateNginxConfig } from '@/actions/server/management/generate-nginx-config';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -96,6 +97,41 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
 
     const handleReconfigure = () => {
         setConfigStatus('not-configured');
+    };
+
+    const handleRebuildConfiguration = async () => {
+        if (!site || !site.domains || site.domains.length === 0) {
+            toast({
+                variant: 'destructive',
+                title: 'No Domains Configured',
+                description: 'Please add domains in Settings > Domain before rebuilding configuration'
+            });
+            return;
+        }
+
+        setIsConfiguring(true);
+        toast({
+            title: 'Rebuilding Nginx Configuration...',
+            description: `Generating configuration for ${site.domains.length} domain(s)`
+        });
+
+        const result = await generateNginxConfig(server.id, site.domains);
+
+        if (result.success) {
+            setConfigStatus('configured');
+            toast({
+                title: 'Configuration Rebuilt Successfully',
+                description: result.message || 'Nginx configuration has been updated based on your domain settings'
+            });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Rebuild Failed',
+                description: result.message || result.error || 'Failed to rebuild nginx configuration'
+            });
+        }
+
+        setIsConfiguring(false);
     };
 
     useEffect(() => {
@@ -235,14 +271,34 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
                                     </Button>
                                 )}
                                 {(configStatus === 'configured' || configStatus === 'cancelled') && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={handleReconfigure}
-                                        className="text-primary hover:text-primary/80"
-                                    >
-                                        Redo
-                                    </Button>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleRebuildConfiguration}
+                                            disabled={isConfiguring}
+                                        >
+                                            {isConfiguring ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                    Rebuilding...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <RefreshCw className="mr-2 h-4 w-4" />
+                                                    Rebuild Config
+                                                </>
+                                            )}
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleReconfigure}
+                                            className="text-primary hover:text-primary/80"
+                                        >
+                                            Redo
+                                        </Button>
+                                    </div>
                                 )}
                             </div>
                         </div>

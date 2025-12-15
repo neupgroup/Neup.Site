@@ -2,27 +2,27 @@ import type { CanvasElementData } from '@/schemas/canvas';
 import type { Path } from '@/actions/paths';
 
 export interface GeneratedTheme {
-    light: Record<string, string>;
-    dark: Record<string, string>;
-    black: Record<string, string>;
+  light: Record<string, string>;
+  dark: Record<string, string>;
+  black: Record<string, string>;
 }
 
 export interface SiteTheme {
-    mode?: 'light' | 'dark' | 'black';
-    colors: string[];
-    radius?: 'none' | 'low' | 'medium' | 'high';
-    generated?: GeneratedTheme;
+  mode?: 'light' | 'dark' | 'black';
+  colors: string[];
+  radius?: 'none' | 'low' | 'medium' | 'high';
+  generated?: GeneratedTheme;
 }
 
 export interface Site {
   id: string;
   name: string;
   url: string;
-  domains?: { value: string }[];
-  domainSettings?: {
+  domains?: {
+    value: string;
     forceHttps?: boolean;
     redirectToNonWww?: boolean;
-  };
+  }[];
   tier: 'free' | 'premium';
   logoUrl?: string;
   hideSitename?: boolean;
@@ -58,18 +58,18 @@ export interface PathStructure {
 }
 
 export interface Structure {
-    id: string;
-    siteId: string;
-    structure: PathStructure[];
-    status: 'deployed' | 'pendingDeployment';
-    updatedAt?: string | null;
+  id: string;
+  siteId: string;
+  structure: PathStructure[];
+  status: 'deployed' | 'pendingDeployment';
+  updatedAt?: string | null;
 }
 
 export interface Deployment {
-    id: string;
-    siteId: string;
-    structure: PathStructure[];
-    status: 'deployed' | 'cancelled';
-    theme: SiteTheme;
-    attemptedOn: string | null;
+  id: string;
+  siteId: string;
+  structure: PathStructure[];
+  status: 'deployed' | 'cancelled';
+  theme: SiteTheme;
+  attemptedOn: string | null;
 }
