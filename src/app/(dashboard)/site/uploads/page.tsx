@@ -105,6 +105,9 @@ const FileManager = () => {
             default: return <FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />;
         }
     };
+
+    const folderCount = files.filter(f => f.type === 'directory').length;
+    const fileCount = files.length - folderCount;
     
     return (
         <Card>
@@ -124,7 +127,9 @@ const FileManager = () => {
             </AlertDialog>
             <CardHeader>
                 <CardTitle>File Browser</CardTitle>
-                <CardDescription>Browse files in your site's public directory.</CardDescription>
+                <CardDescription>
+                    {loading ? 'Loading...' : `${folderCount} folders, ${fileCount} files`}
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="flex items-center gap-2 mb-4">
@@ -178,6 +183,7 @@ export default function SiteUploadsPage() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const currentPath = searchParams.get('path') || '/';
 
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
@@ -237,7 +243,9 @@ export default function SiteUploadsPage() {
     setTimeout(() => {
         setUploadingFiles([]);
         toast({ title: 'Uploads Finished', description: 'File list will be refreshed.'});
-        router.refresh();
+        // A full page refresh might be too disruptive. Let's just refresh the URL to trigger the useEffect in FileManager
+        const params = new URLSearchParams(searchParams);
+        router.push(`${pathname}?${params.toString()}`);
     }, 1500);
   };
 
