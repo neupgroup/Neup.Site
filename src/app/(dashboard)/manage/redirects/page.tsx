@@ -23,7 +23,9 @@ import { useProfile } from '@/context/ProfileContext';
 
 const formSchema = z.object({
   from: z.string().min(1, 'From path is required.').refine(p => p.startsWith('/'), "Path must start with a '/'"),
-  to: z.string().url({ message: "Must be a valid URL." }),
+  to: z.string().min(1, 'Destination is required.').refine(val => val.startsWith('/') || /^(https?:\/\/)/.test(val), {
+    message: 'Must be a relative path (starting with /) or a full URL (starting with http:// or https://).'
+  }),
   type: z.enum(['temporary', 'permanent']),
 });
 
@@ -124,7 +126,7 @@ export default function RedirectsPage() {
                          <FormField control={form.control} name="to" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>To</FormLabel>
-                                <FormControl><Input {...field} placeholder="https://example.com/new-page" /></FormControl>
+                                <FormControl><Input {...field} placeholder="/new-page or https://example.com" /></FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />
