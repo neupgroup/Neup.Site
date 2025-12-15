@@ -5,6 +5,7 @@ import { getFirestore, collection, query, where, getDocs, deleteDoc, doc, Timest
 import { initializeFirebase } from '@/lib/firebase';
 import { logErrorToFirestore } from '@/lib/logging';
 import { cookies } from 'next/headers';
+import crypto from 'crypto';
 
 export interface LinkedAccount {
     id: string;
@@ -20,9 +21,19 @@ export interface LinkedAccount {
     };
 }
 
-export async function getAccountId(): Promise<string | undefined> {
+export async function getAccountId(): Promise<string> {
     const cookieStore = await cookies();
-    return cookieStore.get('account_id')?.value;
+    let accountId = cookieStore.get('account_id')?.value;
+    if (!accountId) {
+        accountId = `user_${crypto.randomBytes(8).toString('hex')}`;
+        cookieStore.set('account_id', accountId, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 60 * 60 * 24 * 365, // One year
+            path: '/',
+        });
+    }
+    return accountId;
 }
 
 export async function getLinkedAccounts(): Promise<{ accounts?: LinkedAccount[], error?: string }> {

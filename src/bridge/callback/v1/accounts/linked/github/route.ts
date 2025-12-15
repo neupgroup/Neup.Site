@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
 import crypto from 'crypto';
+import { getAccountId } from '@/actions/accounts';
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -65,15 +66,11 @@ export async function GET(req: NextRequest) {
 
         const githubUser = await userResponse.json();
 
-        const accountId = 'user_placeholder_123';
-        cookieStore.set('account_id', accountId, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 24 * 365, // One year
-            path: '/',
-        });
-
-
+        const accountId = await getAccountId();
+        if (!accountId) {
+            throw new Error("Could not establish a user session.");
+        }
+        
         const { firestore } = initializeFirebase();
 
         // Before adding, check if an account for this GitHub user ID already exists for this accountId
@@ -112,3 +109,4 @@ export async function GET(req: NextRequest) {
         return NextResponse.redirect(redirectUrl);
     }
 }
+
