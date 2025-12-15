@@ -20,8 +20,8 @@ export interface ServerAllocation {
 }
 
 export interface UsedPort {
-    port: number;
-    description: string;
+  port: number;
+  description: string;
 }
 
 export interface Server {
@@ -40,6 +40,7 @@ export interface Server {
   storageUsed?: string;
   storageTotal?: string;
   storageUnit?: string;
+  defaultNginxConfigStatus?: 'configured' | 'not-configured' | 'cancelled' | 'ongoing';
   createdOn?: string | null;
   expiresOn?: string | null;
 }

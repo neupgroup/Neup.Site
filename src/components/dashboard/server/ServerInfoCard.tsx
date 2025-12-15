@@ -1,11 +1,10 @@
-
 'use client';
 import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2, ServerCrash, RefreshCw, Loader2, Clock, ListTree, Wifi, Cpu } from 'lucide-react';
+import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2, ServerCrash, RefreshCw, Loader2, Clock, ListTree, Wifi, Cpu, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -16,6 +15,7 @@ import { runCommand } from '@/actions/runner';
 import { getUptime } from '@/actions/server/management/get-uptime';
 import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
 import { getMemoryUsage } from '@/actions/server/management/get-memory-usage';
+import { configureDefaultNginx, checkDefaultNginxStatus } from '@/actions/server/management/configure-default-nginx';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -37,6 +37,10 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
     const [memory, setMemory] = useState<{ used: number, total: number, unit: string } | null>(null);
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(true);
+    const [configStatus, setConfigStatus] = useState<'configured' | 'not-configured' | 'cancelled' | 'ongoing'>(
+        initialServer.defaultNginxConfigStatus || 'not-configured'
+    );
+    const [isConfiguring, setIsConfiguring] = useState(false);
 
     const { site } = useProfile();
     const [isPending, startTransition] = useTransition();
@@ -65,8 +69,46 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
         setIsRefreshing(false);
     }
 
+    const handleConfigureDefaultNginx = async () => {
+        setIsConfiguring(true);
+        setConfigStatus('ongoing');
+        toast({ title: "Configuring Default Nginx...", description: "Creating SSL certificates and setting up redirects" });
+
+        const result = await configureDefaultNginx(server.id);
+
+        if (result.success) {
+            setConfigStatus('configured');
+            toast({
+                title: "Configuration Successful",
+                description: result.message || "Default nginx configuration has been applied"
+            });
+        } else {
+            setConfigStatus('not-configured');
+            toast({
+                variant: 'destructive',
+                title: "Configuration Failed",
+                description: result.message || result.error || "Failed to configure default nginx"
+            });
+        }
+
+        setIsConfiguring(false);
+    };
+
+    const handleReconfigure = () => {
+        setConfigStatus('not-configured');
+    };
+
     useEffect(() => {
         handleRefreshAll();
+
+        // Check configuration status on mount
+        const checkConfig = async () => {
+            const statusResult = await checkDefaultNginxStatus(server.id);
+            if (statusResult.success && statusResult.configured) {
+                setConfigStatus('configured');
+            }
+        };
+        checkConfig();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [server.id]);
 
@@ -140,6 +182,70 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
                                 View active connections
                             </Link>
                         </DetailItem>
+                    </div>
+
+                    <Separator className="my-4" />
+
+                    {/* Configuration Section */}
+                    <div className="space-y-3">
+                        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                            <Settings className="h-4 w-4" />
+                            Configuration
+                        </h4>
+                        <div className="flex items-center justify-between gap-4 p-3 border rounded-lg bg-muted/30">
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm font-medium">Default Nginx:</span>
+                                {configStatus === 'configured' && (
+                                    <Badge variant="default" className="bg-green-600 hover:bg-green-700">
+                                        Configured
+                                    </Badge>
+                                )}
+                                {configStatus === 'not-configured' && (
+                                    <Badge variant="secondary">Not Configured</Badge>
+                                )}
+                                {configStatus === 'ongoing' && (
+                                    <Badge variant="outline" className="border-blue-500 text-blue-600">
+                                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                                        Ongoing
+                                    </Badge>
+                                )}
+                                {configStatus === 'cancelled' && (
+                                    <Badge variant="destructive">Cancelled</Badge>
+                                )}
+                            </div>
+                            <div>
+                                {configStatus === 'not-configured' && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleConfigureDefaultNginx}
+                                        disabled={isConfiguring}
+                                    >
+                                        {isConfiguring ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Configuring...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Settings className="mr-2 h-4 w-4" />
+                                                Configure
+                                            </>
+                                        )}
+                                    </Button>
+                                )}
+                                {(configStatus === 'configured' || configStatus === 'cancelled') && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleReconfigure}
+                                        className="text-primary hover:text-primary/80"
+                                    >
+                                        Redo
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     {server.expiresOn && (
