@@ -118,7 +118,7 @@ export default function FileManager({ serverId }: { serverId: string }) {
     const { toast } = useToast();
 
     const currentPath = searchParams.get('path') || '/';
-
+    
     const [files, setFiles] = useState<FileInfo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -222,6 +222,9 @@ export default function FileManager({ serverId }: { serverId: string }) {
         }
         return size.replace('K', ' KB').replace('M', ' MB').replace('G', ' GB');
     }
+    
+    const folderCount = files.filter(f => f.type === 'd').length;
+    const fileCount = files.length - folderCount;
 
     return (
         <Card>
@@ -259,7 +262,9 @@ export default function FileManager({ serverId }: { serverId: string }) {
                 <div className="flex justify-between items-center">
                     <div>
                         <CardTitle>File Manager</CardTitle>
-                        <CardDescription>Browse and edit files on your server.</CardDescription>
+                        <CardDescription>
+                            {isLoading ? 'Loading...' : `${folderCount} folders, ${fileCount} files`}
+                        </CardDescription>
                     </div>
                      <Button variant="outline" onClick={() => setIsCreateFileDialogOpen(true)}>
                         <FilePlus className="mr-2 h-4 w-4" />
@@ -276,18 +281,18 @@ export default function FileManager({ serverId }: { serverId: string }) {
                         className="font-mono"
                     />
                 </div>
-                {isLoading ? (
+                 {isLoading ? (
                     <div className="space-y-2">
                         {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
                     </div>
-                ) : error ? (
+                 ) : error ? (
                     <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error</AlertTitle>
                         <AlertDescription>{error}</AlertDescription>
                     </Alert>
-                ) : (
-                    <div className="space-y-1">
+                 ) : (
+                     <div className="space-y-1">
                         {currentPath !== '/' && (
                             <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
                                 <ArrowLeft className="h-4 w-4 text-primary" />
@@ -322,13 +327,13 @@ export default function FileManager({ serverId }: { serverId: string }) {
                                 </Button>
                             </div>
                         ))}
-                        {files.length === 0 && (
+                         {files.length === 0 && (
                             <div className="text-center text-muted-foreground py-4">
                                 <p>Directory is empty.</p>
                             </div>
                         )}
                     </div>
-                )}
+                 )}
             </CardContent>
         </Card>
     );
