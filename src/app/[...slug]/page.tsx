@@ -1,22 +1,66 @@
 
-import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
+
+import { collection, query, where, getDocs, limit, doc, getDoc, orderBy } from 'firebase/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
 import { initializeFirebase } from '@/lib/firebase';
-import { use } from 'react';
+import { NextRequest, NextResponse } from 'next/server';
+import type { Redirect } from '@/schemas/redirect';
+
+async function handleRedirect(req: NextRequest, slug: string[]): Promise<NextResponse | null> {
+    const { firestore } = initializeFirebase();
+    const incomingPath = `/${slug.join('/')}`;
+
+    // Query for all redirects on the site. In a high-traffic app, this would be cached.
+    // We can't easily query for a pattern match in Firestore, so we fetch all and match in memory.
+    const siteId = req.cookies.get('siteId')?.value;
+    if (!siteId) return null;
+
+    const redirectsRef = collection(firestore, 'redirects');
+    const q = query(redirectsRef, where('siteId', '==', siteId));
+    const redirectsSnapshot = await getDocs(q);
+
+    if (redirectsSnapshot.empty) {
+        return null;
+    }
+
+    const redirects = redirectsSnapshot.docs.map(doc => doc.data() as Redirect);
+
+    for (const redirect of redirects) {
+        const fromPattern = redirect.from.replace(/\{\{\w+\}\}/g, '([^/]+)');
+        const regex = new RegExp(`^${fromPattern}$`);
+        const match = incomingPath.match(regex);
+
+        if (match) {
+            const wildcardNames = (redirect.from.match(/\{\{(\w+)\}\}/g) || []).map(p => p.slice(2, -2));
+            let destination = redirect.to;
+
+            wildcardNames.forEach((name, index) => {
+                destination = destination.replace(new RegExp(`\\{\\{${name}\\}\\}`, 'g'), match[index + 1]);
+            });
+
+            const status = redirect.type === 'permanent' ? 301 : 302;
+            
+            // Handle absolute vs. relative 'to' URLs
+            if (destination.startsWith('/')) {
+                const url = req.nextUrl.clone();
+                url.pathname = destination;
+                return NextResponse.redirect(url, { status });
+            }
+            return NextResponse.redirect(destination, { status });
+        }
+    }
+
+    return null;
+}
+
 
 async function getPageForPath(slug: string[]): Promise<{html: string | null, theme?: {primary?: string, accent?: string}}> {
     const path = `/${slug.join('/')}`;
-    // This is a simplified check. A real implementation would need to match
-    // dynamic routes like /authors/[authorName] to a path definition.
-    // For now, we'll assume direct matches or a lookup that resolves the dynamic part.
-    const pathForQuery = `/${slug[0]}`; // Example: query for /authors, not /authors/john-doe
 
     const { firestore } = initializeFirebase();
     
     try {
         const pathsRef = collection(firestore, 'paths');
-        // This query is too simple for dynamic routes, but it's the foundation.
-        // A real system would need a more complex matching logic.
         const qPath = query(pathsRef, where('path', '==', path), limit(1));
         const pathSnapshot = await getDocs(qPath);
 
@@ -35,20 +79,11 @@ async function getPageForPath(slug: string[]): Promise<{html: string | null, the
 
 
         if (!pageSnap.exists()) {
-            return { html: null }; // Page document not found
+            return { html: null };
         }
 
         const pageData = pageSnap.data();
         const elements = pageData.elements;
-        
-        // Here's where we would fetch the actual data using the slug
-        // For example:
-        // const dataSourceBinding = await getPageDataSource(pageId);
-        // if (dataSourceBinding) {
-        //   const dynamicValue = slug.length > 1 ? slug[1] : null;
-        //   const apiData = await fetchDataFromSource(dataSourceBinding, { authorName: dynamicValue });
-        //   // This data would then need to be passed to the rendering engine.
-        // }
         
         const siteData = siteSnap.exists() ? siteSnap.data() : null;
 
@@ -63,9 +98,17 @@ async function getPageForPath(slug: string[]): Promise<{html: string | null, the
 }
 
 
-export default async function CatchAllPage({ params }: { params: Promise<{ slug: string[] }> }) {
+export default async function CatchAllPage({ params, request }: { params: { slug: string[] }, request: NextRequest }) {
   
-  const { slug } = await params;
+  const { slug } = params;
+
+  // 1. Check for redirects first
+  const redirectResponse = await handleRedirect(request, slug);
+  if (redirectResponse) {
+    return redirectResponse;
+  }
+  
+  // 2. If no redirect, try to render a page
   const { html: htmlContent } = await getPageForPath(slug);
 
   if (!htmlContent) {
