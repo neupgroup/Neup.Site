@@ -14,6 +14,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
+import { getRedirects, Redirect } from './redirects';
 
 
 /**
@@ -159,17 +160,31 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     const { site } = await getSite();
     const currentStructure = structureSnap.data() as Structure;
 
+    // Fetch redirects
+    const redirectsResult = await getRedirects();
+    const redirects = redirectsResult.success ? redirectsResult.redirects : [];
+    
+    const formattedRedirects = redirects?.map(r => ({
+      source: r.from,
+      destination: r.to,
+      permanent: r.type === 'permanent',
+      id: r.id,
+      createdAt: r.created_on,
+    }));
+
+
     // Create a new document in the 'deployments' collection
     await addDoc(collection(firestore, 'deployments'), {
       siteId,
       structure: currentStructure.structure,
       status: 'deployed',
       theme: site?.theme || {},
+      redirects: formattedRedirects, // Store redirects with the deployment
       attemptedOn: serverTimestamp(),
     });
 
-    // Upload structure to the server
-    await uploadStructureToServer(siteId, currentStructure.structure, site?.theme || {});
+    // Upload structure, theme, and redirects to the server
+    await uploadStructureToServer(siteId, currentStructure.structure, site?.theme || {}, formattedRedirects || []);
 
     // Reset the staging structure
     const updatedPaths = currentStructure.structure.map(p => ({ ...p, changesMade: false }));
@@ -186,7 +201,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
   }
 }
 
-async function uploadStructureToServer(siteId: string, structure: any, theme: any): Promise<{ success: boolean; error?: string }> {
+async function uploadStructureToServer(siteId: string, structure: any, theme: any, redirects: any[]): Promise<{ success: boolean; error?: string }> {
   let logId: string | undefined;
 
   try {
@@ -242,7 +257,7 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
 
     // 4. Resolve appPath (logic matches runner.ts)
     const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
-    const structurePath = `${resolvedAppPath}/structure`;
+    const structurePath = `${resolvedAppPath}`; // Deploy to the root of the app path
 
     // 5. Connect and Upload
     const ssh = new NodeSSH();
@@ -259,23 +274,29 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
       // Create temp files
       const tempStructurePath = path.join(os.tmpdir(), `structure-${siteId}-${Date.now()}.json`);
       const tempThemePath = path.join(os.tmpdir(), `theme-${siteId}-${Date.now()}.json`);
+      const tempRedirectsPath = path.join(os.tmpdir(), `redirects-${siteId}-${Date.now()}.json`);
+
 
       fs.writeFileSync(tempStructurePath, JSON.stringify(structure, null, 2));
       fs.writeFileSync(tempThemePath, JSON.stringify(theme, null, 2));
+      fs.writeFileSync(tempRedirectsPath, JSON.stringify(redirects, null, 2));
+
 
       try {
-        if (logId) await updateServerLog(logId, { output: `Connected. Uploading structure to ${structurePath}...` });
+        if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${structurePath}...` });
         await ssh.execCommand(`mkdir -p ${structurePath}`);
         await ssh.putFile(tempStructurePath, `${structurePath}/structure.json`);
         await ssh.putFile(tempThemePath, `${structurePath}/theme.json`);
+        await ssh.putFile(tempRedirectsPath, `${structurePath}/redirects.json`);
 
-        const successMsg = 'Structure uploaded successfully.';
+        const successMsg = 'Structure, theme, and redirects uploaded successfully.';
         console.log(successMsg);
         if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
 
       } finally {
         if (fs.existsSync(tempStructurePath)) fs.unlinkSync(tempStructurePath);
         if (fs.existsSync(tempThemePath)) fs.unlinkSync(tempThemePath);
+        if (fs.existsSync(tempRedirectsPath)) fs.unlinkSync(tempRedirectsPath);
       }
 
     } catch (sshError: any) {
