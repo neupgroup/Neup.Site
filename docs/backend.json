@@ -387,6 +387,22 @@
         "appliedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "jobId", "name", "email", "status", "appliedAt"]
+    },
+    "Redirect": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Redirect",
+      "type": "object",
+      "description": "Represents a URL redirect rule.",
+      "properties": {
+        "id": { "type": "string" },
+        "siteId": { "type": "string" },
+        "from": { "type": "string" },
+        "to": { "type": "string", "format": "uri" },
+        "type": { "type": "string", "enum": ["temporary", "permanent"] },
+        "created_by": { "type": "string" },
+        "created_on": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "siteId", "from", "to", "type", "created_by"]
     }
   },
   "auth": {
@@ -591,6 +607,20 @@
           "entityName": "Applicant",
           "schema": { "$ref": "#/backend/entities/Applicant" },
           "description": "Stores applicants for a specific job posting."
+        }
+      },
+      {
+        "path": "/redirects/{redirectId}",
+        "definition": {
+          "entityName": "Redirect",
+          "schema": { "$ref": "#/backend/entities/Redirect" },
+          "description": "Stores URL redirect rules.",
+           "params": [
+            {
+              "name": "redirectId",
+              "description": "The unique identifier for the redirect."
+            }
+          ]
         }
       }
     ],
