@@ -106,37 +106,35 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
 /**
  * Uploads a file to a specific path within the public folder on the remote server.
  */
-export async function uploadPublicFile(relativePath: string, content: string, fileName: string): Promise<{ success: boolean; error?: string }> {
+export async function uploadPublicFile(filePath: string, content: string): Promise<{ success: boolean; error?: string }> {
     let ssh: NodeSSH | undefined;
-     const siteId = 'current-site'; // Placeholder
+    const siteId = 'current-site'; // Placeholder
 
     try {
-        const { ssh: sshConnection, publicPath: remoteBaseDir, serverId } = await getRemoteServerConnection(siteId);
+        const { ssh: sshConnection, publicPath: remoteBaseDir } = await getRemoteServerConnection(siteId);
         ssh = sshConnection;
 
-        const cleanRelativePath = relativePath.replace(/^\/|\/$/g, '');
-        const remoteDir = path.posix.join(remoteBaseDir, cleanRelativePath);
-        const remoteFullPath = path.posix.join(remoteDir, fileName);
+        const remoteFullPath = path.posix.join(remoteBaseDir, filePath);
+        const remoteDir = path.posix.dirname(remoteFullPath);
 
         // Ensure remote directory exists
-        await ssh.execCommand(`mkdir -p ${remoteDir}`);
+        await ssh.execCommand(`mkdir -p "${remoteDir}"`);
 
         const fileContent = Buffer.from(content, 'base64');
         
-        // Write to a temporary local file before putting it on the server
-        const tempFilePath = path.join(os.tmpdir(), `upload-${Date.now()}-${fileName}`);
+        const tempFileName = `upload-${Date.now()}-${path.basename(filePath)}`;
+        const tempFilePath = path.join(os.tmpdir(), tempFileName);
         await fs.writeFile(tempFilePath, fileContent);
         
         try {
             await ssh.putFile(tempFilePath, remoteFullPath);
         } finally {
-            // Clean up the temporary file
             await fs.unlink(tempFilePath);
         }
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to upload file to ${relativePath}: ${e.message}`, source: 'uploadPublicFile' });
+        await logErrorToFirestore({ message: `Failed to upload file to ${filePath}: ${e.message}`, source: 'uploadPublicFile' });
         return { success: false, error: `File upload failed: ${e.message}` };
     } finally {
         ssh?.dispose();
@@ -162,7 +160,7 @@ export async function deletePublicFile(relativePath: string): Promise<{ success:
             return { success: false, error: 'Access denied. Cannot delete root public folder.' };
         }
         
-        await ssh.execCommand(`rm -rf ${remoteFullPath}`);
+        await ssh.execCommand(`rm -rf "${remoteFullPath}"`);
 
         return { success: true };
     } catch (e: any) {

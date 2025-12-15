@@ -4,7 +4,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -191,8 +191,7 @@ export default function SiteUploadsPage() {
 
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [uploadPath, setUploadPath] = useState(currentPath);
-  const [currentConcurrency, setCurrentConcurrency] = useState(1);
-
+  
   useEffect(() => {
     setUploadPath(currentPath);
   }, [currentPath]);
@@ -201,6 +200,7 @@ export default function SiteUploadsPage() {
     const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
       file,
       status: 'pending',
+      progress: 0,
     }));
     setUploadingFiles(prev => [...prev, ...newFiles]);
   }, []);
@@ -223,249 +223,39 @@ export default function SiteUploadsPage() {
     const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
     if (filesToUpload.length === 0) return;
 
-    // Calculate average file size to determine starting concurrency
-    const avgFileSize = filesToUpload.reduce((sum, f) => sum + f.file.size, 0) / filesToUpload.length;
-    const isSmallFiles = avgFileSize < 2 * 1024 * 1024; // < 2 MB = small files
+    setUploadingFiles(prev => prev.map(f => f.status === 'pending' ? { ...f, status: 'uploading' } : f));
 
-    // Dynamic adaptive concurrency settings
-    let concurrency = isSmallFiles ? 8 : 1; // Start with 8x for small files, 1x for large files
-    const maxConcurrency = 32; // Max 32 concurrent uploads
-    const minConcurrency = 1; // Min 1 concurrent upload
+    await Promise.all(filesToUpload.map(async (fileToUpload) => {
+        try {
+            const content = await readFileAsBase64(fileToUpload.file);
+            const relativePath = fileToUpload.file.webkitRelativePath || fileToUpload.file.name;
+            const finalPath = path.posix.join(uploadPath, relativePath);
 
-    console.log(`🎯 Starting with ${concurrency}x concurrency (avg file size: ${(avgFileSize / 1024).toFixed(2)} KB, ${isSmallFiles ? 'small' : 'large'} files)`);
-    setCurrentConcurrency(concurrency);
-
-    // Performance tracking - recent uploads for analysis
-    const recentUploads: {
-      fileName: string;
-      speed: number; // bytes per second
-      duration: number;
-      fileSize: number;
-      completedAt: number;
-    }[] = [];
-
-    const uploadQueue = [...filesToUpload];
-    const activeUploads = new Set<string>();
-    let totalCompleted = 0;
-    let uploadsAtLastAdjustment = 0;
-    let baselineThroughput: number | null = null; // Track baseline for degradation detection
-
-    // Check every 5-8 uploads (randomized to avoid patterns)
-    const getNextAdjustmentThreshold = () => {
-      return uploadsAtLastAdjustment + Math.floor(Math.random() * 4) + 5; // 5-8 uploads
-    };
-
-    let nextAdjustmentAt = getNextAdjustmentThreshold();
-
-    // Calculate performance metrics from recent uploads
-    const getPerformanceMetrics = () => {
-      if (recentUploads.length === 0) return null;
-
-      // Use all recent uploads for analysis
-      const recentData = recentUploads;
-
-      // Calculate weighted average speed (larger files have more weight)
-      const totalSize = recentData.reduce((sum, u) => sum + u.fileSize, 0);
-      const weightedSpeed = recentData.reduce((sum, u) => {
-        const weight = u.fileSize / totalSize;
-        return sum + (u.speed * weight);
-      }, 0);
-
-      // Calculate throughput (total bytes / total time)
-      const totalBytes = recentData.reduce((sum, u) => sum + u.fileSize, 0);
-      const totalTime = recentData.reduce((sum, u) => sum + u.duration, 0);
-      const throughput = totalTime > 0 ? (totalBytes / totalTime) * 1000 : 0;
-
-      return {
-        weightedSpeed,
-        throughput,
-        avgFileSize: totalSize / recentData.length,
-        sampleCount: recentData.length
-      };
-    };
-
-    // Decide whether to increase, decrease, or maintain concurrency
-    const adjustConcurrency = () => {
-      const metrics = getPerformanceMetrics();
-
-      if (!metrics || metrics.sampleCount < 2) {
-        // Not enough data yet, try doubling if we have queue
-        if (uploadQueue.length > 0 && concurrency < maxConcurrency) {
-          const newConcurrency = Math.min(maxConcurrency, concurrency * 2);
-          if (newConcurrency !== concurrency) {
-            concurrency = newConcurrency;
-            setCurrentConcurrency(concurrency);
-            console.log(`🚀 Doubling concurrency to ${concurrency} (exploring capacity, completed: ${totalCompleted})`);
-          }
-        }
-        return;
-      }
-
-      const { weightedSpeed, throughput, avgFileSize } = metrics;
-
-      // Set baseline on first adjustment
-      if (baselineThroughput === null) {
-        baselineThroughput = throughput;
-        console.log(`📍 Baseline throughput set: ${(baselineThroughput / 1024).toFixed(2)} KB/s at ${concurrency}x concurrency`);
-      }
-
-      // Calculate performance degradation percentage
-      const degradation = baselineThroughput > 0
-        ? ((baselineThroughput - throughput) / baselineThroughput) * 100
-        : 0;
-
-      // Dynamic thresholds based on file size
-      const baseThreshold = 50 * 1024; // 50 KB/s
-      const maxThreshold = 200 * 1024; // 200 KB/s
-      const sizeThreshold = Math.min(maxThreshold, baseThreshold + (avgFileSize / 1024) * 1024);
-
-      console.log(`📊 Metrics after ${totalCompleted} uploads: Speed=${(weightedSpeed / 1024).toFixed(2)} KB/s, Throughput=${(throughput / 1024).toFixed(2)} KB/s, Degradation=${degradation.toFixed(1)}%, AvgSize=${(avgFileSize / 1024).toFixed(2)} KB, Threshold=${(sizeThreshold / 1024).toFixed(2)} KB/s, Concurrency=${concurrency}`);
-
-      // Decision logic with 30% degradation threshold
-      if (degradation > 30 && concurrency > minConcurrency) {
-        // Performance degraded by more than 30%, decrease concurrency
-        const newConcurrency = Math.max(minConcurrency, Math.floor(concurrency / 2));
-        if (newConcurrency !== concurrency) {
-          concurrency = newConcurrency;
-          setCurrentConcurrency(concurrency);
-          console.log(`� Halving concurrency to ${concurrency} (performance degraded by ${degradation.toFixed(1)}%, throughput: ${(throughput / 1024).toFixed(2)} KB/s, completed: ${totalCompleted})`);
-          // Reset baseline after decrease
-          baselineThroughput = null;
-        }
-      } else if (throughput > sizeThreshold && concurrency < maxConcurrency && degradation < 10) {
-        // Performance is good and not degrading, increase to test capacity
-        const newConcurrency = Math.min(maxConcurrency, concurrency * 2);
-        if (newConcurrency !== concurrency) {
-          concurrency = newConcurrency;
-          setCurrentConcurrency(concurrency);
-          console.log(`� Doubling concurrency to ${concurrency} (good performance: ${(throughput / 1024).toFixed(2)} KB/s, degradation: ${degradation.toFixed(1)}%, completed: ${totalCompleted})`);
-          // Update baseline when increasing
-          baselineThroughput = throughput;
-        }
-      } else if (degradation <= 30 && degradation > 10) {
-        // Performance degraded but not enough to decrease, maintain and monitor
-        console.log(`➡️ Maintaining concurrency at ${concurrency} (degradation ${degradation.toFixed(1)}% is acceptable, monitoring, completed: ${totalCompleted})`);
-      } else {
-        // Stable performance, maintain current level
-        console.log(`➡️ Maintaining concurrency at ${concurrency} (stable performance, degradation: ${degradation.toFixed(1)}%, completed: ${totalCompleted})`);
-      }
-
-      // Clear recent uploads after adjustment to start fresh analysis
-      recentUploads.length = 0;
-    };
-
-    const uploadFile = async (fileToUpload: UploadingFile) => {
-      const startTime = Date.now();
-      activeUploads.add(fileToUpload.file.name);
-
-      try {
-        // Update status to uploading
-        setUploadingFiles(prev => prev.map(f =>
-          f.file.name === fileToUpload.file.name
-            ? { ...f, status: 'uploading', startTime, progress: 0 }
-            : f
-        ));
-
-        const content = await readFileAsBase64(fileToUpload.file);
-
-        // Progress updates with better estimation
-        const progressInterval = setInterval(() => {
-          setUploadingFiles(prev => prev.map(f => {
-            if (f.file.name === fileToUpload.file.name && f.status === 'uploading') {
-              const elapsed = Date.now() - startTime;
-              // Estimate based on file size and average speed
-              const metrics = getPerformanceMetrics();
-              const estimatedDuration = metrics
-                ? (fileToUpload.file.size / metrics.throughput) * 1000
-                : 5000;
-              const estimatedProgress = Math.min(90, (elapsed / estimatedDuration) * 100);
-              return { ...f, progress: estimatedProgress };
+            const result = await uploadPublicFile(finalPath, content);
+            
+            if (result.success) {
+                setUploadingFiles(prev => prev.map(f =>
+                    f.file === fileToUpload.file ? { ...f, status: 'success', progress: 100 } : f
+                ));
+            } else {
+                throw new Error(result.error);
             }
-            return f;
-          }));
-        }, 200);
-
-        const result = await uploadPublicFile(uploadPath, content, fileToUpload.file.name);
-        clearInterval(progressInterval);
-
-        const endTime = Date.now();
-        const duration = endTime - startTime;
-        const speed = (fileToUpload.file.size / duration) * 1000; // bytes per second
-
-        if (result.success) {
-          setUploadingFiles(prev => prev.map(f =>
-            f.file.name === fileToUpload.file.name
-              ? { ...f, status: 'success', progress: 100, speed }
-              : f
-          ));
-
-          // Add to recent uploads for performance tracking
-          recentUploads.push({
-            fileName: fileToUpload.file.name,
-            speed,
-            duration,
-            fileSize: fileToUpload.file.size,
-            completedAt: endTime
-          });
-
-          totalCompleted++;
-
-          // Check if it's time to adjust concurrency (every 5-8 uploads)
-          if (totalCompleted >= nextAdjustmentAt) {
-            adjustConcurrency();
-            uploadsAtLastAdjustment = totalCompleted;
-            nextAdjustmentAt = getNextAdjustmentThreshold();
-            console.log(`🔄 Next adjustment scheduled at ${nextAdjustmentAt} uploads`);
-          }
-        } else {
-          throw new Error(result.error);
+        } catch (e: any) {
+            setUploadingFiles(prev => prev.map(f =>
+                f.file === fileToUpload.file ? { ...f, status: 'error', error: e.message } : f
+            ));
         }
-      } catch (e: any) {
-        setUploadingFiles(prev => prev.map(f =>
-          f.file.name === fileToUpload.file.name
-            ? { ...f, status: 'error', error: e.message, progress: 0 }
-            : f
-        ));
-      } finally {
-        activeUploads.delete(fileToUpload.file.name);
-      }
-    };
-
-    // Process queue with dynamic adaptive concurrency
-    const processQueue = async () => {
-      while (uploadQueue.length > 0 || activeUploads.size > 0) {
-        // Start new uploads up to current concurrency limit
-        while (uploadQueue.length > 0 && activeUploads.size < concurrency) {
-          const nextFile = uploadQueue.shift();
-          if (nextFile) {
-            uploadFile(nextFile); // Don't await - let it run in parallel
-          }
-        }
-
-        // Wait a bit before checking again
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-    };
-
-    await processQueue();
-
-    // Show completion message
+    }));
+    
+    // Clear successful uploads and refresh after a delay
     setTimeout(() => {
-      setUploadingFiles([]);
-      const metrics = getPerformanceMetrics();
-      const avgSpeed = metrics ? (metrics.throughput / 1024).toFixed(2) : 'N/A';
-      toast({
-        title: 'Uploads Finished',
-        description: `${totalCompleted} file(s) uploaded successfully. Avg speed: ${avgSpeed} KB/s`
-      });
-
-      // Refresh the file list
-      const params = new URLSearchParams(searchParams);
-      router.push(`${pathname}?${params.toString()}`);
-    }, 1500);
+        setUploadingFiles(prev => prev.filter(f => f.status === 'error'));
+        // Refresh file browser by re-navigating
+        const params = new URLSearchParams(searchParams);
+        router.push(`${pathname}?${params.toString()}`);
+    }, 2000);
   };
 
-  const uploadingCount = uploadingFiles.filter(f => f.status === 'uploading').length;
   const pendingCount = uploadingFiles.filter(f => f.status === 'pending').length;
 
   return (
@@ -477,21 +267,16 @@ export default function SiteUploadsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Upload Files</CardTitle>
+          <CardTitle>Upload Files or Folders</CardTitle>
           <CardDescription>
-            Drag and drop files here to upload them to the specified directory.
-            {uploadingCount > 0 && (
-              <span className="block mt-1 text-primary font-medium">
-                ⚡ Uploading {uploadingCount} file(s) • Concurrency: {currentConcurrency}x (max 32x)
-              </span>
-            )}
+            Drag and drop your project folder or individual files here.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div {...getRootProps({ className: cn("p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors", isDragActive ? "border-primary bg-primary/10" : "border-border hover:border-primary/50") })}>
-            <input {...getInputProps()} />
+            <input {...getInputProps({ directory: "true", webkitdirectory: "true" })} />
             <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <p>{isDragActive ? "Drop to upload" : "Drag 'n' drop files here, or click to select"}</p>
+            <p>{isDragActive ? "Drop to upload" : "Drag 'n' drop files or a folder here, or click to select"}</p>
           </div>
 
           <div className="mt-4 space-y-2">
@@ -516,26 +301,7 @@ export default function SiteUploadsPage() {
                 <div key={index} className="flex items-center gap-4 p-2 border rounded-md">
                   {uf.status === 'success' ? <CheckCircle className="h-5 w-5 text-green-500" /> : uf.status === 'uploading' ? <Loader2 className="h-5 w-5 animate-spin" /> : uf.status === 'error' ? <AlertCircle className="h-5 w-5 text-destructive" /> : <FileText className="h-5 w-5" />}
                   <div className="flex-1 truncate">
-                    <p className="text-sm font-medium">{uf.file.name}</p>
-                    {uf.status === 'uploading' && uf.progress !== undefined && (
-                      <div className="mt-1">
-                        <div className="w-full bg-muted rounded-full h-1.5">
-                          <div
-                            className="bg-primary h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${uf.progress}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {uf.progress.toFixed(0)}%
-                          {uf.speed && ` • ${(uf.speed / 1024).toFixed(2)} KB/s`}
-                        </p>
-                      </div>
-                    )}
-                    {uf.status === 'success' && uf.speed && (
-                      <p className="text-xs text-green-600">
-                        ✓ Uploaded at {(uf.speed / 1024).toFixed(2)} KB/s
-                      </p>
-                    )}
+                    <p className="text-sm font-medium">{uf.file.webkitRelativePath || uf.file.name}</p>
                     {uf.status === 'error' && <p className="text-xs text-destructive">{uf.error}</p>}
                   </div>
                   <span className="text-xs text-muted-foreground">
@@ -543,9 +309,11 @@ export default function SiteUploadsPage() {
                   </span>
                 </div>
               ))}
-              <Button onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
-                Upload {pendingCount} file(s)
-              </Button>
+              {pendingCount > 0 && (
+                <Button onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
+                  Upload {pendingCount} file(s)
+                </Button>
+              )}
             </div>
           )}
         </CardContent>
