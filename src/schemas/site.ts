@@ -21,7 +21,6 @@ export interface Site {
   domains?: {
     value: string;
     forceHttps?: boolean;
-    redirectToNonWww?: boolean;
   }[];
   tier: 'free' | 'premium';
   logoUrl?: string;

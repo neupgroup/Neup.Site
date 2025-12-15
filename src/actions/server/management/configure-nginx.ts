@@ -3,33 +3,25 @@
 import { getSite } from "@/actions/editor/site";
 
 interface NginxConfigParams {
-  urls: string[];
-  proxyUrl: string;
-  listenPort: number;
+    urls: string[];
+    proxyUrl: string;
+    listenPort: number;
 }
 
-export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxConfigParams): Promise<string> {
-    if (urls.length === 0) {
-        throw new Error('At least one URL is required.');
-    }
+/**
+ * Creates a general HTTPS server block for a domain
+ */
+function createGeneralServerBlock(domain: string, proxyUrl: string, listenPort: number): string {
+    return `
+server {
+    listen ${listenPort} ssl;
+    server_name ${domain};
 
-    const { site } = await getSite();
-    const forceHttps = site?.domainSettings?.forceHttps ?? true;
-    const redirectToNonWww = site?.domainSettings?.redirectToNonWww ?? true;
+    ssl_certificate /etc/letsencrypt/live/${domain}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${domain}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    const firstUrl = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`);
-    const primaryDomain = firstUrl.hostname.replace('www.', ''); // Get non-www version
-    const safeDomain = primaryDomain.replace(/\./g, '_');
-    const configFileName = `${safeDomain}.conf`;
-
-    const allDomains = new Set<string>();
-    urls.forEach(urlStr => {
-        const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
-        allDomains.add(url.hostname);
-    });
-    const serverName = Array.from(allDomains).join(' ');
-
-    const locationBlock = `
     location / {
         proxy_pass ${proxyUrl};
         proxy_http_version 1.1;
@@ -40,50 +32,81 @@ export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: N
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-    }`;
-
-    let nginxConfig = '';
-
-    // Main HTTPS server block
-    let httpsServerBlock = `
-server {
-    listen ${listenPort} ssl;
-    server_name ${serverName};
-
-    ssl_certificate /etc/letsencrypt/live/${primaryDomain}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${primaryDomain}/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    ${redirectToNonWww ? `
-    if ($host = www.${primaryDomain}) {
-        return 301 https://${primaryDomain}$request_uri;
-    }` : ''}
-    ${locationBlock}
+    }
+}`;
 }
-`;
 
-    // HTTP redirect block (if forcing HTTPS)
-    if (forceHttps) {
-        const httpRedirectBlock = `
+/**
+ * Creates an HTTP to HTTPS redirect block for a domain
+ */
+function createHttpsRedirectBlock(domain: string): string {
+    return `
 server {
     listen 80;
-    server_name ${serverName};
+    server_name ${domain};
     return 301 https://$host$request_uri;
+}`;
 }
-`;
-        nginxConfig += httpRedirectBlock;
+
+export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxConfigParams): Promise<string> {
+    if (urls.length === 0) {
+        throw new Error('At least one URL is required.');
     }
 
-    nginxConfig += httpsServerBlock;
-    
+    const { site } = await getSite();
+
+    // Process each URL and create domain-specific configurations
+    const domainConfigs: string[] = [];
+    const processedDomains = new Set<string>();
+
+    for (const urlStr of urls) {
+        const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
+        const domain = url.hostname;
+
+        // Skip if we've already processed this domain
+        if (processedDomains.has(domain)) {
+            continue;
+        }
+        processedDomains.add(domain);
+
+        // Find the matching domain settings from the site's domains array
+        const domainConfig = site?.domains?.find(d => d.value === domain);
+
+        const forceHttps = domainConfig?.forceHttps ?? true;
+
+        // Step 1: Create the blocks for this domain
+        const generalBlock = createGeneralServerBlock(domain, proxyUrl, listenPort);
+        const httpsRedirectBlock = createHttpsRedirectBlock(domain);
+
+        // Step 2: Combine blocks based on what's needed for this domain
+        let domainNginxConfig = '';
+
+        // Add HTTPS redirect if needed
+        if (forceHttps) {
+            domainNginxConfig += httpsRedirectBlock + '\n';
+        }
+
+        // Always add the general server block
+        domainNginxConfig += generalBlock + '\n';
+
+        // Step 3: Save this domain's configuration
+        domainConfigs.push(domainNginxConfig);
+    }
+
+    // Step 4: Merge all domain configurations
+    const mergedNginxConfig = domainConfigs.join('\n');
+
+    // Step 5: Create the final deployment script
+    const firstDomain = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`).hostname;
+    const safeDomain = firstDomain.replace(/\./g, '_');
+    const configFileName = `${safeDomain}.conf`;
     const configFilePath = `/etc/nginx/sites-available/${configFileName}`;
     const enabledConfigPath = `/etc/nginx/sites-enabled/${configFileName}`;
 
     const command = `
 sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled && \\
 sudo bash -c "cat > ${configFilePath}" <<'EOF'
-${nginxConfig}
+${mergedNginxConfig}
 EOF
 sudo ln -s -f ${configFilePath} ${enabledConfigPath} && \\
 sudo nginx -t && \\

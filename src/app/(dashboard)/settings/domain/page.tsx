@@ -24,7 +24,6 @@ const domainSchema = z.object({
         return pattern.test(val);
     }, 'Invalid domain or path format.'),
     forceHttps: z.boolean().default(true),
-    redirectToNonWww: z.boolean().default(true),
 });
 
 export const DomainFormSchema = z.object({
@@ -73,7 +72,7 @@ export default function DomainPage() {
             return;
         }
 
-        appendDomain({ value: newDomain, forceHttps: true, redirectToNonWww: true });
+        appendDomain({ value: newDomain, forceHttps: true });
         setNewDomain('');
         setDomainError('');
     };
@@ -176,20 +175,6 @@ export default function DomainPage() {
                                                             className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                                         />
                                                         <span className="text-sm">Force HTTPS</span>
-                                                    </div>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name={`domains.${index}.redirectToNonWww`}
-                                                render={({ field }) => (
-                                                    <div className="flex items-center gap-2">
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                                        />
-                                                        <span className="text-sm">Redirect 'www' to non-'www'</span>
                                                     </div>
                                                 )}
                                             />

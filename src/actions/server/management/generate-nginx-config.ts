@@ -5,7 +5,6 @@ import { runCommand } from '@/actions/runner';
 export interface Domain {
     value: string;
     forceHttps?: boolean;
-    redirectToNonWww?: boolean;
 }
 
 export interface NginxConfigResult {
@@ -21,11 +20,6 @@ export interface NginxConfigResult {
 function generateDomainConfig(domain: Domain, sslCertPath?: string, sslKeyPath?: string): string {
     const domainName = domain.value;
     const forceHttps = domain.forceHttps ?? true;
-    const redirectToNonWww = domain.redirectToNonWww ?? true;
-
-    // Extract base domain (without www)
-    const baseDomain = domainName.replace(/^www\./, '');
-    const wwwDomain = `www.${baseDomain}`;
 
     let config = '';
 
@@ -35,8 +29,8 @@ function generateDomainConfig(domain: Domain, sslCertPath?: string, sslKeyPath?:
         config += `server {
     listen 80;
     listen [::]:80;
-    server_name ${baseDomain}${redirectToNonWww ? ` ${wwwDomain}` : ''};
-    return 301 https://${baseDomain}$request_uri;
+    server_name ${domainName};
+    return 301 https://${domainName}$request_uri;
 }
 
 `;
@@ -45,9 +39,9 @@ function generateDomainConfig(domain: Domain, sslCertPath?: string, sslKeyPath?:
         config += `server {
     listen 80;
     listen [::]:80;
-    server_name ${baseDomain}${redirectToNonWww ? ` ${wwwDomain}` : ''};
+    server_name ${domainName};
     
-    root /var/www/${baseDomain};
+    root /var/www/${domainName};
     index index.html index.htm;
     
     location / {
@@ -60,32 +54,16 @@ function generateDomainConfig(domain: Domain, sslCertPath?: string, sslKeyPath?:
 
     // HTTPS Server Block (if forcing HTTPS or if SSL certs are provided)
     if (forceHttps || (sslCertPath && sslKeyPath)) {
-        if (redirectToNonWww) {
-            // Redirect www to non-www on HTTPS
-            config += `server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    server_name ${wwwDomain};
-    
-    ssl_certificate ${sslCertPath || '/etc/nginx/ssl/default.crt'};
-    ssl_certificate_key ${sslKeyPath || '/etc/nginx/ssl/default.key'};
-    
-    return 301 https://${baseDomain}$request_uri;
-}
-
-`;
-        }
-
         // Main HTTPS server
         config += `server {
     listen 443 ssl;
     listen [::]:443 ssl;
-    server_name ${baseDomain};
+    server_name ${domainName};
     
     ssl_certificate ${sslCertPath || '/etc/nginx/ssl/default.crt'};
     ssl_certificate_key ${sslKeyPath || '/etc/nginx/ssl/default.key'};
     
-    root /var/www/${baseDomain};
+    root /var/www/${domainName};
     index index.html index.htm;
     
     location / {
