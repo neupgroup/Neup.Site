@@ -229,7 +229,7 @@ export default function SiteUploadsPage() {
         try {
             const content = await readFileAsBase64(fileToUpload.file);
             const relativePath = fileToUpload.file.webkitRelativePath || fileToUpload.file.name;
-            const finalPath = path.posix.join(uploadPath, relativePath);
+            const finalPath = `${uploadPath.replace(/\/$/, '')}/${relativePath}`;
 
             const result = await uploadPublicFile(finalPath, content);
             
