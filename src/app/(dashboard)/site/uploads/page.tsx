@@ -10,10 +10,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, ArrowLeft, Link as LinkIcon } from 'lucide-react';
+import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { uploadPublicFile, getPublicFiles, deletePublicFile, type PublicFile } from '@/actions/uploads';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 
 interface UploadingFile {
   file: File;
@@ -62,7 +73,9 @@ const FileManager = () => {
         if (file.type === 'directory') {
             navigate(file.path);
         } else {
-            window.open(file.path, '_blank');
+            // In a real app, you'd get the base URL from a config
+            // For now, let's assume a placeholder.
+            window.open(`/uploads-placeholder/${file.path}`, '_blank');
         }
     };
     
@@ -95,6 +108,20 @@ const FileManager = () => {
     
     return (
         <Card>
+             <AlertDialog open={!!deletingFile} onOpenChange={(open) => !open && setDeletingFile(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will permanently delete "{deletingFile?.name}". This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
             <CardHeader>
                 <CardTitle>File Browser</CardTitle>
                 <CardDescription>Browse files in your site's public directory.</CardDescription>
@@ -150,6 +177,7 @@ const FileManager = () => {
 export default function SiteUploadsPage() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const currentPath = searchParams.get('path') || '/';
 
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
@@ -168,41 +196,49 @@ export default function SiteUploadsPage() {
   }, []);
   
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: false });
+
+  const readFileAsBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const result = (reader.result as string).split(',')[1];
+            resolve(result);
+        };
+        reader.onerror = (error) => reject(error);
+    });
+  };
   
   const handleUpload = async () => {
     const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
     if (filesToUpload.length === 0) return;
 
-    for (const fileToUpload of filesToUpload) {
-      setUploadingFiles(prev => prev.map(f => f.file.name === fileToUpload.file.name ? { ...f, status: 'uploading' } : f));
-      
+    setUploadingFiles(prev => prev.map(f =>
+      f.status === 'pending' ? { ...f, status: 'uploading' } : f
+    ));
+
+    const uploadPromises = filesToUpload.map(async (fileToUpload) => {
       try {
-        const reader = new FileReader();
-        reader.readAsDataURL(fileToUpload.file);
-        reader.onload = async (e) => {
-            const content = (e.target?.result as string).split(',')[1];
-            const result = await uploadPublicFile(uploadPath, content, fileToUpload.file.name);
-            
-            if (result.success) {
-                setUploadingFiles(prev => prev.map(f => f.file.name === fileToUpload.file.name ? { ...f, status: 'success' } : f));
-            } else {
-                 setUploadingFiles(prev => prev.map(f => f.file.name === fileToUpload.file.name ? { ...f, status: 'error', error: result.error } : f));
-            }
-        };
-        reader.onerror = () => {
-            setUploadingFiles(prev => prev.map(f => f.file.name === fileToUpload.file.name ? { ...f, status: 'error', error: 'Failed to read file.' } : f));
+        const content = await readFileAsBase64(fileToUpload.file);
+        const result = await uploadPublicFile(uploadPath, content, fileToUpload.file.name);
+        
+        if (result.success) {
+          setUploadingFiles(prev => prev.map(f => f.file.name === fileToUpload.file.name ? { ...f, status: 'success' } : f));
+        } else {
+          throw new Error(result.error);
         }
       } catch (e: any) {
         setUploadingFiles(prev => prev.map(f => f.file.name === fileToUpload.file.name ? { ...f, status: 'error', error: e.message } : f));
       }
-    }
+    });
+
+    await Promise.all(uploadPromises);
 
     setTimeout(() => {
         setUploadingFiles([]);
-        toast({ title: 'Uploads Finished', description: 'Files have been processed.'});
-        // This is a bit of a hack to force the FileManager to re-render
-        window.location.reload();
-    }, 2000);
+        toast({ title: 'Uploads Finished', description: 'File list will be refreshed.'});
+        router.refresh();
+    }, 1500);
   };
 
   return (
@@ -225,7 +261,7 @@ export default function SiteUploadsPage() {
           </div>
           
            <div className="mt-4 space-y-2">
-              <Label htmlFor="upload-path">Location</Label>
+              <Label htmlFor="upload-path">Upload Location</Label>
               <div className="flex items-center">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground sm:text-sm h-10">
                       /public
@@ -263,4 +299,3 @@ export default function SiteUploadsPage() {
     </div>
   );
 }
-
