@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, use } from 'react';
@@ -11,10 +12,11 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
-import type { Site } from '@/schemas/site';
+import type { Site, Structure } from '@/schemas/site';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
+import { getStructure, createDeployment } from '@/actions/structure';
 
 interface DeploymentStep {
     name: string;
@@ -29,12 +31,16 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
     const { toast } = useToast();
     const [isChecking, setIsChecking] = useState(true);
     const [isExecutingAction, setIsExecutingAction] = useState<string | null>(null);
-    const [steps, setSteps] = useState<DeploymentStep[]>([
+    const [structure, setStructure] = useState<Structure | null>(null);
+
+    const initialSteps: DeploymentStep[] = [
         { name: 'Website Live', status: 'loading', description: 'Checking if website is reachable...' },
+        { name: 'Deploy Structure', status: 'loading', description: 'Checking for pending structure changes...', action: { commandId: 'deploy-structure', label: 'Redeploy Structure' } },
         { name: 'Application Exists', status: 'loading', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
         { name: 'Application Built', status: 'loading', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
         { name: 'Start App & Configure Proxy', status: 'loading', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
-    ]);
+    ];
+    const [steps, setSteps] = useState<DeploymentStep[]>(initialSteps);
 
     const updateStep = (index: number, status: DeploymentStep['status'], description: string) => {
         setSteps(prev => {
@@ -54,21 +60,28 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(true);
+        setSteps(initialSteps); // Reset steps to loading state
 
-        // Initialize all steps with loading state
-        setSteps([
-            { name: 'Website Live', status: 'loading', description: 'Checking if website is reachable...' },
-            { name: 'Application Exists', status: 'loading', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
-            { name: 'Application Built', status: 'loading', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
-            { name: 'Start App & Configure Proxy', status: 'loading', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
-        ]);
+        // Fetch structure first
+        const structureResult = await getStructure();
+        if (structureResult.success) {
+            setStructure(structureResult.structure || null);
+            if (structureResult.structure?.status === 'pendingDeployment') {
+                updateStep(1, 'warning', 'There are pending structure changes to deploy.');
+            } else {
+                updateStep(1, 'success', 'Structure is up-to-date.');
+            }
+        } else {
+            updateStep(1, 'failure', 'Could not check structure status.');
+        }
+
 
         // STEP 1: Check if Website is Live
         if (!site.domains || site.domains.length === 0) {
             updateStep(0, 'failure', 'No domain configured for this site.');
-            updateStep(1, 'failure', 'Cannot proceed without domain.');
             updateStep(2, 'failure', 'Cannot proceed without domain.');
             updateStep(3, 'failure', 'Cannot proceed without domain.');
+            updateStep(4, 'failure', 'Cannot proceed without domain.');
             setIsChecking(false);
             return;
         }
@@ -80,15 +93,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             const data = await res.json();
 
             if (res.ok && data.success && data.status === 200) {
-                // Website is LIVE! All checks pass
                 updateStep(0, 'success', `Website is live and reachable (Status 200).`);
-                updateStep(1, 'success', 'Application directory exists.');
-                updateStep(2, 'success', 'Application is built.');
-                updateStep(3, 'success', 'Application is running and proxy is configured.');
-                setIsChecking(false);
-                return; // Done!
             } else {
-                // Website is NOT live - continue checking
                 const statusCode = data.status || 'Unknown';
                 updateStep(0, 'failure', `Website is not reachable (Status ${statusCode}).`);
             }
@@ -96,33 +102,29 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             updateStep(0, 'failure', 'Could not reach the website URL.');
         }
 
-        // STEP 2: Check if Application Exists
-        updateStep(1, 'loading', 'Checking for application directory...');
+        // STEP 3: Check if Application Exists
+        updateStep(2, 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
 
         if (!appDirCheck.exists || appDirCheck.error) {
-            // Application does NOT exist - steps 3 and 4 are false
-            updateStep(1, 'failure', appDirCheck.error || 'Application directory not found.');
-            updateStep(2, 'failure', 'Cannot check - application directory not found.');
+            updateStep(2, 'failure', appDirCheck.error || 'Application directory not found.');
             updateStep(3, 'failure', 'Cannot check - application directory not found.');
+            updateStep(4, 'failure', 'Cannot check - application directory not found.');
             setIsChecking(false);
             return;
         }
+        updateStep(2, 'success', `Application directory found at ${appDirCheck.resolvedPath}.`);
 
-        // Application EXISTS
-        updateStep(1, 'success', `Application directory found at ${appDirCheck.resolvedPath}.`);
-
-        // STEP 3: Check if Application is Built
-        updateStep(2, 'loading', 'Checking for .next build folder...');
+        // STEP 4: Check if Application is Built
+        updateStep(3, 'loading', 'Checking for .next build folder...');
         const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
 
-        // Update action label based on build status
         setSteps(prev => {
             const newSteps = [...prev];
-            if (newSteps[2]) {
+            if (newSteps[3]) {
                 const actionLabel = buildCheck.exists ? 'Rebuild App' : 'Build App';
-                newSteps[2] = {
-                    ...newSteps[2],
+                newSteps[3] = {
+                    ...newSteps[3],
                     action: { commandId: 'build-app', label: actionLabel }
                 };
             }
@@ -130,18 +132,15 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         });
 
         if (!buildCheck.exists) {
-            // Application is NOT built - step 4 is false
-            updateStep(2, 'failure', 'Application not built. The ".next" folder is missing.');
-            updateStep(3, 'failure', 'Cannot check - application not built.');
+            updateStep(3, 'failure', 'Application not built. The ".next" folder is missing.');
+            updateStep(4, 'failure', 'Cannot check - application not built.');
             setIsChecking(false);
             return;
         }
+        updateStep(3, 'success', 'Build folder found.');
 
-        // Application IS built
-        updateStep(2, 'success', 'Build folder found.');
-
-        // STEP 4: Check if App is Started and Proxy is Configured
-        updateStep(3, 'loading', 'Checking PM2 process and Nginx configuration...');
+        // STEP 5: Check if App is Started and Proxy is Configured
+        updateStep(4, 'loading', 'Checking PM2 process and Nginx configuration...');
 
         const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
             getPm2Processes(server.id),
@@ -153,7 +152,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         let nginxOk = false;
         let stepDescription = '';
 
-        // Check PM2 status
         if (!pm2Check.success) {
             stepDescription += `Could not check PM2 processes: ${pm2Check.error}. `;
         } else {
@@ -168,7 +166,6 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             }
         }
 
-        // Check Nginx status
         if (!nginxAvailableCheck.exists) {
             stepDescription += `Nginx config file not found. `;
         } else if (!nginxEnabledCheck.exists) {
@@ -178,11 +175,10 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             stepDescription += 'Nginx config is enabled.';
         }
 
-        // Final result for step 4
         if (pm2Ok && nginxOk) {
-            updateStep(3, 'success', stepDescription.trim());
+            updateStep(4, 'success', stepDescription.trim());
         } else {
-            updateStep(3, 'failure', stepDescription.trim());
+            updateStep(4, 'failure', stepDescription.trim());
         }
 
         setIsChecking(false);
@@ -199,60 +195,47 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (!clickedStep || !clickedStep.action) return;
 
         setIsExecutingAction(clickedStep.name);
-
-        // In reverse order, only execute the clicked step's action
         updateStep(clickedStepIndex, 'loading', `Executing: ${clickedStep.action.label}...`);
 
         let result: { success: boolean; error?: string; logId?: string; finalStatus?: any } = { success: false };
 
-        if (clickedStep.action.commandId === 'build-app') {
-            // Use the specialized rebuildApplication action which updates status.json
+        if (clickedStep.action.commandId === 'deploy-structure') {
+            result = await createDeployment();
+        } else if (clickedStep.action.commandId === 'build-app') {
             result = await rebuildApplication(server.id);
         } else {
-            // Use generic runner
             result = await runCommand(server.id, clickedStep.action.commandId, {}, clickedStep.action.label);
         }
 
-        // Assume success if explicit success or 'completed'
-        if (result.success && (result.finalStatus === 'completed' || result.success)) {
+        if (result.success) {
             updateStep(clickedStepIndex, 'success', `${clickedStep.action.label} completed successfully.`);
-            toast({ title: 'Step Succeeded!', description: `${clickedStep.action.label} completed successfully.` });
+            toast({ title: 'Action Succeeded!', description: `${clickedStep.action.label} completed.` });
         } else {
             updateStep(clickedStepIndex, 'failure', `Action "${clickedStep.action.label}" failed.`);
-            toast({ variant: 'destructive', title: 'Step Failed', description: `Action "${clickedStep.action.label}" failed. Check server logs.` });
+            toast({ variant: 'destructive', title: 'Action Failed', description: result.error || 'An unknown error occurred.' });
             if (result.logId) {
                 router.push(`/root/servers/${server.id}?log=${result.logId}`);
             }
         }
 
         setIsExecutingAction(null);
-        setTimeout(() => runChecks(), 2000); // Re-run checks to refresh status from file
+        setTimeout(() => runChecks(), 2000);
     };
 
     const renderStepActions = (step: DeploymentStep, index: number) => {
-        const actions: JSX.Element[] = [];
-
-        // New sequential flow: show action if step failed and all previous steps are successful
-        // Step 0 (Website Live) - no actions
-        // Step 1 (Application Exists) - show actions if failed
-        // Step 2 (Application Built) - show actions if failed and step 1 is successful
-        // Step 3 (Start App & Configure Proxy) - show actions if failed and steps 1-2 are successful
-
         let canShowAction = false;
+        if (index === 0) return null;
 
-        if (index === 0) {
-            // Website Live - no actions available
-            canShowAction = false;
-        } else if (index === 1) {
-            // Application Exists - show if failed
-            canShowAction = step.status === 'failure';
+        if (step.action?.commandId === 'deploy-structure') {
+             // Always show deploy button if there are changes or never deployed
+            canShowAction = structure?.status === 'pendingDeployment';
         } else {
-            // For steps 2 and 3, check if all previous steps are successful
             const allPreviousSuccessful = steps.slice(1, index).every(s => s.status === 'success');
             canShowAction = (step.status === 'failure' || (step.status === 'success' && (step.name === 'Application Built' || step.name === 'Start App & Configure Proxy'))) && allPreviousSuccessful;
         }
 
         if (canShowAction) {
+            const actions: JSX.Element[] = [];
             if (step.action) {
                 actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
             }
@@ -261,11 +244,12 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                     actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => runCommand(server.id, subAction.commandId, {})} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
                 });
             }
+            if (actions.length > 0) {
+                 return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
+            }
         }
-
-        if (actions.length === 0) return null;
-
-        return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
+        
+        return null;
     }
 
     const getStatusIcon = (status: DeploymentStep['status']) => {
