@@ -160,14 +160,13 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
   const profileName = site?.name;
   const logoUrl = site?.logoUrl;
   const hideSitename = site?.hideSitename;
-  const hideLogo = site?.hideLogo;
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
           <Link href="/" className="flex items-center gap-4">
-            {!hideLogo && (loading ? (
+            {(loading ? (
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
                <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>

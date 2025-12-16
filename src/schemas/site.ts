@@ -25,7 +25,6 @@ export interface Site {
   tier: 'free' | 'premium';
   logoUrl?: string;
   hideSitename?: boolean;
-  hideLogo?: boolean;
   description?: string;
   socialProfiles?: { platformName: string; url: string; }[];
   contactEmail?: { value: string; }[];

@@ -14,12 +14,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Save, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Save, Loader2, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
+import Link from 'next/link';
 
 export const SocialProfileSchema = z.object({
     platformName: z.string().min(1, 'Platform name is required'),
@@ -29,15 +30,13 @@ export const SocialProfileSchema = z.object({
 export const ProfileFormSchema = z.object({
     name: z.string().min(1, 'Profile Name is required'),
     hideSitename: z.boolean().default(false),
-    logoUrl: z.string().optional(),
-    hideLogo: z.boolean().default(false),
     description: z.string().optional(),
     socialProfiles: z.array(SocialProfileSchema).max(9, 'You can add a maximum of 9 social profiles.'),
     contactEmail: z.array(z.object({ value: z.string().email() })).max(9, 'You can add a maximum of 9 emails.'),
     contactPhone: z.array(z.object({ value: z.string() })).max(9, 'You can add a maximum of 9 phone numbers.'),
-}).refine(data => !data.hideSitename || !data.hideLogo, {
-    message: "You cannot hide both the site name and the logo.",
-    path: ["hideLogo"], // Arbitrarily choosing one field to show the error
+}).refine(data => !data.hideSitename, {
+    message: "You cannot hide the site name.",
+    path: ["hideSitename"],
 });
 
 
@@ -52,8 +51,6 @@ export default function ProfilePage() {
         defaultValues: {
             name: '',
             hideSitename: false,
-            logoUrl: '',
-            hideLogo: false,
             description: '',
             socialProfiles: [],
             contactEmail: [],
@@ -86,8 +83,6 @@ export default function ProfilePage() {
             form.reset({
                 name: site.name,
                 hideSitename: site.hideSitename || false,
-                logoUrl: removeUrlPrefix(site.logoUrl),
-                hideLogo: site.hideLogo || false,
                 description: site.description || '',
                 socialProfiles: site.socialProfiles?.map(p => ({ ...p, url: removeUrlPrefix(p.url) })) || [],
                 contactEmail: site.contactEmail || [],
@@ -98,7 +93,6 @@ export default function ProfilePage() {
             form.reset({
                 name: 'My New Site',
                 hideSitename: false,
-                hideLogo: false,
                 description: 'A brief description of my new site.',
                 socialProfiles: [],
                 contactEmail: [],
@@ -108,13 +102,10 @@ export default function ProfilePage() {
     }, [loading, site, form, toast]);
 
     const onSubmit = async (data: ProfileFormData) => {
-        // Keep existing domains, don't overwrite them from this form
-        const currentDomains = site?.domains || [];
-
         const dataToSave = {
-            ...data,
-            domains: currentDomains,
-        }
+            ...site, // carry over all existing fields
+            ...data, // overwrite with form data
+        };
 
         const result = await saveSite(dataToSave);
 
@@ -123,7 +114,6 @@ export default function ProfilePage() {
             const newSiteData = {
                 ...(site || { id: result.id, tier: 'free', url: '' }),
                 ...dataToSave,
-                logoUrl: data.logoUrl ? (data.logoUrl.startsWith('http') ? data.logoUrl : `https://${data.logoUrl}`) : undefined,
             };
             setSite(newSiteData as Site);
         } else {
@@ -132,8 +122,6 @@ export default function ProfilePage() {
     };
 
     const descriptionLength = form.watch('description')?.length || 0;
-    const hideSitenameValue = form.watch('hideSitename');
-    const hideLogoValue = form.watch('hideLogo');
 
     const descIndicatorColor = () => {
         if (descriptionLength >= 60 && descriptionLength <= 180) return 'bg-green-500';
@@ -162,8 +150,17 @@ export default function ProfilePage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Site Information</CardTitle>
-                        <CardDescription>This information may be used across your site.</CardDescription>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <CardTitle>Site Information</CardTitle>
+                                <CardDescription>This information may be used across your site.</CardDescription>
+                            </div>
+                            <Button asChild variant="outline">
+                                <Link href="/settings/profile/logo">
+                                    <ImageIcon className="mr-2" /> Manage Logos
+                                </Link>
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <FormField control={form.control} name="name" render={({ field }) => (
@@ -184,31 +181,6 @@ export default function ProfilePage() {
                                         <Switch
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
-                                            disabled={hideLogoValue}
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField control={form.control} name="logoUrl" render={({ field }) => (
-                            <FormItem><FormLabel>Logo URL</FormLabel><FormControl><Input {...field} placeholder="example.com/logo.png" /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField
-                            control={form.control}
-                            name="hideLogo"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                    <div className="space-y-0.5">
-                                        <FormLabel>Hide Logo</FormLabel>
-                                        <FormDescription>
-                                            Enable this to hide the logo from the site header.
-                                        </FormDescription>
-                                    </div>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            disabled={hideSitenameValue}
                                         />
                                     </FormControl>
                                 </FormItem>
