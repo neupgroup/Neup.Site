@@ -35,8 +35,8 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
 
     const initialSteps: DeploymentStep[] = [
         { name: 'Website Live', status: 'loading', description: 'Checking if website is reachable...' },
-        { name: 'Deploy Structure', status: 'loading', description: 'Checking for pending structure changes...', action: { commandId: 'deploy-structure', label: 'Redeploy Structure' } },
         { name: 'Application Exists', status: 'loading', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
+        { name: 'Deploy Structure', status: 'loading', description: 'Checking for pending structure changes...', action: { commandId: 'deploy-structure', label: 'Redeploy Structure' } },
         { name: 'Application Built', status: 'loading', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
         { name: 'Start App & Configure Proxy', status: 'loading', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
     ];
@@ -62,23 +62,12 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         setIsChecking(true);
         setSteps(initialSteps); // Reset steps to loading state
 
-        // Fetch structure first
-        const structureResult = await getStructure();
-        if (structureResult.success) {
-            setStructure(structureResult.structure || null);
-            if (structureResult.structure?.status === 'pendingDeployment') {
-                updateStep(1, 'warning', 'There are pending structure changes to deploy.');
-            } else {
-                updateStep(1, 'success', 'Structure is up-to-date.');
-            }
-        } else {
-            updateStep(1, 'failure', 'Could not check structure status.');
-        }
-
 
         // STEP 1: Check if Website is Live
         if (!site.domains || site.domains.length === 0) {
             updateStep(0, 'failure', 'No domain configured for this site.');
+            // Fail subsequent steps that depend on the domain or app path
+            updateStep(1, 'failure', 'Cannot proceed without domain.');
             updateStep(2, 'failure', 'Cannot proceed without domain.');
             updateStep(3, 'failure', 'Cannot proceed without domain.');
             updateStep(4, 'failure', 'Cannot proceed without domain.');
@@ -102,18 +91,35 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
             updateStep(0, 'failure', 'Could not reach the website URL.');
         }
 
-        // STEP 3: Check if Application Exists
-        updateStep(2, 'loading', 'Checking for application directory...');
+        // STEP 2: Check if Application Exists
+        updateStep(1, 'loading', 'Checking for application directory...');
         const appDirCheck = await checkPathExists(server.id);
 
         if (!appDirCheck.exists || appDirCheck.error) {
-            updateStep(2, 'failure', appDirCheck.error || 'Application directory not found.');
+            updateStep(1, 'failure', appDirCheck.error || 'Application directory not found.');
+            // Fail subsequent steps
+            updateStep(2, 'failure', 'Cannot check - application directory not found.');
             updateStep(3, 'failure', 'Cannot check - application directory not found.');
             updateStep(4, 'failure', 'Cannot check - application directory not found.');
             setIsChecking(false);
             return;
         }
-        updateStep(2, 'success', `Application directory found at ${appDirCheck.resolvedPath}.`);
+        updateStep(1, 'success', `Application directory found at ${appDirCheck.resolvedPath}.`);
+
+        // STEP 3: Deploy Structure Check
+        updateStep(2, 'loading', 'Checking for pending structure changes...');
+        const structureResult = await getStructure();
+        if (structureResult.success) {
+            const fetchedStructure = structureResult.structure || null;
+            setStructure(fetchedStructure);
+            if (fetchedStructure?.status === 'pendingDeployment') {
+                updateStep(2, 'warning', 'There are pending structure changes to deploy.');
+            } else {
+                updateStep(2, 'success', 'Structure is up-to-date.');
+            }
+        } else {
+            updateStep(2, 'failure', 'Could not check structure status.');
+        }
 
         // STEP 4: Check if Application is Built
         updateStep(3, 'loading', 'Checking for .next build folder...');
@@ -227,10 +233,9 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         if (index === 0) return null;
 
         if (step.action?.commandId === 'deploy-structure') {
-             // Always show deploy button if there are changes or never deployed
             canShowAction = structure?.status === 'pendingDeployment';
         } else {
-            const allPreviousSuccessful = steps.slice(1, index).every(s => s.status === 'success');
+            const allPreviousSuccessful = steps.slice(1, index).every(s => s.status === 'success' || s.status === 'warning');
             canShowAction = (step.status === 'failure' || (step.status === 'success' && (step.name === 'Application Built' || step.name === 'Start App & Configure Proxy'))) && allPreviousSuccessful;
         }
 
