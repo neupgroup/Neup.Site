@@ -257,7 +257,7 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
 
     // 4. Resolve appPath (logic matches runner.ts)
     const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
-    const structurePath = `${resolvedAppPath}`; // Deploy to the root of the app path
+    const structurePath = `${resolvedAppPath}/src`; // Deploy to the src directory
 
     // 5. Connect and Upload
     const ssh = new NodeSSH();
