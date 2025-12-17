@@ -40,6 +40,7 @@ export interface Server {
   storageUsed?: string;
   storageTotal?: string;
   storageUnit?: string;
+  serverConfigured?: boolean;
   defaultNginxConfigStatus?: 'configured' | 'not-configured' | 'cancelled' | 'ongoing';
   createdOn?: string | null;
   expiresOn?: string | null;

@@ -19,6 +19,7 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' |
     const { firestore } = initializeFirebase();
     const docRef = await addDoc(collection(firestore, 'servers'), {
       ...serverData,
+      serverConfigured: false, // Default to not configured
       createdOn: serverTimestamp(),
       expiresOn: null,
     });
@@ -53,6 +54,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
         username: data.username,
         basePath: data.basePath,
         appPath: data.appPath,
+        serverConfigured: data.serverConfigured || false,
         createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
         expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
       } as Server
@@ -93,6 +95,7 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
           id: serverDoc.id,
           name: serverData.name,
           publicIp: serverData.publicIp,
+          serverConfigured: serverData.serverConfigured || false,
           createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
         };
 
@@ -146,6 +149,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
       username: data.username,
       basePath: data.basePath,
       appPath: data.appPath,
+      serverConfigured: data.serverConfigured || false,
       createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
       expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
     };
@@ -187,6 +191,7 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
       username: data.username,
       basePath: data.basePath,
       appPath: data.appPath,
+      serverConfigured: data.serverConfigured || false,
       createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
       expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
     };
