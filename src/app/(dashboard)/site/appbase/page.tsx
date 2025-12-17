@@ -1,21 +1,24 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState, useCallback, useEffect } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, FileJson, Edit, HardDrive, RotateCcw } from 'lucide-react';
-import Link from 'next/link';
+import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getAppBaseFiles } from '@/actions/app-base';
-import { getSiteServers } from '@/actions/servers';
+import { cn } from '@/lib/utils';
+import { deletePublicFile, type PublicFile, getPublicFiles } from '@/actions/uploads';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useProfile } from '@/context/ProfileContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { getAppBaseFileContent, saveAppBaseFileContent, backupAppBaseFile } from '@/actions/app-base';
-import { Loader2 } from 'lucide-react';
 
 interface AppBaseFile {
   name: string;
