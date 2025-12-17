@@ -1,7 +1,9 @@
+
 export interface AppBaseFile {
   name: string;
   size: string;
   type: 'internal' | 'external';
+  status: 'created' | 'template';
 }
 
 export interface AppBaseBackup {

@@ -18,7 +18,7 @@ import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
-  fileName: z.string().min(1, 'Filename is required').refine(name => name.endsWith('.json'), 'Filename must end with .json'),
+  name: z.string().min(1, 'Name is required.'),
   type: z.enum(['internal', 'external']),
 });
 
@@ -30,7 +30,7 @@ export default function CreateAppBaseFilePage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { fileName: '', type: 'external' },
+    defaultValues: { name: '', type: 'external' },
   });
 
   const onSubmit = async (data: FormValues) => {
@@ -41,7 +41,7 @@ export default function CreateAppBaseFilePage() {
     }
     const serverId = serverResult.servers[0].id;
     
-    const result = await createAppBaseFile(serverId, data.fileName, data.type);
+    const result = await createAppBaseFile(serverId, data.name, data.type);
     if (result.success) {
       toast({ title: 'File Created' });
       router.push('/site/appbase');
@@ -65,14 +65,14 @@ export default function CreateAppBaseFilePage() {
           <Card>
             <CardHeader>
               <CardTitle>Create New File</CardTitle>
-              <CardDescription>Create a new JSON file in the app's base directory.</CardDescription>
+              <CardDescription>Create a new JSON file in the app's base directory. The .json extension will be added automatically.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField control={form.control} name="fileName" render={({ field }) => (
+              <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Filename</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g., config.json" />
+                    <Input {...field} placeholder="e.g., config" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
