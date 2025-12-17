@@ -8,7 +8,7 @@ import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket } from 'luc
 import { getStructure, buildStructure, createDeployment, getLastDeployment } from '@/actions/structure';
 import type { Structure, Deployment } from '@/schemas/site';
 import { getSiteServers } from '@/actions/servers';
-import { deployCodebase } from '@/actions/deploy';
+import { deployCodebaseFromStorage } from '@/actions/deploy';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -87,9 +87,9 @@ export default function DeployPage() {
 
     const handleDeployCodebase = async () => {
         setIsDeployingCodebase(true);
-        const result = await deployCodebase();
+        const result = await deployCodebaseFromStorage();
         if (result.success && result.logId) {
-            toast({ title: 'Deployment Started', description: 'Check server logs for progress.' });
+            toast({ title: 'Deployment Started', description: 'Check server logs for progress.'});
             router.push(`/root/servers/${result.serverId}`);
         } else {
             toast({ variant: 'destructive', title: 'Codebase Deployment Failed', description: result.error });
