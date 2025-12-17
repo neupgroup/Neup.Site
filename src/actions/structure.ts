@@ -250,7 +250,8 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
         const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
         const srcDir = `${resolvedAppPath}/src`;
-        const dataDir = `${srcDir}/data`; // Changed this line
+        const dataDir = `${srcDir}/data`;
+        const baseDir = `${srcDir}/base`;
 
         const ssh = new NodeSSH();
         console.log(`Connecting to ${server.publicIp} to upload data...`);
@@ -266,9 +267,11 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
             // Create temporary local directories
             const tempBaseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
             const tempSrcDir = path.join(tempBaseDir, 'src');
-            const tempDataDir = path.join(tempBaseDir, 'data'); // Changed this line
+            const tempDataDir = path.join(tempBaseDir, 'data');
+            const tempAppBaseDir = path.join(tempBaseDir, 'base');
             await fs.mkdir(tempSrcDir, { recursive: true });
             await fs.mkdir(tempDataDir, { recursive: true });
+            await fs.mkdir(tempAppBaseDir, { recursive: true });
 
             // Prepare redirects data
             const redirectsResult = await getRedirects();
@@ -289,7 +292,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
             // Write files to temp directories
             await fs.writeFile(path.join(tempSrcDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
             await fs.writeFile(path.join(tempDataDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
-            await fs.writeFile(path.join(tempDataDir, 'redirects.json'), JSON.stringify(formattedRedirects || [], null, 2));
+            await fs.writeFile(path.join(tempAppBaseDir, 'redirects.json'), JSON.stringify(formattedRedirects || [], null, 2));
             await fs.writeFile(path.join(tempDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
 
 
@@ -297,13 +300,23 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
                 if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${resolvedAppPath}...` });
                 
                 await ssh.execCommand(`mkdir -p ${srcDir}`);
-                await ssh.execCommand(`mkdir -p ${dataDir}`); // Ensure data directory exists inside src
+                await ssh.execCommand(`mkdir -p ${dataDir}`);
+                await ssh.execCommand(`mkdir -p ${baseDir}`);
 
                 // Upload structure.json to src
                 await ssh.putFile(path.join(tempSrcDir, 'structure.json'), `${srcDir}/structure.json`);
 
                  // Upload data directory to src/data
                  await ssh.putDirectory(tempDataDir, dataDir, {
+                    recursive: true,
+                    concurrency: 1,
+                    tick: (localPath, remotePath, error) => {
+                        if (error) console.error(`Failed to upload ${localPath}`);
+                    }
+                });
+
+                // Upload base directory to src/base
+                 await ssh.putDirectory(tempAppBaseDir, baseDir, {
                     recursive: true,
                     concurrency: 1,
                     tick: (localPath, remotePath, error) => {
