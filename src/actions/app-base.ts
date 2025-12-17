@@ -8,9 +8,9 @@ import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
 import { initializeFirebase } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, doc, getDoc } from 'firebase/firestore';
-import type { AppBaseBackup } from '@/schemas/app-base';
+import type { AppBaseBackup, AppBaseFile } from '@/schemas/app-base';
 
-async function getAppBasePath(serverId: string) {
+async function resolveAppBasePath(serverId: string, type: 'internal' | 'external') {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
     if (serverError || !server) {
         throw new Error('Could not retrieve server details for path resolution.');
@@ -22,52 +22,60 @@ async function getAppBasePath(serverId: string) {
     }
 
     const appPath = server.appPath?.replace(/\{\{universal.site_id\}\}/g, site.id) || `/var/www/${site.id}`;
-    const basePath = `${appPath}/src/base`;
+    const basePath = type === 'internal' ? `${appPath}/base` : `${appPath}/src/base`;
 
     return { ssh: new NodeSSH(), server, basePath };
 }
 
-export async function getAppBaseFiles(serverId: string): Promise<{ success: boolean; files?: { name: string; size: string }[]; error?: string }> {
+export async function getAppBaseFiles(serverId: string): Promise<{ success: boolean; files?: AppBaseFile[]; error?: string }> {
     let ssh: NodeSSH | undefined;
     try {
-        const { ssh: sshInstance, server, basePath } = await getAppBasePath(serverId);
-        ssh = sshInstance;
+        const fetchFilesFromPath = async (type: 'internal' | 'external'): Promise<AppBaseFile[]> => {
+            const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
+            ssh = sshInstance;
+            
+            await ssh.connect({
+                host: server.publicIp,
+                username: server.username || 'root',
+                privateKey: server.privateKey,
+            });
 
-        await ssh.connect({
-            host: server.publicIp,
-            username: server.username || 'root',
-            privateKey: server.privateKey,
-        });
+            await ssh.execCommand(`mkdir -p ${basePath}`);
+            const result = await ssh.execCommand(`ls -la ${basePath}`);
+            ssh.dispose();
 
-        await ssh.execCommand(`mkdir -p ${basePath}`);
-        const result = await ssh.execCommand(`ls -la ${basePath}`);
-        
-        if (result.code !== 0) {
-            throw new Error(result.stderr);
+            if (result.code !== 0) {
+                console.warn(`Could not list files in ${basePath}: ${result.stderr}`);
+                return [];
+            }
+            
+            return result.stdout.trim().split('\n').slice(1).map(line => {
+                const parts = line.split(/\s+/);
+                if (parts.length < 9 || parts[0].startsWith('d')) return null; // Skip directories
+                return { name: parts[8], size: parts[4], type };
+            }).filter(Boolean) as AppBaseFile[];
         }
 
-        const files = result.stdout.trim().split('\n').slice(1).map(line => {
-            const parts = line.split(/\s+/);
-            if (parts.length < 9 || parts[0].startsWith('d')) return null; // Skip directories
-            return { name: parts[8], size: parts[4] };
-        }).filter(Boolean) as { name: string, size: string }[];
+        const [internalFiles, externalFiles] = await Promise.all([
+            fetchFilesFromPath('internal'),
+            fetchFilesFromPath('external')
+        ]);
+        
+        return { success: true, files: [...internalFiles, ...externalFiles] };
 
-        return { success: true, files };
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to get app base files: ${e.message}`, source: 'getAppBaseFiles' });
         return { success: false, error: e.message };
-    } finally {
-        ssh?.dispose();
     }
 }
 
-export async function createAppBaseFile(serverId: string, fileName: string): Promise<{ success: boolean; error?: string }> {
+export async function createAppBaseFile(serverId: string, fileName: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
      if (!fileName.endsWith('.json')) {
         return { success: false, error: 'File must have a .json extension.'};
     }
     let ssh: NodeSSH | undefined;
     try {
-        const { ssh: sshInstance, server, basePath } = await getAppBasePath(serverId);
+        const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
         ssh = sshInstance;
 
         await ssh.connect({
@@ -88,10 +96,10 @@ export async function createAppBaseFile(serverId: string, fileName: string): Pro
     }
 }
 
-export async function getAppBaseFileContent(serverId: string, fileName: string): Promise<{ success: boolean; content?: string; error?: string }> {
+export async function getAppBaseFileContent(serverId: string, fileName: string, type: 'internal' | 'external'): Promise<{ success: boolean; content?: string; error?: string }> {
      let ssh: NodeSSH | undefined;
     try {
-        const { ssh: sshInstance, server, basePath } = await getAppBasePath(serverId);
+        const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
         ssh = sshInstance;
 
         await ssh.connect({
@@ -116,10 +124,10 @@ export async function getAppBaseFileContent(serverId: string, fileName: string):
     }
 }
 
-export async function saveAppBaseFileContent(serverId: string, fileName: string, content: string): Promise<{ success: boolean; error?: string }> {
+export async function saveAppBaseFileContent(serverId: string, fileName: string, content: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
     let ssh: NodeSSH | undefined;
     try {
-        const { ssh: sshInstance, server, basePath } = await getAppBasePath(serverId);
+        const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
         ssh = sshInstance;
 
         await ssh.connect({
@@ -141,9 +149,9 @@ export async function saveAppBaseFileContent(serverId: string, fileName: string,
 }
 
 
-export async function backupAppBaseFile(serverId: string, fileName: string): Promise<{ success: boolean; error?: string }> {
+export async function backupAppBaseFile(serverId: string, fileName: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
     try {
-        const contentResult = await getAppBaseFileContent(serverId, fileName);
+        const contentResult = await getAppBaseFileContent(serverId, fileName, type);
         if (!contentResult.success || !contentResult.content) {
             throw new Error(contentResult.error || "Could not read file content for backup.");
         }
@@ -158,6 +166,7 @@ export async function backupAppBaseFile(serverId: string, fileName: string): Pro
         await addDoc(collection(firestore, 'appBaseBackups'), {
             siteId: site.id,
             fileName,
+            fileType: type,
             content: contentResult.content,
             backedUpAt: serverTimestamp(),
             backedUpBy: accountId,
@@ -206,8 +215,9 @@ export async function restoreAppBaseBackup(backupId: string, serverId: string): 
         }
 
         const backupData = backupSnap.data() as AppBaseBackup;
+        const fileType = backupData.fileType || 'external'; // Default to external for backward compatibility
         
-        const saveResult = await saveAppBaseFileContent(serverId, backupData.fileName, backupData.content);
+        const saveResult = await saveAppBaseFileContent(serverId, backupData.fileName, backupData.content, fileType);
         
         if (!saveResult.success) {
             throw new Error(saveResult.error || "Failed to write restored content to server.");

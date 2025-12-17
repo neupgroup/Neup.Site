@@ -26,11 +26,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import type { AppBaseFile } from '@/schemas/app-base';
 
-interface AppBaseFile {
-  name: string;
-  size: string;
-}
 
 export default function AppBasePage() {
   const [files, setFiles] = useState<AppBaseFile[]>([]);
@@ -41,7 +39,7 @@ export default function AppBasePage() {
   const [fileContent, setFileContent] = useState('');
   const [isEditorLoading, setIsEditorLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isBackingUp, setIsBackingUp] = useState<string | null>(null);
   const [uploadingFile, setUploadingFile] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -73,7 +71,7 @@ export default function AppBasePage() {
     if (!serverId) return;
     setEditingFile(file);
     setIsEditorLoading(true);
-    const result = await getAppBaseFileContent(serverId, file.name);
+    const result = await getAppBaseFileContent(serverId, file.name, file.type);
     if (result.success && result.content !== undefined) {
       setFileContent(result.content);
     } else {
@@ -86,7 +84,7 @@ export default function AppBasePage() {
   const handleSaveContent = async () => {
     if (!serverId || !editingFile) return;
     setIsSaving(true);
-    const result = await saveAppBaseFileContent(serverId, editingFile.name, fileContent);
+    const result = await saveAppBaseFileContent(serverId, editingFile.name, fileContent, editingFile.type);
     if (result.success) {
       toast({ title: 'File Saved' });
       setEditingFile(null);
@@ -99,14 +97,14 @@ export default function AppBasePage() {
 
   const handleBackup = async (file: AppBaseFile) => {
     if (!serverId) return;
-    setIsBackingUp(true);
-    const result = await backupAppBaseFile(serverId, file.name);
+    setIsBackingUp(file.name);
+    const result = await backupAppBaseFile(serverId, file.name, file.type);
     if (result.success) {
       toast({ title: 'Backup Created', description: `A backup for ${file.name} has been saved.` });
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
-    setIsBackingUp(false);
+    setIsBackingUp(null);
   }
 
   const handleUploadClick = (fileName: string) => {
@@ -121,11 +119,14 @@ export default function AppBasePage() {
     }
 
     const file = event.target.files[0];
+    const targetAppBaseFile = files.find(f => f.name === uploadingFile);
+    if (!targetAppBaseFile) return;
+
     const reader = new FileReader();
 
     reader.onload = async (e) => {
         const content = e.target?.result as string;
-        const result = await saveAppBaseFileContent(serverId, uploadingFile, content);
+        const result = await saveAppBaseFileContent(serverId, uploadingFile, content, targetAppBaseFile.type);
         if (result.success) {
             toast({ title: 'File Uploaded', description: `${uploadingFile} has been updated.` });
             fetchServerAndFiles();
@@ -159,7 +160,7 @@ export default function AppBasePage() {
       <header className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Files</h1>
-          <p className="text-muted-foreground">Manage JSON configuration files in your application's `src/base` directory.</p>
+          <p className="text-muted-foreground">Manage JSON configuration files in your application's base directories.</p>
         </div>
         <div className="flex gap-2">
            <Button asChild variant="outline">
@@ -177,7 +178,7 @@ export default function AppBasePage() {
       <Card>
         <CardHeader>
           <CardTitle>Files</CardTitle>
-          <CardDescription>Files located in the `[appPath]/src/base` directory on your server.</CardDescription>
+          <CardDescription>Files in `[appPath]/base` (Internal) and `[appPath]/src/base` (External).</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -193,16 +194,21 @@ export default function AppBasePage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow><TableHead>Filename</TableHead><TableHead>Size</TableHead><TableHead className="text-right">Actions</TableHead></TableRow>
+                <TableRow><TableHead>Filename</TableHead><TableHead>Type</TableHead><TableHead>Size</TableHead><TableHead className="text-right">Actions</TableHead></TableRow>
               </TableHeader>
               <TableBody>
                 {files.map((file) => (
-                  <TableRow key={file.name}>
+                  <TableRow key={`${file.name}-${file.type}`}>
                     <TableCell className="font-mono">{file.name}</TableCell>
+                    <TableCell>
+                      <Badge variant={file.type === 'internal' ? 'secondary' : 'outline'}>
+                        {file.type === 'internal' ? 'Internal' : 'External'}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{file.size} B</TableCell>
                     <TableCell className="text-right space-x-2">
-                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={isBackingUp}>
-                           {isBackingUp ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
+                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
+                           {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
                            {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload

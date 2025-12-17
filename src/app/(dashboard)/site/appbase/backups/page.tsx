@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getAppBaseBackups, restoreAppBaseBackup, type AppBaseBackup } from '@/actions/app-base';
 import { getSiteServers } from '@/actions/servers';
 import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 
 export default function BackupsPage() {
   const [backups, setBackups] = useState<AppBaseBackup[]>([]);
@@ -88,6 +89,7 @@ export default function BackupsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Filename</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Backed Up At</TableHead>
                   <TableHead>Backed Up By</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -97,6 +99,11 @@ export default function BackupsPage() {
                 {backups.map((backup) => (
                   <TableRow key={backup.id}>
                     <TableCell className="font-mono">{backup.fileName}</TableCell>
+                    <TableCell>
+                      <Badge variant={backup.fileType === 'internal' ? 'secondary' : 'outline'}>
+                        {backup.fileType === 'internal' ? 'Internal' : 'External'}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{backup.backedUpAt ? format(new Date(backup.backedUpAt), 'PPpp') : 'N/A'}</TableCell>
                     <TableCell className="font-mono text-xs">{backup.backedUpBy}</TableCell>
                     <TableCell className="text-right">

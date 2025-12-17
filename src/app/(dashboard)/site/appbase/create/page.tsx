@@ -15,9 +15,11 @@ import { useToast } from '@/hooks/use-toast';
 import { createAppBaseFile } from '@/actions/app-base';
 import { getSiteServers } from '@/actions/servers';
 import Link from 'next/link';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
   fileName: z.string().min(1, 'Filename is required').refine(name => name.endsWith('.json'), 'Filename must end with .json'),
+  type: z.enum(['internal', 'external']),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -28,7 +30,7 @@ export default function CreateAppBaseFilePage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { fileName: '' },
+    defaultValues: { fileName: '', type: 'external' },
   });
 
   const onSubmit = async (data: FormValues) => {
@@ -39,7 +41,7 @@ export default function CreateAppBaseFilePage() {
     }
     const serverId = serverResult.servers[0].id;
     
-    const result = await createAppBaseFile(serverId, data.fileName);
+    const result = await createAppBaseFile(serverId, data.fileName, data.type);
     if (result.success) {
       toast({ title: 'File Created' });
       router.push('/site/appbase');
@@ -65,13 +67,30 @@ export default function CreateAppBaseFilePage() {
               <CardTitle>Create New File</CardTitle>
               <CardDescription>Create a new JSON file in the app's base directory.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <FormField control={form.control} name="fileName" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Filename</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="e.g., config.json" />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="type" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>File Location</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a location" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="external">External (`/src/base`)</SelectItem>
+                      <SelectItem value="internal">Internal (`/base`)</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )} />
