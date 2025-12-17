@@ -24,7 +24,9 @@ async function downloadFile(url: string, dest: string): Promise<void> {
     await fs.writeFile(dest, buffer);
 }
 
-export async function deployCodebase(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
+// This function is now deprecated in favor of API-based uploads
+// but kept for potential future use or reference.
+export async function deployCodebaseFromStorage(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
     const cookieStore = await cookies();
     const siteId = cookieStore.get('siteId')?.value;
     if (!siteId) return { success: false, error: 'Site ID not found.' };

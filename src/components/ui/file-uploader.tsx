@@ -7,47 +7,30 @@ import { useToast } from '@/hooks/use-toast';
 import { UploadCloud, Loader2, CheckCircle, AlertCircle, File as FileIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useProfile } from '@/context/ProfileContext';
-import { initializeFirebase } from '@/lib/firebase';
 import Image from 'next/image';
 
 interface FileUploaderProps {
-  uploadPath: string; // This will now be the path in Firebase Storage, e.g., '/logo.png'
+  uploadPath: string;
   acceptedFileTypes?: string;
   onUploadSuccess?: (url: string) => void;
+  currentImageUrl?: string | null;
 }
 
-export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess }: FileUploaderProps) {
+export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, currentImageUrl }: FileUploaderProps) {
   const { site } = useProfile();
   const { toast } = useToast();
   
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
-  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
 
   const siteId = site?.id;
 
-  const fetchExistingFile = useCallback(async () => {
-    if (!siteId) return;
-    try {
-        const { storage } = initializeFirebase();
-        const storageRef = ref(storage, `uploads/${siteId}${uploadPath}`);
-        const url = await getDownloadURL(storageRef);
-        setPreviewUrl(url);
-    } catch (e: any) {
-        if (e.code !== 'storage/object-not-found') {
-            console.warn(`Could not fetch existing file for ${uploadPath}:`, e.message);
-        }
-        setPreviewUrl(null);
-    }
-  }, [siteId, uploadPath]);
-
   useEffect(() => {
-    fetchExistingFile();
-  }, [fetchExistingFile]);
+    setPreviewUrl(currentImageUrl || null);
+  }, [currentImageUrl]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -68,31 +51,37 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess }:
     if (!file || !siteId) return;
 
     setStatus('uploading');
-    setProgress(0);
     setError(null);
 
-    try {
-      const { storage } = initializeFirebase();
-      const storageRef = ref(storage, `uploads/${siteId}${uploadPath}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('platform', 'neupsites');
+    formData.append('contentIds', JSON.stringify([siteId]));
 
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setProgress(progress);
-        },
-        (error) => {
-          throw error;
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          setStatus('success');
-          setPreviewUrl(downloadURL);
-          setFile(null);
-          toast({ title: 'Upload Successful', description: `${file.name} has been uploaded.` });
-          if (onUploadSuccess) onUploadSuccess(downloadURL);
-        }
-      );
+    const fileName = uploadPath.split('/').pop()?.split('.')[0] || 'file';
+    formData.append('name', fileName);
+
+    try {
+      const response = await fetch('https://neupgroup.com/api/v1/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.url) {
+        setStatus('success');
+        setPreviewUrl(result.url);
+        setFile(null);
+        toast({ title: 'Upload Successful', description: `${file.name} has been uploaded.` });
+        if (onUploadSuccess) onUploadSuccess(result.url);
+      } else {
+        throw new Error(result.message || 'The API returned an error.');
+      }
     } catch (e: any) {
       setStatus('error');
       setError(e.message || 'An unknown error occurred');
@@ -130,7 +119,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess }:
             <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(2)} KB</span>
           </div>
           <Button onClick={handleUpload} disabled={status === 'uploading'} size="sm">
-            {status === 'uploading' ? `Uploading ${Math.round(progress)}%` : 'Upload'}
+            {status === 'uploading' ? `Uploading...` : 'Upload'}
           </Button>
         </div>
       )}

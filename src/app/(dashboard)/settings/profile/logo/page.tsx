@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -5,10 +6,27 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { FileUploader } from '@/components/ui/file-uploader';
+import { useProfile } from '@/context/ProfileContext';
+import { saveSite, type Site } from '@/actions/editor/site';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LogoUploadPage() {
+  const { site, setSite } = useProfile();
+  const { toast } = useToast();
+
+  const handleUploadSuccess = async (logoUrl: string) => {
+    const result = await saveSite({ logoUrl });
+    if (result.success) {
+      if (site) {
+        setSite({ ...site, logoUrl });
+      }
+      toast({ title: "Logo Updated", description: "Your new site logo has been saved." });
+    } else {
+      toast({ variant: 'destructive', title: "Error", description: result.error });
+    }
+  };
+  
   const iconUploads = [
-    { label: 'Site Logo (SVG, PNG, JPG)', path: '/logo.png', acceptedTypes: 'image/*' },
     { label: 'Favicon (favicon.ico)', path: '/favicon.ico', acceptedTypes: 'image/x-icon' },
     { label: 'Apple Touch Icon (apple-touch-icon.png)', path: '/apple-touch-icon.png', acceptedTypes: 'image/png' },
     { label: 'Favicon 16x16 (favicon-16x16.png)', path: '/favicon-16x16.png', acceptedTypes: 'image/png' },
@@ -33,9 +51,26 @@ export default function LogoUploadPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Site Assets</CardTitle>
+          <CardTitle>Site Logo</CardTitle>
           <CardDescription>
-            Upload your logo and the necessary favicons. Each uploader accepts a single file. Dropping a new file will overwrite the existing one.
+            Upload your main site logo. This will be displayed in the header.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <FileUploader 
+                uploadPath="/logo.png"
+                acceptedFileTypes="image/*"
+                onUploadSuccess={handleUploadSuccess}
+                currentImageUrl={site?.logoUrl}
+            />
+        </CardContent>
+      </Card>
+      
+       <Card>
+        <CardHeader>
+          <CardTitle>Site Icons</CardTitle>
+          <CardDescription>
+            Upload the necessary favicons. Each uploader accepts a single file. Dropping a new file will overwrite the existing one.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">

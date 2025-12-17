@@ -104,45 +104,6 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
 }
 
 /**
- * Uploads a file to a specific path within the public folder on the remote server.
- */
-export async function uploadPublicFile(filePath: string, content: string): Promise<{ success: boolean; error?: string }> {
-    let ssh: NodeSSH | undefined;
-    const siteId = 'current-site'; // Placeholder
-
-    try {
-        const { ssh: sshConnection, publicPath: remoteBaseDir } = await getRemoteServerConnection(siteId);
-        ssh = sshConnection;
-
-        const remoteFullPath = path.posix.join(remoteBaseDir, filePath);
-        const remoteDir = path.posix.dirname(remoteFullPath);
-
-        // Ensure remote directory exists
-        await ssh.execCommand(`mkdir -p "${remoteDir}"`);
-
-        const fileContent = Buffer.from(content, 'base64');
-        
-        const tempFileName = `upload-${Date.now()}-${path.basename(filePath)}`;
-        const tempFilePath = path.join(os.tmpdir(), tempFileName);
-        await fs.writeFile(tempFilePath, fileContent);
-        
-        try {
-            await ssh.putFile(tempFilePath, remoteFullPath);
-        } finally {
-            await fs.unlink(tempFilePath);
-        }
-
-        return { success: true };
-    } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to upload file to ${filePath}: ${e.message}`, source: 'uploadPublicFile' });
-        return { success: false, error: `File upload failed: ${e.message}` };
-    } finally {
-        ssh?.dispose();
-    }
-}
-
-
-/**
  * Deletes a file or directory from the public folder on the remote server.
  */
 export async function deletePublicFile(relativePath: string): Promise<{ success: boolean; error?: string }> {

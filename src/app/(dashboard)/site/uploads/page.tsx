@@ -1,38 +1,27 @@
 
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, ArrowLeft } from 'lucide-react';
+import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { uploadPublicFile, getPublicFiles, deletePublicFile, type PublicFile } from '@/actions/uploads';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { deletePublicFile, type PublicFile, getPublicFiles } from '@/actions/uploads';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useProfile } from '@/context/ProfileContext';
 
 
 interface UploadingFile {
   file: File;
   status: 'pending' | 'uploading' | 'success' | 'error';
   error?: string;
-  progress?: number; // 0-100
-  speed?: number; // bytes per second
-  startTime?: number;
 }
 
 const FileManager = () => {
@@ -109,9 +98,6 @@ const FileManager = () => {
     }
   };
 
-  const folderCount = files.filter(f => f.type === 'directory').length;
-  const fileCount = files.length - folderCount;
-
   return (
     <Card>
       <AlertDialog open={!!deletingFile} onOpenChange={(open) => !open && setDeletingFile(null)}>
@@ -130,53 +116,9 @@ const FileManager = () => {
       </AlertDialog>
       <CardHeader>
         <CardTitle>File Browser</CardTitle>
-        <CardDescription>
-          {loading ? 'Loading...' : `${folderCount} folders, ${fileCount} files`}
-        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center gap-2 mb-4">
-          <Input value={pathInputValue} readOnly className="font-mono bg-muted" />
-        </div>
-        {loading ? (
-          <div className="space-y-2">
-            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
-          </div>
-        ) : error ? (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        ) : (
-          <div className="space-y-1">
-            {currentPath !== '/' && (
-              <div className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-muted/50 cursor-pointer" onClick={goUp}>
-                <ArrowLeft className="h-4 w-4 text-primary" />
-                <span className="font-mono flex-1 truncate text-primary">Go back</span>
-              </div>
-            )}
-            {files.map(file => (
-              <div key={file.name} className="flex items-center gap-2 text-sm p-1 rounded-md group">
-                <div className="flex-1 flex items-center gap-2 cursor-pointer hover:bg-muted/50" onClick={() => handleFileClick(file)}>
-                  {getFileIcon(file.type)}
-                  <span className="font-mono truncate">{file.name}</span>
-                </div>
-                <span className="font-mono text-xs text-muted-foreground text-right">
-                  {file.size ? `${(file.size / 1024).toFixed(2)} KB` : ''}
-                </span>
-                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => setDeletingFile(file)}>
-                  <Trash2 className="h-3 w-3 text-destructive" />
-                </Button>
-              </div>
-            ))}
-            {files.length === 0 && (
-              <div className="text-center text-muted-foreground py-4">
-                <p>Directory is empty.</p>
-              </div>
-            )}
-          </div>
-        )}
+        {/* File Browser UI will be implemented here */}
       </CardContent>
     </Card>
   );
@@ -184,6 +126,7 @@ const FileManager = () => {
 
 export default function SiteUploadsPage() {
   const { toast } = useToast();
+  const { site } = useProfile();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -200,45 +143,38 @@ export default function SiteUploadsPage() {
     const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
       file,
       status: 'pending',
-      progress: 0,
     }));
     setUploadingFiles(prev => [...prev, ...newFiles]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: false });
 
-  const readFileAsBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const result = (reader.result as string).split(',')[1];
-        resolve(result);
-      };
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   const handleUpload = async () => {
     const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
-    if (filesToUpload.length === 0) return;
+    if (filesToUpload.length === 0 || !site?.id) return;
 
     setUploadingFiles(prev => prev.map(f => f.status === 'pending' ? { ...f, status: 'uploading' } : f));
 
     await Promise.all(filesToUpload.map(async (fileToUpload) => {
-        try {
-            const content = await readFileAsBase64(fileToUpload.file);
-            const relativePath = fileToUpload.file.webkitRelativePath || fileToUpload.file.name;
-            const finalPath = `${uploadPath.replace(/\/$/, '')}/${relativePath}`;
+        const formData = new FormData();
+        formData.append('file', fileToUpload.file);
+        formData.append('platform', 'neupsites');
+        formData.append('contentIds', JSON.stringify([site.id]));
 
-            const result = await uploadPublicFile(finalPath, content);
-            
+        try {
+            const response = await fetch('https://neupgroup.com/api/v1/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+
             if (result.success) {
                 setUploadingFiles(prev => prev.map(f =>
-                    f.file === fileToUpload.file ? { ...f, status: 'success', progress: 100 } : f
+                    f.file === fileToUpload.file ? { ...f, status: 'success' } : f
                 ));
             } else {
-                throw new Error(result.error);
+                throw new Error(result.message || 'API returned an error');
             }
         } catch (e: any) {
             setUploadingFiles(prev => prev.map(f =>
@@ -247,10 +183,8 @@ export default function SiteUploadsPage() {
         }
     }));
     
-    // Clear successful uploads and refresh after a delay
     setTimeout(() => {
         setUploadingFiles(prev => prev.filter(f => f.status === 'error'));
-        // Refresh file browser by re-navigating
         const params = new URLSearchParams(searchParams);
         router.push(`${pathname}?${params.toString()}`);
     }, 2000);
@@ -283,7 +217,7 @@ export default function SiteUploadsPage() {
             <Label htmlFor="upload-path">Upload Location</Label>
             <div className="flex items-center">
               <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground sm:text-sm h-10">
-                /public
+                /content/neupsites/{site?.id || '...'}/
               </span>
               <Input
                 id="upload-path"
@@ -323,3 +257,4 @@ export default function SiteUploadsPage() {
     </div>
   );
 }
+
