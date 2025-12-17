@@ -11,7 +11,10 @@ import type { Site } from '@/schemas/site';
 
 
 export const metadata: Metadata = {
-  title: 'Neup.Sites',
+  title: {
+    template: '%s | Neup.Sites',
+    default: 'Neup.Sites'
+  },
   description: 'Visually build your website.',
 };
 

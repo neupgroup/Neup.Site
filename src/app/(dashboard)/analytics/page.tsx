@@ -9,7 +9,7 @@ export default function AnalyticsPage() {
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Site Analytics</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Analytics</h1>
       </header>
       <Card>
         <CardHeader>

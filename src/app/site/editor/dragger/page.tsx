@@ -5,6 +5,11 @@ import Editor from '@/components/editor/editor';
 import { getPage } from '@/actions/editor/pages';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Editor',
+};
 
 const initialElements: CanvasElementData[] = [];
 

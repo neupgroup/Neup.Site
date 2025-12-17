@@ -8,7 +8,7 @@ export default function ArticlesPage() {
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Articles</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Articles</h1>
       </header>
       <Card>
         <CardHeader>

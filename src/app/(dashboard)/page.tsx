@@ -3,6 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Users, FileText, Puzzle, Palette, Newspaper, Plus } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Dashboard',
+};
 
 // Placeholder data - in a real app, this would come from an API or database
 const dashboardData = {

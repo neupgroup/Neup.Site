@@ -8,7 +8,7 @@ export default function ReferralsPage() {
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Referrals</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Referrals</h1>
       </header>
       <Card>
         <CardHeader>
