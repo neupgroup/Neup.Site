@@ -2,6 +2,7 @@
 import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 import { errorEmitter } from './error-emitter';
 
@@ -9,6 +10,7 @@ interface FirebaseInstances {
     app: FirebaseApp;
     firestore: Firestore;
     auth: Auth;
+    storage: FirebaseStorage;
 }
 
 function initializeFirebase(): FirebaseInstances {
@@ -19,8 +21,9 @@ function initializeFirebase(): FirebaseInstances {
     const app = getApp();
     const firestore = getFirestore(app);
     const auth = getAuth(app);
+    const storage = getStorage(app);
     
-    return { app, firestore, auth };
+    return { app, firestore, auth, storage };
   } catch (e: any) {
     // Emit a generic error if Firebase initialization fails.
     // This is a critical error, so it should be handled globally.

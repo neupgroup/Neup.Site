@@ -1,8 +1,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -15,7 +16,6 @@ import { deployCodebase } from '@/actions/deploy';
 import type { CodeFile } from '@/schemas/codebase';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 interface UploadingFile {
@@ -156,7 +156,7 @@ export default function CodebasePage() {
         </div>
          <Button onClick={handleDeploy} disabled={isDeploying || totalCount === 0}>
             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2" />}
-            {isDeploying ? 'Deploying...' : 'Deploy Codebase'}
+            {isDeploying ? 'Deploying...' : 'Deploy Assets'}
         </Button>
       </header>
       <Card>

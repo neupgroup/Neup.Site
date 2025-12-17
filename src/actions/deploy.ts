@@ -3,22 +3,25 @@
 
 import { cookies } from 'next/headers';
 import { getFirestore, collection, query, where, getDocs, limit, orderBy } from 'firebase/firestore';
+import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
 import { initializeFirebase } from '@/lib/firebase';
 import { getPrivateServerDetails } from '@/actions/servers';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToFirestore } from '@/lib/logging';
-import type { CodeFile } from '@/schemas/codebase';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
+import { getSite } from './editor/site';
 
-async function getAllFiles(siteId: string): Promise<CodeFile[]> {
-    const { firestore } = initializeFirebase();
-    const filesRef = collection(firestore, 'codeFiles');
-    const siteQuery = query(filesRef, where('siteId', '==', siteId));
-    const querySnapshot = await getDocs(siteQuery);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as CodeFile));
+async function downloadFile(url: string, dest: string): Promise<void> {
+    const res = await fetch(url);
+    if (!res.ok) {
+        throw new Error(`Failed to download file from ${url}: ${res.statusText}`);
+    }
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    await fs.writeFile(dest, buffer);
 }
 
 export async function deployCodebase(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
@@ -30,7 +33,7 @@ export async function deployCodebase(): Promise<{ success: boolean; error?: stri
 
     // 1. Find the server allocation for this site
     const allocationsQuery = query(
-        collection(firestore, 'serverAllocations'),
+        collection(firestore, 'allocations'),
         where('siteId', '==', siteId),
         limit(1)
     );
@@ -41,21 +44,25 @@ export async function deployCodebase(): Promise<{ success: boolean; error?: stri
     const allocation = allocationsSnapshot.docs[0].data();
     const serverId = allocation.serverId;
 
-    const deploymentPath = allocation.deploymentPath || '/var/www/app';
-
     // 2. Get server credentials
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
     if (serverError || !server || !server.publicIp || !server.privateKey) {
         return { success: false, error: `Failed to retrieve server credentials: ${serverError || 'Missing IP or key.'}` };
     }
 
-    const username = allocation.username || server.username || 'root';
+    const { site } = await getSite();
+    if (!site) {
+      return { success: false, error: 'Could not resolve site context for deployment.' };
+    }
+
+    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site.id) || `/var/www/${site.id}`;
 
     // 3. Create initial log entry
     const createLogResult = await createServerLog({
         serverId: serverId,
-        command: `CODEBASE DEPLOYMENT for site: ${siteId}`,
-        output: 'Starting deployment...',
+        commandName: `Asset Deployment for site: ${siteId}`,
+        command: `Deploying assets from Firebase Storage to ${resolvedAppPath}/public`,
+        output: 'Starting asset deployment...',
         status: 'pending',
         initiatedBy: 'system',
     });
@@ -66,75 +73,65 @@ export async function deployCodebase(): Promise<{ success: boolean; error?: stri
     const logId = createLogResult.id;
 
     // Start the deployment in the background (don't await the full process)
-    runDeploymentInBackground(logId, serverId, siteId, deploymentPath, username, server.publicIp, server.privateKey);
+    runAssetDeploymentInBackground(logId, serverId, siteId, resolvedAppPath, server.username || 'root', server.publicIp, server.privateKey);
 
     return { success: true, serverId, logId };
 }
 
 
-async function runDeploymentInBackground(logId: string, serverId: string, siteId: string, deploymentPath: string, username: string, host: string, privateKey: string) {
+async function runAssetDeploymentInBackground(logId: string, serverId: string, siteId: string, appPath: string, username: string, host: string, privateKey: string) {
+    const { storage } = initializeFirebase();
     const ssh = new NodeSSH();
-    let finalOutput = '';
+    let finalOutput = `Starting asset deployment for site ${siteId}...\n`;
 
     try {
-        await updateServerLog(logId, { status: 'ongoing', output: `Fetching all code files for site ${siteId}...` });
+        await updateServerLog(logId, { status: 'ongoing', output: finalOutput });
 
-        const files = await getAllFiles(siteId);
-        if (files.length === 0) {
-            throw new Error("No files found in the codebase to deploy.");
+        const storageRef = ref(storage, `uploads/${siteId}`);
+        const res = await listAll(storageRef);
+
+        if (res.items.length === 0 && res.prefixes.length === 0) {
+            finalOutput += 'No assets found in Firebase Storage to deploy.\n';
+            await updateServerLog(logId, { status: 'completed', output: finalOutput });
+            return;
         }
 
-        await updateServerLog(logId, { output: `Found ${files.length} files. Connecting to server ${host}...` });
+        finalOutput += `Found ${res.items.length} file(s) and ${res.prefixes.length} folder(s).\nConnecting to server...\n`;
+        await updateServerLog(logId, { output: finalOutput });
 
         await ssh.connect({ host, username, privateKey });
 
-        await updateServerLog(logId, { output: `Connected to server. Preparing remote directory: ${deploymentPath}` });
+        finalOutput += 'Connected to server. Preparing public directory...\n';
+        await updateServerLog(logId, { output: finalOutput });
+        const remotePublicPath = `${appPath}/public`;
+        await ssh.execCommand(`mkdir -p ${remotePublicPath}`);
 
-        await ssh.execCommand(`mkdir -p ${deploymentPath}`);
+        for (const itemRef of res.items) {
+            const downloadUrl = await getDownloadURL(itemRef);
+            const tempFilePath = path.join(os.tmpdir(), itemRef.name);
+            const remotePath = path.posix.join(remotePublicPath, itemRef.name);
 
-        finalOutput += `Connected successfully.\nUploading ${files.length} files to ${deploymentPath}...\n\n`;
+            finalOutput += `Downloading ${itemRef.name}...\n`;
+            await updateServerLog(logId, { output: finalOutput });
+            
+            await downloadFile(downloadUrl, tempFilePath);
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const remotePath = `${deploymentPath}/${file.filePath}`;
-            const remoteDir = remotePath.substring(0, remotePath.lastIndexOf('/'));
+            finalOutput += `Uploading ${itemRef.name} to ${remotePath}...\n`;
+            await updateServerLog(logId, { output: finalOutput });
 
-            // This is slow if done for every file. A better approach would be to collect all dirs first.
-            if (remoteDir !== deploymentPath) {
-                await ssh.execCommand(`mkdir -p ${remoteDir}`);
-            }
-
-            // The content is already base64 encoded in the database
-            const fileContent = Buffer.from(file.content, 'base64');
-            const tempFilePath = path.join(os.tmpdir(), `deploy-${file.id}-${Date.now()}`);
-            fs.writeFileSync(tempFilePath, fileContent);
-
-            try {
-                await ssh.putFile(tempFilePath, remotePath);
-            } finally {
-                if (fs.existsSync(tempFilePath)) {
-                    fs.unlinkSync(tempFilePath);
-                }
-            }
-
-            const progress = `(${(i + 1)}/${files.length}) Uploaded: ${file.filePath}\n`;
-            finalOutput += progress;
-
-            // Only update log periodically to avoid spamming Firestore
-            if (i % 5 === 0 || i === files.length - 1) {
-                await updateServerLog(logId, { output: finalOutput });
-            }
+            await ssh.putFile(tempFilePath, remotePath);
+            await fs.unlink(tempFilePath);
         }
 
-        finalOutput += `\nDeployment completed successfully.`;
+        finalOutput += `\nAsset deployment completed successfully.`;
         await updateServerLog(logId, { status: 'completed', output: finalOutput });
 
     } catch (e: any) {
         finalOutput += `\n\n--- DEPLOYMENT FAILED ---\n${e.message}`;
         await updateServerLog(logId, { status: 'failed', output: finalOutput });
         await logErrorToFirestore({
-            message: `Deployment failed for site ${siteId}: ${e.message}`,
-            source: 'deployCodebase.runDeploymentInBackground',
+            message: `Asset deployment failed for site ${siteId}: ${e.message}`,
+            source: 'deployCodebase.runAssetDeploymentInBackground',
             stack: e.stack,
         });
     } finally {
