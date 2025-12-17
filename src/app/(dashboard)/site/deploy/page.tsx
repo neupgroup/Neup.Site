@@ -2,10 +2,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon } from 'lucide-react';
-import { getStructure, buildStructure, createDeployment, getLastDeployment } from '@/actions/structure';
+import { getStructure, createDeployment, getLastDeployment } from '@/actions/structure';
 import type { Structure, Deployment } from '@/schemas/site';
 import { getSiteServers } from '@/actions/servers';
 import { useRouter } from 'next/navigation';
@@ -160,4 +160,3 @@ export default function DeployPage() {
         </div >
     );
 }
-
