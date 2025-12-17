@@ -5,15 +5,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon } from 'lucide-react';
-import { getStructure, createDeployment, getLastDeployment } from '@/actions/structure';
+import { getStructure, createDeployment, getLastDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending } from '@/actions/structure';
 import type { Structure, Deployment } from '@/schemas/site';
 import { getSiteServers } from '@/actions/servers';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 
-const StatusCard = ({ title, description, status, icon: Icon }: { title: string; description: string; status: 'loading' | 'pending' | 'deployed'; icon: React.ElementType }) => {
+const StatusCard = ({ title, description, status, icon: Icon, onDeploy }: { title: string; description: string; status: 'loading' | 'pending' | 'deployed'; icon: React.ElementType, onDeploy: () => void }) => {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -27,6 +26,11 @@ const StatusCard = ({ title, description, status, icon: Icon }: { title: string;
                     {status === 'deployed' && <CheckCircle className="h-4 w-4 text-green-500" />}
                     <p className="text-sm text-muted-foreground">{description}</p>
                 </div>
+                 {status === 'deployed' && (
+                    <Button variant="link" size="sm" className="p-0 h-auto text-xs mt-1" onClick={onDeploy}>
+                        Deploy again?
+                    </Button>
+                )}
             </CardContent>
         </Card>
     );
@@ -81,6 +85,30 @@ export default function DeployPage() {
         setIsDeploying(false);
     }
     
+    const handleForceDeploy = async (type: 'theme' | 'redirects' | 'assets' | 'structure') => {
+        if (!structure?.siteId) return;
+
+        setIsDeploying(true);
+        toast({ title: "Initiating Deployment...", description: `Marking ${type} as pending.` });
+
+        try {
+            if (type === 'theme') {
+                await markThemeAsPending(structure.siteId);
+            } else if (type === 'redirects') {
+                await markRedirectsAsPending(structure.siteId);
+            } else if (type === 'assets') {
+                await markAssetsAsPending(structure.siteId);
+            }
+            // For structure, we assume if you click deploy again you want to deploy whatever is current.
+            
+            await handleDeploy();
+
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not force deployment.'});
+            setIsDeploying(false);
+        }
+    }
+    
     const hasPendingStructure = structure?.structure.some(s => s.changesMade) || false;
     const hasPendingTheme = structure?.themeChanged || false;
     const hasPendingRedirects = structure?.redirectsChanged || false;
@@ -119,24 +147,28 @@ export default function DeployPage() {
                             description={hasPendingStructure ? "Path or page content changes pending" : "Up to date"}
                             status={getStatus(hasPendingStructure)}
                             icon={GitBranch}
+                             onDeploy={() => handleForceDeploy('structure')}
                         />
                          <StatusCard 
                             title="Theme" 
                             description={hasPendingTheme ? "Color or style changes pending" : "Up to date"}
                             status={getStatus(hasPendingTheme)}
                             icon={Palette}
+                             onDeploy={() => handleForceDeploy('theme')}
                         />
                          <StatusCard 
                             title="Redirects" 
                             description={hasPendingRedirects ? "URL redirect changes pending" : "Up to date"}
                             status={getStatus(hasPendingRedirects)}
                             icon={Redo}
+                             onDeploy={() => handleForceDeploy('redirects')}
                         />
                          <StatusCard 
                             title="Site Assets" 
                             description={hasPendingAssets ? "Logo or profile changes pending" : "Up to date"}
                             status={getStatus(hasPendingAssets)}
                             icon={ImageIcon}
+                            onDeploy={() => handleForceDeploy('assets')}
                         />
                     </div>
                 </CardContent>
@@ -144,8 +176,7 @@ export default function DeployPage() {
                     {hasServer ? (
                         <Button
                           onClick={handleDeploy}
-                          disabled={isDeploying || loading}
-                          variant={!hasAnyPendingChanges ? 'outline' : 'default'}
+                          disabled={isDeploying || loading || !hasAnyPendingChanges}
                         >
                             {isDeploying ? (
                                 <Loader2 className="animate-spin mr-2" />
@@ -154,9 +185,8 @@ export default function DeployPage() {
                             )}
                             {isDeploying
                                 ? 'Deploying...'
-                                : hasAnyPendingChanges
-                                ? 'Deploy All Changes'
-                                : 'Deploy Again?'}
+                                : 'Deploy All Changes'
+                            }
                         </Button>
                     ) : (
                         <Alert variant="destructive" className="w-full">
