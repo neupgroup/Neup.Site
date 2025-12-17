@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from 'firebase/firestore';
@@ -10,7 +11,7 @@ import { getPages } from './editor/pages';
 import { getSite } from './editor/site';
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
@@ -188,7 +189,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     });
 
     // Upload structure, theme, and redirects to the server
-    await uploadStructureToServer(siteId, currentStructure.structure, site?.theme || {}, formattedRedirects || []);
+    await uploadStructureToServer(siteId, currentStructure, site || null);
 
     // Reset the staging structure
     const updatedPaths = currentStructure.structure.map(p => ({ ...p, changesMade: false }));
@@ -208,105 +209,138 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
   }
 }
 
-async function uploadStructureToServer(siteId: string, structure: any, theme: any, redirects: any[]): Promise<{ success: boolean; error?: string }> {
-  let logId: string | undefined;
-
-  try {
-    const { firestore } = initializeFirebase();
-    const allocationsQuery = query(
-      collection(firestore, 'allocations'),
-      where('siteId', '==', siteId),
-      limit(1)
-    );
-    let allocationsSnapshot = await getDocs(allocationsQuery);
-
-    if (allocationsSnapshot.empty) {
-      console.warn(`No server allocated for site ${siteId}. Structure not uploaded.`);
-      return { success: true };
-    }
-
-    const allocation = allocationsSnapshot.docs[0].data();
-    const serverId = allocation.serverId;
-
-    const { server, error } = await getPrivateServerDetails(serverId);
-    if (error || !server || !server.publicIp || !server.privateKey) {
-      console.error(`Server details not found for ${serverId}: ${error}`);
-      return { success: false, error: error || 'Server details not found' };
-    }
-
-    const logResult = await createServerLog({
-      serverId: serverId,
-      commandName: 'Deploy Site Data',
-      command: 'Uploading site structure, theme, and redirects to server...',
-      output: 'Starting deployment process...',
-      status: 'pending',
-      initiatedBy: 'system'
-    });
-
-    if (logResult.success && logResult.id) {
-      logId = logResult.id;
-    }
-    
-    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
-    const targetDir = `${resolvedAppPath}/src`;
-
-    const ssh = new NodeSSH();
-    console.log(`Connecting to ${server.publicIp} to upload data...`);
-    if (logId) await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
+async function uploadStructureToServer(siteId: string, structure: Structure, site: Site | null): Promise<{ success: boolean; error?: string }> {
+    let logId: string | undefined;
 
     try {
-      await ssh.connect({
-        host: server.publicIp,
-        username: server.username || 'root',
-        privateKey: server.privateKey
-      });
+        const { firestore } = initializeFirebase();
+        const allocationsQuery = query(
+            collection(firestore, 'allocations'),
+            where('siteId', '==', siteId),
+            limit(1)
+        );
+        const allocationsSnapshot = await getDocs(allocationsQuery);
 
-      const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
-      const tempStructurePath = path.join(tempDir, `structure.json`);
-      const tempThemePath = path.join(tempDir, `theme.json`);
-      const tempRedirectsPath = path.join(tempDir, `redirects.json`);
+        if (allocationsSnapshot.empty) {
+            console.warn(`No server allocated for site ${siteId}. Data not uploaded.`);
+            return { success: true };
+        }
 
-      await fs.promises.writeFile(tempStructurePath, JSON.stringify(structure, null, 2));
-      await fs.promises.writeFile(tempThemePath, JSON.stringify(theme, null, 2));
-      await fs.promises.writeFile(tempRedirectsPath, JSON.stringify(redirects, null, 2));
+        const allocation = allocationsSnapshot.docs[0].data();
+        const serverId = allocation.serverId;
 
-      try {
-        if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${targetDir}...` });
-        await ssh.execCommand(`mkdir -p ${targetDir}`);
-        await ssh.putDirectory(tempDir, targetDir, {
-            recursive: true,
-            concurrency: 1,
-            tick: (localPath, remotePath, error) => {
-              if (error) {
-                console.error(`Failed to upload ${localPath}`);
-              }
-            }
+        const { server, error } = await getPrivateServerDetails(serverId);
+        if (error || !server || !server.publicIp || !server.privateKey) {
+            console.error(`Server details not found for ${serverId}: ${error}`);
+            return { success: false, error: error || 'Server details not found' };
+        }
+
+        const logResult = await createServerLog({
+            serverId: serverId,
+            commandName: 'Deploy Site Data',
+            command: 'Uploading site structure, theme, redirects, and profile to server...',
+            output: 'Starting deployment process...',
+            status: 'pending',
+            initiatedBy: 'system'
         });
 
-        const successMsg = 'Structure, theme, and redirects uploaded successfully.';
-        console.log(successMsg);
-        if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
+        if (logResult.success && logResult.id) {
+            logId = logResult.id;
+        }
 
-      } finally {
-        await fs.promises.rm(tempDir, { recursive: true, force: true });
-      }
+        const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
+        const srcDir = `${resolvedAppPath}/src`;
+        const dataDir = `${resolvedAppPath}/data`;
 
-    } catch (sshError: any) {
-      console.error('SSH Error uploading site data:', sshError);
-      const errMsg = `Failed to upload data to server: ${sshError.message}`;
-      if (logId) await updateServerLog(logId, { status: 'failed', output: errMsg });
-      throw new Error(errMsg);
-    } finally {
-      ssh.dispose();
+        const ssh = new NodeSSH();
+        console.log(`Connecting to ${server.publicIp} to upload data...`);
+        if (logId) await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
+
+        try {
+            await ssh.connect({
+                host: server.publicIp,
+                username: server.username || 'root',
+                privateKey: server.privateKey
+            });
+
+            // Create temporary local directories
+            const tempBaseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
+            const tempSrcDir = path.join(tempBaseDir, 'src');
+            const tempDataDir = path.join(tempBaseDir, 'data');
+            await fs.mkdir(tempSrcDir, { recursive: true });
+            await fs.mkdir(tempDataDir, { recursive: true });
+
+            // Prepare redirects data
+            const redirectsResult = await getRedirects();
+            const redirects = redirectsResult.success ? redirectsResult.redirects : [];
+            const formattedRedirects = redirects?.map(r => ({
+                source: r.from,
+                destination: r.to,
+                permanent: r.type === 'permanent',
+            }));
+
+            // Prepare site profile data
+            const siteProfile = {
+                name: site?.name || '',
+                logoUrl: site?.logoUrl || '',
+                hideSitename: site?.hideSitename || false
+            };
+            
+            // Write files to temp directories
+            await fs.writeFile(path.join(tempSrcDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
+            await fs.writeFile(path.join(tempDataDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
+            await fs.writeFile(path.join(tempDataDir, 'redirects.json'), JSON.stringify(formattedRedirects || [], null, 2));
+            await fs.writeFile(path.join(tempDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
+
+
+            try {
+                if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${resolvedAppPath}...` });
+                
+                await ssh.execCommand(`mkdir -p ${srcDir}`);
+                await ssh.execCommand(`mkdir -p ${dataDir}`);
+
+                // Upload src directory
+                await ssh.putDirectory(tempSrcDir, srcDir, {
+                    recursive: true,
+                    concurrency: 1,
+                    tick: (localPath, remotePath, error) => {
+                        if (error) console.error(`Failed to upload ${localPath}`);
+                    }
+                });
+
+                 // Upload data directory
+                 await ssh.putDirectory(tempDataDir, dataDir, {
+                    recursive: true,
+                    concurrency: 1,
+                    tick: (localPath, remotePath, error) => {
+                        if (error) console.error(`Failed to upload ${localPath}`);
+                    }
+                });
+
+                const successMsg = 'Site data (structure, theme, redirects, profile) uploaded successfully.';
+                console.log(successMsg);
+                if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
+
+            } finally {
+                await fs.rm(tempBaseDir, { recursive: true, force: true });
+            }
+
+        } catch (sshError: any) {
+            console.error('SSH Error uploading site data:', sshError);
+            const errMsg = `Failed to upload data to server: ${sshError.message}`;
+            if (logId) await updateServerLog(logId, { status: 'failed', output: errMsg });
+            throw new Error(errMsg);
+        } finally {
+            ssh.dispose();
+        }
+
+        return { success: true };
+
+    } catch (e: any) {
+        if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
+        await logErrorToFirestore({ message: `Failed to upload site data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
+        return { success: false, error: e.message };
     }
-
-    return { success: true };
-
-  } catch (e: any) {
-    if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToFirestore({ message: `Failed to upload site data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
-    return { success: false, error: e.message };
-  }
 }
 
 
