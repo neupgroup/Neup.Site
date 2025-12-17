@@ -43,7 +43,7 @@ export default function LogoUploadPage() {
             <p className="text-muted-foreground">Upload your site's branding assets.</p>
         </div>
         <Button variant="ghost" asChild>
-            <Link href="/profile">
+            <Link href="/settings/profile">
                 <ArrowLeft className="mr-2" /> Back to Profile
             </Link>
         </Button>
