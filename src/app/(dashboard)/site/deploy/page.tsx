@@ -142,9 +142,21 @@ export default function DeployPage() {
                 </CardContent>
                 <CardFooter>
                     {hasServer ? (
-                        <Button onClick={handleDeploy} disabled={isDeploying || loading || !hasAnyPendingChanges}>
-                            {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2 h-4 w-4" />}
-                            {isDeploying ? 'Deploying...' : (hasAnyPendingChanges ? 'Deploy All Changes' : 'Nothing to Deploy')}
+                        <Button
+                          onClick={handleDeploy}
+                          disabled={isDeploying || loading}
+                          variant={!hasAnyPendingChanges ? 'outline' : 'default'}
+                        >
+                            {isDeploying ? (
+                                <Loader2 className="animate-spin mr-2" />
+                            ) : (
+                                <Rocket className="mr-2 h-4 w-4" />
+                            )}
+                            {isDeploying
+                                ? 'Deploying...'
+                                : hasAnyPendingChanges
+                                ? 'Deploy All Changes'
+                                : 'Deploy Again?'}
                         </Button>
                     ) : (
                         <Alert variant="destructive" className="w-full">
