@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
 import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/actions/codebase';
-import { deployCodebase } from '@/actions/deploy';
+import { deployCodebaseFromStorage } from '@/actions/deploy';
 import type { CodeFile } from '@/schemas/codebase';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -121,7 +121,7 @@ export default function CodebasePage() {
 
   const handleDeploy = async () => {
     setIsDeploying(true);
-    const result = await deployCodebase();
+    const result = await deployCodebaseFromStorage();
     if (result.success && result.logId) {
         toast({ title: 'Deployment Started', description: 'Check server logs for progress.'});
         router.push(`/root/servers/${result.serverId}`);
