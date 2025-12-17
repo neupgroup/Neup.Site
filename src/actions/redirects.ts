@@ -19,6 +19,7 @@ import type { Redirect } from '@/schemas/redirect';
 import { logErrorToFirestore } from '@/lib/logging';
 import { getAccountId } from '@/actions/accounts';
 import { cookies } from 'next/headers';
+import { markRedirectsAsPending } from './structure';
 
 export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();
@@ -36,6 +37,9 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
       created_by: accountId,
       created_on: serverTimestamp(),
     });
+    
+    await markRedirectsAsPending(siteId);
+
     revalidatePath('/manage/redirects');
     return { success: true, id: docRef.id };
   } catch (e: any) {
@@ -75,9 +79,17 @@ export async function getRedirects(): Promise<{ success: boolean; redirects?: Re
 }
 
 export async function deleteRedirect(id: string): Promise<{ success: boolean; error?: string }> {
+  const siteId = cookies().get('siteId')?.value;
+  if (!siteId) {
+    return { success: false, error: 'Site context not found.' };
+  }
+
   try {
     const { firestore } = initializeFirebase();
     await deleteDoc(doc(firestore, 'redirects', id));
+    
+    await markRedirectsAsPending(siteId);
+
     revalidatePath('/manage/redirects');
     return { success: true };
   } catch (e: any) {

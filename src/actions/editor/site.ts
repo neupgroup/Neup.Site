@@ -14,6 +14,7 @@ import { normalizeUrl } from '@/lib/url-utils';
 import { Site, SiteTheme } from '@/schemas/site';
 import { initializeFirebase } from '@/lib/firebase';
 import { generateThemeFromColor } from '@/lib/color-utils';
+import { markAssetsAsPending, markThemeAsPending } from '../structure';
 
 export type { Site, SiteTheme };
 
@@ -24,8 +25,6 @@ export type { Site, SiteTheme };
 export async function getSite(): Promise<{ success: boolean, site?: Site, error?: string }> {
   const cookieStore = await cookies();
   const siteId = cookieStore.get('siteId')?.value;
-  // If there's no siteId, we are likely in a root context. This is not an error.
-  // Simply return successfully with no site data.
   if (!siteId) return { success: true, site: undefined };
 
   try {
@@ -34,8 +33,6 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
     const docSnap = await getDoc(siteRef);
 
     if (!docSnap.exists()) {
-      // This is not an error, but the site document may not have been created yet.
-      // A new one will be created on the first save in the profile page.
       return { success: true, site: undefined };
     }
 
@@ -73,7 +70,6 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
 
 /**
  * Saves or creates a site configuration document.
- * The ID of the document is the siteId from the cookie.
  */
 export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
   const cookieStore = await cookies();
@@ -84,8 +80,8 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
     const { firestore } = initializeFirebase();
     const siteRef = doc(firestore, 'sites', siteId);
 
-    // Check if the document exists to determine if this is a create or update
     const docSnap = await getDoc(siteRef);
+    const existingData = docSnap.exists() ? docSnap.data() as Site : {};
 
     let dataToSave: any = { ...data, updatedAt: serverTimestamp() };
 
@@ -93,8 +89,13 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
       dataToSave.createdAt = serverTimestamp();
     }
 
-    if (data.logoUrl) {
+    if (data.logoUrl && data.logoUrl !== existingData.logoUrl) {
       dataToSave.logoUrl = normalizeUrl(data.logoUrl);
+      await markAssetsAsPending(siteId);
+    }
+    
+    if (data.name !== existingData.name || data.hideSitename !== existingData.hideSitename) {
+      await markAssetsAsPending(siteId);
     }
 
     if (data.socialProfiles) {
@@ -102,18 +103,17 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
         ...p,
         url: normalizeUrl(p.url)
       }));
+       await markAssetsAsPending(siteId);
     }
 
-    if (data.theme?.colors && data.theme.colors.length > 0) {
-      dataToSave.theme = {
-        ...data.theme, // Keep user-selected colors and radius
-        generated: generateThemeFromColor(data.theme.colors)
+    if (data.theme) {
+      dataToSave.theme = { ...data.theme };
+      if (data.theme.colors && data.theme.colors.length > 0) {
+          dataToSave.theme.generated = generateThemeFromColor(data.theme.colors);
       }
-    } else if (data.theme) {
-      dataToSave.theme = {
-        ...data.theme,
-      }
+      await markThemeAsPending(siteId);
     }
+
 
     await setDoc(siteRef, dataToSave, { merge: true });
     return { success: true, id: siteId };

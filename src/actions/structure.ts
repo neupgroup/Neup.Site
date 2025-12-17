@@ -40,6 +40,9 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
       siteId: data.siteId,
       status: data.status,
       structure: data.structure || [],
+      themeChanged: data.themeChanged || false,
+      redirectsChanged: data.redirectsChanged || false,
+      assetsChanged: data.assetsChanged || false,
       updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : null,
     };
     return { success: true, structure };
@@ -81,6 +84,8 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
       structure: data.structure || [],
       status: data.status,
       theme: data.theme,
+      redirects: data.redirects,
+      siteProfile: data.siteProfile,
       attemptedOn: data.attemptedOn instanceof Timestamp ? data.attemptedOn.toDate().toISOString() : null,
     };
     return { success: true, deployment };
@@ -160,7 +165,6 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     const { site } = await getSite();
     const currentStructure = structureSnap.data() as Structure;
 
-    // Fetch redirects
     const redirectsResult = await getRedirects();
     const redirects = redirectsResult.success ? redirectsResult.redirects : [];
     
@@ -172,14 +176,14 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
       createdAt: r.created_on,
     }));
 
-
     // Create a new document in the 'deployments' collection
     await addDoc(collection(firestore, 'deployments'), {
       siteId,
       structure: currentStructure.structure,
       status: 'deployed',
       theme: site?.theme || {},
-      redirects: formattedRedirects, // Store redirects with the deployment
+      redirects: formattedRedirects,
+      siteProfile: { name: site?.name, logoUrl: site?.logoUrl, hideSitename: site?.hideSitename },
       attemptedOn: serverTimestamp(),
     });
 
@@ -191,6 +195,9 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     await setDoc(structureRef, {
       status: 'deployed',
       structure: updatedPaths,
+      themeChanged: false,
+      redirectsChanged: false,
+      assetsChanged: false,
       updatedAt: serverTimestamp(),
     }, { merge: true });
 
@@ -206,25 +213,12 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
 
   try {
     const { firestore } = initializeFirebase();
-
-    // 1. Find the server allocated to this site
-    // Try 'allocations' first (used by servers.ts)
-    let allocationsQuery = query(
+    const allocationsQuery = query(
       collection(firestore, 'allocations'),
       where('siteId', '==', siteId),
       limit(1)
     );
     let allocationsSnapshot = await getDocs(allocationsQuery);
-
-    // If not found, try 'serverAllocations' (used by deploy.ts)
-    if (allocationsSnapshot.empty) {
-      allocationsQuery = query(
-        collection(firestore, 'serverAllocations'),
-        where('siteId', '==', siteId),
-        limit(1)
-      );
-      allocationsSnapshot = await getDocs(allocationsQuery);
-    }
 
     if (allocationsSnapshot.empty) {
       console.warn(`No server allocated for site ${siteId}. Structure not uploaded.`);
@@ -234,18 +228,16 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
     const allocation = allocationsSnapshot.docs[0].data();
     const serverId = allocation.serverId;
 
-    // 2. Get credentials
     const { server, error } = await getPrivateServerDetails(serverId);
     if (error || !server || !server.publicIp || !server.privateKey) {
       console.error(`Server details not found for ${serverId}: ${error}`);
       return { success: false, error: error || 'Server details not found' };
     }
 
-    // 3. Create Deployment Log
     const logResult = await createServerLog({
       serverId: serverId,
-      commandName: 'Deploy Structure',
-      command: 'Uploading site structure to server...',
+      commandName: 'Deploy Site Data',
+      command: 'Uploading site structure, theme, and redirects to server...',
       output: 'Starting deployment process...',
       status: 'pending',
       initiatedBy: 'system'
@@ -254,14 +246,12 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
     if (logResult.success && logResult.id) {
       logId = logResult.id;
     }
-
-    // 4. Resolve appPath (logic matches runner.ts)
+    
     const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
-    const structurePath = `${resolvedAppPath}/src`; // Deploy to the src directory
+    const targetDir = `${resolvedAppPath}/src`;
 
-    // 5. Connect and Upload
     const ssh = new NodeSSH();
-    console.log(`Connecting to ${server.publicIp} to upload structure...`);
+    console.log(`Connecting to ${server.publicIp} to upload data...`);
     if (logId) await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
 
     try {
@@ -271,37 +261,39 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
         privateKey: server.privateKey
       });
 
-      // Create temp files
-      const tempStructurePath = path.join(os.tmpdir(), `structure-${siteId}-${Date.now()}.json`);
-      const tempThemePath = path.join(os.tmpdir(), `theme-${siteId}-${Date.now()}.json`);
-      const tempRedirectsPath = path.join(os.tmpdir(), `redirects-${siteId}-${Date.now()}.json`);
+      const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
+      const tempStructurePath = path.join(tempDir, `structure.json`);
+      const tempThemePath = path.join(tempDir, `theme.json`);
+      const tempRedirectsPath = path.join(tempDir, `redirects.json`);
 
-
-      fs.writeFileSync(tempStructurePath, JSON.stringify(structure, null, 2));
-      fs.writeFileSync(tempThemePath, JSON.stringify(theme, null, 2));
-      fs.writeFileSync(tempRedirectsPath, JSON.stringify(redirects, null, 2));
-
+      await fs.promises.writeFile(tempStructurePath, JSON.stringify(structure, null, 2));
+      await fs.promises.writeFile(tempThemePath, JSON.stringify(theme, null, 2));
+      await fs.promises.writeFile(tempRedirectsPath, JSON.stringify(redirects, null, 2));
 
       try {
-        if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${structurePath}...` });
-        await ssh.execCommand(`mkdir -p ${structurePath}`);
-        await ssh.putFile(tempStructurePath, `${structurePath}/structure.json`);
-        await ssh.putFile(tempThemePath, `${structurePath}/theme.json`);
-        await ssh.putFile(tempRedirectsPath, `${structurePath}/redirects.json`);
+        if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${targetDir}...` });
+        await ssh.execCommand(`mkdir -p ${targetDir}`);
+        await ssh.putDirectory(tempDir, targetDir, {
+            recursive: true,
+            concurrency: 1,
+            tick: (localPath, remotePath, error) => {
+              if (error) {
+                console.error(`Failed to upload ${localPath}`);
+              }
+            }
+        });
 
         const successMsg = 'Structure, theme, and redirects uploaded successfully.';
         console.log(successMsg);
         if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
 
       } finally {
-        if (fs.existsSync(tempStructurePath)) fs.unlinkSync(tempStructurePath);
-        if (fs.existsSync(tempThemePath)) fs.unlinkSync(tempThemePath);
-        if (fs.existsSync(tempRedirectsPath)) fs.unlinkSync(tempRedirectsPath);
+        await fs.promises.rm(tempDir, { recursive: true, force: true });
       }
 
     } catch (sshError: any) {
-      console.error('SSH Error uploading structure:', sshError);
-      const errMsg = `Failed to upload structure to server: ${sshError.message}`;
+      console.error('SSH Error uploading site data:', sshError);
+      const errMsg = `Failed to upload data to server: ${sshError.message}`;
       if (logId) await updateServerLog(logId, { status: 'failed', output: errMsg });
       throw new Error(errMsg);
     } finally {
@@ -312,7 +304,7 @@ async function uploadStructureToServer(siteId: string, structure: any, theme: an
 
   } catch (e: any) {
     if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToFirestore({ message: `Failed to upload structure: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
+    await logErrorToFirestore({ message: `Failed to upload site data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
     return { success: false, error: e.message };
   }
 }
@@ -337,12 +329,10 @@ export async function markStructureAsPending(siteId: string, paths: string[], is
         }
         return p;
       });
-      // If a path was deleted, filter it out
       if (isDeletion) {
         finalStructure = finalStructure.filter(p => !paths.includes(p.path));
       }
     } else if (!isDeletion) {
-      // If structure doesn't exist and we are adding/updating, create entries
       const { pages } = await getPages();
       const pagesWithPaths = pages?.filter(p => p.paths && p.paths.some(pathInfo => paths.includes(pathInfo.path))) || [];
 
@@ -374,5 +364,35 @@ export async function markStructureAsPending(siteId: string, paths: string[], is
       stack: error.stack,
       source: 'markStructureAsPending'
     });
+  }
+}
+
+export async function markAssetsAsPending(siteId: string): Promise<void> {
+  try {
+    const { firestore } = initializeFirebase();
+    const structureRef = doc(firestore, 'structure', siteId);
+    await setDoc(structureRef, { assetsChanged: true, status: 'pendingDeployment' }, { merge: true });
+  } catch (e: any) {
+    console.error("Failed to mark assets as pending:", e);
+  }
+}
+
+export async function markThemeAsPending(siteId: string): Promise<void> {
+  try {
+    const { firestore } = initializeFirebase();
+    const structureRef = doc(firestore, 'structure', siteId);
+    await setDoc(structureRef, { themeChanged: true, status: 'pendingDeployment' }, { merge: true });
+  } catch (e: any) {
+    console.error("Failed to mark theme as pending:", e);
+  }
+}
+
+export async function markRedirectsAsPending(siteId: string): Promise<void> {
+  try {
+    const { firestore } = initializeFirebase();
+    const structureRef = doc(firestore, 'structure', siteId);
+    await setDoc(structureRef, { redirectsChanged: true, status: 'pendingDeployment' }, { merge: true });
+  } catch (e: any) {
+    console.error("Failed to mark redirects as pending:", e);
   }
 }

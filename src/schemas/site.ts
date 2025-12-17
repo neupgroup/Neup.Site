@@ -1,5 +1,7 @@
+
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Path } from '@/actions/paths';
+import type { Redirect } from '@/schemas/redirect';
 
 export interface GeneratedTheme {
   light: Record<string, string>;
@@ -60,6 +62,9 @@ export interface Structure {
   siteId: string;
   structure: PathStructure[];
   status: 'deployed' | 'pendingDeployment';
+  themeChanged: boolean;
+  redirectsChanged: boolean;
+  assetsChanged: boolean;
   updatedAt?: string | null;
 }
 
@@ -69,5 +74,7 @@ export interface Deployment {
   structure: PathStructure[];
   status: 'deployed' | 'cancelled';
   theme: SiteTheme;
+  redirects: Omit<Redirect, 'siteId'>[];
+  siteProfile: { name: string, logoUrl?: string, hideSitename?: boolean };
   attemptedOn: string | null;
 }
