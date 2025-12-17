@@ -54,7 +54,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
     setError(null);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file, uploadPath);
     formData.append('platform', 'neupsites');
     formData.append('contentIds', JSON.stringify([siteId]));
 
@@ -62,7 +62,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
     formData.append('name', fileName);
 
     try {
-      const response = await fetch('https://neupgroup.com/api/v1/upload', {
+      const response = await fetch('https://neupgroup.com/content/bridge/api/upload', {
         method: 'POST',
         body: formData,
       });
