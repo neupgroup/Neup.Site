@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UploadCloud, FileText, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus } from 'lucide-react';
+import { UploadCloud, FileText, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { getSiteServers } from '@/actions/servers';
@@ -42,7 +42,9 @@ export default function AppBasePage() {
   const [isEditorLoading, setIsEditorLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState<string | null>(null);
   
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const fetchServerAndFiles = useCallback(async () => {
@@ -107,12 +109,57 @@ export default function AppBasePage() {
     setIsBackingUp(false);
   }
 
+  const handleUploadClick = (fileName: string) => {
+    setUploadingFile(fileName);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0 || !uploadingFile || !serverId) {
+        setUploadingFile(null);
+        return;
+    }
+
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+        const content = e.target?.result as string;
+        const result = await saveAppBaseFileContent(serverId, uploadingFile, content);
+        if (result.success) {
+            toast({ title: 'File Uploaded', description: `${uploadingFile} has been updated.` });
+            fetchServerAndFiles();
+        } else {
+            toast({ variant: 'destructive', title: 'Upload Failed', description: result.error });
+        }
+        setUploadingFile(null);
+    };
+
+    reader.onerror = () => {
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to read the selected file.' });
+        setUploadingFile(null);
+    };
+
+    reader.readAsText(file);
+
+    // Reset file input
+    event.target.value = '';
+  };
+
+
   return (
     <div className="w-full">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelected}
+        className="hidden"
+        accept=".json"
+      />
       <header className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Files</h1>
-          <p className="text-muted-foreground">Manage JSON configuration files in your application's base directory.</p>
+          <p className="text-muted-foreground">Manage JSON configuration files in your application's `src/base` directory.</p>
         </div>
         <div className="flex gap-2">
            <Button asChild variant="outline">
@@ -130,7 +177,7 @@ export default function AppBasePage() {
       <Card>
         <CardHeader>
           <CardTitle>Files</CardTitle>
-          <CardDescription>Files located in the `[appPath]/base` directory on your server.</CardDescription>
+          <CardDescription>Files located in the `[appPath]/src/base` directory on your server.</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -153,12 +200,15 @@ export default function AppBasePage() {
                   <TableRow key={file.name}>
                     <TableCell className="font-mono">{file.name}</TableCell>
                     <TableCell>{file.size} B</TableCell>
-                    <TableCell className="text-right">
-                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={isBackingUp} className="mr-2">
-                           {isBackingUp ? <Loader2 className="animate-spin mr-2"/> : <HardDrive className="mr-2"/>} Backup
+                    <TableCell className="text-right space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={isBackingUp}>
+                           {isBackingUp ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
+                           {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
                         </Button>
                         <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
-                            <Edit className="mr-2"/> Edit
+                            <Edit className="mr-2 h-4 w-4"/> Edit
                         </Button>
                     </TableCell>
                   </TableRow>
@@ -186,7 +236,7 @@ export default function AppBasePage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingFile(null)}>Cancel</Button>
             <Button onClick={handleSaveContent} disabled={isSaving || isEditorLoading}>
-                {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2"/>} Save
+                {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>} Save
             </Button>
           </DialogFooter>
         </DialogContent>
