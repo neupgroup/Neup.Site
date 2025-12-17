@@ -10,15 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save } from 'lucide-react';
+import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { deletePublicFile, type PublicFile, getPublicFiles } from '@/actions/uploads';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { useProfile } from '@/context/ProfileContext';
+import { getSiteServers } from '@/actions/servers';
+import { getAppBaseFiles, getAppBaseFileContent, saveAppBaseFileContent, backupAppBaseFile } from '@/actions/app-base';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { getAppBaseFileContent, saveAppBaseFileContent, backupAppBaseFile } from '@/actions/app-base';
+import Link from 'next/link';
 
 interface AppBaseFile {
   name: string;
