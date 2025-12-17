@@ -22,7 +22,7 @@ async function getAppBasePath(serverId: string) {
     }
 
     const appPath = server.appPath?.replace(/\{\{universal.site_id\}\}/g, site.id) || `/var/www/${site.id}`;
-    const basePath = `${appPath}/base`;
+    const basePath = `${appPath}/src/base`;
 
     return { ssh: new NodeSSH(), server, basePath };
 }

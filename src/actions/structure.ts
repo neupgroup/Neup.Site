@@ -250,7 +250,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
         const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
         const srcDir = `${resolvedAppPath}/src`;
-        const dataDir = `${resolvedAppPath}/data`;
+        const dataDir = `${srcDir}/data`; // Changed this line
 
         const ssh = new NodeSSH();
         console.log(`Connecting to ${server.publicIp} to upload data...`);
@@ -266,7 +266,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
             // Create temporary local directories
             const tempBaseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
             const tempSrcDir = path.join(tempBaseDir, 'src');
-            const tempDataDir = path.join(tempBaseDir, 'data');
+            const tempDataDir = path.join(tempBaseDir, 'data'); // Changed this line
             await fs.mkdir(tempSrcDir, { recursive: true });
             await fs.mkdir(tempDataDir, { recursive: true });
 
@@ -297,18 +297,12 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
                 if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${resolvedAppPath}...` });
                 
                 await ssh.execCommand(`mkdir -p ${srcDir}`);
-                await ssh.execCommand(`mkdir -p ${dataDir}`);
+                await ssh.execCommand(`mkdir -p ${dataDir}`); // Ensure data directory exists inside src
 
-                // Upload src directory
-                await ssh.putDirectory(tempSrcDir, srcDir, {
-                    recursive: true,
-                    concurrency: 1,
-                    tick: (localPath, remotePath, error) => {
-                        if (error) console.error(`Failed to upload ${localPath}`);
-                    }
-                });
+                // Upload structure.json to src
+                await ssh.putFile(path.join(tempSrcDir, 'structure.json'), `${srcDir}/structure.json`);
 
-                 // Upload data directory
+                 // Upload data directory to src/data
                  await ssh.putDirectory(tempDataDir, dataDir, {
                     recursive: true,
                     concurrency: 1,
