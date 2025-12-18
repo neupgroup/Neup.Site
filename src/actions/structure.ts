@@ -169,21 +169,13 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     const redirectsResult = await getRedirects();
     const redirects = redirectsResult.success ? redirectsResult.redirects : [];
     
-    const formattedRedirects = redirects?.map(r => ({
-      source: r.from,
-      destination: r.to,
-      permanent: r.type === 'permanent',
-      id: r.id,
-      createdAt: r.created_on,
-    }));
-
     // Create a new document in the 'deployments' collection
     await addDoc(collection(firestore, 'deployments'), {
       siteId,
       structure: currentStructure.structure,
       status: 'deployed',
       theme: site?.theme || {},
-      redirects: formattedRedirects,
+      redirects: redirects || [],
       siteProfile: { name: site?.name, logoUrl: site?.logoUrl, hideSitename: site?.hideSitename },
       attemptedOn: serverTimestamp(),
     });
@@ -276,12 +268,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
             // Prepare redirects data
             const redirectsResult = await getRedirects();
             const redirects = redirectsResult.success ? redirectsResult.redirects : [];
-            const formattedRedirects = redirects?.map(r => ({
-                source: r.from,
-                destination: r.to,
-                permanent: r.type === 'permanent',
-            }));
-
+            
             // Prepare site profile data
             const siteProfile = {
                 name: site?.name || '',
@@ -292,7 +279,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
             // Write files to temp directories
             await fs.writeFile(path.join(tempSrcDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
             await fs.writeFile(path.join(tempDataDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
-            await fs.writeFile(path.join(tempAppBaseDir, 'redirects.json'), JSON.stringify(formattedRedirects || [], null, 2));
+            await fs.writeFile(path.join(tempAppBaseDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
             await fs.writeFile(path.join(tempDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
 
 
@@ -437,3 +424,4 @@ export async function markRedirectsAsPending(siteId: string): Promise<void> {
     console.error("Failed to mark redirects as pending:", e);
   }
 }
+
