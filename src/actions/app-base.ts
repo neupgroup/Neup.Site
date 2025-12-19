@@ -67,14 +67,18 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
 
         const processFiles = (files: { name: string; size: string }[], type: 'internal' | 'external') => {
             for (const file of files) {
-                if (file.name.endsWith('.template.json')) {
-                    const baseName = file.name.replace('.template.json', '');
-                    if (!fileMap.has(baseName)) {
-                        fileMap.set(baseName, { name: baseName, type, size: '0', status: 'template' });
-                    }
-                } else if (file.name.endsWith('.json')) {
+                if (file.name.endsWith('.json')) {
                     const baseName = file.name.replace('.json', '');
-                    fileMap.set(baseName, { name: baseName, type, size: file.size, status: 'created' });
+                     if (file.name.endsWith('.template.json')) {
+                        // It's a template, only add if no concrete version exists
+                        const concreteName = baseName.replace('.template', '');
+                        if (!fileMap.has(concreteName)) {
+                            fileMap.set(concreteName, { name: concreteName, type, size: '0', status: 'template' });
+                        }
+                    } else {
+                        // It's a concrete file, add it (overwrites template if present)
+                        fileMap.set(baseName, { name: baseName, type, size: file.size, status: 'created' });
+                    }
                 }
             }
         };
@@ -147,7 +151,7 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
         });
         
         const filePath = `${basePath}/${fullFileName}`;
-        const result = await ssh.execCommand(`cat ${filePath}`);
+        const result = await ssh.execCommand(`cat '${filePath}'`);
         
         if (result.code !== 0) {
             throw new Error(result.stderr);
@@ -269,4 +273,3 @@ export async function restoreAppBaseBackup(backupId: string, serverId: string): 
         return { success: false, error: e.message };
     }
 }
-
