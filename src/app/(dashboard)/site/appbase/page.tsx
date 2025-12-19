@@ -183,7 +183,7 @@ export default function AppBasePage() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
+            <div className="space-y-2"><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /></div>
           ) : error ? (
             <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
           ) : files.length === 0 ? (
@@ -193,34 +193,30 @@ export default function AppBasePage() {
               <p>Click "Create File" to add a new JSON configuration file.</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Name</TableHead><TableHead>Type</TableHead><TableHead className="text-right">Actions</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
+            <div className="space-y-2">
                 {files.map((file) => (
-                  <TableRow key={`${file.name}-${file.type}`}>
-                    <TableCell className="font-mono">{file.name}</TableCell>
-                    <TableCell>
-                      <Badge variant={file.type === 'internal' ? 'secondary' : 'outline'}>
-                        {file.type === 'internal' ? 'Internal' : 'External'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right space-x-2">
-                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
-                           {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
-                           {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
-                        </Button>
-                        <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
-                            <Edit className="mr-2 h-4 w-4"/> Edit
-                        </Button>
-                    </TableCell>
-                  </TableRow>
+                  <div key={`${file.name}-${file.type}`} className="p-2 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <FileJson className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-mono text-sm truncate">{file.name}</span>
+                          <Badge variant={file.type === 'internal' ? 'secondary' : 'outline'}>
+                              {file.type === 'internal' ? 'Internal' : 'External'}
+                          </Badge>
+                      </div>
+                      <div className="flex items-center gap-2 self-end sm:self-center">
+                          <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
+                              {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
+                              {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
+                          </Button>
+                          <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
+                              <Edit className="mr-2 h-4 w-4"/> Edit
+                          </Button>
+                      </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+            </div>
           )}
         </CardContent>
       </Card>
