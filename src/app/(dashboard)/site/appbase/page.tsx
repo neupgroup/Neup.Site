@@ -176,50 +176,43 @@ export default function AppBasePage() {
             </Button>
         </div>
       </header>
-      <Card>
-        <CardHeader>
-          <CardTitle>Files</CardTitle>
-          <CardDescription>Files in `/base` (External) and `/src/base` (Internal).</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
+      
+      <div className="space-y-2">
+        {loading ? (
             <div className="space-y-2"><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /></div>
-          ) : error ? (
+        ) : error ? (
             <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
-          ) : files.length === 0 ? (
+        ) : files.length === 0 ? (
             <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-              <FileJson className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold">No Files Found</h3>
-              <p>Click "Create File" to add a new JSON configuration file.</p>
+            <FileJson className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold">No Files Found</h3>
+            <p>Click "Create File" to add a new JSON configuration file.</p>
             </div>
-          ) : (
-            <div className="space-y-2">
-                {files.map((file) => (
-                  <div key={`${file.name}-${file.type}`} className="p-2 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <FileJson className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-mono text-sm truncate">{file.name}</span>
-                          <Badge variant={file.type === 'internal' ? 'secondary' : 'outline'}>
-                              {file.type === 'internal' ? 'Internal' : 'External'}
-                          </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 self-end sm:self-center">
-                          <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
-                              {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
-                              {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
-                          </Button>
-                          <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
-                              <Edit className="mr-2 h-4 w-4"/> Edit
-                          </Button>
-                      </div>
-                  </div>
-                ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        ) : (
+            files.map((file) => (
+                <div key={`${file.name}-${file.type}`} className="p-2 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <FileJson className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-mono text-sm truncate">{file.name}</span>
+                        <Badge variant={file.type === 'internal' ? 'secondary' : 'outline'}>
+                            {file.type === 'internal' ? 'Internal' : 'External'}
+                        </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 self-end sm:self-center">
+                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
+                            {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
+                            {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
+                        </Button>
+                        <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
+                            <Edit className="mr-2 h-4 w-4"/> Edit
+                        </Button>
+                    </div>
+                </div>
+            ))
+        )}
+      </div>
       
        <Dialog open={!!editingFile} onOpenChange={(open) => !open && setEditingFile(null)}>
         <DialogContent className="max-w-3xl h-[70vh] flex flex-col">
