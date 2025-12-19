@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UploadCloud, FileText, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus, Upload } from 'lucide-react';
+import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { getSiteServers } from '@/actions/servers';
@@ -179,7 +179,7 @@ export default function AppBasePage() {
       <Card>
         <CardHeader>
           <CardTitle>Files</CardTitle>
-          <CardDescription>Files in `/base` (Internal) and `/src/base` (External).</CardDescription>
+          <CardDescription>Files in `/base` (External) and `/src/base` (Internal).</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (

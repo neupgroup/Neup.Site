@@ -23,8 +23,8 @@ async function resolveAppBasePath(serverId: string, type: 'internal' | 'external
 
     const appPath = server.appPath?.replace(/\{\{universal.site_id\}\}/g, site.id) || `/var/www/${site.id}`;
     
-    // Corrected logic: Internal is /base, External is /src/base
-    const basePath = type === 'internal' ? `${appPath}/base` : `${appPath}/src/base`;
+    // Corrected logic: Internal is /src/base, External is /base
+    const basePath = type === 'internal' ? `${appPath}/src/base` : `${appPath}/base`;
 
     return { ssh: new NodeSSH(), server, basePath };
 }
