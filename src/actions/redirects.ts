@@ -12,6 +12,10 @@ import {
   addDoc,
   query,
   where,
+  orderBy,
+  limit,
+  getCountFromServer,
+  startAfter,
 } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
@@ -48,7 +52,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
   }
 }
 
-export async function getRedirects(): Promise<{ success: boolean; redirects?: Redirect[]; error?: string }> {
+export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }): Promise<{ success: boolean; redirects?: Redirect[]; error?: string; totalCount?: number }> {
     const siteId = cookies().get('siteId')?.value;
     if (!siteId) {
         return { success: false, error: 'Site context not found.' };
@@ -56,8 +60,25 @@ export async function getRedirects(): Promise<{ success: boolean; redirects?: Re
 
   try {
     const { firestore } = initializeFirebase();
-    const q = query(collection(firestore, 'redirects'), where('siteId', '==', siteId));
-    const querySnapshot = await getDocs(q);
+    const redirectsRef = collection(firestore, 'redirects');
+    const siteQuery = query(redirectsRef, where('siteId', '==', siteId));
+    
+    const countSnapshot = await getCountFromServer(siteQuery);
+    const totalCount = countSnapshot.data().count;
+
+    const baseQuery = query(siteQuery, orderBy('created_on', 'desc'));
+
+    let finalQuery;
+    if (page > 1) {
+        const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
+        const prevPageSnapshot = await getDocs(prevPageQuery);
+        const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
+        finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
+    } else {
+        finalQuery = query(baseQuery, limit(pageSize));
+    }
+
+    const querySnapshot = await getDocs(finalQuery);
     const redirects = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
       const createdOn = data.created_on;
@@ -71,7 +92,7 @@ export async function getRedirects(): Promise<{ success: boolean; redirects?: Re
         created_on: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
       } as Redirect;
     });
-    return { success: true, redirects };
+    return { success: true, redirects, totalCount };
   } catch (e: any) {
     await logErrorToFirestore({ message: `Failed to get redirects: ${e.message}`, stack: e.stack, source: 'getRedirects' });
     return { success: false, error: 'Failed to fetch redirects.' };

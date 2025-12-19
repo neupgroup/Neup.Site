@@ -1,38 +1,50 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { getRedirects, deleteRedirect, type Redirect } from '@/actions/redirects';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Redo, AlertCircle, Plus, Trash2 } from 'lucide-react';
+import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { CardFooter } from '@/components/ui/card';
 
 export default function RedirectsPage() {
   const { toast } = useToast();
   const [redirects, setRedirects] = useState<Redirect[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const fetchRedirects = async () => {
-    setLoading(true);
-    const result = await getRedirects();
-    if (result.success && result.redirects) {
-      setRedirects(result.redirects);
-    } else {
-      setError(result.error || 'Failed to fetch redirects');
-    }
-    setLoading(false);
-  };
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const pageSize = 10;
+  
+  const [isPending, startTransition] = useTransition();
+
 
   useEffect(() => {
-    fetchRedirects();
-  }, []);
+    startTransition(async () => {
+        setLoading(true);
+        const result = await getRedirects({ page: currentPage, pageSize });
+        if (result.success && result.redirects) {
+            setRedirects(result.redirects);
+            setTotalCount(result.totalCount || 0);
+        } else {
+            setError(result.error || 'Failed to fetch redirects');
+        }
+        setLoading(false);
+    });
+  }, [currentPage, pageSize]);
   
   const handleDelete = async (id: string) => {
     const originalRedirects = [...redirects];
@@ -44,8 +56,26 @@ export default function RedirectsPage() {
       setRedirects(originalRedirects);
     } else {
       toast({ title: 'Redirect Deleted' });
+      // Re-fetch to ensure pagination is correct
+      startTransition(() => {
+        getRedirects({ page: currentPage, pageSize }).then(res => {
+          if (res.success && res.redirects) {
+            setRedirects(res.redirects);
+            setTotalCount(res.totalCount || 0);
+          }
+        })
+      })
     }
   }
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', newPage.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
+  const totalPages = Math.ceil(totalCount / pageSize);
+
 
   return (
     <div className="w-full space-y-8">
@@ -88,6 +118,34 @@ export default function RedirectsPage() {
             ))
         )}
       </div>
+
+       {totalPages > 1 && (
+            <CardFooter className="flex items-center justify-between px-0">
+                <div className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage <= 1 || isPending}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages || isPending}
+                    >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        )}
     </div>
   );
 }
