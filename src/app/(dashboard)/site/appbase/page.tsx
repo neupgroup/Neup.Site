@@ -202,9 +202,6 @@ export default function AppBasePage() {
                         <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
                             {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
-                            {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
-                        </Button>
                         <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
                             <Edit className="mr-2 h-4 w-4"/> Edit
                         </Button>
