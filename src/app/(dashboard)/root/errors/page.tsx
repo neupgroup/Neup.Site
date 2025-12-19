@@ -45,7 +45,7 @@ const ErrorsPage = () => {
     };
 
     fetchErrors();
-  }, [currentPage]);
+  }, [currentPage, pageSize]);
   
   const totalPages = Math.ceil(totalCount / pageSize);
 
