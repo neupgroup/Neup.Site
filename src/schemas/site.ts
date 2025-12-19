@@ -16,6 +16,15 @@ export interface SiteTheme {
   generated?: GeneratedTheme;
 }
 
+export interface SiteIcons {
+  favicon?: string;
+  favicon16?: string;
+  favicon32?: string;
+  appleTouch?: string;
+  android192?: string;
+  android512?: string;
+}
+
 export interface Site {
   id: string;
   name: string;
@@ -26,6 +35,7 @@ export interface Site {
   }[];
   tier: 'free' | 'premium';
   logoUrl?: string;
+  icons?: SiteIcons;
   hideSitename?: boolean;
   description?: string;
   socialProfiles?: { platformName: string; url: string; }[];

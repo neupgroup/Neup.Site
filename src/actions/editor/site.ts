@@ -11,12 +11,12 @@ import {
 } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
-import { Site, SiteTheme } from '@/schemas/site';
+import { Site, SiteTheme, SiteIcons } from '@/schemas/site';
 import { initializeFirebase } from '@/lib/firebase';
 import { generateThemeFromColor } from '@/lib/color-utils';
 import { markAssetsAsPending, markThemeAsPending } from '../structure';
 
-export type { Site, SiteTheme };
+export type { Site, SiteTheme, SiteIcons };
 
 /**
  * Fetches a single site configuration document.
@@ -48,6 +48,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
       domainSettings: data.domainSettings,
       tier: data.tier,
       logoUrl: data.logoUrl,
+      icons: data.icons || {},
       hideSitename: data.hideSitename || false,
       hideLogo: data.hideLogo || false,
       description: data.description,
@@ -92,6 +93,11 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
     if (data.logoUrl && data.logoUrl !== existingData.logoUrl) {
       dataToSave.logoUrl = normalizeUrl(data.logoUrl);
       await markAssetsAsPending(siteId);
+    }
+    
+    if (data.icons) {
+        dataToSave.icons = { ...(existingData.icons || {}), ...data.icons };
+        await markAssetsAsPending(siteId);
     }
     
     if (data.name !== existingData.name || data.hideSitename !== existingData.hideSitename) {
