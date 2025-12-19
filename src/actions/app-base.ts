@@ -23,7 +23,7 @@ async function resolveAppBasePath(serverId: string, type: 'internal' | 'external
 
     const appPath = server.appPath?.replace(/\{\{universal.site_id\}\}/g, site.id) || `/var/www/${site.id}`;
     
-    // Internal files go to /base, External to /src/base
+    // Corrected logic: Internal is /base, External is /src/base
     const basePath = type === 'internal' ? `${appPath}/base` : `${appPath}/src/base`;
 
     return { ssh: new NodeSSH(), server, basePath };
@@ -32,7 +32,7 @@ async function resolveAppBasePath(serverId: string, type: 'internal' | 'external
 export async function getAppBaseFiles(serverId: string): Promise<{ success: boolean; files?: AppBaseFile[]; error?: string }> {
     let ssh: NodeSSH | undefined;
     try {
-        const fetchFilesFromPath = async (type: 'internal' | 'external'): Promise<{ name: string; size: string }[]> => {
+        const fetchFilesFromPath = async (type: 'internal' | 'external'): Promise<AppBaseFile[]> => {
             const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
             ssh = sshInstance;
 
@@ -54,41 +54,28 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
             return result.stdout.trim().split('\n').slice(1).map(line => {
                 const parts = line.split(/\s+/);
                 if (parts.length < 9 || parts[0].startsWith('d')) return null;
-                return { name: parts[8], size: parts[4] };
-            }).filter((file): file is { name: string; size: string } => file !== null);
+                
+                const fileName = parts[8];
+                if (!fileName.endsWith('.json')) return null;
+
+                return { 
+                    name: fileName.replace('.json', ''),
+                    size: parts[4],
+                    type: type,
+                    status: 'created' // Simplified status
+                };
+            }).filter((file): file is AppBaseFile => file !== null);
         };
 
         const [internalFiles, externalFiles] = await Promise.all([
             fetchFilesFromPath('internal'),
             fetchFilesFromPath('external')
         ]);
-
-        const fileMap = new Map<string, AppBaseFile>();
-
-        const processFiles = (files: { name: string; size: string }[], type: 'internal' | 'external') => {
-            for (const file of files) {
-                if (file.name.endsWith('.json')) {
-                    const baseName = file.name.replace('.json', '');
-                     if (file.name.endsWith('.template.json')) {
-                        // It's a template, only add if no concrete version exists
-                        const concreteName = baseName.replace('.template', '');
-                        if (!fileMap.has(concreteName)) {
-                            fileMap.set(concreteName, { name: concreteName, type, size: '0', status: 'template' });
-                        }
-                    } else {
-                        // It's a concrete file, add it (overwrites template if present)
-                        fileMap.set(baseName, { name: baseName, type, size: file.size, status: 'created' });
-                    }
-                }
-            }
-        };
-
-        processFiles(internalFiles, 'internal');
-        processFiles(externalFiles, 'external');
         
-        const finalFiles = Array.from(fileMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+        const allFiles = [...internalFiles, ...externalFiles];
+        const sortedFiles = allFiles.sort((a, b) => a.name.localeCompare(b.name));
 
-        return { success: true, files: finalFiles };
+        return { success: true, files: sortedFiles };
 
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to get app base files: ${e.message}`, source: 'getAppBaseFiles' });

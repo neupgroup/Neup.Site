@@ -67,17 +67,6 @@ export default function AppBasePage() {
   useEffect(() => {
     fetchServerAndFiles();
   }, [fetchServerAndFiles]);
-  
-  const handleCreateFromTemplate = async (file: AppBaseFile) => {
-    if (!serverId) return;
-    const result = await createAppBaseFile(serverId, file.name, file.type);
-    if (result.success) {
-      toast({ title: 'File Created', description: `${file.name}.json has been created from its template.` });
-      fetchServerAndFiles();
-    } else {
-      toast({ variant: 'destructive', title: 'Error', description: result.error });
-    }
-  }
 
   const handleEditClick = async (file: AppBaseFile) => {
     if (!serverId) return;
@@ -206,7 +195,7 @@ export default function AppBasePage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow><TableHead>Name</TableHead><TableHead>Type</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow>
+                <TableRow><TableHead>Name</TableHead><TableHead>Type</TableHead><TableHead className="text-right">Actions</TableHead></TableRow>
               </TableHeader>
               <TableBody>
                 {files.map((file) => (
@@ -217,29 +206,16 @@ export default function AppBasePage() {
                         {file.type === 'internal' ? 'Internal' : 'External'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                        {file.status === 'created' ? (
-                             <Badge variant="default" className="bg-green-600">Created</Badge>
-                        ) : (
-                            <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => handleCreateFromTemplate(file)}>
-                                <Badge variant="secondary">Creation Required</Badge>
-                            </Button>
-                        )}
-                    </TableCell>
                     <TableCell className="text-right space-x-2">
-                        {file.status === 'created' && (
-                            <>
-                                <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
-                                   {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
-                                   {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
-                                </Button>
-                                <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
-                                    <Edit className="mr-2 h-4 w-4"/> Edit
-                                </Button>
-                            </>
-                        )}
+                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
+                           {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleUploadClick(file.name)} disabled={!!uploadingFile}>
+                           {uploadingFile === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>} Upload
+                        </Button>
+                        <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
+                            <Edit className="mr-2 h-4 w-4"/> Edit
+                        </Button>
                     </TableCell>
                   </TableRow>
                 ))}
