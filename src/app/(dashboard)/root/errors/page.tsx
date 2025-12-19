@@ -3,14 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+  CardDescription,
+} from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Terminal, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,6 +17,7 @@ import { getErrorLogsAction, type ErrorLog } from '@/actions/errors';
 import { Button } from '@/components/ui/button';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 const ErrorsPage = () => {
   const [errors, setErrors] = useState<ErrorLog[]>([]);
@@ -56,75 +56,64 @@ const ErrorsPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
+    <div className="w-full">
+      <header className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-2">
             <Terminal className="h-6 w-6" />
-            Application Errors
-          </CardTitle>
-          <CardDescription>A list of errors logged by the application.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            {fetchError && (
+            <div>
+              <h1 className="font-headline text-2xl font-semibold tracking-tight">Application Errors</h1>
+              <p className="text-muted-foreground">A list of errors logged by the application.</p>
+            </div>
+        </div>
+      </header>
+        <div className="space-y-2">
+            {loading ? (
+                <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className="p-3 border rounded-md">
+                           <Skeleton className="h-10 w-full" />
+                        </div>
+                    ))}
+                </div>
+            ) : fetchError ? (
                  <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Error Fetching Logs</AlertTitle>
                     <AlertDescription>{fetchError}</AlertDescription>
                 </Alert>
-            )}
-            {!fetchError && (
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Timestamp</TableHead>
-                        <TableHead>Source</TableHead>
-                        <TableHead>Message</TableHead>
-                        <TableHead className="text-right">Details</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {loading ? (
-                            Array.from({ length: 5 }).map((_, i) => (
-                                <TableRow key={i}>
-                                    <TableCell><Skeleton className="h-5 w-48" /></TableCell>
-                                    <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                                    <TableCell><Skeleton className="h-5 w-full" /></TableCell>
-                                    <TableCell className="text-right"><Skeleton className="h-8 w-8 inline-block" /></TableCell>
-                                </TableRow>
-                            ))
-                        ) : errors.length > 0 ? (
-                        errors.map(error => (
-                            <TableRow key={error.id}>
-                            <TableCell>{new Date(error.timestamp).toLocaleString()}</TableCell>
-                            <TableCell><span className="font-mono text-xs bg-muted px-2 py-1 rounded-md">{error.source || 'N/A'}</span></TableCell>
-                            <TableCell className="max-w-md truncate">
+            ) : errors.length === 0 ? (
+                 <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+                    <Terminal className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold">No Errors Logged</h3>
+                    <p>The application has not logged any errors.</p>
+                </div>
+            ) : (
+                errors.map(error => (
+                    <div key={error.id} className="p-3 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border">
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate" title={error.message}>
                                 <Link href={`/root/errors/${error.id}`} className="hover:underline">
                                     {error.message}
                                 </Link>
-                            </TableCell>
-                            <TableCell className="text-right">
-                                <Button asChild variant="ghost" size="icon">
-                                    <Link href={`/root/errors/${error.id}`}>
-                                        <ArrowRight className="h-4 w-4" />
-                                    </Link>
-                                </Button>
-                            </TableCell>
-                            </TableRow>
-                        ))
-                        ) : (
-                        <TableRow>
-                            <TableCell colSpan={4} className="text-center text-muted-foreground py-10">
-                            No errors logged.
-                            </TableCell>
-                        </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {new Date(error.timestamp).toLocaleString()}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-4 self-end sm:self-center">
+                            <Badge variant="outline" className="font-mono">{error.source || 'N/A'}</Badge>
+                            <Button asChild variant="ghost" size="icon">
+                                <Link href={`/root/errors/${error.id}`}>
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
+                ))
             )}
-        </CardContent>
+        </div>
         {totalPages > 1 && (
-            <CardFooter className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-6">
                 <div className="text-sm text-muted-foreground">
                     Page {currentPage} of {totalPages}
                 </div>
@@ -148,9 +137,8 @@ const ErrorsPage = () => {
                         <ChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
-            </CardFooter>
+            </div>
         )}
-      </Card>
     </div>
   );
 };
