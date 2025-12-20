@@ -1,23 +1,16 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getServers, type Server } from '@/actions/servers';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Plus, Server as ServerIcon } from 'lucide-react';
+import { AlertCircle, Plus, Server as ServerIcon, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
 
 export default function ServersPage() {
   const [servers, setServers] = useState<Server[]>([]);
@@ -41,7 +34,7 @@ export default function ServersPage() {
 
   return (
     <div className="w-full">
-      <header className="flex items-center justify-between mb-4">
+      <header className="flex items-center justify-between mb-8">
         <div>
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Your Servers</h1>
             <p className="text-muted-foreground">A list of servers you have created to deploy sites.</p>
@@ -52,9 +45,10 @@ export default function ServersPage() {
           </Link>
         </Button>
       </header>
-        <div className="border rounded-lg">
+        <div className="space-y-4">
           {loading ? (
-            <div className="p-4">
+            <div className="space-y-4">
+                 <Skeleton className="h-24 w-full" />
                  <Skeleton className="h-24 w-full" />
             </div>
           ) : error ? (
@@ -66,45 +60,37 @@ export default function ServersPage() {
                 </Alert>
             </div>
           ) : servers.length === 0 ? (
-            <div className="text-center text-muted-foreground p-12">
+            <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
                 <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold">No Servers Created</h3>
                 <p>Click "Create Server" to get started.</p>
             </div>
           ) : (
-             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Public IP</TableHead>
-                  <TableHead>Provider</TableHead>
-                  <TableHead>Platform</TableHead>
-                  <TableHead>Username</TableHead>
-                  <TableHead>Created On</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {servers.map((server) => (
-                  <TableRow key={server.id}>
-                    <TableCell className="font-medium">
-                        <Link href={`/root/servers/${server.id}`} className="hover:underline">
-                            {server.name}
-                        </Link>
-                         {server.isPrivate && <Badge variant="secondary" className="ml-2">Private</Badge>}
-                    </TableCell>
-                    <TableCell>
-                        <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                            {server.publicIp}
-                        </a>
-                    </TableCell>
-                     <TableCell>{server.provider || 'N/A'}</TableCell>
-                    <TableCell className="capitalize">{server.platform || 'N/A'}</TableCell>
-                    <TableCell>{server.username || 'N/A'}</TableCell>
-                    <TableCell>{server.createdOn ? new Date(server.createdOn).toLocaleDateString() : 'N/A'}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+             servers.map((server) => (
+                <Card key={server.id} className="w-full">
+                    <CardHeader>
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                             <div className="flex-1">
+                                <CardTitle className="hover:underline">
+                                     <Link href={`/root/servers/${server.id}`}>
+                                        {server.name}
+                                     </Link>
+                                </CardTitle>
+                                <CardDescription className="font-mono">{server.publicIp}</CardDescription>
+                            </div>
+                             <div className="flex items-center gap-2">
+                                {server.provider && <Badge variant="secondary">{server.provider}</Badge>}
+                                {server.platform && <Badge variant="outline" className="capitalize">{server.platform}</Badge>}
+                                <Button asChild variant="ghost" size="icon">
+                                    <Link href={`/root/servers/${server.id}`}>
+                                        <ArrowRight className="h-4 w-4" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                    </CardHeader>
+                </Card>
+             ))
           )}
         </div>
     </div>
