@@ -4,7 +4,6 @@
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
 import { getSite, type Site } from '@/actions/editor/site';
 import { validateSession, saveSessionData, getCookie } from '@/lib/session-manager';
-import { SessionReloadBanner } from '@/components/session-reload-banner';
 
 const SESSION_STORAGE_KEY_SITE = 'siteProfileData';
 
@@ -12,7 +11,6 @@ interface ProfileContextType {
   site: Site | null;
   setSite: Dispatch<SetStateAction<Site | null>>;
   loading: boolean;
-  showReloadBanner: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -20,7 +18,6 @@ const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const [site, setSite] = useState<Site | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showReloadBanner, setShowReloadBanner] = useState(false);
 
   useEffect(() => {
     async function initializeProfile() {
@@ -103,8 +100,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   }, [site]);
 
   return (
-    <ProfileContext.Provider value={{ site, setSite, loading, showReloadBanner }}>
-      <SessionReloadBanner show={showReloadBanner} />
+    <ProfileContext.Provider value={{ site, setSite, loading }}>
       {children}
     </ProfileContext.Provider>
   );
