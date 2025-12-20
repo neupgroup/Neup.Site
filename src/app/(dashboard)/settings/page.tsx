@@ -39,7 +39,7 @@ export default function SettingsPage() {
         <p className="text-muted-foreground">Manage your account and application settings.</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {settingsOptions.map((option) => (
           <Link key={option.title} href={option.href} className="group block">
             <Card className="h-full transition-all group-hover:border-primary group-hover:shadow-md">
