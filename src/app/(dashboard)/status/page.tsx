@@ -26,7 +26,7 @@ interface DeploymentStep {
     subActions?: { commandId: string; label: string; }[];
 }
 
-const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server, allocation: ServerAllocation, site: Site | null }) => {
+const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { server: Server, allocation: ServerAllocation, site: Site | null, isProduction: boolean }) => {
     const router = useRouter();
     const { toast } = useToast();
     const [isChecking, setIsChecking] = useState(true);
@@ -64,7 +64,9 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
 
 
         // STEP 1: Check if Website is Live
-        if (!site.domainSettings?.production?.url) {
+        if (!isProduction) {
+            updateStep(0, 'warning', 'Live check is only performed for production servers.');
+        } else if (!site.domainSettings?.production?.url) {
             updateStep(0, 'failure', 'No production domain configured for this site.');
         } else {
             updateStep(0, 'loading', `Pinging ${site.domainSettings.production.url}...`);
@@ -182,7 +184,7 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
         }
 
         setIsChecking(false);
-    }, [server.id, site]);
+    }, [server.id, site, isProduction, initialSteps]);
 
     useEffect(() => {
         runChecks();
@@ -272,9 +274,9 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
                 <div className="flex justify-between items-center">
                     <CardTitle className="flex items-center gap-2">
                         <ServerIcon className="h-5 w-5" />
-                        <span className="truncate">{server.name} ({allocation.id.includes('prod') ? 'Production' : 'Staging/Backup'})</span>
+                        <span className="truncate">{server.name} ({isProduction ? 'Production' : 'Staging/Backup'})</span>
                     </CardTitle>
-                    {site?.domainSettings?.production?.url && (
+                    {isProduction && site?.domainSettings?.production?.url && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Globe className="h-4 w-4" />
                             <a href={`https://${site.domainSettings.production.url}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{site.domainSettings.production.url}</a>
@@ -349,7 +351,7 @@ export default function ApplicationStatusPage() {
             ) : (
                 <div className="space-y-6">
                     {servers.map(server => (
-                        <DeploymentStatusChecker key={server.id} server={server} allocation={server.allocation} site={site} />
+                        <DeploymentStatusChecker key={server.id} server={server} allocation={server.allocation} site={site} isProduction={server.allocation.id.includes('prod')} />
                     ))}
                 </div>
             )}
