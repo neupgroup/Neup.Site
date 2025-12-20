@@ -2,7 +2,7 @@
 'use client'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users, Repeat, Network, User } from 'lucide-react';
+import { ArrowRight, Users, Repeat, Network, User, KeyRound } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function SettingsPage() {
@@ -26,6 +26,12 @@ export default function SettingsPage() {
       description: 'Manage your linked accounts like GitHub.',
       icon: <Users className="h-6 w-6 text-primary" />,
       href: '/settings/accounts',
+    },
+    {
+      title: 'API Tokens',
+      description: 'Generate and manage tokens for API access.',
+      icon: <KeyRound className="h-6 w-6 text-primary" />,
+      href: '/settings/tokens',
     },
     {
       title: 'Domains',
