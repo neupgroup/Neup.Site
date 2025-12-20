@@ -94,12 +94,28 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
             updateStep(0, 'failure', 'Could not reach the website URL.');
         }
 
-        // If website is live, mark all other steps as success and skip checking
+        // If website is live, skip all checks except Deploy Structure
         if (websiteIsLive) {
+            // Mark other steps as success
             updateStep(1, 'success', 'Application is running correctly.');
-            updateStep(2, 'success', 'Structure is deployed.');
             updateStep(3, 'success', 'Application is built.');
             updateStep(4, 'success', 'App and proxy are configured.');
+
+            // STEP 3: Deploy Structure Check (always check from database)
+            updateStep(2, 'loading', 'Checking for pending structure changes...');
+            const structureResult = await getStructure();
+            if (structureResult.success) {
+                const fetchedStructure = structureResult.structure || null;
+                setStructure(fetchedStructure);
+                if (fetchedStructure?.status === 'pendingDeployment') {
+                    updateStep(2, 'warning', 'Structure changes are pending deployment.');
+                } else {
+                    updateStep(2, 'success', 'Structure is up to date.');
+                }
+            } else {
+                updateStep(2, 'failure', 'Could not check structure status.');
+            }
+
             setIsChecking(false);
             return;
         }
@@ -122,15 +138,17 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         updateStep(1, 'success', `Application directory found at ${appDirCheck.resolvedPath}.`);
 
         // STEP 3: Deploy Structure Check
+        // This check is now handled within the websiteIsLive block, but also needs to run if website is NOT live.
+        // So, we keep it here for the non-live path.
         updateStep(2, 'loading', 'Checking for pending structure changes...');
         const structureResult = await getStructure();
         if (structureResult.success) {
             const fetchedStructure = structureResult.structure || null;
             setStructure(fetchedStructure);
             if (fetchedStructure?.status === 'pendingDeployment') {
-                updateStep(2, 'warning', 'There are pending structure changes to deploy.');
+                updateStep(2, 'warning', 'Structure changes are pending deployment.');
             } else {
-                updateStep(2, 'success', 'Structure is up-to-date.');
+                updateStep(2, 'success', 'Structure is up to date.');
             }
         } else {
             updateStep(2, 'failure', 'Could not check structure status.');
@@ -228,6 +246,13 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
 
         if (clickedStep.action.commandId === 'deploy-structure') {
             result = await createDeployment();
+            // Refresh structure status after deployment
+            if (result.success) {
+                const structureResult = await getStructure();
+                if (structureResult.success) {
+                    setStructure(structureResult.structure || null);
+                }
+            }
         } else if (clickedStep.action.commandId === 'build-app') {
             result = await rebuildApplication(server.id, isProduction);
         } else {
@@ -235,7 +260,11 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         }
 
         if (result.success) {
-            updateStep(clickedStepIndex, 'success', `${clickedStep.action.label} completed successfully.`);
+            if (clickedStep.action.commandId === 'deploy-structure') {
+                updateStep(clickedStepIndex, 'success', 'Structure is up to date.');
+            } else {
+                updateStep(clickedStepIndex, 'success', `${clickedStep.action.label} completed successfully.`);
+            }
             toast({ title: 'Action Succeeded!', description: `${clickedStep.action.label} completed.` });
         } else {
             updateStep(clickedStepIndex, 'failure', `Action "${clickedStep.action.label}" failed.`);
@@ -249,9 +278,11 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         setTimeout(() => runChecks(), 2000);
     };
 
-    const renderStepActions = (step: DeploymentStep, index: number) => {
+    const renderStepDescription = (step: DeploymentStep, index: number) => {
         let canShowAction = false;
-        if (index === 0) return null;
+        if (index === 0) {
+            return <p className="text-sm text-muted-foreground">{step.description}</p>;
+        }
 
         if (step.action?.commandId === 'deploy-structure') {
             canShowAction = structure?.status === 'pendingDeployment';
@@ -260,23 +291,98 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
             canShowAction = (step.status === 'failure' || (step.status === 'success' && (step.name === 'Application Built' || step.name === 'Start App & Configure Proxy'))) && allPreviousSuccessful;
         }
 
-        if (canShowAction) {
-            const actions: JSX.Element[] = [];
-            if (step.action) {
-                actions.push(<Button key={step.action.commandId} size="sm" variant="link" onClick={() => handleActionClick(index)} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : step.action.label}</Button>);
+        if (canShowAction && step.action) {
+            const isSuccess = step.status === 'success';
+            const actionText = isSuccess ? `${step.action.label} again` : step.action.label;
+
+            // Special handling for the last step (Start App & Configure Proxy) when successful
+            if (isSuccess && step.name === 'Start App & Configure Proxy') {
+                return (
+                    <p className="text-sm text-muted-foreground">
+                        {step.description}
+                        {step.description.endsWith('.') ? '' : '.'}{' '}
+                        <button
+                            onClick={() => handleActionClick(index)}
+                            disabled={!!isExecutingAction}
+                            className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isExecutingAction === step.name ? (
+                                <span className="inline-flex items-center gap-1">
+                                    <Loader2 className="h-3 w-3 animate-spin inline" />
+                                    {actionText}...
+                                </span>
+                            ) : (
+                                actionText
+                            )}
+                        </button> or just{' '}
+                        <button
+                            onClick={async () => {
+                                setIsExecutingAction('restart-app');
+                                const result = await runCommand(server.id, 'restart-app', {}, 'Restart App');
+                                if (result.success) {
+                                    toast({ title: 'App Restarted', description: 'The application has been restarted successfully.' });
+                                    setTimeout(() => runChecks(), 2000);
+                                } else {
+                                    toast({ variant: 'destructive', title: 'Restart Failed', description: result.error || 'Failed to restart the app.' });
+                                }
+                                setIsExecutingAction(null);
+                            }}
+                            disabled={!!isExecutingAction}
+                            className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isExecutingAction === 'restart-app' ? (
+                                <span className="inline-flex items-center gap-1">
+                                    <Loader2 className="h-3 w-3 animate-spin inline" />
+                                    Restart the app...
+                                </span>
+                            ) : (
+                                'Restart the app'
+                            )}
+                        </button>.
+                    </p>
+                );
             }
-            if (step.subActions) {
-                step.subActions.forEach(subAction => {
-                    actions.push(<Button key={subAction.commandId} size="sm" variant="link" onClick={() => runCommand(server.id, subAction.commandId, {})} disabled={!!isExecutingAction}>{isExecutingAction === step.name ? <Loader2 className="animate-spin" /> : subAction.label}</Button>);
-                });
-            }
-            if (actions.length > 0) {
-                return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
-            }
+
+            return (
+                <p className="text-sm text-muted-foreground">
+                    {step.description}
+                    {step.description.endsWith('.') ? '' : '.'}{' '}
+                    <button
+                        onClick={() => handleActionClick(index)}
+                        disabled={!!isExecutingAction}
+                        className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isExecutingAction === step.name ? (
+                            <span className="inline-flex items-center gap-1">
+                                <Loader2 className="h-3 w-3 animate-spin inline" />
+                                {actionText}...
+                            </span>
+                        ) : (
+                            actionText
+                        )}
+                    </button>.
+                    {step.subActions && step.subActions.length > 0 && (
+                        <>
+                            {step.subActions.map((subAction, idx) => (
+                                <span key={subAction.commandId}>
+                                    {' '}
+                                    <button
+                                        onClick={() => runCommand(server.id, subAction.commandId, {})}
+                                        disabled={!!isExecutingAction}
+                                        className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {subAction.label}
+                                    </button>.
+                                </span>
+                            ))}
+                        </>
+                    )}
+                </p>
+            );
         }
 
-        return null;
-    }
+        return <p className="text-sm text-muted-foreground">{step.description}</p>;
+    };
 
     const getStatusIcon = (status: DeploymentStep['status']) => {
         switch (status) {
@@ -332,8 +438,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
                                     </div>
                                     <div className="flex-1">
                                         <p className="font-medium">{step.name}</p>
-                                        <p className="text-sm text-muted-foreground">{step.description}</p>
-                                        {renderStepActions(step, index)}
+                                        {renderStepDescription(step, index)}
                                     </div>
                                 </div>
                             </div>

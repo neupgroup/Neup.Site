@@ -69,7 +69,7 @@ echo "--- Creating new Nginx config ---"
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
-    server_name {{universal.site_domain}};
+    server_name {{universal.productionDomain}};
 
     location / {
         proxy_pass http://localhost:{{universal.app_port}};
@@ -88,7 +88,7 @@ sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/s
 sudo nginx -t
 
 echo "--- Step 8: Setting up SSL with Certbot and enabling auto-redirect ---"
-sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
+sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.productionDomain}} --redirect
 
 sudo systemctl reload nginx
 
@@ -148,7 +148,7 @@ echo "--- Creating new Nginx config ---"
 sudo bash -c "cat > /etc/nginx/sites-available/{{universal.site_id}}.conf" <<'EOF'
 server {
     listen 80;
-    server_name {{universal.site_domain}};
+    server_name {{universal.productionDomain}};
 
     location / {
         proxy_pass http://localhost:{{universal.app_port}};
@@ -165,12 +165,25 @@ server {
 EOF
 sudo ln -s -f /etc/nginx/sites-available/{{universal.site_id}}.conf /etc/nginx/sites-enabled/
 sudo nginx -t
-sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.site_domain}} --redirect
+sudo certbot --nginx --non-interactive --agree-tos --email encryption.sites@neupgroup.com -d {{universal.productionDomain}} --redirect
 sudo systemctl reload nginx
             `,
                 type: 'updation',
                 danger: 'mid',
                 allocatesPort: true
+            }
+        },
+        {
+            id: 'restart-app', data: {
+                name: "Restart App",
+                description: "Restarts the PM2 process for the application.",
+                commandTemplate: `
+cd {{universal.server_appPath}}
+pm2 restart {{universal.site_id}} || echo "Process not found, starting fresh..."
+pm2 save
+            `,
+                type: 'updation',
+                danger: 'low'
             }
         },
     ];
