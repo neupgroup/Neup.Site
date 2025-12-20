@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { saveSite, type Site } from '@/actions/editor/site';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -75,7 +74,7 @@ export default function DomainPage() {
 
     if (loading) {
         return (
-            <div className="w-full max-w-4xl mx-auto space-y-8">
+            <div className="w-full max-w-4xl space-y-8">
                 <Skeleton className="h-12 w-1/3" />
                 <Skeleton className="h-64 w-full" />
             </div>
@@ -84,7 +83,7 @@ export default function DomainPage() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-4xl mx-auto space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-4xl space-y-8">
                 <header>
                     <h1 className="text-3xl font-bold font-headline">Domains</h1>
                     <p className="text-muted-foreground">Manage your site's domains and redirection rules.</p>
