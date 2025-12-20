@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Shield } from 'lucide-react';
 
 export default function PermissionsPage() {
-    
+
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight>Manage Permissions</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Permissions</h1>
       </header>
       <Card>
         <CardHeader>
@@ -18,10 +18,10 @@ export default function PermissionsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-           <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+          <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
             <Shield className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <p>Permissions management functionality coming soon.</p>
-           </div>
+          </div>
         </CardContent>
       </Card>
     </div>
