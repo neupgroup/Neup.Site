@@ -166,7 +166,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     const { site } = await getSite();
     const currentStructure = structureSnap.data() as Structure;
 
-    const redirectsResult = await getRedirects();
+    const redirectsResult = await getRedirects({});
     const redirects = redirectsResult.success ? redirectsResult.redirects : [];
 
     // Create a new document in the 'deployments' collection
@@ -272,7 +272,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       await fs.mkdir(tempAppBaseDir, { recursive: true });
 
       // Prepare redirects data
-      const redirectsResult = await getRedirects();
+      const redirectsResult = await getRedirects({});
       const redirects = redirectsResult.success ? redirectsResult.redirects : [];
 
       // Prepare site profile data

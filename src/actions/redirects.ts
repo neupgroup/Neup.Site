@@ -25,9 +25,11 @@ import { getAccountId } from '@/actions/accounts';
 import { cookies } from 'next/headers';
 import { markRedirectsAsPending } from './structure';
 
+export type { Redirect };
+
 export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();
-  const siteId = cookies().get('siteId')?.value;
+  const siteId = (await cookies()).get('siteId')?.value;
 
   if (!accountId || !siteId) {
     return { success: false, error: 'User or site context not found.' };
@@ -41,7 +43,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
       created_by: accountId,
       created_on: serverTimestamp(),
     });
-    
+
     await markRedirectsAsPending(siteId);
 
     revalidatePath('/manage/redirects');
@@ -53,16 +55,16 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
 }
 
 export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }): Promise<{ success: boolean; redirects?: Redirect[]; error?: string; totalCount?: number }> {
-    const siteId = cookies().get('siteId')?.value;
-    if (!siteId) {
-        return { success: false, error: 'Site context not found.' };
-    }
+  const siteId = (await cookies()).get('siteId')?.value;
+  if (!siteId) {
+    return { success: false, error: 'Site context not found.' };
+  }
 
   try {
     const { firestore } = initializeFirebase();
     const redirectsRef = collection(firestore, 'redirects');
     const siteQuery = query(redirectsRef, where('siteId', '==', siteId));
-    
+
     const countSnapshot = await getCountFromServer(siteQuery);
     const totalCount = countSnapshot.data().count;
 
@@ -70,12 +72,12 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
 
     let finalQuery;
     if (page > 1) {
-        const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
-        const prevPageSnapshot = await getDocs(prevPageQuery);
-        const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
-        finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
+      const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
+      const prevPageSnapshot = await getDocs(prevPageQuery);
+      const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
+      finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
     } else {
-        finalQuery = query(baseQuery, limit(pageSize));
+      finalQuery = query(baseQuery, limit(pageSize));
     }
 
     const querySnapshot = await getDocs(finalQuery);
@@ -100,7 +102,7 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
 }
 
 export async function deleteRedirect(id: string): Promise<{ success: boolean; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
+  const siteId = (await cookies()).get('siteId')?.value;
   if (!siteId) {
     return { success: false, error: 'Site context not found.' };
   }
@@ -108,7 +110,7 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
   try {
     const { firestore } = initializeFirebase();
     await deleteDoc(doc(firestore, 'redirects', id));
-    
+
     await markRedirectsAsPending(siteId);
 
     revalidatePath('/manage/redirects');
