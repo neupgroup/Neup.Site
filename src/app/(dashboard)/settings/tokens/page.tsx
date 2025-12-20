@@ -15,14 +15,18 @@ import { useToast } from '@/hooks/use-toast';
 import { createToken, getTokens, revokeToken, type ApiToken } from '@/actions/tokens';
 import { format } from 'date-fns';
 
-function generateToken() {
-  const array = new Uint32Array(8);
-  window.crypto.getRandomValues(array);
-  let token = '';
-  for (let i = 0; i < array.length; i++) {
-    token += (i < 2 ? 'npk_' : '') + array[i].toString(36);
-  }
-  return token.substring(0, 32);
+async function sha256(message: string): Promise<string> {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function generateToken(): { token: string, prefix: string } {
+  const prefix = 'npk_';
+  const randomPart = Array.from(window.crypto.getRandomValues(new Uint8Array(20)))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+  return { token: `${prefix}${randomPart}`, prefix };
 }
 
 export default function TokensPage() {
@@ -33,7 +37,7 @@ export default function TokensPage() {
   const [tokenNameToCreate, setTokenNameToCreate] = useState('');
   const [generatedToken, setGeneratedToken] = useState<string | null>(null);
   const [tokenToDelete, setTokenToDelete] = useState<ApiToken | null>(null);
-  const [copiedTokenId, setCopiedTokenId] = useState<string | null>(null);
+  const [copiedToken, setCopiedToken] = useState(false);
   const { toast } = useToast();
 
   const fetchTokens = useCallback(async () => {
@@ -57,11 +61,14 @@ export default function TokensPage() {
       return;
     }
     setIsCreating(true);
-    const newToken = generateToken();
-    const result = await createToken(tokenNameToCreate, newToken);
+
+    const { token, prefix } = generateToken();
+    const tokenHash = await sha256(token);
+    
+    const result = await createToken(tokenNameToCreate, tokenHash, prefix);
 
     if (result.success) {
-      setGeneratedToken(newToken);
+      setGeneratedToken(token);
       setTokenNameToCreate('');
       fetchTokens();
     } else {
@@ -83,10 +90,15 @@ export default function TokensPage() {
     setTokenToDelete(null);
   };
   
-  const copyToClipboard = (text: string, id: string) => {
+  const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedTokenId(id);
-    setTimeout(() => setCopiedTokenId(null), 2000);
+    setCopiedToken(true);
+    setTimeout(() => setCopiedToken(false), 2000);
+  }
+
+  const closeGeneratedTokenDialog = () => {
+    setGeneratedToken(null);
+    setCopiedToken(false);
   }
 
   return (
@@ -104,11 +116,11 @@ export default function TokensPage() {
             <p>Please copy this token now. You won't be able to see it again.</p>
             <div className="flex items-center gap-2 mt-2 p-2 bg-muted rounded-md font-mono text-sm">
                 <span className="flex-1 truncate">{generatedToken}</span>
-                 <Button variant="ghost" size="icon" onClick={() => copyToClipboard(generatedToken, 'new')}>
-                    {copiedTokenId === 'new' ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                 <Button variant="ghost" size="icon" onClick={() => copyToClipboard(generatedToken)}>
+                    {copiedToken ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                 </Button>
             </div>
-            <Button variant="outline" size="sm" className="mt-2" onClick={() => setGeneratedToken(null)}>Close</Button>
+            <Button variant="outline" size="sm" className="mt-2" onClick={closeGeneratedTokenDialog}>Close</Button>
           </AlertDescription>
         </Alert>
       )}
