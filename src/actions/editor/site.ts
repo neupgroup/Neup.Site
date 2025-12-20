@@ -44,7 +44,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
       id: docSnap.id,
       name: data.name || '',
       url: data.url,
-      domainSettings: data.domainSettings,
+      domains: data.domains,
       tier: data.tier,
       logoUrl: data.logoUrl,
       icons: data.icons || {},
@@ -88,31 +88,31 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
     if (!docSnap.exists()) {
       dataToSave.createdAt = serverTimestamp();
     }
-    
-    if (data.domainSettings) {
-        dataToSave.domainSettings = {
-            ...(existingData.domainSettings || {}),
-            production: {
-                ...existingData.domainSettings?.production,
-                ...data.domainSettings.production,
-            },
-            staging: {
-                ...existingData.domainSettings?.staging,
-                ...data.domainSettings.staging,
-            },
-        };
+
+    if (data.domains) {
+      dataToSave.domains = {
+        ...(existingData.domains || {}),
+        production: {
+          ...existingData.domains?.production,
+          ...data.domains.production,
+        },
+        development: {
+          ...existingData.domains?.development,
+          ...data.domains.development,
+        },
+      };
     }
 
     if (data.logoUrl && data.logoUrl !== existingData.logoUrl) {
       dataToSave.logoUrl = normalizeUrl(data.logoUrl);
       await markAssetsAsPending(siteId);
     }
-    
+
     if (data.icons) {
-        dataToSave.icons = { ...(existingData.icons || {}), ...data.icons };
-        await markAssetsAsPending(siteId);
+      dataToSave.icons = { ...(existingData.icons || {}), ...data.icons };
+      await markAssetsAsPending(siteId);
     }
-    
+
     if (data.name !== existingData.name || data.hideSitename !== existingData.hideSitename) {
       await markAssetsAsPending(siteId);
     }
@@ -122,13 +122,13 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
         ...p,
         url: normalizeUrl(p.url)
       }));
-       await markAssetsAsPending(siteId);
+      await markAssetsAsPending(siteId);
     }
 
     if (data.theme) {
       dataToSave.theme = { ...data.theme };
       if (data.theme.colors && data.theme.colors.length > 0) {
-          dataToSave.theme.generated = generateThemeFromColor(data.theme.colors);
+        dataToSave.theme.generated = generateThemeFromColor(data.theme.colors);
       }
       await markThemeAsPending(siteId);
     }

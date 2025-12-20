@@ -35,7 +35,7 @@ export interface Site {
   id: string;
   name: string;
   url: string;
-  domainSettings?: {
+  domains?: {
     production?: DomainSetting;
     development?: DomainSetting;
   },

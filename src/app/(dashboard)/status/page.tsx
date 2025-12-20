@@ -63,33 +63,35 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         setIsChecking(true);
         setSteps(initialSteps); // Reset steps to loading state
 
-
-        // STEP 1: Check if Website is Live
+        // Check if domain is configured
         const domainUrl = isProduction
-            ? site.domainSettings?.production?.url
-            : site.domainSettings?.development?.url;
-
-        let websiteIsLive = false;
+            ? site.domains?.production?.url
+            : site.domains?.development?.url;
 
         if (!domainUrl) {
-            updateStep(0, 'failure', `No ${isProduction ? 'production' : 'development'} domain configured for this site.`);
-        } else {
-            updateStep(0, 'loading', `Pinging ${domainUrl}...`);
-            try {
-                const url = `https://${domainUrl}`;
-                const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
-                const data = await res.json();
+            // Domain not configured - skip all checks
+            setIsChecking(false);
+            return;
+        }
 
-                if (res.ok && data.success && data.status === 200) {
-                    updateStep(0, 'success', `Website is live and reachable (Status 200).`);
-                    websiteIsLive = true;
-                } else {
-                    const statusCode = data.status || 'Unknown';
-                    updateStep(0, 'failure', `Website is not reachable (Status ${statusCode}).`);
-                }
-            } catch (e) {
-                updateStep(0, 'failure', 'Could not reach the website URL.');
+        // STEP 1: Check if Website is Live
+        let websiteIsLive = false;
+
+        updateStep(0, 'loading', `Pinging ${domainUrl}...`);
+        try {
+            const url = `https://${domainUrl}`;
+            const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
+            const data = await res.json();
+
+            if (res.ok && data.success && data.status === 200) {
+                updateStep(0, 'success', `Website is live and reachable (Status 200).`);
+                websiteIsLive = true;
+            } else {
+                const statusCode = data.status || 'Unknown';
+                updateStep(0, 'failure', `Website is not reachable (Status ${statusCode}).`);
             }
+        } catch (e) {
+            updateStep(0, 'failure', 'Could not reach the website URL.');
         }
 
         // If website is live, mark all other steps as success and skip checking
@@ -299,8 +301,8 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
                         <Globe className="h-5 w-5" />
                         <span className="truncate">
                             {isProduction
-                                ? (site?.domainSettings?.production?.url || 'Production Domain Not Set')
-                                : (site?.domainSettings?.development?.url || 'Development Domain Not Set')
+                                ? (site?.domains?.production?.url || 'Production Domain Not Set')
+                                : (site?.domains?.development?.url || 'Development Domain Not Set')
                             }
                         </span>
                     </CardTitle>
@@ -311,20 +313,33 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
                 <CardDescription className="truncate font-mono">{server.name} • {server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {steps.map((step, index) => (
-                    <div key={step.name}>
-                        <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 pt-1">
-                                {getStatusIcon(step.status)}
-                            </div>
-                            <div className="flex-1">
-                                <p className="font-medium">{step.name}</p>
-                                <p className="text-sm text-muted-foreground">{step.description}</p>
-                                {renderStepActions(step, index)}
-                            </div>
-                        </div>
+                {!site?.domains?.[isProduction ? 'production' : 'development']?.url ? (
+                    <div className="text-center py-8">
+                        <p className="text-muted-foreground mb-4">
+                            Configure your {isProduction ? 'production' : 'development'} domain to check your app's status.
+                        </p>
+                        <Button variant="outline" onClick={() => window.location.href = '/settings/domain'}>
+                            Configure Domain
+                        </Button>
                     </div>
-                ))}
+                ) : (
+                    <>
+                        {steps.map((step, index) => (
+                            <div key={step.name}>
+                                <div className="flex items-start gap-4">
+                                    <div className="flex-shrink-0 pt-1">
+                                        {getStatusIcon(step.status)}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium">{step.name}</p>
+                                        <p className="text-sm text-muted-foreground">{step.description}</p>
+                                        {renderStepActions(step, index)}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </>
+                )}
             </CardContent>
         </Card>
     );
@@ -353,8 +368,8 @@ export default function ApplicationStatusPage() {
     // Use the first allocated server for both production and development
     const allocatedServer = servers.length > 0 ? servers[0] : null;
 
-    const productionDomain = site?.domainSettings?.production?.url;
-    const developmentDomain = site?.domainSettings?.development?.url;
+    const productionDomain = site?.domains?.production?.url;
+    const developmentDomain = site?.domains?.development?.url;
 
     return (
         <div className="w-full max-w-4xl mx-auto">

@@ -9,19 +9,22 @@ import { saveSite, type Site } from '@/actions/editor/site';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2 } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const DomainSettingsSchema = z.object({
-    domainSettings: z.object({
+    domains: z.object({
         production: z.object({
             url: z.string().optional(),
+            forceHttps: z.boolean().optional(),
         }).optional(),
         development: z.object({
             url: z.string().optional(),
+            forceHttps: z.boolean().optional(),
         }).optional(),
     }).optional(),
 });
@@ -35,9 +38,9 @@ export default function DomainPage() {
     const form = useForm<DomainFormData>({
         resolver: zodResolver(DomainSettingsSchema),
         defaultValues: {
-            domainSettings: {
-                production: { url: '' },
-                development: { url: '' },
+            domains: {
+                production: { url: '', forceHttps: true },
+                development: { url: '', forceHttps: false },
             },
         },
     });
@@ -45,9 +48,15 @@ export default function DomainPage() {
     useEffect(() => {
         if (!loading && site) {
             form.reset({
-                domainSettings: {
-                    production: { url: site.domainSettings?.production?.url || '' },
-                    development: { url: site.domainSettings?.development?.url || '' },
+                domains: {
+                    production: {
+                        url: site.domains?.production?.url || '',
+                        forceHttps: site.domains?.production?.forceHttps ?? true
+                    },
+                    development: {
+                        url: site.domains?.development?.url || '',
+                        forceHttps: site.domains?.development?.forceHttps ?? false
+                    },
                 },
             });
         }
@@ -61,9 +70,9 @@ export default function DomainPage() {
             if (site) {
                 setSite({
                     ...site,
-                    domainSettings: {
-                        ...site.domainSettings,
-                        ...data.domainSettings
+                    domains: {
+                        ...site.domains,
+                        ...data.domains
                     },
                 });
             }
@@ -90,32 +99,81 @@ export default function DomainPage() {
                 </header>
 
                 <div className="space-y-6">
-                    <FormField
-                        control={form.control}
-                        name="domainSettings.production.url"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Domain for your Website</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder="e.g., yourdomain.com" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="domainSettings.development.url"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Domain for your Development Site</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder="e.g., dev.yourdomain.com" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    {/* Production Domain */}
+                    <div className="space-y-4 p-4 border rounded-lg">
+                        <h3 className="font-semibold">Production Domain</h3>
+                        <FormField
+                            control={form.control}
+                            name="domains.production.url"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Domain URL</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="e.g., yourdomain.com" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="domains.production.forceHttps"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                        <FormLabel>Force HTTPS</FormLabel>
+                                        <FormDescription>
+                                            Redirect all HTTP requests to HTTPS
+                                        </FormDescription>
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    {/* Development Domain */}
+                    <div className="space-y-4 p-4 border rounded-lg">
+                        <h3 className="font-semibold">Development Domain</h3>
+                        <FormField
+                            control={form.control}
+                            name="domains.development.url"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Domain URL</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="e.g., dev.yourdomain.com" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="domains.development.forceHttps"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                        <FormLabel>Force HTTPS</FormLabel>
+                                        <FormDescription>
+                                            Redirect all HTTP requests to HTTPS
+                                        </FormDescription>
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                 </div>
 
 

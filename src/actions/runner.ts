@@ -117,8 +117,8 @@ export async function runCommand(
             'universal.siteId': site?.id || '',
             'universal.site_id': site?.id || '',
             'universal.site_name': site?.name || '',
-            'universal.productionDomain': site?.domainSettings?.production?.url || '',
-            'universal.developmentDomain': site?.domainSettings?.development?.url || '',
+            'universal.productionDomain': site?.domains?.production?.url || '',
+            'universal.developmentDomain': site?.domains?.development?.url || '',
             'universal.account_id': accountId || '',
             'universal.account_githubToken': githubAccessToken,
         };
