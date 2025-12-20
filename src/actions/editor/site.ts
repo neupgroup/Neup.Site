@@ -44,7 +44,6 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
       id: docSnap.id,
       name: data.name || '',
       url: data.url,
-      domains: data.domains || [],
       domainSettings: data.domainSettings,
       tier: data.tier,
       logoUrl: data.logoUrl,
@@ -88,6 +87,20 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
 
     if (!docSnap.exists()) {
       dataToSave.createdAt = serverTimestamp();
+    }
+    
+    if (data.domainSettings) {
+        dataToSave.domainSettings = {
+            ...(existingData.domainSettings || {}),
+            production: {
+                ...existingData.domainSettings?.production,
+                ...data.domainSettings.production,
+            },
+            staging: {
+                ...existingData.domainSettings?.staging,
+                ...data.domainSettings.staging,
+            },
+        };
     }
 
     if (data.logoUrl && data.logoUrl !== existingData.logoUrl) {

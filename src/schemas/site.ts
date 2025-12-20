@@ -1,4 +1,5 @@
 
+
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Path } from '@/actions/paths';
 import type { Redirect } from '@/schemas/redirect';
@@ -25,14 +26,19 @@ export interface SiteIcons {
   android512?: string;
 }
 
+export interface DomainSetting {
+    url?: string;
+    forceHttps?: boolean;
+}
+
 export interface Site {
   id: string;
   name: string;
   url: string;
-  domains?: {
-    value: string;
-    forceHttps?: boolean;
-  }[];
+  domainSettings?: {
+    production?: DomainSetting;
+    staging?: DomainSetting;
+  },
   tier: 'free' | 'premium';
   logoUrl?: string;
   icons?: SiteIcons;

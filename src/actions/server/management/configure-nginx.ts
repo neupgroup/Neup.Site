@@ -1,6 +1,8 @@
+
 "use server";
 
 import { getSite } from "@/actions/editor/site";
+import type { DomainSetting } from '@/schemas/site';
 
 interface NginxConfigParams {
     urls: string[];
@@ -11,10 +13,10 @@ interface NginxConfigParams {
 /**
  * Creates a general HTTPS server block for a domain
  */
-function createGeneralServerBlock(domain: string, proxyUrl: string, listenPort: number): string {
+function createGeneralServerBlock(domain: string, proxyUrl: string): string {
     return `
 server {
-    listen ${listenPort} ssl;
+    listen 443 ssl http2;
     server_name ${domain};
 
     ssl_certificate /etc/letsencrypt/live/${domain}/fullchain.pem;
@@ -48,58 +50,42 @@ server {
 }`;
 }
 
-export async function getConfigureNginxCommand({ urls, proxyUrl, listenPort }: NginxConfigParams): Promise<string> {
-    if (urls.length === 0) {
-        throw new Error('At least one URL is required.');
-    }
 
+export async function getConfigureNginxCommand({ proxyUrl, listenPort }: Omit<NginxConfigParams, 'urls'>): Promise<string> {
     const { site } = await getSite();
 
-    // Process each URL and create domain-specific configurations
+    if (!site?.domainSettings) {
+        throw new Error('No domain settings found for the site.');
+    }
+    
+    const domains: { url: string; forceHttps?: boolean }[] = [];
+    if (site.domainSettings.production?.url) domains.push({url: site.domainSettings.production.url, forceHttps: site.domainSettings.production.forceHttps});
+    if (site.domainSettings.staging?.url) domains.push({url: site.domainSettings.staging.url, forceHttps: site.domainSettings.staging.forceHttps});
+
+    if (domains.length === 0) {
+        throw new Error('At least one domain must be configured.');
+    }
+
     const domainConfigs: string[] = [];
-    const processedDomains = new Set<string>();
 
-    for (const urlStr of urls) {
-        const url = new URL(urlStr.startsWith('http') ? urlStr : `http://${urlStr}`);
-        const domain = url.hostname;
-
-        // Skip if we've already processed this domain
-        if (processedDomains.has(domain)) {
-            continue;
-        }
-        processedDomains.add(domain);
-
-        // Find the matching domain settings from the site's domains array
-        const domainConfig = site?.domains?.find(d => d.value === domain);
-
-        const forceHttps = domainConfig?.forceHttps ?? true;
-
-        // Step 1: Create the blocks for this domain
-        const generalBlock = createGeneralServerBlock(domain, proxyUrl, listenPort);
-        const httpsRedirectBlock = createHttpsRedirectBlock(domain);
-
-        // Step 2: Combine blocks based on what's needed for this domain
+    for (const domainInfo of domains) {
+        const domain = domainInfo.url;
+        const forceHttps = domainInfo.forceHttps ?? true;
+        
         let domainNginxConfig = '';
 
-        // Add HTTPS redirect if needed
         if (forceHttps) {
-            domainNginxConfig += httpsRedirectBlock + '\n';
+            domainNginxConfig += createHttpsRedirectBlock(domain) + '\n';
         }
 
-        // Always add the general server block
-        domainNginxConfig += generalBlock + '\n';
+        domainNginxConfig += createGeneralServerBlock(domain, proxyUrl) + '\n';
 
-        // Step 3: Save this domain's configuration
         domainConfigs.push(domainNginxConfig);
     }
 
-    // Step 4: Merge all domain configurations
     const mergedNginxConfig = domainConfigs.join('\n');
-
-    // Step 5: Create the final deployment script
-    const firstDomain = new URL(urls[0].startsWith('http') ? urls[0] : `http://${urls[0]}`).hostname;
-    const safeDomain = firstDomain.replace(/\./g, '_');
-    const configFileName = `${safeDomain}.conf`;
+    const safeDomainName = site.id.replace(/[^a-zA-Z0-9]/g, '_');
+    const configFileName = `${safeDomainName}.conf`;
     const configFilePath = `/etc/nginx/sites-available/${configFileName}`;
     const enabledConfigPath = `/etc/nginx/sites-enabled/${configFileName}`;
 
