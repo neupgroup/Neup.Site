@@ -40,7 +40,7 @@ export default function CreateAppBaseFilePage() {
       return;
     }
     const serverId = serverResult.servers[0].id;
-    
+
     const result = await createAppBaseFile(serverId, data.name, data.type);
     if (result.success) {
       toast({ title: 'File Created' });
@@ -87,8 +87,8 @@ export default function CreateAppBaseFilePage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="external">External (`/src/base`)</SelectItem>
-                      <SelectItem value="internal">Internal (`/base`)</SelectItem>
+                      <SelectItem value="internal">Internal (`/src/base`)</SelectItem>
+                      <SelectItem value="external">External (`/base`)</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

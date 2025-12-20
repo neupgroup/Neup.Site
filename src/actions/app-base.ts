@@ -22,7 +22,7 @@ async function resolveAppBasePath(serverId: string, type: 'internal' | 'external
     }
 
     const appPath = server.appPath?.replace(/\{\{universal.site_id\}\}/g, site.id) || `/var/www/${site.id}`;
-    
+
     // Corrected logic: Internal is /src/base, External is /base
     const basePath = type === 'internal' ? `${appPath}/src/base` : `${appPath}/base`;
 
@@ -54,11 +54,11 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
             return result.stdout.trim().split('\n').slice(1).map(line => {
                 const parts = line.split(/\s+/);
                 if (parts.length < 9 || parts[0].startsWith('d')) return null;
-                
+
                 const fileName = parts[8];
                 if (!fileName.endsWith('.json')) return null;
 
-                return { 
+                return {
                     name: fileName.replace('.json', ''),
                     size: parts[4],
                     type: type,
@@ -71,7 +71,7 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
             fetchFilesFromPath('internal'),
             fetchFilesFromPath('external')
         ]);
-        
+
         const allFiles = [...internalFiles, ...externalFiles];
         const sortedFiles = allFiles.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -87,7 +87,7 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
 export async function createAppBaseFile(serverId: string, name: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
     const sanitizedName = name.replace(/[^a-zA-Z0-9-]/g, '_');
     const fileName = `${sanitizedName}.json`;
-    
+
     let ssh: NodeSSH | undefined;
     try {
         const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
@@ -104,7 +104,7 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
         // Check if template exists, if so, copy its content
         const templatePath = `${basePath}/${sanitizedName}.template.json`;
         const checkTemplateResult = await ssh.execCommand(`test -f ${templatePath}`);
-        
+
         let content = '{}';
         if (checkTemplateResult.code === 0) {
             const catResult = await ssh.execCommand(`cat ${templatePath}`);
@@ -112,9 +112,9 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
                 content = catResult.stdout;
             }
         }
-        
+
         await ssh.exec('tee', [filePath], { stdin: content });
-        
+
         return { success: true };
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to create app base file: ${e.message}`, source: 'createAppBaseFile' });
@@ -125,8 +125,8 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
 }
 
 export async function getAppBaseFileContent(serverId: string, fileName: string, type: 'internal' | 'external'): Promise<{ success: boolean; content?: string; error?: string }> {
-     const fullFileName = `${fileName}.json`;
-     let ssh: NodeSSH | undefined;
+    const fullFileName = `${fileName}.json`;
+    let ssh: NodeSSH | undefined;
     try {
         const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
         ssh = sshInstance;
@@ -136,10 +136,10 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
             username: server.username || 'root',
             privateKey: server.privateKey,
         });
-        
+
         const filePath = `${basePath}/${fullFileName}`;
         const result = await ssh.execCommand(`cat '${filePath}'`);
-        
+
         if (result.code !== 0) {
             throw new Error(result.stderr);
         }
@@ -168,7 +168,7 @@ export async function saveAppBaseFileContent(serverId: string, fileName: string,
 
         const filePath = `${basePath}/${fullFileName}`;
         await ssh.exec('tee', [filePath], { stdin: content });
-        
+
         return { success: true };
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to save app base file content: ${e.message}`, source: 'saveAppBaseFileContent' });
@@ -201,7 +201,7 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
             backedUpAt: serverTimestamp(),
             backedUpBy: accountId,
         });
-        
+
         return { success: true };
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to backup file ${fileName}: ${e.message}`, source: 'backupAppBaseFile' });
@@ -219,13 +219,24 @@ export async function getAppBaseBackups(): Promise<{ success: boolean; backups?:
 
         const { firestore } = initializeFirebase();
         const q = query(
-            collection(firestore, 'appBaseBackups'), 
-            where('siteId', '==', site.id), 
+            collection(firestore, 'appBaseBackups'),
+            where('siteId', '==', site.id),
             orderBy('backedUpAt', 'desc')
         );
 
         const querySnapshot = await getDocs(q);
-        const backups = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AppBaseBackup[];
+        const backups = querySnapshot.docs.map(docSnap => {
+            const data = docSnap.data();
+            return {
+                id: docSnap.id,
+                siteId: data.siteId,
+                fileName: data.fileName,
+                fileType: data.fileType,
+                content: data.content,
+                backedUpAt: data.backedUpAt?.toDate?.()?.toISOString() || null,
+                backedUpBy: data.backedUpBy,
+            } as AppBaseBackup;
+        });
 
         return { success: true, backups };
     } catch (e: any) {
@@ -247,9 +258,9 @@ export async function restoreAppBaseBackup(backupId: string, serverId: string): 
         const backupData = backupSnap.data() as AppBaseBackup;
         const fileType = backupData.fileType || 'external'; // Default to external for backward compatibility
         const baseFileName = backupData.fileName.replace('.json', '');
-        
+
         const saveResult = await saveAppBaseFileContent(serverId, baseFileName, backupData.content, fileType);
-        
+
         if (!saveResult.success) {
             throw new Error(saveResult.error || "Failed to write restored content to server.");
         }
