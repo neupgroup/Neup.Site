@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, use } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSiteServers, type Server } from '@/actions/servers';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,14 +33,15 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
     const [isExecutingAction, setIsExecutingAction] = useState<string | null>(null);
     const [structure, setStructure] = useState<Structure | null>(null);
 
-    const initialSteps: DeploymentStep[] = [
+    const initialSteps: DeploymentStep[] = useMemo(() => [
         { name: 'Website Live', status: 'loading', description: 'Checking if website is reachable...' },
         { name: 'Application Exists', status: 'loading', description: 'Checking for application directory...', subActions: [{ commandId: 'install-requisites', label: 'Install Requisites' }, { commandId: 'install-packages', label: 'Install App' }] },
         { name: 'Deploy Structure', status: 'loading', description: 'Checking for pending structure changes...', action: { commandId: 'deploy-structure', label: 'Redeploy Structure' } },
         { name: 'Application Built', status: 'loading', description: 'Checking for .next build folder...', action: { commandId: 'build-app', label: 'Build App' } },
         { name: 'Start App & Configure Proxy', status: 'loading', description: 'Checking PM2 process and Nginx config...', action: { commandId: 'start-app-and-configure-proxy', label: 'Restart App & Proxy' } },
-    ];
+    ], []);
     const [steps, setSteps] = useState<DeploymentStep[]>(initialSteps);
+    const hasRunChecks = useRef(false);
 
     const updateStep = (index: number, status: DeploymentStep['status'], description: string) => {
         setSteps(prev => {
@@ -64,19 +65,24 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
 
 
         // STEP 1: Check if Website is Live
-        if (!isProduction) {
-            updateStep(0, 'warning', 'Live check is only performed for production servers.');
-        } else if (!site.domainSettings?.production?.url) {
-            updateStep(0, 'failure', 'No production domain configured for this site.');
+        const domainUrl = isProduction
+            ? site.domainSettings?.production?.url
+            : site.domainSettings?.development?.url;
+
+        let websiteIsLive = false;
+
+        if (!domainUrl) {
+            updateStep(0, 'failure', `No ${isProduction ? 'production' : 'development'} domain configured for this site.`);
         } else {
-            updateStep(0, 'loading', `Pinging ${site.domainSettings.production.url}...`);
+            updateStep(0, 'loading', `Pinging ${domainUrl}...`);
             try {
-                const url = `https://${site.domainSettings.production.url}`;
+                const url = `https://${domainUrl}`;
                 const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
                 const data = await res.json();
-    
+
                 if (res.ok && data.success && data.status === 200) {
                     updateStep(0, 'success', `Website is live and reachable (Status 200).`);
+                    websiteIsLive = true;
                 } else {
                     const statusCode = data.status || 'Unknown';
                     updateStep(0, 'failure', `Website is not reachable (Status ${statusCode}).`);
@@ -86,10 +92,21 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
             }
         }
 
+        // If website is live, mark all other steps as success and skip checking
+        if (websiteIsLive) {
+            updateStep(1, 'success', 'Application is running correctly.');
+            updateStep(2, 'success', 'Structure is deployed.');
+            updateStep(3, 'success', 'Application is built.');
+            updateStep(4, 'success', 'App and proxy are configured.');
+            setIsChecking(false);
+            return;
+        }
+
+        // If website is NOT live, continue with detailed checks to diagnose the issue
 
         // STEP 2: Check if Application Exists
         updateStep(1, 'loading', 'Checking for application directory...');
-        const appDirCheck = await checkPathExists(server.id);
+        const appDirCheck = await checkPathExists(server.id, undefined, isProduction);
 
         if (!appDirCheck.exists || appDirCheck.error) {
             updateStep(1, 'failure', appDirCheck.error || 'Application directory not found.');
@@ -119,7 +136,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
 
         // STEP 4: Check if Application is Built
         updateStep(3, 'loading', 'Checking for .next build folder...');
-        const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`);
+        const buildCheck = await checkPathExists(server.id, `${appDirCheck.resolvedPath}/.next`, isProduction);
 
         setSteps(prev => {
             const newSteps = [...prev];
@@ -144,10 +161,13 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         // STEP 5: Check if App is Started and Proxy is Configured
         updateStep(4, 'loading', 'Checking PM2 process and Nginx configuration...');
 
+        const pm2ProcessName = isProduction ? site.id : `${site.id}.development`;
+        const nginxConfigName = isProduction ? site.id : `${site.id}.development`;
+
         const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
             getPm2Processes(server.id),
-            checkPathExists(server.id, `/etc/nginx/sites-available/${site.id}.conf`),
-            checkPathExists(server.id, `/etc/nginx/sites-enabled/${site.id}.conf`)
+            checkPathExists(server.id, `/etc/nginx/sites-available/${nginxConfigName}.conf`, isProduction),
+            checkPathExists(server.id, `/etc/nginx/sites-enabled/${nginxConfigName}.conf`, isProduction)
         ]);
 
         let pm2Ok = false;
@@ -157,7 +177,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         if (!pm2Check.success) {
             stepDescription += `Could not check PM2 processes: ${pm2Check.error}. `;
         } else {
-            const siteProcess = pm2Check.processes?.find(p => p.name === site.id);
+            const siteProcess = pm2Check.processes?.find(p => p.name === pm2ProcessName);
             if (!siteProcess) {
                 stepDescription += `PM2 process not found. `;
             } else if (siteProcess.status !== 'online') {
@@ -184,10 +204,13 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         }
 
         setIsChecking(false);
-    }, [server.id, site, isProduction, initialSteps]);
+    }, [server.id, site, isProduction]);
 
     useEffect(() => {
-        runChecks();
+        if (!hasRunChecks.current) {
+            hasRunChecks.current = true;
+            runChecks();
+        }
     }, [runChecks]);
 
     const handleActionClick = async (clickedStepIndex: number) => {
@@ -204,7 +227,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         if (clickedStep.action.commandId === 'deploy-structure') {
             result = await createDeployment();
         } else if (clickedStep.action.commandId === 'build-app') {
-            result = await rebuildApplication(server.id);
+            result = await rebuildApplication(server.id, isProduction);
         } else {
             result = await runCommand(server.id, clickedStep.action.commandId, {}, clickedStep.action.label);
         }
@@ -246,10 +269,10 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
                 });
             }
             if (actions.length > 0) {
-                 return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
+                return <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{actions}</div>
             }
         }
-        
+
         return null;
     }
 
@@ -270,20 +293,22 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
 
     return (
         <Card>
-             <CardHeader>
+            <CardHeader>
                 <div className="flex justify-between items-center">
                     <CardTitle className="flex items-center gap-2">
-                        <ServerIcon className="h-5 w-5" />
-                        <span className="truncate">{server.name} ({isProduction ? 'Production' : 'Staging/Backup'})</span>
+                        <Globe className="h-5 w-5" />
+                        <span className="truncate">
+                            {isProduction
+                                ? (site?.domainSettings?.production?.url || 'Production Domain Not Set')
+                                : (site?.domainSettings?.development?.url || 'Development Domain Not Set')
+                            }
+                        </span>
                     </CardTitle>
-                    {isProduction && site?.domainSettings?.production?.url && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Globe className="h-4 w-4" />
-                            <a href={`https://${site.domainSettings.production.url}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{site.domainSettings.production.url}</a>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {isProduction ? 'Production' : 'Development'}
+                    </div>
                 </div>
-                <CardDescription className="truncate font-mono">{server.publicIp}</CardDescription>
+                <CardDescription className="truncate font-mono">{server.name} • {server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {steps.map((step, index) => (
@@ -325,6 +350,12 @@ export default function ApplicationStatusPage() {
         fetchServers();
     }, []);
 
+    // Use the first allocated server for both production and development
+    const allocatedServer = servers.length > 0 ? servers[0] : null;
+
+    const productionDomain = site?.domainSettings?.production?.url;
+    const developmentDomain = site?.domainSettings?.development?.url;
+
     return (
         <div className="w-full max-w-4xl mx-auto">
             <header className="mb-8">
@@ -335,6 +366,7 @@ export default function ApplicationStatusPage() {
             {loading ? (
                 <div className="space-y-6">
                     <Skeleton className="h-64 w-full" />
+                    <Skeleton className="h-64 w-full" />
                 </div>
             ) : error ? (
                 <Alert variant="destructive">
@@ -342,17 +374,91 @@ export default function ApplicationStatusPage() {
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
-            ) : servers.length === 0 ? (
-                <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-                    <ServerIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold">No Allocated Servers Found</h3>
-                    <p>You need to allocate a server to this site before you can start an application.</p>
-                </div>
             ) : (
                 <div className="space-y-6">
-                    {servers.map(server => (
-                        <DeploymentStatusChecker key={server.id} server={server} allocation={server.allocation} site={site} isProduction={server.allocation.id.includes('prod')} />
-                    ))}
+                    {/* Production Card */}
+                    {allocatedServer ? (
+                        <DeploymentStatusChecker
+                            key={`${allocatedServer.id}-production`}
+                            server={allocatedServer}
+                            allocation={allocatedServer.allocation}
+                            site={site}
+                            isProduction={true}
+                        />
+                    ) : (
+                        <Card>
+                            <CardHeader>
+                                <div className="flex justify-between items-center">
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Globe className="h-5 w-5" />
+                                        <span className="truncate">
+                                            {productionDomain || 'Production Domain Not Set'}
+                                        </span>
+                                    </CardTitle>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        Production
+                                    </div>
+                                </div>
+                                <CardDescription>No server allocated</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-center py-8">
+                                    <p className="text-muted-foreground mb-4">
+                                        No server is currently allocated for the production application.
+                                    </p>
+                                    <Button disabled>
+                                        <Rocket className="mr-2 h-4 w-4" />
+                                        Start Production App
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground mt-2">
+                                        Allocate a server first to enable deployment
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Development Card */}
+                    {allocatedServer ? (
+                        <DeploymentStatusChecker
+                            key={`${allocatedServer.id}-development`}
+                            server={allocatedServer}
+                            allocation={allocatedServer.allocation}
+                            site={site}
+                            isProduction={false}
+                        />
+                    ) : (
+                        <Card>
+                            <CardHeader>
+                                <div className="flex justify-between items-center">
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Globe className="h-5 w-5" />
+                                        <span className="truncate">
+                                            {developmentDomain || 'Development Domain Not Set'}
+                                        </span>
+                                    </CardTitle>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        Development
+                                    </div>
+                                </div>
+                                <CardDescription>No server allocated</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-center py-8">
+                                    <p className="text-muted-foreground mb-4">
+                                        No server is currently allocated for the development application.
+                                    </p>
+                                    <Button disabled>
+                                        <Rocket className="mr-2 h-4 w-4" />
+                                        Start Development App
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground mt-2">
+                                        Allocate a server first to enable deployment
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             )}
         </div>

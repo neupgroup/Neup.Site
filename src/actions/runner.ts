@@ -31,7 +31,7 @@ export async function runCommand(
     const isCommandId = !commandIdentifier.includes(' ') && !commandIdentifier.includes('\n') && !commandIdentifier.includes('<');
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
     let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
-    
+
     let confidentialParamKeys: string[] = [];
     let allocatesPort = false;
     let commandName: string | undefined = commandNameToLog;
@@ -71,12 +71,12 @@ export async function runCommand(
                 confidentialParamKeys = cmd.parameters?.filter(p => p.confidential).map(p => p.key) || [];
                 await updateServerLog(logId, { commandName });
             } else {
-                 throw new Error(`Command with ID ${commandId} not found.`);
+                throw new Error(`Command with ID ${commandId} not found.`);
             }
         }
 
         let { preExecutionScript, bashCommand } = parseCommandTemplate(rawCommandTemplate);
-        
+
         const { server, error: serverError } = await getPrivateServerDetails(serverId);
         if (serverError || !server || !server.publicIp || !server.privateKey) {
             throw new Error(`Failed to retrieve server credentials: ${serverError || 'Missing IP or private key.'}`);
@@ -88,7 +88,7 @@ export async function runCommand(
 
 
         const accountId = await getAccountId();
-        
+
         let githubAccessToken = '';
         if (accountId) {
             try {
@@ -100,10 +100,10 @@ export async function runCommand(
                     }
                 }
             } catch (e: any) {
-                 console.warn('Failed to fetch GitHub token for universal variable.', e);
+                console.warn('Failed to fetch GitHub token for universal variable.', e);
             }
         }
-        
+
         const siteResult = await getSite();
         const site = siteResult.success ? siteResult.site : null;
 
@@ -114,30 +114,32 @@ export async function runCommand(
             'universal.server_publicIp': server.publicIp,
             'universal.server_basePath': server.basePath || `/home/${server.username || 'root'}`,
             'universal.server_appPath': resolvedAppPath,
+            'universal.siteId': site?.id || '',
             'universal.site_id': site?.id || '',
             'universal.site_name': site?.name || '',
-            'universal.site_domain': site?.domains?.map(d => d.value).join(' ') || '',
+            'universal.productionDomain': site?.domainSettings?.production?.url || '',
+            'universal.developmentDomain': site?.domainSettings?.development?.url || '',
             'universal.account_id': accountId || '',
             'universal.account_githubToken': githubAccessToken,
         };
-        
+
         let templateParams = { ...processedParams };
         const allParamsForPreExecution = { ...templateParams, ...appServerVariables };
-        
+
         if (preExecutionScript) {
             let scriptWithInjectedParams = preExecutionScript;
             for (const [key, value] of Object.entries(allParamsForPreExecution)) {
                 const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
                 scriptWithInjectedParams = scriptWithInjectedParams.replace(placeholderRegex, JSON.stringify(value));
             }
-            
+
             const sandbox = {};
             vm.createContext(sandbox);
 
             try {
                 const scriptToRun = `(() => { ${scriptWithInjectedParams} })();`;
                 const scriptResult = vm.runInContext(scriptToRun, sandbox, { timeout: 2000 });
-                
+
                 if (typeof scriptResult === 'string') {
                     bashCommand = scriptResult;
                 } else if (typeof scriptResult === 'object' && scriptResult !== null) {
@@ -147,15 +149,15 @@ export async function runCommand(
                 throw new Error(`Pre-execution script failed: ${scriptError.message}`);
             }
         }
-        
+
         const allFinalParams = { ...templateParams, ...appServerVariables };
-        
+
         let commandToExecute = bashCommand;
         for (const [key, value] of Object.entries(allFinalParams)) {
-             const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-             commandToExecute = commandToExecute.replace(placeholderRegex, String(value));
+            const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+            commandToExecute = commandToExecute.replace(placeholderRegex, String(value));
         }
-        
+
         let loggedCommand = bashCommand;
         const allParamsForLogging = { ...allFinalParams };
         confidentialParamKeys.forEach(key => {
@@ -163,12 +165,12 @@ export async function runCommand(
                 allParamsForLogging[key] = '********';
             }
         });
-        if(allParamsForLogging['universal.account_githubToken']) {
+        if (allParamsForLogging['universal.account_githubToken']) {
             allParamsForLogging['universal.account_githubToken'] = '********';
         }
-         for (const [key, value] of Object.entries(allParamsForLogging)) {
-             const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-             loggedCommand = loggedCommand.replace(placeholderRegex, String(value));
+        for (const [key, value] of Object.entries(allParamsForLogging)) {
+            const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+            loggedCommand = loggedCommand.replace(placeholderRegex, String(value));
         }
 
         // This is the wrapper that handles swap file creation and cleanup
@@ -208,7 +210,7 @@ BASH_COMMAND_EOF
 echo "--- COMMAND FINISHED ---"
 echo ""
 `;
-        
+
         await updateServerLog(logId, { command: loggedCommand });
 
         const ssh = new NodeSSH();
@@ -217,9 +219,9 @@ echo ""
 
         try {
             await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
-            
+
             await ssh.connect({ host: server.publicIp, username: server.username || 'root', privateKey: server.privateKey });
-            
+
             await updateServerLog(logId, { output: `Connection successful. Preparing to run command...` });
 
             const result = await ssh.execCommand(finalCommand, {
@@ -232,21 +234,21 @@ echo ""
                     updateServerLog(logId, { output: finalOutput });
                 }
             });
-            
+
             finalStatus = result.code === 0 ? 'completed' : 'failed';
             if (result.code !== 0) {
-                 finalOutput += `\n\n--- COMMAND FAILED ---\nExited with code: ${result.code}`;
+                finalOutput += `\n\n--- COMMAND FAILED ---\nExited with code: ${result.code}`;
             }
 
             await updateServerLog(logId, { status: finalStatus, output: finalOutput });
-            
+
             return { success: finalStatus === 'completed', logId, finalStatus };
 
         } catch (sshError: any) {
-            finalOutput = `${finalOutput}\n\n--- SSH ERROR ---\n${sshError.message || String(sshError)}`; 
+            finalOutput = `${finalOutput}\n\n--- SSH ERROR ---\n${sshError.message || String(sshError)}`;
             throw new Error(finalOutput);
         } finally {
-            if(ssh.isConnected()) {
+            if (ssh.isConnected()) {
                 ssh.dispose();
             }
             revalidatePath(`/root/servers/${serverId}`);

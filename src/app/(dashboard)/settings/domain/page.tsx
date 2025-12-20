@@ -16,14 +16,14 @@ import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const DomainSettingsSchema = z.object({
-  domainSettings: z.object({
-    production: z.object({
-      url: z.string().optional(),
+    domainSettings: z.object({
+        production: z.object({
+            url: z.string().optional(),
+        }).optional(),
+        development: z.object({
+            url: z.string().optional(),
+        }).optional(),
     }).optional(),
-    staging: z.object({
-      url: z.string().optional(),
-    }).optional(),
-  }).optional(),
 });
 
 export type DomainFormData = z.infer<typeof DomainSettingsSchema>;
@@ -37,7 +37,7 @@ export default function DomainPage() {
         defaultValues: {
             domainSettings: {
                 production: { url: '' },
-                staging: { url: '' },
+                development: { url: '' },
             },
         },
     });
@@ -47,7 +47,7 @@ export default function DomainPage() {
             form.reset({
                 domainSettings: {
                     production: { url: site.domainSettings?.production?.url || '' },
-                    staging: { url: site.domainSettings?.staging?.url || '' },
+                    development: { url: site.domainSettings?.development?.url || '' },
                 },
             });
         }
@@ -59,7 +59,7 @@ export default function DomainPage() {
         if (result.success && result.id) {
             toast({ title: 'Domains Saved', description: 'Your domain settings have been updated.' });
             if (site) {
-                 setSite({
+                setSite({
                     ...site,
                     domainSettings: {
                         ...site.domainSettings,
@@ -105,12 +105,12 @@ export default function DomainPage() {
                     />
                     <FormField
                         control={form.control}
-                        name="domainSettings.staging.url"
+                        name="domainSettings.development.url"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Domain for your Testing Site</FormLabel>
+                                <FormLabel>Domain for your Development Site</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder="e.g., staging.yourdomain.com" />
+                                    <Input {...field} placeholder="e.g., dev.yourdomain.com" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

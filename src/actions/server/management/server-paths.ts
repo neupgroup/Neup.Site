@@ -3,7 +3,7 @@
 import { getPrivateServerDetails } from '@/actions/servers';
 import { getSite } from '@/actions/editor/site';
 
-export async function resolveAppPath(serverId: string): Promise<{ resolvedPath: string, error?: string, siteId?: string }> {
+export async function resolveAppPath(serverId: string, isProduction: boolean = true): Promise<{ resolvedPath: string, error?: string, siteId?: string }> {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
     if (serverError || !server) {
         return { resolvedPath: '', error: 'Could not retrieve server details for path resolution.' };
@@ -23,6 +23,11 @@ export async function resolveAppPath(serverId: string): Promise<{ resolvedPath: 
 
     for (const [key, value] of Object.entries(variables)) {
         resolvedPath = resolvedPath.replace(new RegExp(key.replace(/\{|\}/g, '\\$&'), 'g'), value);
+    }
+
+    // Append .development for development servers
+    if (!isProduction) {
+        resolvedPath = `${resolvedPath}.development`;
     }
 
     return { resolvedPath, siteId: site.id };

@@ -13,7 +13,7 @@ import { updateAppStatus } from './app-status';
 
 
 
-export async function checkPathExists(serverId: string, path?: string): Promise<{ exists: boolean; error?: string, resolvedPath?: string }> {
+export async function checkPathExists(serverId: string, path?: string, isProduction: boolean = true): Promise<{ exists: boolean; error?: string, resolvedPath?: string }> {
   const ssh = new NodeSSH();
   let pathToCheck = path;
   let resolvedPathForOutput = path;
@@ -25,7 +25,7 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
     }
 
     if (!pathToCheck) {
-      const { resolvedPath, error: resolveError } = await resolveAppPath(serverId);
+      const { resolvedPath, error: resolveError } = await resolveAppPath(serverId, isProduction);
       if (resolveError) {
         throw new Error(resolveError);
       }
@@ -68,8 +68,8 @@ export async function checkPathExists(serverId: string, path?: string): Promise<
   }
 }
 
-export async function rebuildApplication(serverId: string): Promise<{ success: boolean; error?: string, logId?: string }> {
-  const { resolvedPath, error: resolveError, siteId } = await resolveAppPath(serverId);
+export async function rebuildApplication(serverId: string, isProduction: boolean = true): Promise<{ success: boolean; error?: string, logId?: string }> {
+  const { resolvedPath, error: resolveError, siteId } = await resolveAppPath(serverId, isProduction);
   if (resolveError || !siteId) {
     return { success: false, error: resolveError || "Could not resolve application path or site ID." };
   }
@@ -85,13 +85,13 @@ set -e
 echo "--- Starting Rebuild in ${resolvedPath} ---"
 cd '${resolvedPath}'
 
-echo "--- Step 1: Deleting existing PM2 process for ${siteId} ---"
-(pm2 list | grep -q "${siteId}" && pm2 delete "${siteId}") || echo "No old PM2 process to delete."
+echo "--- Step 1: Deleting existing PM2 process for ${siteId}${isProduction ? '' : '.development'} ---"
+(pm2 list | grep -q "${siteId}${isProduction ? '' : '.development'}" && pm2 delete "${siteId}${isProduction ? '' : '.development'}") || echo "No old PM2 process to delete."
 pm2 save
 
-echo "--- Step 2: Deleting old Nginx configs for ${siteId} ---"
-sudo rm -f /etc/nginx/sites-available/${siteId}.conf
-sudo rm -f /etc/nginx/sites-enabled/${siteId}.conf
+echo "--- Step 2: Deleting old Nginx configs for ${siteId}${isProduction ? '' : '.development'} ---"
+sudo rm -f /etc/nginx/sites-available/${siteId}${isProduction ? '' : '.development'}.conf
+sudo rm -f /etc/nginx/sites-enabled/${siteId}${isProduction ? '' : '.development'}.conf
 sudo systemctl reload nginx
 
 echo "--- Step 3: Deleting .next and node_modules folders ---"

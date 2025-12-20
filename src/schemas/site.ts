@@ -27,8 +27,8 @@ export interface SiteIcons {
 }
 
 export interface DomainSetting {
-    url?: string;
-    forceHttps?: boolean;
+  url?: string;
+  forceHttps?: boolean;
 }
 
 export interface Site {
@@ -37,7 +37,7 @@ export interface Site {
   url: string;
   domainSettings?: {
     production?: DomainSetting;
-    staging?: DomainSetting;
+    development?: DomainSetting;
   },
   tier: 'free' | 'premium';
   logoUrl?: string;
