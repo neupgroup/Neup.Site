@@ -17,6 +17,7 @@ import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
 import { getStructure, createDeployment } from '@/actions/structure';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 interface DeploymentStep {
     name: string;
@@ -451,6 +452,8 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
 };
 
 export default function ApplicationStatusPage() {
+    usePageTitle('Status');
+
     const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);

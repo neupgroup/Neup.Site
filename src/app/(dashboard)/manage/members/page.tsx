@@ -8,6 +8,11 @@ import { AlertCircle, Plus, Users, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export async function generateMetadata() {
+    return await generatePageMetadata('Members');
+}
 
 function getInitials(name: string) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -20,7 +25,7 @@ export default async function MembersPage() {
         <div className="w-full">
             <header className="flex items-center justify-between mb-8">
                 <h1 className="font-headline text-2xl font-semibold tracking-tight">Team Members</h1>
-                 <Button asChild>
+                <Button asChild>
                     <Link href="/manage/members/add">
                         <Plus className="mr-2" /> Add Member
                     </Link>
@@ -42,7 +47,7 @@ export default async function MembersPage() {
                         </Alert>
                     )}
                     {!error && !members?.length ? (
-                         <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+                        <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
                             <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                             <p className="font-semibold">No members found.</p>
                             <p className="text-sm">Click "Add Member" to get started.</p>
@@ -62,7 +67,7 @@ export default async function MembersPage() {
                                     <TableRow key={member.id}>
                                         <TableCell>
                                             <div className="flex items-center gap-3">
-                                                 <Avatar>
+                                                <Avatar>
                                                     {member.imageUrl && <AvatarImage src={member.imageUrl} alt={member.name} />}
                                                     <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
                                                 </Avatar>
@@ -72,7 +77,7 @@ export default async function MembersPage() {
                                         <TableCell>{member.email}</TableCell>
                                         <TableCell className="capitalize">{member.role}</TableCell>
                                         <TableCell className="text-right">
-                                             <Button asChild variant="ghost" size="icon">
+                                            <Button asChild variant="ghost" size="icon">
                                                 <Link href={`/manage/members/${member.id}`}>
                                                     <ArrowRight className="h-4 w-4" />
                                                 </Link>

@@ -6,6 +6,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Users } from 'lucide-react';
 import Link from 'next/link';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export async function generateMetadata() {
+    return await generatePageMetadata('Team');
+}
 
 export default async function TeamsPage() {
     const { teams, error } = await getTeams();
@@ -36,7 +41,7 @@ export default async function TeamsPage() {
                         </Alert>
                     )}
                     {!error && !teams?.length ? (
-                         <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+                        <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
                             <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                             <p>No teams created yet.</p>
                         </div>

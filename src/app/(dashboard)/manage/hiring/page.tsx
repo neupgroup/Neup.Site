@@ -24,8 +24,11 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Briefcase, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function HiringDashboardPage() {
+  usePageTitle('Hiring');
+
   const [postings, setPostings] = useState<JobPosting[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,9 +77,9 @@ export default function HiringDashboardPage() {
             </Alert>
           ) : postings.length === 0 ? (
             <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-                <Briefcase className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold">No Job Postings Yet</h3>
-                <p>Click "Create Job Posting" to get started.</p>
+              <Briefcase className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold">No Job Postings Yet</h3>
+              <p>Click "Create Job Posting" to get started.</p>
             </div>
           ) : (
             <Table>

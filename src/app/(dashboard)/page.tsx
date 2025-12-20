@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Users, FileText, Puzzle, Palette, Newspaper, Plus } from 'lucide-react';
-import type { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-    title: 'Dashboard',
-};
+export async function generateMetadata() {
+  return await generatePageMetadata('Home');
+}
 
 // Placeholder data - in a real app, this would come from an API or database
 const dashboardData = {
@@ -33,26 +33,26 @@ const QuickStatCard = ({ title, value, icon: Icon, description }: { title: strin
 export default async function DashboardPage() {
 
   return (
-     <div className="w-full">
+    <div className="w-full">
       <header className="mb-8">
         <h1 className="text-3xl font-bold font-headline">Dashboard</h1>
         <p className="text-muted-foreground">Here's a quick overview of your site.</p>
       </header>
-      
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-        <QuickStatCard 
+        <QuickStatCard
           title="Today's Visits"
           value={dashboardData.todaysVisits.toLocaleString()}
           icon={Users}
           description="+20.1% from last month"
         />
-        <QuickStatCard 
+        <QuickStatCard
           title="Total Pages"
           value={dashboardData.totalPages}
           icon={FileText}
           description="Live and draft pages"
         />
-        <QuickStatCard 
+        <QuickStatCard
           title="Active Modules"
           value={dashboardData.activeModules}
           icon={Puzzle}
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-         <Card>
+        <Card>
           <CardHeader>
             <CardTitle>Manage Content</CardTitle>
             <CardDescription>
@@ -74,17 +74,17 @@ export default async function DashboardPage() {
                 <Plus className="mr-2" /> New Page
               </Link>
             </Button>
-             <Button asChild variant="secondary" className="w-full sm:w-auto">
+            <Button asChild variant="secondary" className="w-full sm:w-auto">
               <Link href="/news">
                 <Newspaper className="mr-2" /> View News
               </Link>
             </Button>
           </CardContent>
         </Card>
-         <Card>
+        <Card>
           <CardHeader>
             <CardTitle>Customize Appearance</CardTitle>
-             <CardDescription>
+            <CardDescription>
               Change your site's colors, fonts, and overall theme.
             </CardDescription>
           </CardHeader>

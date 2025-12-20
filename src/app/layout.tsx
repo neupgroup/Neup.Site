@@ -11,10 +11,6 @@ import type { Site } from '@/schemas/site';
 
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s | Neup.Sites',
-    default: 'Neup.Sites'
-  },
   description: 'Visually build your website.',
 };
 
@@ -29,7 +25,7 @@ export default async function RootLayout({
   const themeMode = site?.theme?.mode || 'light';
   const generatedTheme = site?.theme?.generated;
   const renderThemeStyles = !!(generatedTheme && generatedTheme.light && generatedTheme.dark && generatedTheme.black);
-  
+
   const themeStyleString = renderThemeStyles ? `
     :root {
         --background: ${generatedTheme.light.background};
@@ -105,13 +101,13 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={cn(radiusClass, themeMode)}>
       <head>
-         {renderThemeStyles && (
-            <style dangerouslySetInnerHTML={{ __html: themeStyleString }} />
-          )}
+        {renderThemeStyles && (
+          <style dangerouslySetInnerHTML={{ __html: themeStyleString }} />
+        )}
       </head>
       <body className={cn("font-body antialiased")}>
         <Suspense fallback={null}>
-            <ProgressBar />
+          <ProgressBar />
         </Suspense>
         <SidebarProvider>
           {children}
