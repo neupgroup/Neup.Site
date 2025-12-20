@@ -90,48 +90,42 @@ export default function DomainPage() {
                     <p className="text-muted-foreground">Manage your site's domains and redirection rules.</p>
                 </header>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Connected Domains</CardTitle>
-                        <CardDescription>Assign domains for your production and testing environments.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="domainSettings.production.url"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Domain for your Website</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="e.g., yourdomain.com" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="domainSettings.staging.url"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Domain for your Testing Site</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="e.g., staging.yourdomain.com" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
+                <div className="space-y-6">
+                    <FormField
+                        control={form.control}
+                        name="domainSettings.production.url"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Domain for your Website</FormLabel>
+                                <FormControl>
+                                    <Input {...field} placeholder="e.g., yourdomain.com" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="domainSettings.staging.url"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Domain for your Testing Site</FormLabel>
+                                <FormControl>
+                                    <Input {...field} placeholder="e.g., staging.yourdomain.com" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
 
-                <CardFooter className="px-0">
+                <div className="px-0">
                     <Button type="submit" disabled={form.formState.isSubmitting}>
                         {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save All Settings
                     </Button>
-                </CardFooter>
+                </div>
             </form>
         </Form>
     );
