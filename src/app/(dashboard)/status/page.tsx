@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, use } from 'react';
 import { getSiteServers, type Server } from '@/actions/servers';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket } from 'lucide-react';
+import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { runCommand } from '@/actions/runner';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -64,32 +64,26 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
 
 
         // STEP 1: Check if Website is Live
-        if (!site.domains || site.domains.length === 0) {
-            updateStep(0, 'failure', 'No domain configured for this site.');
-            // Fail subsequent steps that depend on the domain or app path
-            updateStep(1, 'failure', 'Cannot proceed without domain.');
-            updateStep(2, 'failure', 'Cannot proceed without domain.');
-            updateStep(3, 'failure', 'Cannot proceed without domain.');
-            updateStep(4, 'failure', 'Cannot proceed without domain.');
-            setIsChecking(false);
-            return;
-        }
-
-        updateStep(0, 'loading', `Pinging ${site.domains[0].value}...`);
-        try {
-            const url = `https://${site.domains[0].value}`;
-            const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
-            const data = await res.json();
-
-            if (res.ok && data.success && data.status === 200) {
-                updateStep(0, 'success', `Website is live and reachable (Status 200).`);
-            } else {
-                const statusCode = data.status || 'Unknown';
-                updateStep(0, 'failure', `Website is not reachable (Status ${statusCode}).`);
+        if (!site.domainSettings?.production?.url) {
+            updateStep(0, 'failure', 'No production domain configured for this site.');
+        } else {
+            updateStep(0, 'loading', `Pinging ${site.domainSettings.production.url}...`);
+            try {
+                const url = `https://${site.domainSettings.production.url}`;
+                const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
+                const data = await res.json();
+    
+                if (res.ok && data.success && data.status === 200) {
+                    updateStep(0, 'success', `Website is live and reachable (Status 200).`);
+                } else {
+                    const statusCode = data.status || 'Unknown';
+                    updateStep(0, 'failure', `Website is not reachable (Status ${statusCode}).`);
+                }
+            } catch (e) {
+                updateStep(0, 'failure', 'Could not reach the website URL.');
             }
-        } catch (e) {
-            updateStep(0, 'failure', 'Could not reach the website URL.');
         }
+
 
         // STEP 2: Check if Application Exists
         updateStep(1, 'loading', 'Checking for application directory...');
@@ -274,14 +268,20 @@ const DeploymentStatusChecker = ({ server, allocation, site }: { server: Server,
 
     return (
         <Card>
-            <CardHeader>
+             <CardHeader>
                 <div className="flex justify-between items-center">
                     <CardTitle className="flex items-center gap-2">
                         <ServerIcon className="h-5 w-5" />
-                        <span className="truncate">{server.name}</span>
+                        <span className="truncate">{server.name} ({allocation.id.includes('prod') ? 'Production' : 'Staging/Backup'})</span>
                     </CardTitle>
+                    {site?.domainSettings?.production?.url && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Globe className="h-4 w-4" />
+                            <a href={`https://${site.domainSettings.production.url}`} target="_blank" rel="noopener noreferrer" className="hover:underline">{site.domainSettings.production.url}</a>
+                        </div>
+                    )}
                 </div>
-                <CardDescription className="truncate">{server.publicIp}</CardDescription>
+                <CardDescription className="truncate font-mono">{server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {steps.map((step, index) => (
