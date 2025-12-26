@@ -2,8 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Newspaper } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ArticlesPage() {
+  usePageTitle('Manage Articles');
     
   return (
     <div className="w-full">

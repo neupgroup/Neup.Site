@@ -24,6 +24,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useProfile } from '@/context/ProfileContext';
 import { Checkbox } from '@/components/ui/checkbox';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 function getInitials(name: string) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -237,8 +238,7 @@ function EditPostingForm({ posting, onCancel, onSave }: { posting: JobPosting, o
     )
 }
 
-export default function ViewJobPostingPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ViewJobPostingPage({ params }: { params: { id: string } }) {
   const [posting, setPosting] = useState<JobPosting | null>(null);
   const [applicants, setApplicants] = useState<Applicant[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -246,12 +246,14 @@ export default function ViewJobPostingPage({ params }: { params: Promise<{ id: s
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [isEditingPosting, setIsEditingPosting] = useState(false);
   const { toast } = useToast();
+  
+  usePageTitle(posting ? `Job: ${posting.title}` : 'View Job');
 
   const fetchJobData = async () => {
     setLoading(true);
     const [postingResult, applicantsResult] = await Promise.all([
-      getJobPostingById(id),
-      getApplicantsForJob(id)
+      getJobPostingById(params.id),
+      getApplicantsForJob(params.id)
     ]);
     
     if (postingResult.error || !postingResult.posting) {
@@ -269,7 +271,7 @@ export default function ViewJobPostingPage({ params }: { params: Promise<{ id: s
 
   useEffect(() => {
     fetchJobData();
-  }, [id]);
+  }, [params.id]);
 
   const handleSaveDetails = async (data: FormValues) => {
     if (!posting) return;
@@ -389,7 +391,7 @@ export default function ViewJobPostingPage({ params }: { params: Promise<{ id: s
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="outline" size="sm"><Link href={`/manage/hiring/${id}/applicants`}>View All</Link></Button></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="outline" size="sm"><Link href={`/manage/hiring/${params.id}/applicants`}>View All</Link></Button></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

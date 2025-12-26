@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { generatePageMetadata } from '@/lib/metadata';
 
 export async function generateMetadata() {
-    return await generatePageMetadata('Team');
+    return await generatePageMetadata('Teams');
 }
 
 export default async function TeamsPage() {
