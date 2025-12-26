@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { logout } from '@/actions/auth/logout';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function SwitchAccountPage() {
   const router = useRouter();
+  usePageTitle('Auth Settings');
 
   useEffect(() => {
     const handleLogout = async () => {

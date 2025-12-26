@@ -2,8 +2,10 @@
 'use client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { use } from 'react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function EditTeamHierarchyPage({ params }: { params: Promise<{ id: string }> }) {
+    usePageTitle('Edit Team Hierarchy');
     const { id } = use(params);
     return (
         <div className="w-full">

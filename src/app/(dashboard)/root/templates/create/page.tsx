@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { z } from 'zod';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -25,6 +26,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateTemplatePage() {
+  usePageTitle('Create Template', 'NeupSites');
   const { toast } = useToast();
   const router = useRouter();
 

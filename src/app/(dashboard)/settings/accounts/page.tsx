@@ -13,6 +13,7 @@ import type { LinkedAccount } from '@/actions/accounts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 function LinkedAccountCard({ account, onDisconnect }: { account: LinkedAccount, onDisconnect: (id: string) => void }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -70,6 +71,7 @@ export default function AccountsPage() {
   const { toast } = useToast();
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [loading, setLoading] = useState(true);
+  usePageTitle('Account Management');
 
   const fetchAccounts = async () => {
       setLoading(true);

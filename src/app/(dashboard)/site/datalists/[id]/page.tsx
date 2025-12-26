@@ -14,6 +14,7 @@ import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ViewDatalistPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -23,6 +24,8 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  usePageTitle(datalist ? `Datalist: ${datalist.name}` : 'Datalist');
 
   useEffect(() => {
     const fetchDatalist = async () => {

@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Member name is required'),
@@ -23,6 +24,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function AddMemberPage() {
+    usePageTitle('Add Member');
     const router = useRouter();
     const { toast } = useToast();
     const form = useForm<FormValues>({

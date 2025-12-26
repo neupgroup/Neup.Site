@@ -14,8 +14,10 @@ import { getAppBaseBackups, restoreAppBaseBackup, type AppBaseBackup } from '@/a
 import { getSiteServers } from '@/actions/servers';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function BackupsPage() {
+  usePageTitle('App Base Backups');
   const [backups, setBackups] = useState<AppBaseBackup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

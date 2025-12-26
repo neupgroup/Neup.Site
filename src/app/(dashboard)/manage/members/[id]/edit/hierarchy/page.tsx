@@ -11,8 +11,10 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function EditMemberHierarchyPage({ params }: { params: Promise<{ id: string }> }) {
+    usePageTitle('Assign Team Members');
     const { id } = use(params);
     const { toast } = useToast();
     const [member, setMember] = useState<Member | null>(null);
@@ -113,7 +115,7 @@ export default function EditMemberHierarchyPage({ params }: { params: Promise<{ 
                             </Label>
                         </div>
                     ))}
-                    {allTeams.length === 0 && <p className="text-muted-foreground text-sm">No teams have been created yet.</p>}
+                    {allTeams.length === 0 && <p className="text-sm text-muted-foreground">No teams have been created yet.</p>}
                 </CardContent>
                 <CardFooter>
                     <Button onClick={handleSave} disabled={isSaving}>

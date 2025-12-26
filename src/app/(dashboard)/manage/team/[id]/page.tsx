@@ -5,6 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, ArrowLeft, Pencil } from 'lucide-react';
 import Link from 'next/link';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export async function generateMetadata({ params }: { params: { id: string }}) {
+    const { team } = await getTeam(params.id);
+    return await generatePageMetadata(team ? `Team: ${team.name}` : 'Team');
+}
 
 export default async function ViewTeamPage({ params }: { params: { id: string } }) {
     const { team, error } = await getTeam(params.id);

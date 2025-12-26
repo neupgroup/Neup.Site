@@ -19,6 +19,11 @@ import {
 } from '@/components/ui/table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Newspaper } from 'lucide-react';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export async function generateMetadata() {
+    return await generatePageMetadata('News Articles');
+}
 
 export default async function NewsListPage() {
   const { articles, error } = await getNewsArticles();

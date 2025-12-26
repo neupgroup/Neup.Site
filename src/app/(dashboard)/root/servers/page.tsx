@@ -11,8 +11,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Server as ServerIcon, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ServersPage() {
+  usePageTitle('Servers', 'NeupSites');
   const [servers, setServers] = useState<Server[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

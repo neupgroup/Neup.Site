@@ -2,10 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Users } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ContactsPage() {
+  usePageTitle('Contacts');
     
-  return (
+  return
+ (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Contacts</h1>

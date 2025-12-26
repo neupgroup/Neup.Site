@@ -14,6 +14,7 @@ import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ViewTemplatePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -23,6 +24,8 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  usePageTitle(template ? `Template: ${template.name}` : 'View Template', 'NeupSites');
 
   useEffect(() => {
     const fetchTemplate = async () => {

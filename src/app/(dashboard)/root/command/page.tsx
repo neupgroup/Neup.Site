@@ -27,8 +27,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Command, ArrowRight, ChevronLeft, ChevronRight, Search, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function CommandsPage() {
+  usePageTitle('Commands', 'NeupSites');
   const [commands, setCommands] = useState<ServerCommand[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 
 const formSchema = z.object({
@@ -34,6 +36,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function EditNewsSettingsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  usePageTitle('Edit Article Settings');
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);

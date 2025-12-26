@@ -2,7 +2,7 @@
 'use client'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users, Repeat, Network, User } from 'lucide-react';
+import { ArrowRight, Users, Repeat, Network, User, KeyRound } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function SettingsPage() {
@@ -28,8 +28,14 @@ export default function SettingsPage() {
       href: '/settings/accounts',
     },
     {
-      title: 'Domains',
-      description: 'Manage your site domains and subdomains.',
+      title: 'API Tokens',
+      description: 'Generate and manage tokens for API access.',
+      icon: <KeyRound className="h-6 w-6 text-primary" />,
+      href: '/settings/tokens',
+    },
+    {
+      title: 'Domains and Proxy',
+      description: 'Manage your site domains and reverse proxy settings.',
       icon: <Network className="h-6 w-6 text-primary" />,
       href: '/settings/domain',
     },

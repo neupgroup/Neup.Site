@@ -3,8 +3,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Star } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function NewsFeaturedPage() {
+    usePageTitle('Featured Articles');
     
   return (
     <div className="w-full">

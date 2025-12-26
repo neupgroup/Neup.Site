@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
@@ -21,6 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
   content: z.string().min(1, 'Content is required'),
@@ -30,6 +32,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function EditNewsContentPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+  usePageTitle('Edit Article Content');
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);

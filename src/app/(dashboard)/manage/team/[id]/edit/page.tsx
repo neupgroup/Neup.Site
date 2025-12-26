@@ -16,6 +16,7 @@ import { useEffect, useState, use } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Team name is required'),
@@ -27,6 +28,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function EditTeamPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    usePageTitle('Edit Team');
     const router = useRouter();
     const { toast } = useToast();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);

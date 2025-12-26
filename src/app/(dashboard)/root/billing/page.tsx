@@ -3,8 +3,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { CreditCard } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function RootBillingPage() {
+    usePageTitle('Root Billing', 'NeupSites');
     
   return (
     <div className="w-full">

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
   from: z.string().min(1, 'From path is required.').refine(p => p.startsWith('/'), "Path must start with a '/'"),
@@ -32,7 +33,8 @@ export default function CreateRedirectPage() {
   const { toast } = useToast();
   const router = useRouter();
   const { site } = useProfile();
-  const displayDomain = site?.domains?.[0]?.value || 'yourdomain.com';
+  usePageTitle('Create Redirect');
+  const displayDomain = site?.domains?.production?.url || 'yourdomain.com';
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

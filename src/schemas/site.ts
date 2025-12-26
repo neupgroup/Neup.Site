@@ -26,9 +26,16 @@ export interface SiteIcons {
   android512?: string;
 }
 
+export interface ProxySetting {
+    path: string;
+    ip: string;
+    port: string;
+}
+
 export interface DomainSetting {
   url?: string;
   forceHttps?: boolean;
+  proxies?: ProxySetting[];
 }
 
 export interface Site {

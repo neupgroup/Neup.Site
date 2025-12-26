@@ -3,8 +3,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { HardDrive } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function SiteStorageHubPage() {
+  usePageTitle('Storage');
     
   return (
     <div className="w-full">

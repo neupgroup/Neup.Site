@@ -15,8 +15,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, LayoutTemplate, ArrowRight, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function TemplatesPage() {
+  usePageTitle('Templates', 'NeupSites');
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

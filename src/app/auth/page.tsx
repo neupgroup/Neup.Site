@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { setSiteIdCookie } from '@/actions/auth'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,6 +16,10 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+
+  useEffect(() => {
+    document.title = 'Sign In, NeupSites';
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

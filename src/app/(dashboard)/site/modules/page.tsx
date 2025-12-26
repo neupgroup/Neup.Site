@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const allPossibleModules = [
     { id: 'user', name: 'User Module', description: 'Manages user authentication and profiles.' },
@@ -27,6 +28,7 @@ const allPossibleModules = [
 ];
 
 export default function SiteModulesPage() {
+  usePageTitle('Site Modules');
   const [modules, setModules] = useState<SiteModules>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

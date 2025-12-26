@@ -3,8 +3,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tag } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function NewsCategoryPage() {
+    usePageTitle('News Categories');
     
   return (
     <div className="w-full">

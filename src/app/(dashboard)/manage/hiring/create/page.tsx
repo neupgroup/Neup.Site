@@ -36,6 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { createJobPosting } from '@/actions/hiring';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Job title is required'),
@@ -47,6 +48,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateJobPostingPage() {
+  usePageTitle('Create Job Posting');
   const router = useRouter();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);

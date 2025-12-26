@@ -14,6 +14,7 @@ import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight } from 'luci
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { CardFooter } from '@/components/ui/card';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function RedirectsPage() {
   const { toast } = useToast();
@@ -21,6 +22,7 @@ export default function RedirectsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
+  usePageTitle('Redirects');
 
   const router = useRouter();
   const pathname = usePathname();

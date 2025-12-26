@@ -20,6 +20,7 @@ import { createNewsArticle } from '@/actions/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -28,6 +29,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateNewsArticlePage() {
+  usePageTitle('Create Article');
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
   const router = useRouter();

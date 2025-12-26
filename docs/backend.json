@@ -324,6 +324,21 @@
       },
       "required": ["id", "account_id", "platform", "authorized_on", "authorization_info"]
     },
+    "ApiToken": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "API Token",
+      "type": "object",
+      "description": "Represents an API token for a user account.",
+      "properties": {
+        "id": { "type": "string" },
+        "accountId": { "type": "string" },
+        "name": { "type": "string" },
+        "token": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastUsed": { "type": "string", "format": "date-time" }
+      },
+      "required": ["accountId", "name", "token"]
+    },
     "Team": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Team",
@@ -573,6 +588,22 @@
             {
               "name": "linkedAccountId",
               "description": "The unique identifier for the linked account."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/api_tokens/{tokenId}",
+        "definition": {
+          "entityName": "ApiToken",
+          "schema": {
+            "$ref": "#/backend/entities/ApiToken"
+          },
+          "description": "Stores API tokens for users.",
+          "params": [
+            {
+              "name": "tokenId",
+              "description": "The unique identifier for the token."
             }
           ]
         }

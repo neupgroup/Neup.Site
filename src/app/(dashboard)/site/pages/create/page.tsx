@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 import { ArrowRight, Code, Edit, MessageSquare, PlusSquare, Loader2 } from 'lucide-react';
 import { createPage, type Page } from '@/actions/editor/pages';
 import { useToast } from '@/hooks/use-toast';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 type CreationType = Page['type'];
 
@@ -48,6 +49,7 @@ const creationOptions: {
 ];
 
 export default function CreatePageHub() {
+  usePageTitle('Create Page');
   const router = useRouter();
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState<CreationType | null>(null);

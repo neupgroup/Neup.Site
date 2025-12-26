@@ -16,6 +16,7 @@ import { deployCodebaseFromStorage } from '@/actions/deploy';
 import type { CodeFile } from '@/schemas/codebase';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 interface UploadingFile {
@@ -26,6 +27,7 @@ interface UploadingFile {
 }
 
 export default function CodebasePage() {
+  usePageTitle('Codebase');
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<CodeFile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -173,14 +175,15 @@ export default function CodebasePage() {
           {uploadingFiles.length > 0 && (
             <div className="mt-6 space-y-4">
               {uploadingFiles.map((uf, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <FileText className="h-5 w-5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium truncate">{uf.file.name}</p>
-                    <Progress value={uf.status === 'success' ? 100 : uf.status === 'uploading' ? 50 : 0} className="h-2" />
+                <div key={index} className="flex items-center gap-4 p-2 border rounded-md">
+                  {uf.status === 'success' ? <CheckCircle className="h-5 w-5 text-green-500" /> : uf.status === 'uploading' ? <Loader2 className="h-5 w-5 animate-spin" /> : uf.status === 'error' ? <AlertCircle className="h-5 w-5 text-destructive" title={uf.error} /> : <FileText className="h-5 w-5" />}
+                  <div className="flex-1 truncate">
+                    <p className="text-sm font-medium">{uf.file.name}</p>
+                    {uf.status === 'error' && <p className="text-xs text-destructive">{uf.error}</p>}
                   </div>
-                  {uf.status === 'uploading' && <Loader2 className="h-5 w-5 animate-spin" />}
-                  {uf.status === 'error' && <AlertCircle className="h-5 w-5 text-destructive" title={uf.error} />}
+                  <span className="text-xs text-muted-foreground">
+                    {(uf.file.size / 1024).toFixed(2)} KB
+                  </span>
                 </div>
               ))}
               <Button onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>

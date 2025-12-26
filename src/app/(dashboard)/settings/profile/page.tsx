@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export const SocialProfileSchema = z.object({
     platformName: z.string().min(1, 'Platform name is required'),
@@ -45,6 +46,7 @@ export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 export default function ProfilePage() {
     const { site, setSite, loading } = useProfile();
     const { toast } = useToast();
+    usePageTitle('Profile Settings');
 
     const form = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileFormSchema),
