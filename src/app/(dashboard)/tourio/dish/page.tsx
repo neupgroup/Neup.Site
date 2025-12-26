@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { UtensilsCrossed, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function DishListPage() {
+  usePageTitle('Tourio Dishes');
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">

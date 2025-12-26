@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ViewExperiencePage({ params }: { params: { id: string } }) {
+  usePageTitle('View Experience');
   return (
     <div className="w-full">
         <div className="mb-4">
