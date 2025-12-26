@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ExperienceListPage() {
-  usePageTitle('Tourio Experiences');
+  usePageTitle('Experiences');
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
