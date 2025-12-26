@@ -14,6 +14,7 @@ import { KeyRound, Plus, Trash2, Copy, Check, Loader2, AlertCircle } from 'lucid
 import { useToast } from '@/hooks/use-toast';
 import { createToken, getTokens, revokeToken, type ApiToken } from '@/actions/tokens';
 import { format } from 'date-fns';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 async function sha256(message: string): Promise<string> {
     const msgBuffer = new TextEncoder().encode(message);
@@ -39,6 +40,7 @@ export default function TokensPage() {
   const [tokenToDelete, setTokenToDelete] = useState<ApiToken | null>(null);
   const [copiedToken, setCopiedToken] = useState(false);
   const { toast } = useToast();
+  usePageTitle('API Tokens');
 
   const fetchTokens = useCallback(async () => {
     setLoading(true);

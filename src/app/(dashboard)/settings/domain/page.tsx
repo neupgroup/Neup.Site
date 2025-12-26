@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2 } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export const DomainSettingsSchema = z.object({
     domains: z.object({
@@ -34,6 +35,7 @@ export type DomainFormData = z.infer<typeof DomainSettingsSchema>;
 export default function DomainPage() {
     const { site, setSite, loading } = useProfile();
     const { toast } = useToast();
+    usePageTitle('Domain Settings');
 
     const form = useForm<DomainFormData>({
         resolver: zodResolver(DomainSettingsSchema),
