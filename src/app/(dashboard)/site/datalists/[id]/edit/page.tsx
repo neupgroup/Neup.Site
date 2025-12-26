@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Save, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 import Link from 'next/link';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -40,6 +41,8 @@ export default function EditDatalistPage({ params }: { params: Promise<{ id: str
   const { toast } = useToast();
   const router = useRouter();
 
+  usePageTitle(datalist ? `Edit: ${datalist.name}` : 'Edit Datalist');
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,21 +53,19 @@ export default function EditDatalistPage({ params }: { params: Promise<{ id: str
 
   useEffect(() => {
     const fetchDatalist = async () => {
-      setLoading(true);
-      const result = await getDatalist(id);
-
-      if (result.success && result.datalist) {
-        setDatalist(result.datalist);
-        form.reset({
-          name: result.datalist.name,
-          data: result.datalist.data,
-        });
-      } else {
-        setError(result.error || 'Failed to load datalist.');
-      }
-      setLoading(false);
-    };
-
+        setLoading(true);
+        const result = await getDatalist(id);
+        if (result.success && result.datalist) {
+            setDatalist(result.datalist);
+            form.reset({
+              name: result.datalist.name,
+              data: result.datalist.data,
+            });
+        } else {
+            setError(result.error || 'Failed to fetch allocation details.');
+        }
+        setLoading(false);
+    }
     fetchDatalist();
   }, [id, form]);
 
@@ -80,18 +81,29 @@ export default function EditDatalistPage({ params }: { params: Promise<{ id: str
   };
 
   if (loading) {
-    return <Skeleton className="h-96 w-full max-w-2xl" />;
+      return (
+          <Card className="max-w-2xl">
+              <CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader>
+              <CardContent className="space-y-4">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-24 w-full" />
+              </CardContent>
+              <CardFooter><Skeleton className="h-10 w-32" /></CardFooter>
+          </Card>
+      )
   }
 
   if (error) {
-    return (
-      <Alert variant="destructive" className="max-w-2xl">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    );
+      return (
+          <Alert variant="destructive" className="max-w-2xl">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+          </Alert>
+      )
   }
+
 
   return (
     <Form {...form}>

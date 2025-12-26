@@ -28,9 +28,11 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import type { AppBaseFile } from '@/schemas/app-base';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 
 export default function AppBasePage() {
+  usePageTitle('App Base');
   const [files, setFiles] = useState<AppBaseFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

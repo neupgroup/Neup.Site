@@ -11,6 +11,7 @@ import { getSiteServers } from '@/actions/servers';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const StatusCard = ({ title, description, status, icon: Icon, onDeploy }: { title: string; description: string; status: 'loading' | 'pending' | 'deployed'; icon: React.ElementType, onDeploy: () => void }) => {
     return (
@@ -38,6 +39,7 @@ const StatusCard = ({ title, description, status, icon: Icon, onDeploy }: { titl
 
 
 export default function DeployPage() {
+    usePageTitle('Deployments');
     const [structure, setStructure] = useState<Structure | null>(null);
     const [lastDeployment, setLastDeployment] = useState<Deployment | null>(null);
     const [loading, setLoading] = useState(true);

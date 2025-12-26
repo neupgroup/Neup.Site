@@ -16,6 +16,7 @@ import { createAppBaseFile } from '@/actions/app-base';
 import { getSiteServers } from '@/actions/servers';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
@@ -25,6 +26,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateAppBaseFilePage() {
+  usePageTitle('Create App Base File');
   const { toast } = useToast();
   const router = useRouter();
 

@@ -4,9 +4,11 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { usePageTitle } from '@/hooks/use-page-title';
 import { useState } from 'react';
 
 export default function AdvancedSettingsPage() {
+    usePageTitle('Advanced Settings');
     const [isCustomHost, setIsCustomHost] = useState(false);
     
   return (

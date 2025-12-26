@@ -15,6 +15,7 @@ import { Save, Loader2, ArrowLeft } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { z } from 'zod';
 import Link from 'next/link';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -31,6 +32,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateDatalistPage() {
+  usePageTitle('Create Datalist');
   const { toast } = useToast();
   const router = useRouter();
 
