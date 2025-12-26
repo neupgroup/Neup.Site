@@ -30,6 +30,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function CommandDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -39,6 +40,8 @@ export default function CommandDetailPage({ params }: { params: { id: string } }
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
+  usePageTitle(command ? `Command: ${command.name}` : 'View Command', 'NeupSites');
 
   useEffect(() => {
     const fetchCommand = async () => {

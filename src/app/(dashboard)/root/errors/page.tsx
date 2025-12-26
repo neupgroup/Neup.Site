@@ -18,8 +18,10 @@ import { Button } from '@/components/ui/button';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const ErrorsPage = () => {
+  usePageTitle('Errors', 'NeupSites');
   const [errors, setErrors] = useState<ErrorLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);

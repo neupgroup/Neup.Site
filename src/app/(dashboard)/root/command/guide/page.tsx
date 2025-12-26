@@ -7,6 +7,7 @@ import { Code, ArrowLeft, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 function CodeBlock({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +18,7 @@ function CodeBlock({ children }: { children: React.ReactNode }) {
 }
 
 export default function CommandsGuidePage() {
+  usePageTitle('Command Guide', 'NeupSites');
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <Button asChild variant="ghost" className="pl-0">

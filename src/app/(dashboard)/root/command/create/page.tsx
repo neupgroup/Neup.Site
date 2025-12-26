@@ -19,6 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { useEffect, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 const placeholderXml = `<javascript.preProcessor>
 // This script runs on our server, not the target server.
@@ -40,6 +41,7 @@ echo "Hello, {{name}}!"
 `;
 
 export default function CreateCommandPage() {
+  usePageTitle('Create Command', 'NeupSites');
   const router = useRouter();
   const { toast } = useToast();
 

@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect, use, useTransition } from 'react';
+import { useState, useEffect, use } from 'react';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,13 +14,16 @@ import { logErrorToFirestore } from '@/lib/logging';
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
 import ServerManagement from '@/components/dashboard/server/ServerManagement';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
-  const { id } = use(params);
+  const { id } = params;
   const [server, setServer] = useState<Server | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  usePageTitle(server ? `Server: ${server.name}` : 'Server Details', 'NeupSites');
 
   useEffect(() => {
     const fetchInitialData = async () => {

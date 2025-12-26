@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -9,12 +10,15 @@ import { getErrorLogById, type ErrorLog } from '@/actions/errors';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { usePageTitle } from '@/hooks/use-page-title';
 
-export default function ErrorDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ErrorDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [log, setLog] = useState<ErrorLog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  usePageTitle(log ? `Error: ${log.source}` : 'Error Details', 'NeupSites');
 
   useEffect(() => {
     const fetchError = async () => {
