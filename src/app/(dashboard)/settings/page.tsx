@@ -34,8 +34,8 @@ export default function SettingsPage() {
       href: '/settings/tokens',
     },
     {
-      title: 'Domains',
-      description: 'Manage your site domains and subdomains.',
+      title: 'Domains and Proxy',
+      description: 'Manage your site domains and reverse proxy settings.',
       icon: <Network className="h-6 w-6 text-primary" />,
       href: '/settings/domain',
     },
