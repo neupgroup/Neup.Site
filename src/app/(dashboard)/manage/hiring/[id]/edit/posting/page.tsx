@@ -16,10 +16,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ArrowLeft, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function JobPostingOptionsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [postingOption, setPostingOption] = useState('company');
+  usePageTitle('Posting Options');
   
   return (
     <div className="w-full max-w-2xl space-y-6">

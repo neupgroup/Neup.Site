@@ -5,7 +5,7 @@ import { Users } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ContactsPage() {
-  usePageTitle('Manage Contacts');
+  usePageTitle('Contacts');
     
   return
  (
