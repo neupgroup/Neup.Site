@@ -1,3 +1,4 @@
+
 import { getNewsArticleById, type NewsArticle } from '@/actions/news';
 import {
   Card,
@@ -13,6 +14,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
 import { use } from 'react';
+import { generatePageMetadata } from '@/lib/metadata';
+
+export async function generateMetadata({ params }: { params: { slug: string }}) {
+    const { article } = await getNewsArticleById(params.slug);
+    return generatePageMetadata(article?.title || 'View Article');
+}
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
