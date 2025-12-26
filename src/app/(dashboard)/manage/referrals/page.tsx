@@ -1,9 +1,12 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Share2 } from 'lucide-react';
+import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function ReferralsPage() {
+    usePageTitle('Referrals');
     
   return (
     <div className="w-full">
