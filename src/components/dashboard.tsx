@@ -91,7 +91,6 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
         <NavLink href="/manage/billing" currentPath={currentPath} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
         <NavLink href="/manage/permissions" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
         <NavLink href="/manage/redirects" currentPath={currentPath} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></NavLink>
-        <NavLink href="/manage/proxy" currentPath={currentPath} onClick={onLinkClick}><Network className="h-4 w-4" /><span>Proxy</span></NavLink>
         <NavLink href="/manage/contacts" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>
         <NavLink href="/manage/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
         <NavLink href="/manage/products" currentPath={currentPath} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></NavLink>
