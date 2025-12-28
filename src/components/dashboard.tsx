@@ -33,7 +33,6 @@ import {
   BookOpen,
   Users,
   Briefcase,
-  Command as CommandIcon,
   Menu,
   X,
   Shield,
@@ -144,7 +143,6 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
         <NavLink href="/root/pages" currentPath={currentPath} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
         <NavLink href="/root/templates" currentPath={currentPath} onClick={onLinkClick}><LayoutTemplate className="h-4 w-4" /><span>Templates</span></NavLink>
         <NavLink href="/root/servers" currentPath={currentPath} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
-        <NavLink href="/root/command" currentPath={currentPath} onClick={onLinkClick}><CommandIcon className="h-4 w-4" /><span>Commands</span></NavLink>
         <NavLink href="/root/servers/allocations" currentPath={currentPath} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Allocations</span></NavLink>
         <NavLink href="/root/storage" currentPath={currentPath} onClick={onLinkClick}><HardDrive className="h-4 w-4" /><span>Storage</span></NavLink>
         <NavLink href="/root/billing" currentPath={currentPath} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>

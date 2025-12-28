@@ -20,6 +20,7 @@ export const serverCommandSchema = z.object({
   portToReserve: z.string().optional(), // This field is deprecated but kept for schema compatibility
   type: z.enum(['creation', 'destruction', 'updation', 'view']).default('view'),
   danger: z.enum(['low', 'mid', 'high']).default('low'),
+  nextCommands: z.array(z.string()).optional(), // Array of command IDs to run after this command completes successfully
   createdAt: z.string().optional().nullable(),
 });
 

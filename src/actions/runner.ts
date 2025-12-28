@@ -27,7 +27,7 @@ export async function runCommand(
     commandIdentifier: string,
     processedParams: Record<string, any> = {},
     commandNameToLog?: string,
-): Promise<{ success: boolean; error?: string; logId?: string; finalStatus?: ServerLog['status'] }> {
+): Promise<{ success: boolean; error?: string; logId?: string; finalStatus?: ServerLog['status']; nextCommandResults?: { commandId: string; success: boolean; logId?: string }[] }> {
     const isCommandId = !commandIdentifier.includes(' ') && !commandIdentifier.includes('\n') && !commandIdentifier.includes('<');
     let commandId: string | undefined = isCommandId ? commandIdentifier : undefined;
     let rawCommandTemplate: string = isCommandId ? '' : commandIdentifier;
@@ -242,7 +242,42 @@ echo ""
 
             await updateServerLog(logId, { status: finalStatus, output: finalOutput });
 
-            return { success: finalStatus === 'completed', logId, finalStatus };
+            // Execute next commands in the flow if this command succeeded
+            let nextCommandResults: { commandId: string; success: boolean; logId?: string }[] = [];
+            if (finalStatus === 'completed' && commandId) {
+                const commandDetails = await getServerCommand(commandId);
+                if (commandDetails.success && commandDetails.command?.nextCommands && commandDetails.command.nextCommands.length > 0) {
+                    finalOutput += `\n\n--- EXECUTING COMMAND FLOW ---\n`;
+                    await updateServerLog(logId, { output: finalOutput });
+
+                    for (const nextCommandId of commandDetails.command.nextCommands) {
+                        const nextCmdDetails = await getServerCommand(nextCommandId);
+                        const nextCmdName = nextCmdDetails.success ? nextCmdDetails.command?.name : nextCommandId;
+
+                        finalOutput += `\nTriggering next command: ${nextCmdName}...\n`;
+                        await updateServerLog(logId, { output: finalOutput });
+
+                        const nextResult = await runCommand(serverId, nextCommandId, processedParams);
+                        nextCommandResults.push({
+                            commandId: nextCommandId,
+                            success: nextResult.success,
+                            logId: nextResult.logId
+                        });
+
+                        if (nextResult.success) {
+                            finalOutput += `✓ ${nextCmdName} completed successfully.\n`;
+                        } else {
+                            finalOutput += `✗ ${nextCmdName} failed: ${nextResult.error}\n`;
+                        }
+                        await updateServerLog(logId, { output: finalOutput });
+                    }
+
+                    finalOutput += `--- COMMAND FLOW COMPLETE ---\n`;
+                    await updateServerLog(logId, { output: finalOutput });
+                }
+            }
+
+            return { success: finalStatus === 'completed', logId, finalStatus, nextCommandResults };
 
         } catch (sshError: any) {
             finalOutput = `${finalOutput}\n\n--- SSH ERROR ---\n${sshError.message || String(sshError)}`;

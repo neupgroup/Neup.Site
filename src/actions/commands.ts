@@ -127,7 +127,8 @@ echo "--- Deployment Complete ---"
                 description: "Clean build: removes node_modules and .next, then runs npm install and build.",
                 commandTemplate: `cd {{universal.server_appPath}} && echo "Cleaning old build..." && rm -rf .next node_modules && echo "Installing dependencies..." && npm install && echo "Building application..." && NODE_OPTIONS="--max_old_space_size=4096" npm run build`,
                 type: 'updation',
-                danger: 'low'
+                danger: 'low',
+                nextCommands: ['restart-app'] // Automatically restart app after successful build
             }
         },
         {
@@ -219,7 +220,7 @@ export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'crea
             ...validatedData.data,
             createdAt: serverTimestamp(),
         });
-        revalidatePath('/root/command');
+
         return { success: true, id: docRef.id };
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
@@ -257,6 +258,7 @@ export async function getServerCommands({
                 danger: data.danger || 'low',
                 allocatesPort: data.allocatesPort ?? false,
                 portToReserve: data.portToReserve,
+                nextCommands: data.nextCommands || [],
                 createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
             } as ServerCommand;
         });
@@ -302,6 +304,7 @@ export async function getServerCommand(id: string): Promise<{ success: boolean; 
             danger: data.danger || 'low',
             allocatesPort: data.allocatesPort ?? false,
             portToReserve: data.portToReserve,
+            nextCommands: data.nextCommands || [],
             createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
         };
         return { success: true, command };
@@ -323,8 +326,7 @@ export async function updateServerCommand(id: string, data: Partial<Omit<ServerC
         const { firestore } = initializeFirebase();
         const docRef = doc(firestore, 'serverCommands', id);
         await setDoc(docRef, validatedData.data, { merge: true });
-        revalidatePath('/root/command');
-        revalidatePath(`/root/command/${id}`);
+
         return { success: true };
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to update server command ${id}: ${e.message}`, stack: e.stack, source: 'updateServerCommand' });
@@ -336,7 +338,7 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
     try {
         const { firestore } = initializeFirebase();
         await deleteDoc(doc(firestore, 'serverCommands', id));
-        revalidatePath('/root/command');
+
         return { success: true };
     } catch (e: any) {
         await logErrorToFirestore({ message: `Failed to delete server command ${id}: ${e.message}`, stack: e.stack, source: 'deleteServerCommand' });
