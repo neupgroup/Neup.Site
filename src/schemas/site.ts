@@ -36,6 +36,7 @@ export interface DomainSetting {
   url?: string;
   forceHttps?: boolean;
   proxies?: ProxySetting[];
+  ignoredPaths?: string[];
 }
 
 export interface Site {

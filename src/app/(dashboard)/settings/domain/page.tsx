@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect } from 'react';
@@ -23,22 +24,57 @@ const ProxySchema = z.object({
     port: z.string().min(1, 'Port is required'),
 });
 
+const IgnoredPathSchema = z.object({
+    value: z.string().min(1, 'Path is required').refine(p => p.startsWith('/'), 'Path must start with /'),
+});
+
 export const DomainSettingsSchema = z.object({
     domains: z.object({
         production: z.object({
             url: z.string().optional(),
             forceHttps: z.boolean().optional(),
+            ignoredPaths: z.array(IgnoredPathSchema).optional(),
             proxies: z.array(ProxySchema).optional(),
         }).optional(),
         development: z.object({
             url: z.string().optional(),
             forceHttps: z.boolean().optional(),
+            ignoredPaths: z.array(IgnoredPathSchema).optional(),
             proxies: z.array(ProxySchema).optional(),
         }).optional(),
     }).optional(),
 });
 
 export type DomainFormData = z.infer<typeof DomainSettingsSchema>;
+
+const IgnoredPathsFields = ({ nestIndex, control }: { nestIndex: "domains.production.ignoredPaths" | "domains.development.ignoredPaths", control: any }) => {
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: nestIndex
+    });
+
+    return (
+        <div className="space-y-4 pt-4">
+            <h4 className="font-semibold text-sm">Ignored Paths</h4>
+             <FormDescription>Paths that should be handled by the main application, not proxied.</FormDescription>
+            {fields.map((item, k) => (
+                <div key={item.id} className="flex items-center gap-2">
+                     <FormField
+                        control={control}
+                        name={`${nestIndex}.${k}.value`}
+                        render={({ field }) => (
+                            <FormItem className="flex-1"><FormControl><Input {...field} placeholder="/path/to/ignore" /></FormControl><FormMessage /></FormItem>
+                        )}
+                    />
+                    <Button type="button" variant="destructive" size="icon" onClick={() => remove(k)}><Trash2 className="h-4 w-4" /></Button>
+                </div>
+            ))}
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ value: '' })}>
+                <Plus className="mr-2 h-4 w-4" /> Add Ignored Path
+            </Button>
+        </div>
+    );
+};
 
 const ProxyFields = ({ nestIndex, control }: { nestIndex: "domains.production.proxies" | "domains.development.proxies", control: any }) => {
     const { fields, append, remove } = useFieldArray({
@@ -49,6 +85,7 @@ const ProxyFields = ({ nestIndex, control }: { nestIndex: "domains.production.pr
     return (
         <div className="space-y-4 pt-4">
             <h4 className="font-semibold text-sm">Reverse Proxy Rules</h4>
+            <FormDescription>Route specific paths to different backend services.</FormDescription>
             {fields.map((item, k) => (
                 <div key={item.id} className="grid grid-cols-1 md:grid-cols-[1fr,1fr,1fr,auto] gap-2 items-end p-3 border rounded-md">
                      <FormField
@@ -91,8 +128,8 @@ export default function DomainPage() {
         resolver: zodResolver(DomainSettingsSchema),
         defaultValues: {
             domains: {
-                production: { url: '', forceHttps: true, proxies: [] },
-                development: { url: '', forceHttps: false, proxies: [] },
+                production: { url: '', forceHttps: true, ignoredPaths: [], proxies: [] },
+                development: { url: '', forceHttps: false, ignoredPaths: [], proxies: [] },
             },
         },
     });
@@ -104,11 +141,13 @@ export default function DomainPage() {
                     production: {
                         url: site.domains?.production?.url || '',
                         forceHttps: site.domains?.production?.forceHttps ?? true,
+                        ignoredPaths: site.domains?.production?.ignoredPaths?.map(p => ({ value: p })) || [],
                         proxies: site.domains?.production?.proxies || [],
                     },
                     development: {
                         url: site.domains?.development?.url || '',
                         forceHttps: site.domains?.development?.forceHttps ?? false,
+                        ignoredPaths: site.domains?.development?.ignoredPaths?.map(p => ({ value: p })) || [],
                         proxies: site.domains?.development?.proxies || [],
                     },
                 },
@@ -117,7 +156,21 @@ export default function DomainPage() {
     }, [loading, site, form]);
 
     const onSubmit = async (data: DomainFormData) => {
-        const result = await saveSite(data);
+        // Transform ignoredPaths back to array of strings
+        const dataToSave = {
+            domains: {
+                production: {
+                    ...data.domains?.production,
+                    ignoredPaths: data.domains?.production?.ignoredPaths?.map(p => p.value),
+                },
+                development: {
+                    ...data.domains?.development,
+                    ignoredPaths: data.domains?.development?.ignoredPaths?.map(p => p.value),
+                }
+            }
+        };
+
+        const result = await saveSite(dataToSave);
 
         if (result.success && result.id) {
             toast({ title: 'Settings Saved', description: 'Your domain and proxy settings have been updated.' });
@@ -126,7 +179,7 @@ export default function DomainPage() {
                     ...site,
                     domains: {
                         ...site.domains,
-                        ...data.domains
+                        ...dataToSave.domains
                     },
                 });
             }
@@ -185,6 +238,7 @@ export default function DomainPage() {
                                 </FormItem>
                             )}
                         />
+                        <IgnoredPathsFields nestIndex="domains.production.ignoredPaths" control={form.control} />
                         <ProxyFields nestIndex="domains.production.proxies" control={form.control} />
                     </div>
 
@@ -219,6 +273,7 @@ export default function DomainPage() {
                                 </FormItem>
                             )}
                         />
+                        <IgnoredPathsFields nestIndex="domains.development.ignoredPaths" control={form.control} />
                         <ProxyFields nestIndex="domains.development.proxies" control={form.control} />
                     </div>
                 </div>
