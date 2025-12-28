@@ -457,7 +457,7 @@ export default function ApplicationStatusPage() {
     const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { site } = useProfile();
+    const { site, loading: profileLoading } = useProfile();
 
     useEffect(() => {
         const fetchServers = async () => {
@@ -486,7 +486,7 @@ export default function ApplicationStatusPage() {
                 <p className="text-muted-foreground">Check the deployment status of your application on its allocated servers.</p>
             </header>
 
-            {loading ? (
+            {loading || profileLoading ? (
                 <div className="space-y-6">
                     <Skeleton className="h-64 w-full" />
                     <Skeleton className="h-64 w-full" />
