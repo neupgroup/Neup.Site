@@ -260,14 +260,14 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       logId = logResult.id;
     }
 
-    const resolvedAppPath = server.appPath?.replace(/\{\{\\s*universal\\.site_id\\s*\}\}/g, siteId) || `/var/www/${siteId}`;
+    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
     const baseDir = `${srcDir}/base`;
 
     const ssh = new NodeSSH();
-    console.log(`Connecting to ${server.publicIp} to upload data...`);
-    if (logId) await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
+    let outputLog = `Connecting to ${server.publicIp} to upload data...\n`;
+    if (logId) await updateServerLog(logId, { status: 'ongoing', output: outputLog });
 
     try {
       await ssh.connect({
@@ -276,22 +276,42 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         privateKey: server.privateKey
       });
 
-      let outputLog = `Connected. Preparing server directories...\n`;
+      outputLog += `Connected. Preparing server directories...\n`;
       if (logId) await updateServerLog(logId, { output: outputLog });
 
       await ssh.execCommand(`mkdir -p ${srcDir}`);
       await ssh.execCommand(`mkdir -p ${dataDir}`);
       await ssh.execCommand(`mkdir -p ${baseDir}`);
+      outputLog += 'Directories ensured.\n';
+      if (logId) await updateServerLog(logId, { output: outputLog });
+
 
       // ---- Environment File Handling ----
-      outputLog += 'Handling .env file...\n';
+      outputLog += '\n--- Handling .env file ---\n';
       const envPath = `${resolvedAppPath}/.env`;
-      outputLog += `Deleting old .env file at ${envPath}...\n`;
-      await ssh.execCommand(`rm -f ${envPath}`);
+      
+      const deleteCmd = `rm -f ${envPath}`;
+      outputLog += `> ${deleteCmd}\n`;
+      const deleteResult = await ssh.execCommand(deleteCmd);
+      if (deleteResult.code !== 0 && deleteResult.stderr) {
+        outputLog += `Warning: ${deleteResult.stderr}\n`;
+      } else {
+        outputLog += 'Old .env file deleted (if it existed).\n';
+      }
+      if (logId) await updateServerLog(logId, { output: outputLog });
+
       if (environments.length > 0) {
         const envContent = environments.map(env => `${env.name}=${env.value}`).join('\n');
-        outputLog += `Creating new .env file with ${environments.length} variables...\n`;
-        await ssh.exec('tee', [envPath], { stdin: envContent });
+        const createCmd = `tee ${envPath}`;
+        outputLog += `> Writing ${environments.length} variables to ${envPath}\n`;
+        const createResult = await ssh.exec(createCmd, [], { stdin: envContent });
+        
+        if (createResult.code !== 0) {
+            outputLog += `Error creating .env file: ${createResult.stderr}\n`;
+            throw new Error(`Failed to create .env file: ${createResult.stderr}`);
+        } else {
+            outputLog += 'New .env file created successfully.\n';
+        }
       } else {
         outputLog += 'No environment variables to create.\n';
       }
@@ -302,7 +322,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       const tempBaseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
       
       try {
-        outputLog += 'Preparing local files for upload...\n';
+        outputLog += '\n--- Preparing local files for upload ---\n';
         if (logId) await updateServerLog(logId, { output: outputLog });
 
         const redirectsResult = await getRedirects({});
@@ -319,19 +339,24 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         await fs.writeFile(path.join(localBaseDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
         await fs.writeFile(path.join(localDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
         
-        outputLog += `Uploading structure.json to ${srcDir}/structure.json...\n`;
+        outputLog += `> Uploading structure.json to ${srcDir}/structure.json...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
         await ssh.putFile(path.join(tempBaseDir, 'structure.json'), `${srcDir}/structure.json`);
+        outputLog += `structure.json uploaded.\n`;
+        if (logId) await updateServerLog(logId, { output: outputLog });
 
-        outputLog += `Uploading data directory to ${dataDir}...\n`;
+        outputLog += `> Uploading data directory to ${dataDir}...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
         await ssh.putDirectory(localDataDir, dataDir, { recursive: true, concurrency: 1 });
+        outputLog += `data directory uploaded.\n`;
+        if (logId) await updateServerLog(logId, { output: outputLog });
 
-        outputLog += `Uploading base directory to ${baseDir}...\n`;
+        outputLog += `> Uploading base directory to ${baseDir}...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
         await ssh.putDirectory(localBaseDir, baseDir, { recursive: true, concurrency: 1 });
-        
-        const successMsg = outputLog + '\nSite data uploaded successfully.';
+        outputLog += `base directory uploaded.\n`;
+
+        const successMsg = outputLog + '\n--- Site data upload complete ---\n';
         console.log(successMsg);
         if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
 
@@ -341,7 +366,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
     } catch (sshError: any) {
       console.error('SSH Error uploading site data:', sshError);
-      const errMsg = `Failed to upload data to server: ${sshError.message}`;
+      const errMsg = outputLog + `\n\n--- FAILED ---\n${sshError.message}`;
       if (logId) await updateServerLog(logId, { status: 'failed', output: errMsg });
       throw new Error(errMsg);
     } finally {
