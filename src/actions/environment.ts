@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import {
@@ -22,6 +23,7 @@ import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import type { EnvironmentVariable } from '@/schemas/environment';
 import { cookies } from 'next/headers';
+import { markEnvironmentsAsPending } from './structure';
 
 
 export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 'id' | 'siteId' | 'createdBy' | 'createdOn'>): Promise<{ success: boolean; id?: string; error?: string }> {
@@ -41,6 +43,8 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
       createdOn: serverTimestamp(),
     });
 
+    await markEnvironmentsAsPending(siteId);
+
     revalidatePath('/site/environment');
     return { success: true, id: docRef.id };
   } catch (e: any) {
@@ -49,7 +53,7 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
   }
 }
 
-export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }): Promise<{ success: boolean; variables?: EnvironmentVariable[]; error?: string; totalCount?: number }> {
+export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number } = {}): Promise<{ success: boolean; variables?: EnvironmentVariable[]; error?: string; totalCount?: number }> {
   const siteId = cookies().get('siteId')?.value;
   if (!siteId) {
     return { success: false, error: 'Site context not found.' };
@@ -106,6 +110,7 @@ export async function deleteEnvironmentVariable(id: string): Promise<{ success: 
   try {
     const { firestore } = initializeFirebase();
     await deleteDoc(doc(firestore, 'environments', id));
+    await markEnvironmentsAsPending(siteId);
     revalidatePath('/site/environment');
     return { success: true };
   } catch (e: any) {

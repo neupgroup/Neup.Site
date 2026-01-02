@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon } from 'lucide-react';
-import { getStructure, createDeployment, getLastDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending } from '@/actions/structure';
+import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
+import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending } from '@/actions/structure';
 import type { Structure, Deployment } from '@/schemas/site';
 import { getSiteServers } from '@/actions/servers';
 import { useRouter } from 'next/navigation';
@@ -115,8 +116,10 @@ export default function DeployPage() {
     const hasPendingTheme = structure?.themeChanged || false;
     const hasPendingRedirects = structure?.redirectsChanged || false;
     const hasPendingAssets = structure?.assetsChanged || false;
+    const hasPendingAppBase = structure?.appBaseChanged || false;
+    const hasPendingEnvironments = structure?.environmentsChanged || false;
 
-    const hasAnyPendingChanges = hasPendingStructure || hasPendingTheme || hasPendingRedirects || hasPendingAssets;
+    const hasAnyPendingChanges = hasPendingStructure || hasPendingTheme || hasPendingRedirects || hasPendingAssets || hasPendingAppBase || hasPendingEnvironments;
     
     const getStatus = (hasChanged: boolean) => {
         if (loading) return 'loading';
@@ -170,6 +173,20 @@ export default function DeployPage() {
                         status={getStatus(hasPendingAssets)}
                         icon={ImageIcon}
                         onDeploy={() => handleForceDeploy('assets')}
+                    />
+                    <StatusCard
+                        title="App Base"
+                        description={hasPendingAppBase ? "App base file changes pending" : "Up to date"}
+                        status={getStatus(hasPendingAppBase)}
+                        icon={FolderKanban}
+                        onDeploy={() => {}}
+                    />
+                    <StatusCard
+                        title="Environments"
+                        description={hasPendingEnvironments ? "Environment variable changes pending" : "Up to date"}
+                        status={getStatus(hasPendingEnvironments)}
+                        icon={FileLock}
+                        onDeploy={() => {}}
                     />
                 </div>
             </div>

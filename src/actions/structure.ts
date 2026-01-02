@@ -42,10 +42,10 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
       siteId: data.siteId,
       status: data.status,
       structure: data.structure || [],
-      environments: data.environments || [],
       themeChanged: data.themeChanged || false,
       redirectsChanged: data.redirectsChanged || false,
       assetsChanged: data.assetsChanged || false,
+      appBaseChanged: data.appBaseChanged || false,
       environmentsChanged: data.environmentsChanged || false,
       updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : null,
     };
@@ -90,6 +90,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
       theme: data.theme,
       redirects: data.redirects,
       siteProfile: data.siteProfile,
+      environments: data.environments,
       attemptedOn: data.attemptedOn instanceof Timestamp ? data.attemptedOn.toDate().toISOString() : null,
     };
     return { success: true, deployment };
@@ -172,7 +173,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     const redirectsResult = await getRedirects({});
     const redirects = redirectsResult.success ? redirectsResult.redirects : [];
     
-    const envVarsResult = await getEnvironmentVariables();
+    const envVarsResult = await getEnvironmentVariables({});
     const environments = envVarsResult.success ? envVarsResult.variables : [];
 
     // Create a new document in the 'deployments' collection
@@ -183,6 +184,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
       theme: site?.theme || {},
       redirects: redirects || [],
       siteProfile: { name: site?.name, logoUrl: site?.logoUrl, hideSitename: site?.hideSitename },
+      environments: environments || [],
       attemptedOn: serverTimestamp(),
     });
 
@@ -203,6 +205,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
       themeChanged: false,
       redirectsChanged: false,
       assetsChanged: false,
+      appBaseChanged: false,
       environmentsChanged: false,
       updatedAt: serverTimestamp(),
     }, { merge: true });
@@ -290,7 +293,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       };
       
       // Prepare .env file content
-      const envContent = environments.map(env => `${env.key}=${env.value}`).join('\n');
+      const envContent = environments.map(env => `${env.name}=${env.value}`).join('\n');
 
 
       // Write files to temp directories
@@ -454,4 +457,14 @@ export async function markEnvironmentsAsPending(siteId: string): Promise<void> {
   } catch (e: any) {
     console.error("Failed to mark environments as pending:", e);
   }
+}
+
+export async function markAppBaseAsPending(siteId: string): Promise<void> {
+    try {
+        const { firestore } = initializeFirebase();
+        const structureRef = doc(firestore, 'structure', siteId);
+        await setDoc(structureRef, { appBaseChanged: true, status: 'pendingDeployment' }, { merge: true });
+    } catch (e: any) {
+        console.error("Failed to mark app base as pending:", e);
+    }
 }
