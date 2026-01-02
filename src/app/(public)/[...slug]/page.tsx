@@ -3,16 +3,18 @@
 import { collection, query, where, getDocs, limit, doc, getDoc, orderBy } from 'firebase/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
 import { initializeFirebase } from '@/lib/firebase';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { cookies, headers } from 'next/headers';
 import type { Redirect } from '@/schemas/redirect';
 
-async function handleRedirect(req: NextRequest, slug: string[]): Promise<NextResponse | null> {
+async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
   const { firestore } = initializeFirebase();
   const incomingPath = `/${slug.join('/')}`;
 
   // Query for all redirects on the site. In a high-traffic app, this would be cached.
   // We can't easily query for a pattern match in Firestore, so we fetch all and match in memory.
-  const siteId = req.cookies.get('siteId')?.value;
+  const cookieStore = await cookies();
+  const siteId = cookieStore.get('siteId')?.value;
   if (!siteId) return null;
 
   const redirectsRef = collection(firestore, 'redirects');
@@ -42,8 +44,10 @@ async function handleRedirect(req: NextRequest, slug: string[]): Promise<NextRes
 
       // Handle absolute vs. relative 'to' URLs
       if (destination.startsWith('/')) {
-        const url = req.nextUrl.clone();
-        url.pathname = destination;
+        const headersList = await headers();
+        const host = headersList.get('host') || 'localhost:3000';
+        const protocol = headersList.get('x-forwarded-proto') || 'http';
+        const url = new URL(destination, `${protocol}://${host}`);
         return NextResponse.redirect(url, { status });
       }
       return NextResponse.redirect(destination, { status });
@@ -100,14 +104,13 @@ async function getPageForPath(slug: string[]): Promise<{ html: string | null, th
 
 
 
-export default async function CatchAllPage(props: { params: Promise<{ slug: string[] }>, request: Promise<NextRequest> }) {
+export default async function CatchAllPage(props: { params: Promise<{ slug: string[] }> }) {
   const params = await props.params;
-  const request = await props.request;
 
   const { slug } = params;
 
   // 1. Check for redirects first
-  const redirectResponse = await handleRedirect(request, slug);
+  const redirectResponse = await handleRedirect(slug);
   if (redirectResponse) {
     return redirectResponse;
   }

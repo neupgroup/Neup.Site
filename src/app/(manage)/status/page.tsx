@@ -81,7 +81,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         updateStep(0, 'loading', `Pinging ${domainUrl}...`);
         try {
             const url = `https://${domainUrl}`;
-            const res = await fetch(`/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
+            const res = await fetch(`/bridge/api/v1/ping?url=${encodeURIComponent(url)}`, { method: 'GET', cache: 'no-cache' });
             const data = await res.json();
 
             if (res.ok && data.success && data.status === 200) {
