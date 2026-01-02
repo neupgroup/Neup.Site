@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -45,6 +46,7 @@ import {
   Network,
   Redo,
   FolderKanban,
+  FileLock,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -128,6 +130,7 @@ function MainNavContent({ currentPath, onLinkClick }: { currentPath: string, onL
         <NavLink href="/site/modules" currentPath={currentPath} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
         <NavLink href="/site/uploads" currentPath={currentPath} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></NavLink>
         <NavLink href="/site/appbase" currentPath={currentPath} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></NavLink>
+        <NavLink href="/site/environment" currentPath={currentPath} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></NavLink>
         <NavLink href="/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
         <NavLink href="/site/theme" currentPath={currentPath} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
         <NavLink href="/site/sections" currentPath={currentPath} onClick={onLinkClick}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
