@@ -292,22 +292,35 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       
       const deleteCmd = `rm -f ${envPath}`;
       outputLog += `> ${deleteCmd}\n`;
+      await updateServerLog(logId, { output: outputLog });
       const deleteResult = await ssh.execCommand(deleteCmd);
       if (deleteResult.code !== 0 && deleteResult.stderr) {
         outputLog += `Warning: ${deleteResult.stderr}\n`;
       } else {
         outputLog += 'Old .env file deleted (if it existed).\n';
       }
-      if (logId) await updateServerLog(logId, { output: outputLog });
+      await updateServerLog(logId, { output: outputLog });
 
       if (environments.length > 0) {
-        const envContent = environments.map(env => `${env.name}=${env.value}`).join('\n');
-        const createCmd = `tee ${envPath}`;
-        outputLog += `> Writing ${environments.length} variables to ${envPath}\n`;
-        const createResult = await ssh.exec(createCmd, [], { stdin: envContent });
+        const envContent = environments.map(env => {
+            if (env.dataType === 'string' && /\s/.test(env.value)) {
+                return `${env.name}="${env.value.replace(/"/g, '\\"')}"`;
+            }
+            return `${env.name}=${env.value}`;
+        }).join('\n');
+
+        // Escape for heredoc
+        const escapedEnvContent = envContent.replace(/\\/g, '\\\\').replace(/'/g, "'\\''").replace(/`/g, '\\`');
+
+        const createCmd = `sudo bash -c "cat > ${envPath}" <<'EOF'\n${escapedEnvContent}\nEOF`;
+        outputLog += `> Writing ${environments.length} variables to ${envPath} using cat heredoc.\n`;
+        await updateServerLog(logId, { output: outputLog });
+        
+        const createResult = await ssh.execCommand(createCmd);
         
         if (createResult.code !== 0) {
             outputLog += `Error creating .env file: ${createResult.stderr}\n`;
+            if (logId) await updateServerLog(logId, { output: outputLog, status: 'failed' });
             throw new Error(`Failed to create .env file: ${createResult.stderr}`);
         } else {
             outputLog += 'New .env file created successfully.\n';
