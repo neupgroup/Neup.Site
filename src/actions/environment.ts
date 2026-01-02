@@ -12,6 +12,9 @@ import {
   serverTimestamp,
   Timestamp,
   orderBy,
+  limit,
+  getCountFromServer,
+  startAfter,
 } from 'firebase/firestore';
 import { initializeFirebase } from '@/lib/firebase';
 import { logErrorToFirestore } from '@/lib/logging';
@@ -46,7 +49,7 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
   }
 }
 
-export async function getEnvironmentVariables(): Promise<{ success: boolean; variables?: EnvironmentVariable[]; error?: string }> {
+export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }): Promise<{ success: boolean; variables?: EnvironmentVariable[]; error?: string; totalCount?: number }> {
   const siteId = cookies().get('siteId')?.value;
   if (!siteId) {
     return { success: false, error: 'Site context not found.' };
@@ -55,9 +58,24 @@ export async function getEnvironmentVariables(): Promise<{ success: boolean; var
   try {
     const { firestore } = initializeFirebase();
     const envRef = collection(firestore, 'environments');
-    const q = query(envRef, where('siteId', '==', siteId), orderBy('createdOn', 'desc'));
+    const siteQuery = query(envRef, where('siteId', '==', siteId));
     
-    const querySnapshot = await getDocs(q);
+    const countSnapshot = await getCountFromServer(siteQuery);
+    const totalCount = countSnapshot.data().count;
+
+    const baseQuery = query(siteQuery, orderBy('createdOn', 'desc'));
+
+    let finalQuery;
+    if (page > 1) {
+      const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
+      const prevPageSnapshot = await getDocs(prevPageQuery);
+      const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
+      finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
+    } else {
+      finalQuery = query(baseQuery, limit(pageSize));
+    }
+    
+    const querySnapshot = await getDocs(finalQuery);
     const variables = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
       const createdOn = data.createdOn;
@@ -72,7 +90,7 @@ export async function getEnvironmentVariables(): Promise<{ success: boolean; var
         createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
       } as EnvironmentVariable;
     });
-    return { success: true, variables };
+    return { success: true, variables, totalCount };
   } catch (e: any) {
     await logErrorToFirestore({ message: `Failed to get environment variables: ${e.message}`, stack: e.stack, source: 'getEnvironmentVariables' });
     return { success: false, error: 'Failed to fetch environment variables.' };

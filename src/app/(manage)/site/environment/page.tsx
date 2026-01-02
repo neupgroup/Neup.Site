@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,9 +17,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { getEnvironmentVariables, deleteEnvironmentVariable, type EnvironmentVariable } from '@/actions/environment';
-import { FileLock, Plus, Trash2, AlertCircle } from 'lucide-react';
+import { FileLock, Plus, Trash2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { CardFooter } from '@/components/ui/card';
 
 export default function EnvironmentPage() {
   usePageTitle('Environments');
@@ -27,21 +29,33 @@ export default function EnvironmentPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [variableToDelete, setVariableToDelete] = useState<EnvironmentVariable | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
   const { toast } = useToast();
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const pageSize = 10;
+  const [isPending, startTransition] = useTransition();
 
   const fetchVariables = useCallback(async () => {
     setLoading(true);
-    const result = await getEnvironmentVariables();
+    const result = await getEnvironmentVariables({ page: currentPage, pageSize });
     if (result.success && result.variables) {
       setVariables(result.variables);
+      setTotalCount(result.totalCount || 0);
     } else {
       setError(result.error || 'Failed to load environment variables.');
     }
     setLoading(false);
-  }, []);
+  }, [currentPage, pageSize]);
 
   useEffect(() => {
-    fetchVariables();
+    startTransition(() => {
+        fetchVariables();
+    });
   }, [fetchVariables]);
 
   const handleDelete = async () => {
@@ -55,6 +69,14 @@ export default function EnvironmentPage() {
     }
     setVariableToDelete(null);
   }
+  
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', newPage.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <div className="w-full space-y-6">
@@ -115,6 +137,34 @@ export default function EnvironmentPage() {
             ))}
           </div>
       )}
+
+      {totalPages > 1 && (
+            <CardFooter className="flex items-center justify-between px-0">
+                <div className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage <= 1 || isPending}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages || isPending}
+                    >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            </CardFooter>
+        )}
     </div>
   );
 }
