@@ -3,13 +3,7 @@
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Path } from '@/actions/paths';
 import type { Redirect } from '@/schemas/redirect';
-
-export interface EnvironmentVariable {
-  id: string;
-  key: string;
-  value: string;
-  type: 'string' | 'number' | 'boolean';
-}
+import type { EnvironmentVariable } from '@/schemas/environment';
 
 export interface GeneratedTheme {
   light: Record<string, string>;
@@ -92,11 +86,11 @@ export interface Structure {
   id: string;
   siteId: string;
   structure: PathStructure[];
-  environments: EnvironmentVariable[];
   status: 'deployed' | 'pendingDeployment';
   themeChanged: boolean;
   redirectsChanged: boolean;
   assetsChanged: boolean;
+  appBaseChanged: boolean;
   environmentsChanged: boolean;
   updatedAt?: string | null;
 }
@@ -109,5 +103,6 @@ export interface Deployment {
   theme: SiteTheme;
   redirects: Omit<Redirect, 'siteId'>[];
   siteProfile: { name: string, logoUrl?: string, hideSitename?: boolean };
+  environments: EnvironmentVariable[];
   attemptedOn: string | null;
 }

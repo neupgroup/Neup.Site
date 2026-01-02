@@ -16,7 +16,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { getRedirects, Redirect } from './redirects';
-import { getEnvironmentVariables } from '@/actions/environment';
+import { getEnvironmentVariables } from './environment';
 
 
 /**
@@ -42,10 +42,10 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
       siteId: data.siteId,
       status: data.status,
       structure: data.structure || [],
-      environments: data.environments || [],
       themeChanged: data.themeChanged || false,
       redirectsChanged: data.redirectsChanged || false,
       assetsChanged: data.assetsChanged || false,
+      appBaseChanged: data.appBaseChanged || false,
       environmentsChanged: data.environmentsChanged || false,
       updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : null,
     };
@@ -90,6 +90,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
       theme: data.theme,
       redirects: data.redirects,
       siteProfile: data.siteProfile,
+      environments: data.environments,
       attemptedOn: data.attemptedOn instanceof Timestamp ? data.attemptedOn.toDate().toISOString() : null,
     };
     return { success: true, deployment };
@@ -172,17 +173,22 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     const redirectsResult = await getRedirects({});
     const redirects = redirectsResult.success ? redirectsResult.redirects : [];
     
-    const envVarsResult = await getEnvironmentVariables();
+    const envVarsResult = await getEnvironmentVariables({});
     const environments = envVarsResult.success ? envVarsResult.variables : [];
 
     // Create a new document in the 'deployments' collection
     await addDoc(collection(firestore, 'deployments'), {
       siteId,
-      structure: currentStructure.structure,
+      structure: currentStructure.structure || [],
       status: 'deployed',
       theme: site?.theme || {},
       redirects: redirects || [],
-      siteProfile: { name: site?.name, logoUrl: site?.logoUrl, hideSitename: site?.hideSitename },
+      siteProfile: { 
+        name: site?.name || '', 
+        logoUrl: site?.logoUrl || null,
+        hideSitename: site?.hideSitename || false 
+      },
+      environments: environments || [],
       attemptedOn: serverTimestamp(),
     });
 
@@ -196,13 +202,14 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     }
 
     // Reset the staging structure
-    const updatedPaths = currentStructure.structure.map(p => ({ ...p, changesMade: false }));
+    const updatedPaths = (currentStructure.structure || []).map(p => ({ ...p, changesMade: false }));
     await setDoc(structureRef, {
       status: 'deployed',
       structure: updatedPaths,
       themeChanged: false,
       redirectsChanged: false,
       assetsChanged: false,
+      appBaseChanged: false,
       environmentsChanged: false,
       updatedAt: serverTimestamp(),
     }, { merge: true });
@@ -253,14 +260,14 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       logId = logResult.id;
     }
 
-    const resolvedAppPath = server.appPath?.replace(/\{\{\\s*universal\\.site_id\\s*\}\}/g, siteId) || `/var/www/${siteId}`;
+    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
     const baseDir = `${srcDir}/base`;
 
     const ssh = new NodeSSH();
-    console.log(`Connecting to ${server.publicIp} to upload data...`);
-    if (logId) await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
+    let outputLog = `Connecting to ${server.publicIp} to upload data...\n`;
+    if (logId) await updateServerLog(logId, { status: 'ongoing', output: outputLog });
 
     try {
       await ssh.connect({
@@ -269,70 +276,100 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         privateKey: server.privateKey
       });
 
-      // Create temporary local directories
-      const tempBaseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
-      const tempSrcDir = path.join(tempBaseDir, 'src');
-      const tempDataDir = path.join(tempBaseDir, 'data');
-      const tempAppBaseDir = path.join(tempBaseDir, 'base');
-      await fs.mkdir(tempSrcDir, { recursive: true });
-      await fs.mkdir(tempDataDir, { recursive: true });
-      await fs.mkdir(tempAppBaseDir, { recursive: true });
+      outputLog += `Connected. Preparing server directories...\n`;
+      if (logId) await updateServerLog(logId, { output: outputLog });
 
-      // Prepare redirects data
-      const redirectsResult = await getRedirects({});
-      const redirects = redirectsResult.success ? redirectsResult.redirects : [];
+      await ssh.execCommand(`mkdir -p ${srcDir}`);
+      await ssh.execCommand(`mkdir -p ${dataDir}`);
+      await ssh.execCommand(`mkdir -p ${baseDir}`);
+      outputLog += 'Directories ensured.\n';
+      if (logId) await updateServerLog(logId, { output: outputLog });
 
-      // Prepare site profile data
-      const siteProfile = {
-        name: site?.name || '',
-        logoUrl: site?.logoUrl || '',
-        hideSitename: site?.hideSitename || false
-      };
+
+      // ---- Environment File Handling ----
+      outputLog += '\n--- Handling .env file ---\n';
+      const envPath = `${resolvedAppPath}/.env`;
       
-      // Prepare .env file content
-      const envContent = environments.map(env => `${env.key}=${env.value}`).join('\n');
+      const deleteCmd = `rm -f ${envPath}`;
+      outputLog += `> ${deleteCmd}\n`;
+      await updateServerLog(logId, { output: outputLog });
+      const deleteResult = await ssh.execCommand(deleteCmd);
+      if (deleteResult.code !== 0 && deleteResult.stderr) {
+        outputLog += `Warning: ${deleteResult.stderr}\n`;
+      } else {
+        outputLog += 'Old .env file deleted (if it existed).\n';
+      }
+      await updateServerLog(logId, { output: outputLog });
 
+      if (environments.length > 0) {
+        const envContent = environments.map(env => {
+            if (env.dataType === 'string' && /\s/.test(env.value)) {
+                return `${env.name}="${env.value.replace(/"/g, '\\"')}"`;
+            }
+            return `${env.name}=${env.value}`;
+        }).join('\n');
 
-      // Write files to temp directories
-      await fs.writeFile(path.join(tempSrcDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
-      await fs.writeFile(path.join(tempDataDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
-      await fs.writeFile(path.join(tempAppBaseDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
-      await fs.writeFile(path.join(tempDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
-      await fs.writeFile(path.join(tempBaseDir, '.env'), envContent);
+        // Escape for heredoc
+        const escapedEnvContent = envContent.replace(/\\/g, '\\\\').replace(/'/g, "'\\''").replace(/`/g, '\\`');
 
-
-      try {
-        if (logId) await updateServerLog(logId, { output: `Connected. Uploading files to ${resolvedAppPath}...` });
-
-        await ssh.execCommand(`mkdir -p ${srcDir}`);
-        await ssh.execCommand(`mkdir -p ${dataDir}`);
-        await ssh.execCommand(`mkdir -p ${baseDir}`);
-
-        // Upload .env file
-        await ssh.putFile(path.join(tempBaseDir, '.env'), `${resolvedAppPath}/.env`);
+        const createCmd = `sudo bash -c "cat > ${envPath}" <<'EOF'\n${escapedEnvContent}\nEOF`;
+        outputLog += `> Writing ${environments.length} variables to ${envPath} using cat heredoc.\n`;
+        await updateServerLog(logId, { output: outputLog });
         
-        // Upload structure.json to src
-        await ssh.putFile(path.join(tempSrcDir, 'structure.json'), `${srcDir}/structure.json`);
+        const createResult = await ssh.execCommand(createCmd);
+        
+        if (createResult.code !== 0) {
+            outputLog += `Error creating .env file: ${createResult.stderr}\n`;
+            if (logId) await updateServerLog(logId, { output: outputLog, status: 'failed' });
+            throw new Error(`Failed to create .env file: ${createResult.stderr}`);
+        } else {
+            outputLog += 'New .env file created successfully.\n';
+        }
+      } else {
+        outputLog += 'No environment variables to create.\n';
+      }
+      if (logId) await updateServerLog(logId, { output: outputLog });
 
-        // Upload data directory to src/data
-        await ssh.putDirectory(tempDataDir, dataDir, {
-          recursive: true,
-          concurrency: 1,
-          tick: (localPath, remotePath, error) => {
-            if (error) console.error(`Failed to upload ${localPath}`);
-          }
-        });
 
-        // Upload base directory to src/base
-        await ssh.putDirectory(tempAppBaseDir, baseDir, {
-          recursive: true,
-          concurrency: 1,
-          tick: (localPath, remotePath, error) => {
-            if (error) console.error(`Failed to upload ${localPath}`);
-          }
-        });
+      // ---- Other File Handling ----
+      const tempBaseDir = await fs.mkdtemp(path.join(os.tmpdir(), 'deployment-'));
+      
+      try {
+        outputLog += '\n--- Preparing local files for upload ---\n';
+        if (logId) await updateServerLog(logId, { output: outputLog });
 
-        const successMsg = 'Site data (structure, theme, redirects, profile, .env) uploaded successfully.';
+        const redirectsResult = await getRedirects({});
+        const redirects = redirectsResult.success ? redirectsResult.redirects : [];
+        const siteProfile = { name: site?.name || '', logoUrl: site?.logoUrl || null, hideSitename: site?.hideSitename || false };
+
+        const localDataDir = path.join(tempBaseDir, 'data');
+        const localBaseDir = path.join(tempBaseDir, 'base');
+        await fs.mkdir(localDataDir, { recursive: true });
+        await fs.mkdir(localBaseDir, { recursive: true });
+
+        await fs.writeFile(path.join(tempBaseDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
+        await fs.writeFile(path.join(localDataDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
+        await fs.writeFile(path.join(localBaseDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
+        await fs.writeFile(path.join(localDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
+        
+        outputLog += `> Uploading structure.json to ${srcDir}/structure.json...\n`;
+        if (logId) await updateServerLog(logId, { output: outputLog });
+        await ssh.putFile(path.join(tempBaseDir, 'structure.json'), `${srcDir}/structure.json`);
+        outputLog += `structure.json uploaded.\n`;
+        if (logId) await updateServerLog(logId, { output: outputLog });
+
+        outputLog += `> Uploading data directory to ${dataDir}...\n`;
+        if (logId) await updateServerLog(logId, { output: outputLog });
+        await ssh.putDirectory(localDataDir, dataDir, { recursive: true, concurrency: 1 });
+        outputLog += `data directory uploaded.\n`;
+        if (logId) await updateServerLog(logId, { output: outputLog });
+
+        outputLog += `> Uploading base directory to ${baseDir}...\n`;
+        if (logId) await updateServerLog(logId, { output: outputLog });
+        await ssh.putDirectory(localBaseDir, baseDir, { recursive: true, concurrency: 1 });
+        outputLog += `base directory uploaded.\n`;
+
+        const successMsg = outputLog + '\n--- Site data upload complete ---\n';
         console.log(successMsg);
         if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
 
@@ -342,7 +379,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
     } catch (sshError: any) {
       console.error('SSH Error uploading site data:', sshError);
-      const errMsg = `Failed to upload data to server: ${sshError.message}`;
+      const errMsg = outputLog + `\n\n--- FAILED ---\n${sshError.message}`;
       if (logId) await updateServerLog(logId, { status: 'failed', output: errMsg });
       throw new Error(errMsg);
     } finally {
@@ -454,4 +491,14 @@ export async function markEnvironmentsAsPending(siteId: string): Promise<void> {
   } catch (e: any) {
     console.error("Failed to mark environments as pending:", e);
   }
+}
+
+export async function markAppBaseAsPending(siteId: string): Promise<void> {
+    try {
+        const { firestore } = initializeFirebase();
+        const structureRef = doc(firestore, 'structure', siteId);
+        await setDoc(structureRef, { appBaseChanged: true, status: 'pendingDeployment' }, { merge: true });
+    } catch (e: any) {
+        console.error("Failed to mark app base as pending:", e);
+    }
 }

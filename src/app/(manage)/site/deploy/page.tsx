@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon } from 'lucide-react';
-import { getStructure, createDeployment, getLastDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending } from '@/actions/structure';
+import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
+import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/actions/structure';
 import type { Structure, Deployment } from '@/schemas/site';
 import { getSiteServers } from '@/actions/servers';
 import { useRouter } from 'next/navigation';
@@ -101,7 +102,6 @@ export default function DeployPage() {
             } else if (type === 'assets') {
                 await markAssetsAsPending(structure.siteId);
             }
-            // For structure, we assume if you click deploy again you want to deploy whatever is current.
             
             await handleDeploy();
 
@@ -115,8 +115,10 @@ export default function DeployPage() {
     const hasPendingTheme = structure?.themeChanged || false;
     const hasPendingRedirects = structure?.redirectsChanged || false;
     const hasPendingAssets = structure?.assetsChanged || false;
+    const hasPendingAppBase = structure?.appBaseChanged || false;
+    const hasPendingEnvironments = structure?.environmentsChanged || false;
 
-    const hasAnyPendingChanges = hasPendingStructure || hasPendingTheme || hasPendingRedirects || hasPendingAssets;
+    const hasAnyPendingChanges = hasPendingStructure || hasPendingTheme || hasPendingRedirects || hasPendingAssets || hasPendingAppBase || hasPendingEnvironments;
     
     const getStatus = (hasChanged: boolean) => {
         if (loading) return 'loading';
@@ -126,80 +128,93 @@ export default function DeployPage() {
     return (
         <div className="w-full">
             <header className="flex items-center justify-between mb-8">
-                <h1 className="font-headline text-2xl font-semibold tracking-tight">Deployments</h1>
-            </header>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Site Deployment</CardTitle>
-                    <CardDescription>
+                <div>
+                  <h1 className="font-headline text-2xl font-semibold tracking-tight">Deployments</h1>
+                  <p className="text-muted-foreground">
                         Deploy your site structure, assets, and configurations to your servers.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {error && (
-                        <Alert variant="destructive">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertTitle>Error</AlertTitle>
-                            <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                    )}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <StatusCard 
-                            title="Structure" 
-                            description={hasPendingStructure ? "Path or page content changes pending" : "Up to date"}
-                            status={getStatus(hasPendingStructure)}
-                            icon={GitBranch}
-                             onDeploy={() => handleForceDeploy('structure')}
-                        />
-                         <StatusCard 
-                            title="Theme" 
-                            description={hasPendingTheme ? "Color or style changes pending" : "Up to date"}
-                            status={getStatus(hasPendingTheme)}
-                            icon={Palette}
-                             onDeploy={() => handleForceDeploy('theme')}
-                        />
-                         <StatusCard 
-                            title="Redirects" 
-                            description={hasPendingRedirects ? "URL redirect changes pending" : "Up to date"}
-                            status={getStatus(hasPendingRedirects)}
-                            icon={Redo}
-                             onDeploy={() => handleForceDeploy('redirects')}
-                        />
-                         <StatusCard 
-                            title="Site Assets" 
-                            description={hasPendingAssets ? "Logo or profile changes pending" : "Up to date"}
-                            status={getStatus(hasPendingAssets)}
-                            icon={ImageIcon}
-                            onDeploy={() => handleForceDeploy('assets')}
-                        />
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    {hasServer ? (
-                        hasAnyPendingChanges ? (
-                            <Button onClick={handleDeploy} disabled={isDeploying || loading}>
-                                {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2 h-4 w-4" />}
-                                {isDeploying ? 'Deploying...' : 'Deploy All Changes'}
-                            </Button>
-                        ) : (
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">Up to date</span>
-                                <Button variant="link" className="p-0 h-auto" onClick={handleDeploy} disabled={isDeploying || loading}>
-                                    {isDeploying ? 'Deploying...' : 'Deploy again?'}
-                                </Button>
-                            </div>
-                        )
+                  </p>
+                </div>
+            </header>
+            
+            <div className="space-y-4">
+                {error && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+                <div className="grid grid-cols-1 gap-4">
+                    <StatusCard 
+                        title="Structure" 
+                        description={hasPendingStructure ? "Path or page content changes pending" : "Up to date"}
+                        status={getStatus(hasPendingStructure)}
+                        icon={GitBranch}
+                         onDeploy={() => handleForceDeploy('structure')}
+                    />
+                     <StatusCard 
+                        title="Theme" 
+                        description={hasPendingTheme ? "Color or style changes pending" : "Up to date"}
+                        status={getStatus(hasPendingTheme)}
+                        icon={Palette}
+                         onDeploy={() => handleForceDeploy('theme')}
+                    />
+                     <StatusCard 
+                        title="Redirects" 
+                        description={hasPendingRedirects ? "URL redirect changes pending" : "Up to date"}
+                        status={getStatus(hasPendingRedirects)}
+                        icon={Redo}
+                         onDeploy={() => handleForceDeploy('redirects')}
+                    />
+                     <StatusCard 
+                        title="Site Assets" 
+                        description={hasPendingAssets ? "Logo or profile changes pending" : "Up to date"}
+                        status={getStatus(hasPendingAssets)}
+                        icon={ImageIcon}
+                        onDeploy={() => handleForceDeploy('assets')}
+                    />
+                    <StatusCard
+                        title="App Base"
+                        description={hasPendingAppBase ? "App base file changes pending" : "Up to date"}
+                        status={getStatus(hasPendingAppBase)}
+                        icon={FolderKanban}
+                        onDeploy={() => {}}
+                    />
+                    <StatusCard
+                        title="Environments"
+                        description={hasPendingEnvironments ? "Environment variable changes pending" : "Up to date"}
+                        status={getStatus(hasPendingEnvironments)}
+                        icon={FileLock}
+                        onDeploy={() => {}}
+                    />
+                </div>
+            </div>
+            
+            <div className="mt-8">
+                {hasServer ? (
+                    hasAnyPendingChanges ? (
+                        <Button onClick={handleDeploy} disabled={isDeploying || loading}>
+                            {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2 h-4 w-4" />}
+                            {isDeploying ? 'Deploying...' : 'Deploy All Changes'}
+                        </Button>
                     ) : (
-                        <Alert variant="destructive" className="w-full">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertTitle>No Server Assigned</AlertTitle>
-                            <AlertDescription>
-                                You must assign a server to this site in the server management settings before you can deploy.
-                            </AlertDescription>
-                        </Alert>
-                    )}
-                </CardFooter>
-            </Card>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground">Up to date</span>
+                            <Button variant="link" className="p-0 h-auto" onClick={handleDeploy} disabled={isDeploying || loading}>
+                                {isDeploying ? 'Deploying...' : 'Deploy again?'}
+                            </Button>
+                        </div>
+                    )
+                ) : (
+                    <Alert variant="destructive" className="w-full">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>No Server Assigned</AlertTitle>
+                        <AlertDescription>
+                            You must assign a server to this site in the server management settings before you can deploy.
+                        </AlertDescription>
+                    </Alert>
+                )}
+            </div>
         </div >
     );
 }

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
@@ -9,6 +10,8 @@ import { logErrorToFirestore } from '@/lib/logging';
 import { initializeFirebase } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, doc, getDoc } from 'firebase/firestore';
 import type { AppBaseBackup, AppBaseFile } from '@/schemas/app-base';
+import { cookies } from 'next/headers';
+import { markAppBaseAsPending } from './structure';
 
 async function resolveAppBasePath(serverId: string, type: 'internal' | 'external') {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -87,6 +90,7 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
 export async function createAppBaseFile(serverId: string, name: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
     const sanitizedName = name.replace(/[^a-zA-Z0-9-]/g, '_');
     const fileName = `${sanitizedName}.json`;
+    const siteId = cookies().get('siteId')?.value;
 
     let ssh: NodeSSH | undefined;
     try {
@@ -114,6 +118,10 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
         }
 
         await ssh.exec('tee', [filePath], { stdin: content });
+        
+        if (siteId) {
+            await markAppBaseAsPending(siteId);
+        }
 
         return { success: true };
     } catch (e: any) {
@@ -155,6 +163,7 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
 
 export async function saveAppBaseFileContent(serverId: string, fileName: string, content: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
     const fullFileName = `${fileName}.json`;
+    const siteId = cookies().get('siteId')?.value;
     let ssh: NodeSSH | undefined;
     try {
         const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
@@ -168,6 +177,10 @@ export async function saveAppBaseFileContent(serverId: string, fileName: string,
 
         const filePath = `${basePath}/${fullFileName}`;
         await ssh.exec('tee', [filePath], { stdin: content });
+        
+        if (siteId) {
+            await markAppBaseAsPending(siteId);
+        }
 
         return { success: true };
     } catch (e: any) {
