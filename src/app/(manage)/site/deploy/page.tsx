@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
-import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending } from '@/actions/structure';
+import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/actions/structure';
 import type { Structure, Deployment } from '@/schemas/site';
 import { getSiteServers } from '@/actions/servers';
 import { useRouter } from 'next/navigation';
@@ -102,7 +102,6 @@ export default function DeployPage() {
             } else if (type === 'assets') {
                 await markAssetsAsPending(structure.siteId);
             }
-            // For structure, we assume if you click deploy again you want to deploy whatever is current.
             
             await handleDeploy();
 
@@ -137,7 +136,7 @@ export default function DeployPage() {
                 </div>
             </header>
             
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {error && (
                     <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
