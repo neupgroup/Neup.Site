@@ -179,7 +179,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     // Create a new document in the 'deployments' collection
     await addDoc(collection(firestore, 'deployments'), {
       siteId,
-      structure: currentStructure.structure,
+      structure: currentStructure.structure || [],
       status: 'deployed',
       theme: site?.theme || {},
       redirects: redirects || [],
@@ -198,7 +198,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     }
 
     // Reset the staging structure
-    const updatedPaths = currentStructure.structure.map(p => ({ ...p, changesMade: false }));
+    const updatedPaths = (currentStructure.structure || []).map(p => ({ ...p, changesMade: false }));
     await setDoc(structureRef, {
       status: 'deployed',
       structure: updatedPaths,
