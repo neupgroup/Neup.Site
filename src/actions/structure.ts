@@ -5,7 +5,7 @@
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
-import type { Structure, PathStructure, Deployment, Site } from '@/schemas/site';
+import type { Structure, PathStructure, Deployment, Site, EnvironmentVariable } from '@/schemas/site';
 import { logErrorToFirestore } from '@/lib/logging';
 import { getPages } from './editor/pages';
 import { getSite } from './editor/site';
@@ -16,6 +16,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { getRedirects, Redirect } from './redirects';
+import { getEnvironmentVariables } from '@/actions/environment';
 
 
 /**
@@ -41,9 +42,11 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
       siteId: data.siteId,
       status: data.status,
       structure: data.structure || [],
+      environments: data.environments || [],
       themeChanged: data.themeChanged || false,
       redirectsChanged: data.redirectsChanged || false,
       assetsChanged: data.assetsChanged || false,
+      environmentsChanged: data.environmentsChanged || false,
       updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : null,
     };
     return { success: true, structure };
@@ -168,6 +171,9 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
 
     const redirectsResult = await getRedirects({});
     const redirects = redirectsResult.success ? redirectsResult.redirects : [];
+    
+    const envVarsResult = await getEnvironmentVariables();
+    const environments = envVarsResult.success ? envVarsResult.variables : [];
 
     // Create a new document in the 'deployments' collection
     await addDoc(collection(firestore, 'deployments'), {
@@ -181,7 +187,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     });
 
     // Upload structure, theme, and redirects to the server
-    const uploadResult = await uploadStructureToServer(siteId, currentStructure, site || null);
+    const uploadResult = await uploadStructureToServer(siteId, currentStructure, site || null, environments || []);
 
     // Even if upload fails, we still mark as deployed in the database
     // The upload can be retried later
@@ -197,6 +203,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
       themeChanged: false,
       redirectsChanged: false,
       assetsChanged: false,
+      environmentsChanged: false,
       updatedAt: serverTimestamp(),
     }, { merge: true });
 
@@ -207,7 +214,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
   }
 }
 
-async function uploadStructureToServer(siteId: string, structure: Structure, site: Site | null): Promise<{ success: boolean; error?: string }> {
+async function uploadStructureToServer(siteId: string, structure: Structure, site: Site | null, environments: EnvironmentVariable[]): Promise<{ success: boolean; error?: string }> {
   let logId: string | undefined;
 
   try {
@@ -246,7 +253,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       logId = logResult.id;
     }
 
-    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
+    const resolvedAppPath = server.appPath?.replace(/\{\{\\s*universal\\.site_id\\s*\}\}/g, siteId) || `/var/www/${siteId}`;
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
     const baseDir = `${srcDir}/base`;
@@ -281,12 +288,17 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         logoUrl: site?.logoUrl || '',
         hideSitename: site?.hideSitename || false
       };
+      
+      // Prepare .env file content
+      const envContent = environments.map(env => `${env.key}=${env.value}`).join('\n');
+
 
       // Write files to temp directories
       await fs.writeFile(path.join(tempSrcDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
       await fs.writeFile(path.join(tempDataDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
       await fs.writeFile(path.join(tempAppBaseDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
       await fs.writeFile(path.join(tempDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
+      await fs.writeFile(path.join(tempBaseDir, '.env'), envContent);
 
 
       try {
@@ -296,6 +308,9 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         await ssh.execCommand(`mkdir -p ${dataDir}`);
         await ssh.execCommand(`mkdir -p ${baseDir}`);
 
+        // Upload .env file
+        await ssh.putFile(path.join(tempBaseDir, '.env'), `${resolvedAppPath}/.env`);
+        
         // Upload structure.json to src
         await ssh.putFile(path.join(tempSrcDir, 'structure.json'), `${srcDir}/structure.json`);
 
@@ -317,7 +332,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
           }
         });
 
-        const successMsg = 'Site data (structure, theme, redirects, profile) uploaded successfully.';
+        const successMsg = 'Site data (structure, theme, redirects, profile, .env) uploaded successfully.';
         console.log(successMsg);
         if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
 
@@ -431,3 +446,12 @@ export async function markRedirectsAsPending(siteId: string): Promise<void> {
   }
 }
 
+export async function markEnvironmentsAsPending(siteId: string): Promise<void> {
+  try {
+    const { firestore } = initializeFirebase();
+    const structureRef = doc(firestore, 'structure', siteId);
+    await setDoc(structureRef, { environmentsChanged: true, status: 'pendingDeployment' }, { merge: true });
+  } catch (e: any) {
+    console.error("Failed to mark environments as pending:", e);
+  }
+}

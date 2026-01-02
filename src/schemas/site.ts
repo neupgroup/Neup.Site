@@ -4,6 +4,13 @@ import type { CanvasElementData } from '@/schemas/canvas';
 import type { Path } from '@/actions/paths';
 import type { Redirect } from '@/schemas/redirect';
 
+export interface EnvironmentVariable {
+  id: string;
+  key: string;
+  value: string;
+  type: 'string' | 'number' | 'boolean';
+}
+
 export interface GeneratedTheme {
   light: Record<string, string>;
   dark: Record<string, string>;
@@ -36,6 +43,7 @@ export interface DomainSetting {
   url?: string;
   forceHttps?: boolean;
   proxies?: ProxySetting[];
+  ignoredPaths?: string[];
 }
 
 export interface Site {
@@ -84,10 +92,12 @@ export interface Structure {
   id: string;
   siteId: string;
   structure: PathStructure[];
+  environments: EnvironmentVariable[];
   status: 'deployed' | 'pendingDeployment';
   themeChanged: boolean;
   redirectsChanged: boolean;
   assetsChanged: boolean;
+  environmentsChanged: boolean;
   updatedAt?: string | null;
 }
 
