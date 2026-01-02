@@ -16,7 +16,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { getRedirects, Redirect } from './redirects';
-import { getEnvironmentVariables } from '@/actions/environment';
+import { getEnvironmentVariables } from './environment';
 
 
 /**
@@ -183,7 +183,11 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
       status: 'deployed',
       theme: site?.theme || {},
       redirects: redirects || [],
-      siteProfile: { name: site?.name, logoUrl: site?.logoUrl, hideSitename: site?.hideSitename },
+      siteProfile: { 
+        name: site?.name || '', 
+        logoUrl: site?.logoUrl || null, 
+        hideSitename: site?.hideSitename || false 
+      },
       environments: environments || [],
       attemptedOn: serverTimestamp(),
     });
@@ -288,7 +292,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       // Prepare site profile data
       const siteProfile = {
         name: site?.name || '',
-        logoUrl: site?.logoUrl || '',
+        logoUrl: site?.logoUrl || null,
         hideSitename: site?.hideSitename || false
       };
       
