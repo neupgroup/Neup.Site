@@ -3,13 +3,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -92,44 +85,36 @@ export default function EnvironmentPage() {
         </Button>
       </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Variables</CardTitle>
-          <CardDescription>All environment variables for this site.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="space-y-4">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-            </div>
-          ) : error ? (
-            <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
-          ) : variables.length === 0 ? (
-            <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-                <FileLock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p>No environment variables set yet.</p>
-            </div>
-          ) : (
-             <div className="space-y-2">
-                {variables.map(variable => (
-                    <div key={variable.id} className="p-3 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border">
-                        <div className="flex-1 min-w-0">
-                            <p className="font-mono text-sm">{variable.name}</p>
-                            <p className="font-mono text-xs text-muted-foreground">{variable.isPrivate ? '••••••••••' : variable.value}</p>
-                        </div>
-                        <div className="flex items-center gap-4 self-end sm:self-center">
-                            <span className="text-xs text-muted-foreground capitalize">{variable.dataType}</span>
-                            <Button variant="ghost" size="icon" onClick={() => setVariableToDelete(variable)}>
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                        </div>
+      {loading ? (
+        <div className="space-y-4">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+        </div>
+      ) : error ? (
+        <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
+      ) : variables.length === 0 ? (
+        <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
+            <FileLock className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <p>No environment variables set yet.</p>
+        </div>
+      ) : (
+          <div className="space-y-2">
+            {variables.map(variable => (
+                <div key={variable.id} className="p-3 bg-card border rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                        <p className="font-mono text-sm">{variable.name}</p>
+                        <p className="font-mono text-xs text-muted-foreground">{variable.isPrivate ? '••••••••••' : variable.value}</p>
                     </div>
-                ))}
-             </div>
-          )}
-        </CardContent>
-      </Card>
+                    <div className="flex items-center gap-4 self-end sm:self-center">
+                        <span className="text-xs text-muted-foreground capitalize">{variable.dataType}</span>
+                        <Button variant="ghost" size="icon" onClick={() => setVariableToDelete(variable)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                    </div>
+                </div>
+            ))}
+          </div>
+      )}
     </div>
   );
 }
