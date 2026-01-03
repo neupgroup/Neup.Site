@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getCookie } from '@/lib/session-manager';
 import { useProfile } from '@/context/ProfileContext';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
