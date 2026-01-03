@@ -115,7 +115,7 @@ export default function SwitchPage() {
     const handleSelectSite = async (siteId: string) => {
         const result = await setSiteIdCookie(siteId);
         if (result.success) {
-            toast({ title: 'Site Switched', description: `You are now working on ${siteId}.` });
+            toast({ title: 'Site Switched', description: `You are now working on site: ${siteId}.` });
             router.push('/');
             router.refresh();
         } else {
@@ -132,8 +132,8 @@ export default function SwitchPage() {
     }
     
     return (
-        <div className="w-full max-w-2xl mx-auto">
-            <header className="mb-8 text-center">
+        <div className="w-full">
+            <header className="mb-8">
                 <h1 className="text-3xl font-bold font-headline">Switch Site</h1>
                 <p className="text-muted-foreground">
                     {isAuthenticated ? 'You will be logged out to select a new site.' : 'Choose a site to continue.'}
