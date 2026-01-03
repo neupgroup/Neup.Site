@@ -8,18 +8,10 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // If the user is trying to access the dashboard and doesn't have a siteId,
-  // redirect them to the auth page.
-  if (!siteId && !pathname.startsWith('/auth')) {
+  // redirect them to the /switch page.
+  if (!siteId && !pathname.startsWith('/switch')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/auth'
-    return NextResponse.redirect(url)
-  }
-
-  // If the user is authenticated (has a siteId) and tries to visit the auth page,
-  // redirect them to the dashboard.
-  if (siteId && pathname.startsWith('/auth')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = '/switch'
     return NextResponse.redirect(url)
   }
  
@@ -37,7 +29,8 @@ export const config = {
      * - landing (public landing page)
      * - preview (public preview pages)
      * - any file with a dot (e.g., .png)
+     * - auth (allow old auth path to be deleted)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|landing|preview|.*\\..*).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|landing|preview|auth|.*\\..*).*)',
   ],
 }

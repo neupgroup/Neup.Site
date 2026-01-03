@@ -1,8 +1,8 @@
 
-'use client'
+'use client';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users, Repeat, Network, User, KeyRound } from 'lucide-react';
+import { ArrowRight, Users, Network, User, KeyRound } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function SettingsPage() {
@@ -14,12 +14,6 @@ export default function SettingsPage() {
       description: 'Manage your site profile and contact information.',
       icon: <User className="h-6 w-6 text-primary" />,
       href: '/settings/profile',
-    },
-    {
-      title: 'Switch Account',
-      description: 'Switch to a different site or profile.',
-      icon: <Repeat className="h-6 w-6 text-primary" />,
-      href: '/settings/switch',
     },
     {
       title: 'Accounts',
