@@ -81,66 +81,65 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
     <nav className="flex flex-col gap-2">
       <NavLink href="/" currentPath={currentPath} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
       <NavLink href="/settings" currentPath={currentPath} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></NavLink>
+      <NavLink href="/status" currentPath={currentPath} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></NavLink>
 
-      {isAuthenticated && (
-        <>
-            <div className="mt-4 space-y-2">
-                <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
-                Manage
-                </div>
-                <NavLink href="/manage/members" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></NavLink>
-                <NavLink href="/manage/team" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Teams</span></NavLink>
-                <NavLink href="/manage/hiring" currentPath={currentPath} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></NavLink>
-                <NavLink href="/manage/billing" currentPath={currentPath} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
-                <NavLink href="/manage/permissions" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
-                <NavLink href="/manage/redirects" currentPath={currentPath} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></NavLink>
-                <NavLink href="/manage/contacts" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>
-                <NavLink href="/manage/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
-                <NavLink href="/manage/products" currentPath={currentPath} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></NavLink>
-                <NavLink href="/manage/articles" currentPath={currentPath} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></NavLink>
-                <NavLink href="/manage/referrals" currentPath={currentPath} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></NavLink>
-            </div>
+      {/* TODO: Add permission-based filtering when permissions are implemented */}
+      {/* For now, showing all navigation items regardless of authentication status */}
+      <div className="mt-4 space-y-2">
+        <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+          Manage
+        </div>
+        <NavLink href="/manage/members" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></NavLink>
+        <NavLink href="/manage/team" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Teams</span></NavLink>
+        <NavLink href="/manage/hiring" currentPath={currentPath} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></NavLink>
+        <NavLink href="/manage/billing" currentPath={currentPath} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
+        <NavLink href="/manage/permissions" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
+        <NavLink href="/manage/redirects" currentPath={currentPath} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></NavLink>
+        <NavLink href="/manage/contacts" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>
+        <NavLink href="/manage/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
+        <NavLink href="/manage/products" currentPath={currentPath} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></NavLink>
+        <NavLink href="/manage/articles" currentPath={currentPath} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></NavLink>
+        <NavLink href="/manage/referrals" currentPath={currentPath} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></NavLink>
+      </div>
 
-            <div className="mt-4 space-y-2">
-                <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
-                News
-                </div>
-                <NavLink href="/news" currentPath={currentPath} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>All Articles</span></NavLink>
-                <NavLink href="/news/create" currentPath={currentPath} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
-                <NavLink href="/news/category" currentPath={currentPath} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
-                <NavLink href="/news/featured" currentPath={currentPath} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
-            </div>
+      <div className="mt-4 space-y-2">
+        <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+          News
+        </div>
+        <NavLink href="/news" currentPath={currentPath} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>All Articles</span></NavLink>
+        <NavLink href="/news/create" currentPath={currentPath} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
+        <NavLink href="/news/category" currentPath={currentPath} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
+        <NavLink href="/news/featured" currentPath={currentPath} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
+      </div>
 
-            <div className="mt-4 space-y-2">
-                <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
-                Tourio
-                </div>
-                <NavLink href="/tourio/experience" currentPath={currentPath} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></NavLink>
-                <NavLink href="/tourio/dish" currentPath={currentPath} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></NavLink>
-            </div>
-            
-            {/* Site Section */}
-            <div className="mt-4 space-y-2">
-                <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
-                Site
-                </div>
-                <NavLink href="/site/pages" currentPath={currentPath} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
-                <NavLink href="/site/sources" currentPath={currentPath} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
-                <NavLink href="/site/datalists" currentPath={currentPath} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></NavLink>
-                <NavLink href="/site/servers" currentPath={currentPath} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
-                <NavLink href="/site/modules" currentPath={currentPath} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
-                <NavLink href="/site/uploads" currentPath={currentPath} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></NavLink>
-                <NavLink href="/site/appbase" currentPath={currentPath} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></NavLink>
-                <NavLink href="/site/environment" currentPath={currentPath} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></NavLink>
-                <NavLink href="/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
-                <NavLink href="/site/theme" currentPath={currentPath} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
-                <NavLink href="/site/sections" currentPath={currentPath} onClick={onLinkClick}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
-                <NavLink href="/site/deploy" currentPath={currentPath} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></NavLink>
-                <NavLink href="/site/advanced" currentPath={currentPath} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></NavLink>
-                <NavLink href="/site/codebase" currentPath={currentPath} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></NavLink>
-            </div>
-        </>
-      )}
+      <div className="mt-4 space-y-2">
+        <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+          Tourio
+        </div>
+        <NavLink href="/tourio/experience" currentPath={currentPath} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></NavLink>
+        <NavLink href="/tourio/dish" currentPath={currentPath} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></NavLink>
+      </div>
+
+      {/* Site Section */}
+      <div className="mt-4 space-y-2">
+        <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+          Site
+        </div>
+        <NavLink href="/site/pages" currentPath={currentPath} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
+        <NavLink href="/site/sources" currentPath={currentPath} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
+        <NavLink href="/site/datalists" currentPath={currentPath} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></NavLink>
+        <NavLink href="/site/servers" currentPath={currentPath} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
+        <NavLink href="/site/modules" currentPath={currentPath} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
+        <NavLink href="/site/uploads" currentPath={currentPath} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></NavLink>
+        <NavLink href="/site/appbase" currentPath={currentPath} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></NavLink>
+        <NavLink href="/site/environment" currentPath={currentPath} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></NavLink>
+        <NavLink href="/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
+        <NavLink href="/site/theme" currentPath={currentPath} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
+        <NavLink href="/site/sections" currentPath={currentPath} onClick={onLinkClick}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
+        <NavLink href="/site/deploy" currentPath={currentPath} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></NavLink>
+        <NavLink href="/site/advanced" currentPath={currentPath} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></NavLink>
+        <NavLink href="/site/codebase" currentPath={currentPath} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></NavLink>
+      </div>
 
       {/* Root Section */}
       <div className="mt-4 space-y-2">
@@ -157,14 +156,14 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
         <NavLink href="/root/errors" currentPath={currentPath} onClick={onLinkClick}><Bug className="h-4 w-4" /><span>Errors</span></NavLink>
       </div>
 
-       <div className="mt-auto pt-8">
-            <div className="mt-4 space-y-2">
-                <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
-                Account
-                </div>
-                <NavLink href="/switch" currentPath={currentPath} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></NavLink>
-            </div>
-       </div>
+      <div className="mt-auto pt-8">
+        <div className="mt-4 space-y-2">
+          <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+            Account
+          </div>
+          <NavLink href="/switch" currentPath={currentPath} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></NavLink>
+        </div>
+      </div>
     </nav>
   );
 }
@@ -213,7 +212,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-   useEffect(() => {
+  useEffect(() => {
     // This component is client-side, so we can check for the cookie here.
     const siteId = getCookie('siteId');
     setIsAuthenticated(!!siteId);
