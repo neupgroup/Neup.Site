@@ -163,7 +163,7 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
                 <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
                 Account
                 </div>
-                <NavLink href="/switch" currentPath={currentPath} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch Account</span></NavLink>
+                <NavLink href="/switch" currentPath={currentPath} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></NavLink>
             </div>
        </div>
     </nav>
