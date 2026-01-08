@@ -193,6 +193,7 @@ pm2 save
                 name: "Generate Reverse Proxy Config",
                 description: "Generates and applies an Nginx reverse proxy configuration for a specific path to a target IP and port.",
                 commandTemplate: `<server.generateReverseProxy>{{universal.productionDomain}}</server.generateReverseProxy>`,
+                type: 'updation',
                 danger: 'mid',
                 parameters: [
                     {

@@ -16,6 +16,7 @@ export interface ServerAllocation {
   username?: string;
   deploymentPath?: string;
   storageAllocation: string; // e.g., "1024" for 1024MB
+  port?: number;
   allocatedOn?: string | null;
 }
 
