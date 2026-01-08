@@ -10,6 +10,7 @@ import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
 import { getSite } from './editor/site';
 import type { ServerLog } from '@/schemas/server';
+import { generateReverseProxyBashScript } from './server/management/reverse-proxy-config';
 
 
 function parseCommandTemplate(template: string): { preExecutionScript?: string; bashCommand: string; } {
@@ -42,6 +43,7 @@ export async function runCommand(
         command: 'Preparing to execute...', // Placeholder
         output: `Initiating command...`,
         status: 'pending',
+        initiatedBy: 'system',
     };
 
     if (commandId) {
@@ -93,7 +95,7 @@ export async function runCommand(
         if (accountId) {
             try {
                 const accountsResult = await getLinkedAccounts();
-                if (accountsResult.success && accountsResult.accounts) {
+                if (accountsResult.accounts) {
                     const githubAccount = accountsResult.accounts.find(acc => acc.platform === 'github');
                     if (githubAccount) {
                         githubAccessToken = githubAccount.authorization_info.access_token;
@@ -158,6 +160,32 @@ export async function runCommand(
             commandToExecute = commandToExecute.replace(placeholderRegex, String(value));
         }
 
+        // Process <server.generateReverseProxy> tag
+        const processReverseProxyTag = (command: string, params: Record<string, any>) => {
+            const reverseProxyRegex = /<server\.generateReverseProxy>([\s\S]*?)<\/server\.generateReverseProxy>/;
+            const match = command.match(reverseProxyRegex);
+            if (match) {
+                const domain = match[1].trim();
+                const proxyPath = String(params['path'] || params['proxyPath'] || '/');
+                const proxyIp = String(params['serverIp'] || params['proxyServerIp'] || '');
+                const proxyPort = String(params['port'] || params['proxyPort'] || '');
+
+                let ignoredPaths: string[] = [];
+                const ignoredRaw = params['ignoredPaths'] || params['proxyIgnoredPaths'];
+                if (typeof ignoredRaw === 'string') {
+                    ignoredPaths = ignoredRaw.split(',').map(s => s.trim()).filter(s => s);
+                } else if (Array.isArray(ignoredRaw)) {
+                    ignoredPaths = ignoredRaw.map(String);
+                }
+
+                const script = generateReverseProxyBashScript(domain, proxyPath, proxyIp, proxyPort, ignoredPaths);
+                return command.replace(reverseProxyRegex, script);
+            }
+            return command;
+        };
+
+        commandToExecute = processReverseProxyTag(commandToExecute, allFinalParams);
+
         let loggedCommand = bashCommand;
         const allParamsForLogging = { ...allFinalParams };
         confidentialParamKeys.forEach(key => {
@@ -172,6 +200,8 @@ export async function runCommand(
             const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
             loggedCommand = loggedCommand.replace(placeholderRegex, String(value));
         }
+
+        loggedCommand = processReverseProxyTag(loggedCommand, allParamsForLogging);
 
         // This is the wrapper that handles swap file creation and cleanup
         const finalCommand = `

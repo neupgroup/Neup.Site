@@ -187,6 +187,46 @@ pm2 save
                 danger: 'low'
             }
         },
+        {
+            id: 'generate-reverse-proxy',
+            data: {
+                name: "Generate Reverse Proxy Config",
+                description: "Generates and applies an Nginx reverse proxy configuration for a specific path to a target IP and port.",
+                commandTemplate: `<server.generateReverseProxy>{{universal.productionDomain}}</server.generateReverseProxy>`,
+                danger: 'mid',
+                parameters: [
+                    {
+                        key: 'path',
+                        label: 'Proxy Path',
+                        description: 'The path on the domain to proxy (e.g., / or /api).',
+                        type: 'text',
+                        required: true,
+                        defaultValue: '/'
+                    },
+                    {
+                        key: 'serverIp',
+                        label: 'Target Server IP',
+                        description: 'The IP address of the target server.',
+                        type: 'text',
+                        required: true
+                    },
+                    {
+                        key: 'port',
+                        label: 'Target Port',
+                        description: 'The port on the target server.',
+                        type: 'text',
+                        required: true
+                    },
+                    {
+                        key: 'ignoredPaths',
+                        label: 'Ignored Paths',
+                        description: 'Comma-separated list of paths to exclude from proxying (e.g., /static, /images).',
+                        type: 'text',
+                        required: false
+                    }
+                ]
+            }
+        }
     ];
 
     for (const cmd of commandsToCreate) {
