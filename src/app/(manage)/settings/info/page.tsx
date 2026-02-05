@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle2, XCircle, Server, Globe, Shield, Zap, Folder, HardDrive } from 'lucide-react';
 
+import { SyncPortButton } from './sync-port-button';
+
 export default async function DevSettingsPage() {
     const [serversData, siteData] = await Promise.all([
         getSiteServers(),
@@ -113,7 +115,8 @@ export default async function DevSettingsPage() {
                                                 <Badge variant="outline" className="font-mono">
                                                     Port: {server.allocation.port}
                                                 </Badge>
-                                                <span className="text-xs text-muted-foreground">(Internal Traffic)</span>
+                                                <span className="text-xs text-muted-foreground mr-2">(Internal Traffic)</span>
+                                                <SyncPortButton siteId={site.id} serverId={server.id} />
                                             </div>
                                         </div>
 

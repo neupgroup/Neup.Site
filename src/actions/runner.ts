@@ -11,6 +11,7 @@ import { getLinkedAccounts, getAccountId } from './accounts';
 import { getSite } from './editor/site';
 import type { ServerLog } from '@/schemas/server';
 import { generateReverseProxyBashScript } from './server/management/reverse-proxy-config';
+import { updateAllocationPort } from './allocations';
 
 
 function parseCommandTemplate(template: string): { preExecutionScript?: string; bashCommand: string; } {
@@ -111,6 +112,9 @@ export async function runCommand(
 
         const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || `/var/www/${site?.id}`;
 
+        const productionProxies = site?.domains?.production?.proxies || [];
+        const productionIgnored = site?.domains?.production?.ignoredPaths || [];
+
         const appServerVariables = {
             'universal.server_name': server.name,
             'universal.server_publicIp': server.publicIp,
@@ -123,6 +127,8 @@ export async function runCommand(
             'universal.developmentDomain': site?.domains?.development?.url || '',
             'universal.account_id': accountId || '',
             'universal.account_githubToken': githubAccessToken,
+            'universal.proxy_datas': JSON.stringify(productionProxies),
+            'universal.proxy_ignores': productionIgnored.join(','),
         };
 
         let templateParams = { ...processedParams };
@@ -166,19 +172,56 @@ export async function runCommand(
             const match = command.match(reverseProxyRegex);
             if (match) {
                 const domain = match[1].trim();
-                const proxyPath = String(params['path'] || params['proxyPath'] || '/');
-                const proxyIp = String(params['serverIp'] || params['proxyServerIp'] || '');
-                const proxyPort = String(params['port'] || params['proxyPort'] || '');
 
-                let ignoredPaths: string[] = [];
-                const ignoredRaw = params['ignoredPaths'] || params['proxyIgnoredPaths'];
-                if (typeof ignoredRaw === 'string') {
-                    ignoredPaths = ignoredRaw.split(',').map(s => s.trim()).filter(s => s);
-                } else if (Array.isArray(ignoredRaw)) {
-                    ignoredPaths = ignoredRaw.map(String);
+                let proxies: { path: string; ip: string; port: string }[] = [];
+                try {
+                    if (params['universal.proxy_datas']) {
+                        const parsed = JSON.parse(params['universal.proxy_datas']);
+                        if (Array.isArray(parsed)) {
+                            proxies = parsed;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing universal.proxy_datas:', e);
                 }
 
-                const script = generateReverseProxyBashScript(domain, proxyPath, proxyIp, proxyPort, ignoredPaths);
+                // Fallback or addition for manual params
+                const manualPath = params['path'] || params['proxyPath'];
+                const manualIp = params['serverIp'] || params['proxyServerIp'];
+                const manualPort = params['port'] || params['proxyPort'];
+
+                if (manualIp && manualPort) {
+                    // Only add if not strictly using DB, or if DB is empty
+                    if (proxies.length === 0) {
+                        proxies.push({
+                            path: String(manualPath || '/'),
+                            ip: String(manualIp),
+                            port: String(manualPort)
+                        });
+                    }
+                }
+
+                let ignoredPaths: string[] = [];
+                if (params['universal.proxy_ignores']) {
+                    ignoredPaths = String(params['universal.proxy_ignores']).split(',').filter(Boolean); // No mapping needed for string split
+                }
+
+                const manualIgnored = params['ignoredPaths'] || params['proxyIgnoredPaths'];
+                if (manualIgnored) {
+                    let manualList: string[] = [];
+                    if (Array.isArray(manualIgnored)) {
+                        manualList = manualIgnored.map(String);
+                    } else if (typeof manualIgnored === 'string') {
+                        manualList = manualIgnored.split(',');
+                    }
+                    ignoredPaths = [...new Set([...ignoredPaths, ...manualList])];
+                }
+
+                // Clean up whitespace
+                ignoredPaths = ignoredPaths.map(s => s.trim()).filter(Boolean);
+
+
+                const script = generateReverseProxyBashScript(domain, proxies, ignoredPaths);
                 return command.replace(reverseProxyRegex, script);
             }
             return command;
@@ -187,7 +230,7 @@ export async function runCommand(
         commandToExecute = processReverseProxyTag(commandToExecute, allFinalParams);
 
         let loggedCommand = bashCommand;
-        const allParamsForLogging = { ...allFinalParams };
+        const allParamsForLogging: Record<string, any> = { ...allFinalParams };
         confidentialParamKeys.forEach(key => {
             if (allParamsForLogging[key]) {
                 allParamsForLogging[key] = '********';
@@ -206,6 +249,7 @@ export async function runCommand(
         // This is the wrapper that handles swap file creation and cleanup
         const finalCommand = `
 set -e
+export PATH=$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/bitnami/node/bin:/opt/bitnami/bg
 SWAP_FILE="/command_swapfile"
 
 cleanup() {
@@ -230,6 +274,9 @@ get_available_port() {
     comm -23 <(seq 49152 65535 | sort) <(ss -tan | awk 'NR>1 {print $4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1
 }
 APP_PORT=${allocatesPort ? "$(get_available_port)" : "''"}
+if [ ! -z "$APP_PORT" ]; then
+    echo "::CAPTURED_PORT::$APP_PORT"
+fi
 export APP_PORT
 
 echo ""
@@ -246,6 +293,7 @@ echo ""
         const ssh = new NodeSSH();
         let finalOutput = '';
         let finalStatus: ServerLog['status'] = 'failed';
+        let capturedPort: number | undefined;
 
         try {
             await updateServerLog(logId, { status: 'ongoing', output: `Connecting to ${server.publicIp}...` });
@@ -256,7 +304,15 @@ echo ""
 
             const result = await ssh.execCommand(finalCommand, {
                 onStdout: (chunk) => {
-                    finalOutput += chunk.toString('utf8');
+                    const chunkStr = chunk.toString('utf8');
+                    finalOutput += chunkStr;
+
+                    // Check for captured port
+                    const portMatch = chunkStr.match(/::CAPTURED_PORT::(\d+)/);
+                    if (portMatch) {
+                        capturedPort = parseInt(portMatch[1], 10);
+                    }
+
                     updateServerLog(logId, { output: finalOutput });
                 },
                 onStderr: (chunk) => {
@@ -268,6 +324,10 @@ echo ""
             finalStatus = result.code === 0 ? 'completed' : 'failed';
             if (result.code !== 0) {
                 finalOutput += `\n\n--- COMMAND FAILED ---\nExited with code: ${result.code}`;
+            } else if (capturedPort && site?.id) {
+                // Update allocation with captured port
+                await updateAllocationPort(site.id, serverId, capturedPort);
+                finalOutput += `\n\n--- PORT UPDATED ---\nAllocated port ${capturedPort} saved to site configuration.`;
             }
 
             await updateServerLog(logId, { status: finalStatus, output: finalOutput });

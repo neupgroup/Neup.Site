@@ -5,7 +5,8 @@
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { initializeFirebase } from '@/lib/firebase';
-import type { Structure, PathStructure, Deployment, Site, EnvironmentVariable } from '@/schemas/site';
+import type { Structure, PathStructure, Deployment, Site } from '@/schemas/site';
+import type { EnvironmentVariable } from '@/schemas/environment';
 import { logErrorToFirestore } from '@/lib/logging';
 import { getPages } from './editor/pages';
 import { getSite } from './editor/site';
@@ -15,7 +16,7 @@ import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
-import { getRedirects, Redirect } from './redirects';
+import { getRedirects, getAllRedirects, Redirect } from './redirects';
 import { getEnvironmentVariables } from './environment';
 
 
@@ -170,7 +171,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
     const { site } = await getSite();
     const currentStructure = structureSnap.data() as Structure;
 
-    const redirectsResult = await getRedirects({});
+    const redirectsResult = await getAllRedirects();
     const redirects = redirectsResult.success ? redirectsResult.redirects : [];
     
     const envVarsResult = await getEnvironmentVariables({});
@@ -264,6 +265,8 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
     const baseDir = `${srcDir}/base`;
+    const coreDir = `${baseDir}/core`;
+    const siteDir = `${baseDir}/site`;
 
     const ssh = new NodeSSH();
     let outputLog = `Connecting to ${server.publicIp} to upload data...\n`;
@@ -279,10 +282,10 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       outputLog += `Connected. Preparing server directories...\n`;
       if (logId) await updateServerLog(logId, { output: outputLog });
 
-      await ssh.execCommand(`mkdir -p ${srcDir}`);
-      await ssh.execCommand(`mkdir -p ${dataDir}`);
-      await ssh.execCommand(`mkdir -p ${baseDir}`);
-      outputLog += 'Directories ensured.\n';
+      await ssh.execCommand(`mkdir -p ${srcDir} ${baseDir} ${coreDir} ${siteDir}`);
+      // Clean up old data directory if it exists
+      await ssh.execCommand(`rm -rf ${dataDir}`);
+      outputLog += 'Directories ensured and old data cleaned.\n';
       if (logId) await updateServerLog(logId, { output: outputLog });
 
 
@@ -292,14 +295,14 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       
       const deleteCmd = `rm -f ${envPath}`;
       outputLog += `> ${deleteCmd}\n`;
-      await updateServerLog(logId, { output: outputLog });
+      if (logId) await updateServerLog(logId, { output: outputLog });
       const deleteResult = await ssh.execCommand(deleteCmd);
       if (deleteResult.code !== 0 && deleteResult.stderr) {
         outputLog += `Warning: ${deleteResult.stderr}\n`;
       } else {
         outputLog += 'Old .env file deleted (if it existed).\n';
       }
-      await updateServerLog(logId, { output: outputLog });
+      if (logId) await updateServerLog(logId, { output: outputLog });
 
       if (environments.length > 0) {
         const envContent = environments.map(env => {
@@ -314,7 +317,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
         const createCmd = `sudo bash -c "cat > ${envPath}" <<'EOF'\n${escapedEnvContent}\nEOF`;
         outputLog += `> Writing ${environments.length} variables to ${envPath} using cat heredoc.\n`;
-        await updateServerLog(logId, { output: outputLog });
+        if (logId) await updateServerLog(logId, { output: outputLog });
         
         const createResult = await ssh.execCommand(createCmd);
         
@@ -338,19 +341,19 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         outputLog += '\n--- Preparing local files for upload ---\n';
         if (logId) await updateServerLog(logId, { output: outputLog });
 
-        const redirectsResult = await getRedirects({});
+        const redirectsResult = await getAllRedirects();
         const redirects = redirectsResult.success ? redirectsResult.redirects : [];
         const siteProfile = { name: site?.name || '', logoUrl: site?.logoUrl || null, hideSitename: site?.hideSitename || false };
 
-        const localDataDir = path.join(tempBaseDir, 'data');
-        const localBaseDir = path.join(tempBaseDir, 'base');
-        await fs.mkdir(localDataDir, { recursive: true });
-        await fs.mkdir(localBaseDir, { recursive: true });
+        const localCoreDir = path.join(tempBaseDir, 'core');
+        const localSiteDir = path.join(tempBaseDir, 'site');
+        await fs.mkdir(localCoreDir, { recursive: true });
+        await fs.mkdir(localSiteDir, { recursive: true });
 
         await fs.writeFile(path.join(tempBaseDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
-        await fs.writeFile(path.join(localDataDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
-        await fs.writeFile(path.join(localBaseDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
-        await fs.writeFile(path.join(localDataDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
+        await fs.writeFile(path.join(localSiteDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
+        await fs.writeFile(path.join(localCoreDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
+        await fs.writeFile(path.join(localSiteDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
         
         outputLog += `> Uploading structure.json to ${srcDir}/structure.json...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
@@ -358,16 +361,15 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         outputLog += `structure.json uploaded.\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
 
-        outputLog += `> Uploading data directory to ${dataDir}...\n`;
+        outputLog += `> Uploading core directory to ${coreDir}...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
-        await ssh.putDirectory(localDataDir, dataDir, { recursive: true, concurrency: 1 });
-        outputLog += `data directory uploaded.\n`;
-        if (logId) await updateServerLog(logId, { output: outputLog });
+        await ssh.putDirectory(localCoreDir, coreDir, { recursive: true, concurrency: 1 });
+        outputLog += `core directory uploaded.\n`;
 
-        outputLog += `> Uploading base directory to ${baseDir}...\n`;
+        outputLog += `> Uploading site directory to ${siteDir}...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
-        await ssh.putDirectory(localBaseDir, baseDir, { recursive: true, concurrency: 1 });
-        outputLog += `base directory uploaded.\n`;
+        await ssh.putDirectory(localSiteDir, siteDir, { recursive: true, concurrency: 1 });
+        outputLog += `site directory uploaded.\n`;
 
         const successMsg = outputLog + '\n--- Site data upload complete ---\n';
         console.log(successMsg);

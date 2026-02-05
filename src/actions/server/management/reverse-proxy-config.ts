@@ -1,40 +1,36 @@
 
+export interface ProxyConfig {
+    path: string;
+    ip: string;
+    port: string;
+}
+
 export function generateReverseProxyBashScript(
     domain: string,
-    proxyPath: string,
-    targetIp: string,
-    targetPort: string,
+    proxies: ProxyConfig[],
     ignoredPaths: string[] = []
 ): string {
     const safeDomain = domain.replace(/[^a-zA-Z0-9.-]/g, ''); // Basic sanitization
     const configPath = `/etc/nginx/sites-available/${safeDomain}`;
-    // const enabledPath = `/etc/nginx/sites-enabled/${safeDomain}`; // Not used since we use ln -s -f locally in the script ? No, we need it.
 
-    // Allow overriding protocol if targetIp contains it, else default to http
-    if (!targetIp || !targetPort) {
-        throw new Error('Target IP and Port are required for reverse proxy configuration.');
-    }
-    const protocol = targetIp.startsWith('http') ? '' : 'http://';
-    const upstreamUrl = `${protocol}${targetIp}:${targetPort}`;
-
-    let ignoredLocations = '';
-
-    // Sort ignored paths by length desc to ensure most specific match wins if nginx logic applies, 
-    // though exact match or prefix match order in file matters.
-    // We will place ignored paths BEFORE the main proxy path to ensure they take precedence if they overlap.
-    for (const path of ignoredPaths) {
-        if (!path.trim()) continue;
-        ignoredLocations += `
-    location ${path} {
-        try_files $uri $uri/ =404;
-    }
-`;
+    if (!proxies || proxies.length === 0) {
+        throw new Error('At least one proxy configuration (Path, IP, Port) is required.');
     }
 
-    // Main proxy location
-    // If proxyPath is not root, we need to ensure correct handling
-    const proxyLocation = `
-    location ${proxyPath} {
+    let proxyLocations = '';
+
+    // Sort proxies by path length desc to ensuring specific paths take precedence over root
+    const sortedProxies = [...proxies].sort((a, b) => b.path.length - a.path.length);
+
+    for (const proxy of sortedProxies) {
+        if (!proxy.ip || !proxy.port) {
+            continue; // Skip invalid configs
+        }
+        const protocol = proxy.ip.startsWith('http') ? '' : 'http://';
+        const upstreamUrl = `${protocol}${proxy.ip}:${proxy.port}`;
+
+        proxyLocations += `
+    location ${proxy.path} {
         proxy_pass ${upstreamUrl};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -46,6 +42,17 @@ export function generateReverseProxyBashScript(
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 `;
+    }
+
+    let ignoredLocations = '';
+    for (const path of ignoredPaths) {
+        if (!path.trim()) continue;
+        ignoredLocations += `
+    location ${path} {
+        try_files $uri $uri/ =404;
+    }
+`;
+    }
 
     // Full Config
     const nginxConfig = `server {
@@ -56,7 +63,7 @@ export function generateReverseProxyBashScript(
     index index.html index.htm;
 
     ${ignoredLocations}
-    ${proxyLocation}
+    ${proxyLocations}
 }`;
 
     // Bash Script Creation
@@ -64,7 +71,7 @@ export function generateReverseProxyBashScript(
     // We also include commands to enable and reload
     const script = `
 echo "--- Configuring Reverse Proxy for ${safeDomain} ---"
-echo "Target: ${upstreamUrl}, Path: ${proxyPath}"
+echo "Generating configuration for provided proxies..."
 
 # Remove existing config
 sudo rm -f ${configPath}

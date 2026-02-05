@@ -2,7 +2,7 @@
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users, Network, User, KeyRound } from 'lucide-react';
+import { ArrowRight, Users, Network, User, KeyRound, Terminal } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function SettingsPage() {
@@ -32,6 +32,12 @@ export default function SettingsPage() {
       description: 'Manage your site domains and reverse proxy settings.',
       icon: <Network className="h-6 w-6 text-primary" />,
       href: '/settings/domain',
+    },
+    {
+      title: 'Development Info',
+      description: 'View technical details, server allocation, and ports.',
+      icon: <Terminal className="h-6 w-6 text-primary" />,
+      href: '/settings/info',
     },
   ];
 

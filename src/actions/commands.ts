@@ -102,6 +102,41 @@ echo "--- Deployment Complete ---"
             }
         },
         {
+            id: 'initial-server-setup',
+            data: {
+                name: "Initial Server Setup",
+                description: "Installs Nginx and Certbot, and configures a default redirect to neupgroup.com/cloud.",
+                commandTemplate: `
+<server.ubuntuBashProcessor>
+set -e
+echo "--- Updating package list ---"
+sudo apt-get update
+
+echo "--- Installing Nginx and Certbot ---"
+sudo apt-get install -y nginx certbot python3-certbot-nginx
+
+echo "--- Configuring default catch-all redirect ---"
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo bash -c "cat > /etc/nginx/sites-available/default-catch-all" <<'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    return 301 https://neupgroup.com/cloud;
+}
+EOF
+sudo ln -sf /etc/nginx/sites-available/default-catch-all /etc/nginx/sites-enabled/
+
+echo "--- Restarting Nginx ---"
+sudo systemctl restart nginx
+echo "--- Initial Setup Complete ---"
+</server.ubuntuBashProcessor>
+                `,
+                type: 'creation',
+                danger: 'mid'
+            }
+        },
+        {
             id: 'install-requisites', data: {
                 name: "Install Requisites",
                 description: "Installs Node.js and npm on an Ubuntu server.",

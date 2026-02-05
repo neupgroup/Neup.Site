@@ -120,3 +120,35 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
     return { success: false, error: 'Failed to delete redirect.' };
   }
 }
+
+export async function getAllRedirects(): Promise<{ success: boolean; redirects?: Redirect[]; error?: string }> {
+  const siteId = (await cookies()).get('siteId')?.value;
+  if (!siteId) {
+    return { success: false, error: 'Site context not found.' };
+  }
+
+  try {
+    const { firestore } = initializeFirebase();
+    const redirectsRef = collection(firestore, 'redirects');
+    const q = query(redirectsRef, where('siteId', '==', siteId), orderBy('created_on', 'desc'));
+
+    const querySnapshot = await getDocs(q);
+    const redirects = querySnapshot.docs.map(docSnap => {
+      const data = docSnap.data();
+      const createdOn = data.created_on;
+      return {
+        id: docSnap.id,
+        siteId: data.siteId,
+        from: data.from,
+        to: data.to,
+        type: data.type,
+        created_by: data.created_by,
+        created_on: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+      } as Redirect;
+    });
+    return { success: true, redirects };
+  } catch (e: any) {
+    await logErrorToFirestore({ message: `Failed to get all redirects: ${e.message}`, stack: e.stack, source: 'getAllRedirects' });
+    return { success: false, error: 'Failed to fetch redirects.' };
+  }
+}
