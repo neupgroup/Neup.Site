@@ -5,12 +5,12 @@ import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { getRedirects, deleteRedirect, type Redirect } from '@/actions/redirects';
+import { getRedirects, deleteRedirect, deployRedirects, type Redirect } from '@/actions/redirects';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { CardFooter } from '@/components/ui/card';
@@ -32,6 +32,7 @@ export default function RedirectsPage() {
   const pageSize = 10;
   
   const [isPending, startTransition] = useTransition();
+  const [isDeploying, setIsDeploying] = useTransition();
 
 
   useEffect(() => {
@@ -76,6 +77,17 @@ export default function RedirectsPage() {
     router.push(`${pathname}?${params.toString()}`);
   }
 
+  const handleUpdateOnServer = () => {
+    setIsDeploying(async () => {
+        const result = await deployRedirects();
+        if (result.success) {
+            toast({ title: 'Redirects Updated', description: 'Redirects have been successfully deployed to the server.' });
+        } else {
+            toast({ variant: 'destructive', title: 'Deployment Failed', description: result.error || 'Failed to deploy redirects.' });
+        }
+    });
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
 
@@ -86,11 +98,17 @@ export default function RedirectsPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Redirects</h1>
             <p className="text-muted-foreground">Create and manage URL redirects for your site.</p>
         </div>
-        <Button asChild>
-            <Link href="/manage/redirects/create">
-                <Plus className="mr-2 h-4 w-4" /> Create Redirect
-            </Link>
-        </Button>
+        <div className="flex gap-2">
+            <Button variant="outline" onClick={handleUpdateOnServer} disabled={isDeploying}>
+                <UploadCloud className="mr-2 h-4 w-4" />
+                {isDeploying ? 'Updating...' : 'Update on Server'}
+            </Button>
+            <Button asChild>
+                <Link href="/manage/redirects/create">
+                    <Plus className="mr-2 h-4 w-4" /> Create Redirect
+                </Link>
+            </Button>
+        </div>
       </header>
       
       <div className="space-y-2">

@@ -261,10 +261,11 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       logId = logResult.id;
     }
 
-    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, siteId) || `/var/www/${siteId}`;
+    const username = server.username || 'root';
+    const resolvedAppPath = `/home/${username}/${siteId}`;
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
-    const baseDir = `${srcDir}/base`;
+    const baseDir = `${resolvedAppPath}/base`;
     const coreDir = `${baseDir}/core`;
     const siteDir = `${baseDir}/site`;
 

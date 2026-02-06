@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Server as ServerIcon, Globe, Warehouse, User, Folder, HardDrive, Share2, ServerCrash, RefreshCw, Loader2, Clock, ListTree, Wifi, Cpu, Settings } from 'lucide-react';
+import { Server as ServerIcon, Globe, Warehouse, User, Share2, ServerCrash, RefreshCw, Loader2, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -14,11 +14,6 @@ import { useProfile } from '@/context/ProfileContext';
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
 import { getUptime } from '@/actions/server/management/get-uptime';
-import { getStorageUsage } from '@/actions/server/management/get-storage-usage';
-import { getMemoryUsage } from '@/actions/server/management/get-memory-usage';
-import { configureDefaultNginx } from '@/actions/server/management/configure-default-nginx';
-import { generateNginxConfig } from '@/actions/server/management/generate-nginx-config';
-import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ServerInfoCardProps {
@@ -35,12 +30,8 @@ const DetailItem = ({ icon: Icon, label, children }: { icon: React.ElementType, 
 const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
     const [server] = useState(initialServer);
     const [uptime, setUptime] = useState<string | null>(null);
-    const [storage, setStorage] = useState<{ used: string, total: string, unit: string } | null>(null);
-    const [memory, setMemory] = useState<{ used: number, total: number, unit: string } | null>(null);
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(true);
-    const [isConfigured, setIsConfigured] = useState(initialServer.serverConfigured || false);
-    const [isConfiguring, setIsConfiguring] = useState(false);
 
     const { site } = useProfile();
     const [isPending, startTransition] = useTransition();
@@ -51,82 +42,19 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
         setIsRefreshing(true);
         toast({ title: "Refreshing Server Data..." });
 
-        const [uptimeResult, storageResult, memoryResult] = await Promise.all([
+        const [uptimeResult] = await Promise.all([
             getUptime(server.id),
-            getStorageUsage(server.id),
-            getMemoryUsage(server.id),
         ]);
 
         if (uptimeResult.success) setUptime(uptimeResult.uptime || null);
-        if (storageResult.success) setStorage(storageResult.data || null);
-        if (memoryResult.success) setMemory(memoryResult.data || null);
 
-        if (!uptimeResult.success || !storageResult.success || !memoryResult.success) {
+        if (!uptimeResult.success) {
             toast({ variant: 'destructive', title: "Failed to Refresh Some Data" });
         } else {
             toast({ title: "Server Data Refreshed" });
         }
         setIsRefreshing(false);
     }
-
-    const handleConfigureDefaultNginx = async () => {
-        setIsConfiguring(true);
-        toast({ title: "Configuring Default Nginx...", description: "Creating SSL certificates and setting up redirects" });
-
-        const result = await runCommand(server.id, 'initial-server-setup', {}, 'Initial Server Setup');
-
-        if (result.success && result.finalStatus === 'completed') {
-            setIsConfigured(true);
-            toast({
-                title: "Configuration Successful",
-                description: "Initial server setup has been completed."
-            });
-        } else {
-            setIsConfigured(false);
-            toast({
-                variant: 'destructive',
-                title: "Configuration Failed",
-                description: result.error || "Failed to configure the server."
-            });
-        }
-
-        setIsConfiguring(false);
-    };
-
-    const handleRebuildConfiguration = async () => {
-        if (!site || !site.domains || site.domains.length === 0) {
-            toast({
-                variant: 'destructive',
-                title: 'No Domains Configured',
-                description: 'Please add domains in Settings > Domain before rebuilding configuration'
-            });
-            return;
-        }
-
-        setIsConfiguring(true);
-        toast({
-            title: 'Rebuilding Nginx Configuration...',
-            description: `Generating configuration for ${site.domains.length} domain(s)`
-        });
-
-        const result = await generateNginxConfig(server.id, site.domains);
-
-        if (result.success) {
-            setIsConfigured(true);
-            toast({
-                title: 'Configuration Rebuilt Successfully',
-                description: result.message || 'Nginx configuration has been updated based on your domain settings'
-            });
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Rebuild Failed',
-                description: result.message || result.error || 'Failed to rebuild nginx configuration'
-            });
-        }
-
-        setIsConfiguring(false);
-    };
 
     useEffect(() => {
         handleRefreshAll();
@@ -144,8 +72,6 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
             }
         });
     };
-
-    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || 'N/A';
 
     return (
         <>
@@ -175,79 +101,9 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
                         <DetailItem icon={User} label="Default Username">
                             <p className="font-mono truncate">{server.username || 'N/A'}</p>
                         </DetailItem>
-                        <DetailItem icon={Folder} label="Base Path">
-                            <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(server.basePath || '/')}`} className="font-mono hover:underline text-primary truncate block">
-                                {server.basePath || 'N/A'}
-                            </Link>
-                        </DetailItem>
-                        <DetailItem icon={Folder} label="App Path">
-                            <Link href={`/root/servers/${server.id}/files?path=${encodeURIComponent(resolvedAppPath)}`} className="font-mono hover:underline text-primary truncate block">
-                                {resolvedAppPath}
-                            </Link>
-                        </DetailItem>
                         <DetailItem icon={Clock} label="Uptime">
                             {isRefreshing ? <Skeleton className="h-5 w-32 mt-1" /> : <p className="truncate">{uptime || 'N/A'}</p>}
                         </DetailItem>
-                        <DetailItem icon={HardDrive} label="Storage">
-                            <Link href={`/root/servers/${server.id}/storage`} className="hover:underline text-primary">
-                                {isRefreshing ? <Skeleton className="h-5 w-24 mt-1" /> : (storage ? `${storage.used}${storage.unit} / ${storage.total}${storage.unit}` : 'Click to view')}
-                            </Link>
-                        </DetailItem>
-                        <DetailItem icon={Cpu} label="Processes (RAM)">
-                            <Link href={`/root/servers/${server.id}/processes`} className="hover:underline text-primary">
-                                {isRefreshing ? <Skeleton className="h-5 w-24 mt-1" /> : (memory ? `${memory.used}${memory.unit} / ${memory.total}${memory.unit}` : 'Click to view')}
-                            </Link>
-                        </DetailItem>
-                        <DetailItem icon={Wifi} label="Network">
-                            <Link href={`/root/servers/${server.id}/network`} className="hover:underline text-primary">
-                                View active connections
-                            </Link>
-                        </DetailItem>
-                    </div>
-
-                    <Separator className="my-4" />
-
-                    {/* Configuration Section */}
-                    <div className="space-y-3">
-                        <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
-                            <Settings className="h-4 w-4" />
-                            Configuration
-                        </h4>
-                        <div className="flex items-center justify-between gap-4 p-3 border rounded-lg bg-muted/30">
-                            <div className="flex items-center gap-3">
-                                <span className="text-sm font-medium">Initial Setup:</span>
-                                {isConfigured ? (
-                                    <Badge variant="default" className="bg-green-600 hover:bg-green-700">
-                                        Completed
-                                    </Badge>
-                                ) : (
-                                    <Badge variant="secondary">Not Completed</Badge>
-                                )}
-                            </div>
-                            <div>
-                                {!isConfigured ? (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleConfigureDefaultNginx}
-                                        disabled={isConfiguring}
-                                    >
-                                        {isConfiguring ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Settings className="mr-2 h-4 w-4" />}
-                                        Run Initial Setup
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleRebuildConfiguration}
-                                        disabled={isConfiguring}
-                                    >
-                                        {isConfiguring ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                                        Rebuild Nginx Config
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
                     </div>
 
                     {server.expiresOn && (
@@ -319,12 +175,7 @@ ServerInfoCard.Skeleton = function ServerInfoCardSkeleton() {
                     <DetailItemSkeleton icon={Globe} label="Public IP" skeletonWidth="w-36" />
                     <DetailItemSkeleton icon={Warehouse} label="Provider" />
                     <DetailItemSkeleton icon={User} label="Default Username" skeletonWidth="w-24" />
-                    <DetailItemSkeleton icon={Folder} label="Base Path" />
-                    <DetailItemSkeleton icon={Folder} label="App Path" />
                     <DetailItemSkeleton icon={Clock} label="Uptime" />
-                    <DetailItemSkeleton icon={HardDrive} label="Storage" />
-                    <DetailItemSkeleton icon={Cpu} label="Processes (RAM)" />
-                    <DetailItemSkeleton icon={Wifi} label="Network" />
                 </div>
             </CardContent>
             <CardFooter className="flex flex-wrap gap-2">

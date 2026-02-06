@@ -36,8 +36,6 @@ export interface Server {
   provider?: string;
   isPrivate?: boolean;
   username?: string;
-  basePath?: string;
-  appPath?: string;
   storageUsed?: string;
   storageTotal?: string;
   storageUnit?: string;

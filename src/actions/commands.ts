@@ -41,9 +41,10 @@ set -e
 echo "--- Starting Application Deployment ---"
 
 APP_NAME="{{universal.site_id}}"
+APP_PATH="/home/$(whoami)/{{universal.site_id}}"
 
-echo "--- Step 1: Navigating to application directory {{universal.server_appPath}} ---"
-cd {{universal.server_appPath}}
+echo "--- Step 1: Navigating to application directory $APP_PATH ---"
+cd $APP_PATH
 
 echo "--- Step 2: Cleaning old dependencies ---"
 rm -rf node_modules
@@ -150,7 +151,7 @@ echo "--- Initial Setup Complete ---"
             data: {
                 name: "Install Packages",
                 description: "Runs 'npm install' in the application directory.",
-                commandTemplate: `cd {{universal.server_appPath}} && npm install`,
+                commandTemplate: `cd /home/$(whoami)/{{universal.site_id}} && npm install`,
                 type: 'updation',
                 danger: 'low'
             }
@@ -160,7 +161,7 @@ echo "--- Initial Setup Complete ---"
             data: {
                 name: "Build App",
                 description: "Clean build: removes node_modules and .next, then runs npm install and build.",
-                commandTemplate: `cd {{universal.server_appPath}} && echo "Cleaning old build..." && rm -rf .next node_modules && echo "Installing dependencies..." && npm install && echo "Building application..." && NODE_OPTIONS="--max_old_space_size=4096" npm run build`,
+                commandTemplate: `cd /home/$(whoami)/{{universal.site_id}} && echo "Cleaning old build..." && rm -rf .next node_modules && echo "Installing dependencies..." && npm install && echo "Building application..." && NODE_OPTIONS="--max_old_space_size=4096" npm run build`,
                 type: 'updation',
                 danger: 'low',
                 nextCommands: ['restart-app'] // Automatically restart app after successful build
@@ -171,7 +172,7 @@ echo "--- Initial Setup Complete ---"
                 name: "Start App & Configure Proxy",
                 description: "Deletes old PM2 instances, starts a new one on an available port, saves it, and configures Nginx with an SSL redirect.",
                 commandTemplate: `
-cd {{universal.server_appPath}}
+cd /home/$(whoami)/{{universal.site_id}}
 (pm2 list | grep -q '{{universal.site_id}}' && pm2 delete '{{universal.site_id}}') || echo "No old processes to delete."
 pm2 start "npm start -- -p {{universal.app_port}}" --name "{{universal.site_id}}" --update-env --time
 pm2 save
@@ -214,7 +215,7 @@ sudo systemctl reload nginx
                 name: "Restart App",
                 description: "Restarts the PM2 process for the application.",
                 commandTemplate: `
-cd {{universal.server_appPath}}
+cd /home/$(whoami)/{{universal.site_id}}
 pm2 restart {{universal.site_id}} || echo "Process not found, starting fresh..."
 pm2 save
             `,

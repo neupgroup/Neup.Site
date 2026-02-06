@@ -59,7 +59,7 @@ export function generateReverseProxyBashScript(
     listen 80;
     server_name ${safeDomain};
 
-    root /var/www/${safeDomain};
+    root /home/$(whoami)/${safeDomain};
     index index.html index.htm;
 
     ${ignoredLocations}
