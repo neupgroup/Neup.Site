@@ -57,7 +57,7 @@ export async function deployCodebaseFromStorage(): Promise<{ success: boolean; e
       return { success: false, error: 'Could not resolve site context for deployment.' };
     }
 
-    const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site.id) || `/var/www/${site.id}`;
+    const resolvedAppPath = `/home/${server.username || 'root'}/${site.id}`;
 
     // 3. Create initial log entry
     const createLogResult = await createServerLog({

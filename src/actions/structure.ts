@@ -266,8 +266,8 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
     const baseDir = `${resolvedAppPath}/base`;
-    const coreDir = `${baseDir}/core`;
-    const siteDir = `${baseDir}/site`;
+    const coreDir = `${resolvedAppPath}/base/core`;
+    const siteDir = `${resolvedAppPath}/base/site`;
 
     const ssh = new NodeSSH();
     let outputLog = `Connecting to ${server.publicIp} to upload data...\n`;
@@ -356,9 +356,9 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         await fs.writeFile(path.join(localCoreDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
         await fs.writeFile(path.join(localSiteDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
         
-        outputLog += `> Uploading structure.json to ${srcDir}/structure.json...\n`;
+        outputLog += `> Uploading structure.json to ${baseDir}/structure.json...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
-        await ssh.putFile(path.join(tempBaseDir, 'structure.json'), `${srcDir}/structure.json`);
+        await ssh.putFile(path.join(tempBaseDir, 'structure.json'), `${baseDir}/structure.json`);
         outputLog += `structure.json uploaded.\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });
 
