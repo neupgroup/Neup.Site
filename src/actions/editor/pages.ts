@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from '@/lib/firestore';
 import {
   collection,
   addDoc,
@@ -16,13 +16,13 @@ import {
   where,
   writeBatch,
   limit,
-} from 'firebase/firestore';
-import { logErrorToFirestore } from '@/lib/logging';
+} from '@/lib/firestore';
+import { logErrorToDatabase } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/schemas/site';
-import { initializeFirebase } from '@/lib/firebase';
+import { getDataStore } from '@/lib/data-store';
 import { getPathsForPage } from '../paths';
 import { markStructureAsPending } from '../structure';
 
@@ -32,7 +32,7 @@ export async function createPage(type: Page['type'] = 'editor') {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'pages'), {
       siteId: siteId,
       name: 'New Page',
@@ -43,7 +43,7 @@ export async function createPage(type: Page['type'] = 'editor') {
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to create page: ${error.message}`,
       stack: error.stack,
       source: 'createPage',
@@ -58,7 +58,7 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const pageRef = doc(firestore, 'pages', id);
     const pageSnap = await getDoc(pageRef);
     if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
@@ -82,7 +82,7 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
 
     return { success: true, id };
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to save page ${id}: ${error.message}`,
       stack: error.stack,
       source: 'savePage',
@@ -97,7 +97,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(
       collection(firestore, 'pages'),
       where('__name__', '==', id),
@@ -131,7 +131,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
     return { success: true, page };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to fetch page with ID ${id}: ${error.message}`,
       stack: error.stack,
       source: 'getPage',
@@ -149,7 +149,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, 'pages'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
 
@@ -174,7 +174,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
     }));
     return { success: true, pages };
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to fetch pages: ${error.message}`,
       stack: error.stack,
       source: 'getPages',
@@ -194,7 +194,7 @@ export async function deletePage(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const batch = writeBatch(firestore);
 
     const pageRef = doc(firestore, 'pages', id);
@@ -224,7 +224,7 @@ export async function deletePage(id: string) {
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to delete page with ID ${id}: ${error.message}`,
       stack: error.stack,
       source: 'deletePage',

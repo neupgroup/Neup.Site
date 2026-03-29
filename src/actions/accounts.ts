@@ -1,9 +1,9 @@
 
 'use server';
 
-import { getFirestore, collection, query, where, getDocs, deleteDoc, doc, Timestamp } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getFirestore, collection, query, where, getDocs, deleteDoc, doc, Timestamp } from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
@@ -44,7 +44,7 @@ export async function getLinkedAccounts(): Promise<{ accounts?: LinkedAccount[],
         return { accounts: [] };
     }
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const q = query(collection(firestore, 'linked_accounts'), where('account_id', '==', accountId));
         const querySnapshot = await getDocs(q);
         const accounts = querySnapshot.docs.map(docSnap => {
@@ -57,7 +57,7 @@ export async function getLinkedAccounts(): Promise<{ accounts?: LinkedAccount[],
         });
         return { accounts };
     } catch (e: any) {
-        await logErrorToFirestore({
+        await logErrorToDatabase({
             message: `Failed to get linked accounts for user ${accountId}: ${e.message}`,
             stack: e.stack,
             source: 'getLinkedAccounts',
@@ -72,7 +72,7 @@ export async function deleteLinkedAccount(id: string): Promise<{ success: boolea
         return { success: false, error: 'User not authenticated.' };
     }
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = doc(firestore, 'linked_accounts', id);
         // Optional: You might want to verify ownership before deleting
         // const docSnap = await getDoc(docRef);
@@ -82,7 +82,7 @@ export async function deleteLinkedAccount(id: string): Promise<{ success: boolea
         await deleteDoc(docRef);
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({
+        await logErrorToDatabase({
             message: `Failed to delete linked account ${id} for user ${accountId}: ${e.message}`,
             stack: e.stack,
             source: 'deleteLinkedAccount',

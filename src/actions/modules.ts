@@ -1,11 +1,11 @@
 
 'use server';
 
-import { getFirestore, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, Timestamp } from '@/lib/firestore';
 import { cookies } from 'next/headers';
 import type { Site } from '@/schemas/site';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export interface SiteModule {
   active: boolean;
@@ -26,7 +26,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const siteRef = doc(firestore, 'sites', siteId);
     const docSnap = await getDoc(siteRef);
 
@@ -50,7 +50,7 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
 
     return { success: true, modules };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get site modules: ${e.message}`, stack: e.stack, source: 'getSiteModules' });
+    await logErrorToDatabase({ message: `Failed to get site modules: ${e.message}`, stack: e.stack, source: 'getSiteModules' });
     return { success: false, error: 'Failed to fetch site modules.' };
   }
 }
@@ -64,7 +64,7 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const siteRef = doc(firestore, 'sites', siteId);
     const key = `modules.${moduleId}`;
 
@@ -86,7 +86,7 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateSiteModule' });
+    await logErrorToDatabase({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateSiteModule' });
     return { success: false, error: 'Failed to update module.' };
   }
 }

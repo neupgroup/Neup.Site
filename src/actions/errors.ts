@@ -1,8 +1,8 @@
 
 'use server';
 
-import { getFirestore, collection, getDocs, orderBy, query, limit, getCountFromServer, startAfter, DocumentSnapshot, doc, getDoc } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+import { getFirestore, collection, getDocs, orderBy, query, limit, getCountFromServer, startAfter, DocumentSnapshot, doc, getDoc } from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 
 export interface ErrorLog {
     id: string;
@@ -14,7 +14,7 @@ export interface ErrorLog {
 
 export async function getErrorLogsAction({ page = 1, pageSize = 10 }: { page?: number, pageSize?: number }): Promise<{ logs?: ErrorLog[], error?: string, totalCount?: number }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const logsRef = collection(firestore, 'errors');
         
         const countSnapshot = await getCountFromServer(logsRef);
@@ -50,7 +50,7 @@ export async function getErrorLogsAction({ page = 1, pageSize = 10 }: { page?: n
 
 export async function getErrorLogById(id: string): Promise<{ log?: ErrorLog, error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = doc(firestore, 'errors', id);
         const docSnap = await getDoc(docRef);
 

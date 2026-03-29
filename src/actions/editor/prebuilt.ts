@@ -5,7 +5,7 @@ import { getPage } from '@/actions/editor/pages';
 import { getTemplates } from '@/actions/editor/templates';
 import { getSections } from '@/actions/editor/sections';
 import type { CanvasElementData } from '@/schemas/canvas';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export interface LibraryItem {
     id: string;
@@ -82,7 +82,7 @@ export async function getPrebuiltEditorData(id: string): Promise<{ success: bool
         return { success: true, data: { pageElements, libraryItems: combinedLibrary } };
 
     } catch (e: any) {
-        await logErrorToFirestore({
+        await logErrorToDatabase({
             message: e.message,
             stack: e.stack,
             source: 'getPrebuiltEditorData',

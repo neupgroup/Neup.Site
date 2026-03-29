@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export async function readFileContent(serverId: string, filePath: string): Promise<{ success: boolean; content?: string | null; error?: string }> {
   const ssh = new NodeSSH();
@@ -37,7 +37,7 @@ export async function readFileContent(serverId: string, filePath: string): Promi
     return { success: true, content: result.stdout };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to read file content for server ${serverId} at path ${filePath}: ${error.message}`,
       stack: error.stack,
       source: 'readFileContent',

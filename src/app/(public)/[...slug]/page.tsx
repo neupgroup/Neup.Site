@@ -1,14 +1,14 @@
 
 
-import { collection, query, where, getDocs, limit, doc, getDoc, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, doc, getDoc, orderBy } from '@/lib/firestore';
 import { convertJsonToHtml } from '@/lib/json-to-html';
-import { initializeFirebase } from '@/lib/firebase';
+import { getDataStore } from '@/lib/data-store';
 import { NextResponse } from 'next/server';
 import { cookies, headers } from 'next/headers';
 import type { Redirect } from '@/schemas/redirect';
 
 async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
-  const { firestore } = initializeFirebase();
+  const { firestore } = getDataStore();
   const incomingPath = `/${slug.join('/')}`;
 
   // Query for all redirects on the site. In a high-traffic app, this would be cached.
@@ -61,7 +61,7 @@ async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
 async function getPageForPath(slug: string[]): Promise<{ html: string | null, theme?: { primary?: string, accent?: string } }> {
   const path = `/${slug.join('/')}`;
 
-  const { firestore } = initializeFirebase();
+  const { firestore } = getDataStore();
 
   try {
     const pathsRef = collection(firestore, 'paths');

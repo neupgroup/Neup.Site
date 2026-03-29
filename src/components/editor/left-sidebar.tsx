@@ -11,7 +11,7 @@ import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box,
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Template } from '@/schemas/template';
 import { cn } from '@/lib/utils';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import Link from 'next/link';
 import { getTemplates } from '@/actions/editor/templates';
 import { Skeleton } from '../ui/skeleton';
@@ -211,7 +211,7 @@ const TemplateLibrary = ({ addGeneratedElement }: { addGeneratedElement: (elemen
         }
       } catch (e: any) {
         setError('An unexpected error occurred.');
-        logErrorToFirestore({ message: e.message, stack: e.stack });
+        logErrorToDatabase({ message: e.message, stack: e.stack });
       } finally {
         setLoading(false);
       }

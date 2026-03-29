@@ -1,0 +1,444 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Site {
+  id             String                 @id
+  name           String                 @default("")
+  url            String?
+  tier           String                 @default("free")
+  logoUrl        String?
+  hideSitename   Boolean                @default(false)
+  hideLogo       Boolean                @default(false)
+  description    String?
+  socialProfiles Json?
+  contactEmail   Json?
+  contactPhone   Json?
+  modules        Json?
+  theme          Json?
+  icons          Json?
+  domains        Json?
+  ownerAccountId String?
+  status         String?
+  type           String?
+  createdAt      DateTime?
+  updatedAt      DateTime?
+  pages          Page[]
+  paths          PagePath[]
+  sections       Section[]
+  datalists      Datalist[]
+  sources        DataSource[]
+  environments   EnvironmentVariable[]
+  redirects      Redirect[]
+  codeFiles      CodeFile[]
+  allocations    Allocation[]
+  structures     SiteStructure[]
+  deployments    Deployment[]
+  appBaseBackups AppBaseBackup[]
+
+  @@index([ownerAccountId])
+  @@map("sites")
+}
+
+model Page {
+  id                 String                  @id @default(cuid())
+  siteId             String
+  name               String                  @default("")
+  elements           Json?
+  reactComponent     String?
+  type               String                  @default("editor")
+  createdAt          DateTime?
+  updatedAt          DateTime?
+  site               Site                    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  paths              PagePath[]
+  dataSourceBindings PageDataSourceBinding[]
+
+  @@index([siteId])
+  @@map("pages")
+}
+
+model PagePath {
+  id        String   @id @default(cuid())
+  siteId    String
+  pageId    String
+  path      String
+  createdAt DateTime?
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, path])
+  @@index([pageId])
+  @@map("paths")
+}
+
+model Section {
+  id        String   @id @default(cuid())
+  siteId    String
+  name      String
+  type      String
+  content   String
+  source    String   @default("json")
+  createdBy String
+  createdAt DateTime?
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId])
+  @@map("sections")
+}
+
+model Template {
+  id         String   @id @default(cuid())
+  name       String
+  description String?
+  imageUrl   String?
+  previewUrl String?
+  category   String?
+  type       String   @default("section")
+  status     String   @default("draft")
+  usableOn   Json?
+  content    Json?
+  createdBy  String   @default("user")
+  createdAt  DateTime?
+
+  @@map("templates")
+}
+
+model DataSource {
+  id        String                  @id @default(cuid())
+  siteId    String
+  name      String
+  type      String
+  methods   Json?
+  url       String?
+  headers   Json?
+  connection String?
+  data      Json?
+  datalistId String?
+  createdAt DateTime?
+  site      Site                    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  bindings  PageDataSourceBinding[]
+
+  @@index([siteId])
+  @@map("sources")
+}
+
+model PageDataSourceBinding {
+  id         String     @id
+  siteId     String
+  pageId     String
+  sourceId   String
+  methodName String
+  page       Page       @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  source     DataSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, pageId])
+  @@map("page_data_sources")
+}
+
+model Datalist {
+  id        String   @id @default(cuid())
+  siteId    String
+  name      String
+  data      String
+  createdAt DateTime?
+  updatedAt DateTime?
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId])
+  @@map("datalists")
+}
+
+model Redirect {
+  id         String   @id @default(cuid())
+  siteId     String
+  from       String
+  to         String
+  type       String
+  created_by String
+  created_on DateTime?
+  site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, created_on])
+  @@map("redirects")
+}
+
+model EnvironmentVariable {
+  id        String   @id @default(cuid())
+  siteId    String
+  name      String
+  value     String
+  dataType  String
+  isPrivate Boolean  @default(false)
+  createdBy String
+  createdOn DateTime?
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, createdOn])
+  @@map("environments")
+}
+
+model SiteStructure {
+  id                  String   @id
+  siteId              String   @unique
+  structure           Json?
+  status              String
+  themeChanged        Boolean  @default(false)
+  redirectsChanged    Boolean  @default(false)
+  assetsChanged       Boolean  @default(false)
+  appBaseChanged      Boolean  @default(false)
+  environmentsChanged Boolean  @default(false)
+  updatedAt           DateTime?
+  site                Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@map("structure")
+}
+
+model Deployment {
+  id          String   @id @default(cuid())
+  siteId      String
+  structure   Json?
+  status      String
+  theme       Json?
+  redirects   Json?
+  siteProfile Json?
+  environments Json?
+  attemptedOn DateTime?
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, status, attemptedOn])
+  @@map("deployments")
+}
+
+model Server {
+  id                       String       @id @default(cuid())
+  name                     String
+  publicIp                 String
+  privateIp                String?
+  privateKey               String?
+  serverType               String?
+  platform                 String?
+  provider                 String?
+  isPrivate                Boolean?
+  username                 String?
+  basePath                 String?
+  appPath                  String?
+  storageUsed              String?
+  storageTotal             String?
+  storageUnit              String?
+  portsOpen                Json?
+  serverConfigured         Boolean      @default(false)
+  defaultNginxConfigStatus String?
+  createdOn                DateTime?
+  expiresOn                DateTime?
+  allocations              Allocation[]
+  logs                     ServerLog[]
+
+  @@map("servers")
+}
+
+model Allocation {
+  id               String   @id @default(cuid())
+  serverId         String
+  siteId           String
+  username         String?
+  deploymentPath   String?
+  storageAllocation String?
+  port             Int?
+  allocatedStorage Int?
+  allocatedOn      DateTime?
+  status           String   @default("active")
+  server           Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  site             Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, serverId])
+  @@map("allocations")
+}
+
+model ServerLog {
+  id          String   @id @default(cuid())
+  serverId    String
+  commandId   String?
+  commandName String?
+  command     String
+  output      String
+  status      String
+  initiatedBy String
+  initiatedAt DateTime?
+  completedAt DateTime?
+  server      Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId, initiatedAt])
+  @@map("serverLogs")
+}
+
+model ServerCommand {
+  id                String   @id @default(cuid())
+  name              String
+  description       String?
+  commandTemplate   String
+  parameters        Json?
+  preExecutionScript String?
+  allocatesPort     Boolean  @default(false)
+  portToReserve     String?
+  type              String   @default("view")
+  danger            String   @default("low")
+  nextCommands      Json?
+  createdAt         DateTime?
+
+  @@map("serverCommands")
+}
+
+model CodeFile {
+  id        String   @id @default(cuid())
+  siteId    String
+  fileName  String
+  filePath  String
+  content   String
+  size      Int      @default(0)
+  createdAt DateTime?
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, createdAt])
+  @@map("codeFiles")
+}
+
+model LinkedAccount {
+  id               String   @id @default(cuid())
+  account_id       String
+  platform         String
+  accessToken      String
+  refreshToken     String?
+  scope            String
+  providerUserId   String
+  providerUsername String
+  authorized_on    DateTime?
+
+  @@index([account_id, platform])
+  @@unique([account_id, platform, providerUserId])
+  @@map("linked_accounts")
+}
+
+model ApiToken {
+  id          String   @id @default(cuid())
+  accountId   String
+  name        String
+  tokenHash   String
+  tokenPrefix String
+  createdAt   DateTime?
+  lastUsed    DateTime?
+
+  @@index([accountId, createdAt])
+  @@map("api_tokens")
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  order       Int?
+  members     Member[]
+
+  @@map("teams")
+}
+
+model Member {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  role        String
+  imageUrl    String?
+  permissions Json?
+  teams       Team[]
+
+  @@map("members")
+}
+
+model JobPosting {
+  id             String      @id @default(cuid())
+  title          String
+  location       String?
+  type           String?
+  description    String?
+  status         String
+  qualifications Json?
+  salary         String?
+  openings       Int?
+  createdAt      DateTime?
+  updatedAt      DateTime?
+  applicants     Applicant[]
+
+  @@map("hiring")
+}
+
+model Applicant {
+  id          String     @id @default(cuid())
+  jobId       String
+  name        String
+  email       String
+  resumeUrl   String?
+  coverLetter String?
+  status      String
+  appliedAt   DateTime?
+  job         JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, appliedAt])
+  @@map("applicants")
+}
+
+model ErrorLog {
+  id             String   @id @default(cuid())
+  message        String
+  stack          String?
+  componentStack String?
+  source         String?
+  details        String?
+  timestamp      DateTime @default(now())
+
+  @@index([timestamp])
+  @@map("errors")
+}
+
+model AppBaseBackup {
+  id         String   @id @default(cuid())
+  siteId     String
+  fileName   String
+  fileType   String
+  content    String
+  backedUpAt DateTime?
+  backedUpBy String
+  site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId, backedUpAt])
+  @@map("appBaseBackups")
+}
+
+model NewsArticle {
+  id          String   @id
+  slug        String?
+  title       String
+  content     String
+  author      String
+  imageUrl    String?
+  publishedAt DateTime?
+  createdAt   DateTime?
+  updatedAt   DateTime?
+
+  @@map("news")
+}
+
+model SyncerLog {
+  id         String   @id @default(cuid())
+  appId      String?  @map("app_id")
+  clientId   String?  @map("client_id")
+  type       String
+  content    String
+  createdOn  DateTime? @map("created_on")
+  status     String?
+
+  @@index([appId, clientId, type, createdOn])
+  @@map("syncer_log")
+}

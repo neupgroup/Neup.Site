@@ -12,10 +12,10 @@ import {
   serverTimestamp,
   addDoc,
   query,
-} from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+} from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 import { revalidatePath } from 'next/cache';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export interface Applicant {
   id: string;
@@ -30,7 +30,7 @@ export interface Applicant {
 
 export async function createApplicant(jobId: string, data: Partial<Omit<Applicant, 'id' | 'jobId' | 'status' | 'appliedAt'>>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, `hiring/${jobId}/applicants`), {
       ...data,
       jobId,
@@ -40,14 +40,14 @@ export async function createApplicant(jobId: string, data: Partial<Omit<Applican
     revalidatePath(`/manage/hiring/${jobId}/applicants`);
     return { success: true, id: docRef.id };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to create applicant for job ${jobId}: ${e.message}`, stack: e.stack, source: 'createApplicant' });
+    await logErrorToDatabase({ message: `Failed to create applicant for job ${jobId}: ${e.message}`, stack: e.stack, source: 'createApplicant' });
     return { success: false, error: 'Failed to create applicant.' };
   }
 }
 
 export async function getApplicantsForJob(jobId: string): Promise<{ success: boolean; applicants?: Applicant[]; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, `hiring/${jobId}/applicants`));
     const querySnapshot = await getDocs(q);
     const applicants = querySnapshot.docs.map(docSnap => {
@@ -66,7 +66,7 @@ export async function getApplicantsForJob(jobId: string): Promise<{ success: boo
     });
     return { success: true, applicants };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get applicants for job ${jobId}: ${e.message}`, stack: e.stack, source: 'getApplicantsForJob' });
+    await logErrorToDatabase({ message: `Failed to get applicants for job ${jobId}: ${e.message}`, stack: e.stack, source: 'getApplicantsForJob' });
     return { success: false, error: 'Failed to fetch applicants.' };
   }
 }

@@ -1,10 +1,10 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, where, serverTimestamp, Timestamp, getDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, where, serverTimestamp, Timestamp, getDoc } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 import { markStructureAsPending } from './structure';
 
 export interface Path {
@@ -28,7 +28,7 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
 
     // Check if path already exists for this site
     const q = query(collection(firestore, 'paths'), where('siteId', '==', siteId), where('path', '==', path));
@@ -48,7 +48,7 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
 
     return { success: true, id: docRef.id };
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to add path: ${error.message}`,
       stack: error.stack,
       source: 'addPath',
@@ -66,7 +66,7 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, 'paths'), where('siteId', '==', siteId), where('pageId', '==', pageId));
     const querySnapshot = await getDocs(q);
     const paths = querySnapshot.docs.map(docSnap => {
@@ -82,7 +82,7 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
     });
     return { success: true, paths };
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to fetch paths for page ${pageId}: ${error.message}`,
       stack: error.stack,
       source: 'getPathsForPage',
@@ -100,7 +100,7 @@ export async function deletePath(id: string): Promise<{ success: boolean; error?
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const pathRef = doc(firestore, 'paths', id);
     const pathSnap = await getDoc(pathRef);
     if (!pathSnap.exists() || pathSnap.data().siteId !== siteId) {
@@ -113,7 +113,7 @@ export async function deletePath(id: string): Promise<{ success: boolean; error?
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to delete path ${id}: ${error.message}`,
       stack: error.stack,
       source: 'deletePath',

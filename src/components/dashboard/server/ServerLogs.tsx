@@ -10,7 +10,7 @@ import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } 
 import { getServerLogs } from '@/actions/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -32,7 +32,7 @@ const ServerLogs = ({ serverId }: { serverId: string }) => {
         } else {
             const errorMessage = result.error || 'Failed to load logs.';
             setLogsError(errorMessage);
-            logErrorToFirestore({
+            logErrorToDatabase({
                 message: `Client-side error in fetchLogs for serverId: ${serverId}. Error: ${errorMessage}`,
                 stack: new Error().stack,
                 source: 'ServerLogs.fetchLogs',

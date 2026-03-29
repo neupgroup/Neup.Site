@@ -1,9 +1,9 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query, where } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query, where } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { initializeFirebase } from '@/lib/firebase';
+import { getDataStore } from '@/lib/data-store';
 import type { Datalist } from '@/schemas/datalist';
 
 /**
@@ -15,7 +15,7 @@ export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'create
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'datalists'), {
       ...datalistData,
       siteId,
@@ -37,7 +37,7 @@ export async function getDatalists(): Promise<{ success: boolean; datalists?: Da
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, 'datalists'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const datalists = querySnapshot.docs.map(docSnap => {
@@ -62,7 +62,7 @@ export async function getDatalist(id: string): Promise<{ success: boolean; datal
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = doc(firestore, 'datalists', id);
     const docSnap = await getDoc(docRef);
 
@@ -94,7 +94,7 @@ export async function updateDatalist(id: string, datalistData: Partial<Omit<Data
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = doc(firestore, 'datalists', id);
     const docSnap = await getDoc(docRef);
 
@@ -122,7 +122,7 @@ export async function deleteDatalist(id: string): Promise<{ success: boolean; er
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = doc(firestore, 'datalists', id);
     const docSnap = await getDoc(docRef);
 

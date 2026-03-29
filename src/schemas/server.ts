@@ -36,9 +36,13 @@ export interface Server {
   provider?: string;
   isPrivate?: boolean;
   username?: string;
+  basePath?: string;
+  appPath?: string;
   storageUsed?: string;
   storageTotal?: string;
   storageUnit?: string;
+  portsOpen?: UsedPort[];
+  usedPorts?: UsedPort[];
   serverConfigured?: boolean;
   defaultNginxConfigStatus?: 'configured' | 'not-configured' | 'cancelled' | 'ongoing';
   createdOn?: string | null;

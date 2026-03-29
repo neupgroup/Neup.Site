@@ -14,7 +14,7 @@ import { AlertCircle, Save, Loader2, Plus, Trash2, ArrowLeft } from 'lucide-reac
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export default function PrebuiltEditorPage() {
     const searchParams = useSearchParams();
@@ -70,7 +70,7 @@ export default function PrebuiltEditorPage() {
         } else {
             const errorMsg = `Library item "${item.name}" (ID: ${item.id}) has no valid content to add.`;
             toast({ variant: 'destructive', title: 'Empty Item', description: 'This template has no content to add.' });
-            logErrorToFirestore({
+            logErrorToDatabase({
                 message: errorMsg,
                 source: 'PrebuiltEditorPage.addSection',
                 details: `Attempted to add a library item where both 'jsonContent' and 'reactContent' are missing or empty.`,

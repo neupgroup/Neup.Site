@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export async function saveFileContent(serverId: string, filePath: string, content: string): Promise<{ success: boolean; error?: string }> {
   const ssh = new NodeSSH();
@@ -33,7 +33,7 @@ export async function saveFileContent(serverId: string, filePath: string, conten
     return { success: true };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to save file content for server ${serverId} at path ${filePath}: ${error.message}`,
       stack: error.stack,
       source: 'saveFileContent',

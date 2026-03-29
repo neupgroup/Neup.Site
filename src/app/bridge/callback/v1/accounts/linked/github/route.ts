@@ -1,8 +1,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { initializeFirebase } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
+import { getDataStore } from '@/lib/data-store';
+import { collection, addDoc, serverTimestamp, getDocs, query, where } from '@/lib/firestore';
 import crypto from 'crypto';
 
 const getAccountId = async () => {
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
 
         const accountId = await getAccountId();
 
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
 
         // Before adding, check if an account for this GitHub user ID already exists for this accountId
         const existingQuery = query(

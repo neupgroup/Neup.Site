@@ -1,10 +1,10 @@
 'use server';
 
-import { collection, doc, setDoc, getDocs, Timestamp, deleteDoc, serverTimestamp, addDoc, query, where, orderBy, limit, getCountFromServer, startAfter } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+import { collection, doc, setDoc, getDocs, Timestamp, deleteDoc, serverTimestamp, addDoc, query, where, orderBy, limit, getCountFromServer, startAfter } from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 import { revalidatePath } from 'next/cache';
 import type { Redirect } from '@/schemas/redirect';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import { getAccountId } from '@/actions/accounts';
 import { cookies } from 'next/headers';
 import { markRedirectsAsPending } from './structure';
@@ -26,7 +26,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'redirects'), {
       ...data,
       siteId,
@@ -39,7 +39,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
     revalidatePath('/manage/redirects');
     return { success: true, id: docRef.id };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to create redirect: ${e.message}`, stack: e.stack, source: 'createRedirect' });
+    await logErrorToDatabase({ message: `Failed to create redirect: ${e.message}`, stack: e.stack, source: 'createRedirect' });
     return { success: false, error: 'Failed to create redirect.' };
   }
 }
@@ -51,7 +51,7 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const redirectsRef = collection(firestore, 'redirects');
     const siteQuery = query(redirectsRef, where('siteId', '==', siteId));
 
@@ -86,7 +86,7 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
     });
     return { success: true, redirects, totalCount };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get redirects: ${e.message}`, stack: e.stack, source: 'getRedirects' });
+    await logErrorToDatabase({ message: `Failed to get redirects: ${e.message}`, stack: e.stack, source: 'getRedirects' });
     return { success: false, error: 'Failed to fetch redirects.' };
   }
 }
@@ -98,7 +98,7 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     await deleteDoc(doc(firestore, 'redirects', id));
 
     await markRedirectsAsPending(siteId);
@@ -106,7 +106,7 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
     revalidatePath('/manage/redirects');
     return { success: true };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to delete redirect ${id}: ${e.message}`, stack: e.stack, source: 'deleteRedirect' });
+    await logErrorToDatabase({ message: `Failed to delete redirect ${id}: ${e.message}`, stack: e.stack, source: 'deleteRedirect' });
     return { success: false, error: 'Failed to delete redirect.' };
   }
 }
@@ -118,7 +118,7 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const redirectsRef = collection(firestore, 'redirects');
     const q = query(redirectsRef, where('siteId', '==', siteId), orderBy('created_on', 'desc'));
 
@@ -138,7 +138,7 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
     });
     return { success: true, redirects };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get all redirects: ${e.message}`, stack: e.stack, source: 'getAllRedirects' });
+    await logErrorToDatabase({ message: `Failed to get all redirects: ${e.message}`, stack: e.stack, source: 'getAllRedirects' });
     return { success: false, error: 'Failed to fetch redirects.' };
   }
 }
@@ -152,7 +152,7 @@ export async function deployRedirects(): Promise<{ success: boolean; error?: str
   let logId: string | undefined;
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const allocationsQuery = query(
       collection(firestore, 'allocations'),
       where('siteId', '==', siteId),
@@ -236,7 +236,7 @@ export async function deployRedirects(): Promise<{ success: boolean; error?: str
 
   } catch (e: any) {
     if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToFirestore({ message: `Failed to deploy redirects: ${e.message}`, stack: e.stack, source: 'deployRedirects' });
+    await logErrorToDatabase({ message: `Failed to deploy redirects: ${e.message}`, stack: e.stack, source: 'deployRedirects' });
     return { success: false, error: e.message };
   }
 }

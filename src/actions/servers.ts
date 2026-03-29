@@ -2,11 +2,11 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from '@/lib/firestore';
 import { Server, ServerAllocation } from '@/schemas/server';
-import { initializeFirebase } from '@/lib/firebase';
+import { getDataStore } from '@/lib/data-store';
 import { cookies } from 'next/headers';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 // Re-export types for convenience
 export type { Server, ServerAllocation };
@@ -16,7 +16,7 @@ export type { Server, ServerAllocation };
  */
 export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' | 'expiresOn'>) {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'servers'), {
       ...serverData,
       serverConfigured: false, // Default to not configured
@@ -25,7 +25,7 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' |
     });
     return { success: true, id: docRef.id };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to create server: ${e.message}`, stack: e.stack, source: 'createServer' });
+    await logErrorToDatabase({ message: `Failed to create server: ${e.message}`, stack: e.stack, source: 'createServer' });
     return { success: false, error: 'Failed to create server.' };
   }
 }
@@ -35,7 +35,7 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' |
  */
 export async function getServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, 'servers'));
     const querySnapshot = await getDocs(q);
     const servers = querySnapshot.docs.map(doc => {
@@ -61,7 +61,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
     });
     return { success: true, servers };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get servers: ${e.message}`, stack: e.stack, source: 'getServers' });
+    await logErrorToDatabase({ message: `Failed to get servers: ${e.message}`, stack: e.stack, source: 'getServers' });
     return { success: false, error: 'Failed to fetch servers.' };
   }
 }
@@ -75,7 +75,7 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const allocationsQuery = query(collection(firestore, 'allocations'), where('siteId', '==', siteId));
     const allocationsSnapshot = await getDocs(allocationsQuery);
 
@@ -114,7 +114,7 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
 
     return { success: true, servers };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get site servers: ${e.message}`, stack: e.stack, source: 'getSiteServers' });
+    await logErrorToDatabase({ message: `Failed to get site servers: ${e.message}`, stack: e.stack, source: 'getSiteServers' });
     return { success: false, error: 'Failed to fetch site-specific servers.' };
   }
 }
@@ -125,11 +125,11 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
  */
 export async function getServer(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const serverRef = doc(firestore, 'servers', id);
     const docSnap = await getDoc(serverRef);
 
-    if (!docSnap.exists) {
+    if (!docSnap.exists()) {
       return { success: false, error: 'Server not found or unauthorized.' };
     }
 
@@ -155,7 +155,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
     };
     return { success: true, server };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get server ${id}: ${e.message}`, stack: e.stack, source: 'getServer' });
+    await logErrorToDatabase({ message: `Failed to get server ${id}: ${e.message}`, stack: e.stack, source: 'getServer' });
     return { success: false, error: 'Failed to fetch server.' };
   }
 }
@@ -166,7 +166,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
  */
 export async function getPrivateServerDetails(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const serverRef = doc(firestore, 'servers', id);
     const docSnap = await getDoc(serverRef);
 
@@ -197,7 +197,7 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
     };
     return { success: true, server };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get private server details for ${id}: ${e.message}`, stack: e.stack, source: 'getPrivateServerDetails' });
+    await logErrorToDatabase({ message: `Failed to get private server details for ${id}: ${e.message}`, stack: e.stack, source: 'getPrivateServerDetails' });
     return { success: false, error: 'Failed to fetch server details.' };
   }
 }
@@ -207,7 +207,7 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
  */
 export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdOn'>>) {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const serverRef = doc(firestore, 'servers', id);
 
     const dataToUpdate: Record<string, any> = { ...serverData };
@@ -223,7 +223,7 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     await setDoc(serverRef, dataToUpdate, { merge: true });
     return { success: true, id };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to update server ${id}: ${e.message}`, stack: e.stack, source: 'updateServer' });
+    await logErrorToDatabase({ message: `Failed to update server ${id}: ${e.message}`, stack: e.stack, source: 'updateServer' });
     return { success: false, error: `Failed to update server ${id}.` };
   }
 }
@@ -233,12 +233,12 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
  */
 export async function deleteServer(id: string) {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const serverRef = doc(firestore, 'servers', id);
     await deleteDoc(serverRef);
     return { success: true };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to delete server ${id}: ${e.message}`, stack: e.stack, source: 'deleteServer' });
+    await logErrorToDatabase({ message: `Failed to delete server ${id}: ${e.message}`, stack: e.stack, source: 'deleteServer' });
     return { success: false, error: 'Failed to delete server.' };
   }
 }

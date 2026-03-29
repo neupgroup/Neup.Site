@@ -3,7 +3,7 @@
 import { getPrivateServerDetails } from '@/actions/servers';
 import { updateAllocationPort } from '@/actions/allocations';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export async function detectAndAppPortFromPm2(siteId: string, serverId: string): Promise<{ success: boolean; port?: number; error?: string }> {
     const ssh = new NodeSSH();
@@ -61,7 +61,7 @@ export async function detectAndAppPortFromPm2(siteId: string, serverId: string):
 
     } catch (e: any) {
         console.error('Port detection error:', e);
-        await logErrorToFirestore({ message: `Port detection failed for ${siteId}: ${e.message}`, stack: e.stack, source: 'detectAndAppPortFromPm2' });
+        await logErrorToDatabase({ message: `Port detection failed for ${siteId}: ${e.message}`, stack: e.stack, source: 'detectAndAppPortFromPm2' });
         return { success: false, error: e.message };
     } finally {
         ssh.dispose();

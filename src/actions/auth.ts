@@ -2,8 +2,8 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 
 export async function setSiteIdCookie(siteId: string) {
   if (!siteId) {
@@ -11,7 +11,7 @@ export async function setSiteIdCookie(siteId: string) {
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const siteRef = doc(firestore, 'sites', siteId);
     const docSnap = await getDoc(siteRef);
 

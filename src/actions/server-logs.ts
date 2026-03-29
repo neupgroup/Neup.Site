@@ -2,17 +2,17 @@
 
 'use server';
 
-import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, setDoc, serverTimestamp, Timestamp, where } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, setDoc, serverTimestamp, Timestamp, where } from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 import type { ServerLog } from '@/schemas/server';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 /**
  * Creates a new server log entry.
  */
 export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiatedAt' | 'completedAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'serverLogs'), {
       ...logData,
       initiatedBy: 'system', // Placeholder for user auth
@@ -32,7 +32,7 @@ export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiated
  */
 export async function updateServerLog(id: string, logData: Partial<Omit<ServerLog, 'id' | 'initiatedAt'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const logRef = doc(firestore, 'serverLogs', id);
 
     let dataToUpdate: Record<string, any> = { ...logData };
@@ -55,7 +55,7 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
  */
 export async function getServerLog(id: string): Promise<{ success: boolean; log?: ServerLog; error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = doc(firestore, 'serverLogs', id);
         const docSnap = await getDoc(docRef);
 
@@ -92,7 +92,7 @@ export async function getServerLog(id: string): Promise<{ success: boolean; log?
  */
 export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { serverId: string, page?: number, pageSize?: number }): Promise<{ logs?: ServerLog[], error?: string, hasMore?: boolean, success: boolean }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const logsRef = collection(firestore, 'serverLogs');
         
         let q = query(
@@ -135,7 +135,7 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
         return { logs, hasMore, success: true };
 
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to fetch server logs for serverId: ${serverId}: ${e.message}`, stack: e.stack, source: 'getServerLogs' });
+        await logErrorToDatabase({ message: `Failed to fetch server logs for serverId: ${serverId}: ${e.message}`, stack: e.stack, source: 'getServerLogs' });
         return { error: 'Failed to load logs. Please check the error logs for more details.', success: false };
     }
 }

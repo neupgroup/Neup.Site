@@ -1,18 +1,18 @@
 
 'use server';
 
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from '@/lib/firestore';
 import {
   doc,
   setDoc,
   getDoc,
   Timestamp,
   serverTimestamp
-} from 'firebase/firestore';
+} from '@/lib/firestore';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
 import { Site, SiteTheme, SiteIcons } from '@/schemas/site';
-import { initializeFirebase } from '@/lib/firebase';
+import { getDataStore } from '@/lib/data-store';
 import { generateThemeFromColor } from '@/lib/color-utils';
 import { markAssetsAsPending, markThemeAsPending } from '../structure';
 
@@ -28,7 +28,7 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
   if (!siteId) return { success: true, site: undefined };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const siteRef = doc(firestore, 'sites', siteId);
     const docSnap = await getDoc(siteRef);
 
@@ -77,7 +77,7 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const siteRef = doc(firestore, 'sites', siteId);
 
     const docSnap = await getDoc(siteRef);

@@ -1,5 +1,5 @@
 
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {
@@ -239,7 +239,7 @@ ${componentBody}
 }
   `.trim();
 } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
         message: `Failed to convert JSON to JSX: ${error.message}`,
         stack: error.stack,
         source: 'convertJsonToJsx',

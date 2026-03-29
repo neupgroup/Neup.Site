@@ -1,10 +1,10 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, Timestamp, orderBy, limit, getCountFromServer, startAfter } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, Timestamp, orderBy, limit, getCountFromServer, startAfter } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 import type { CodeFile } from '@/schemas/codebase';
 
 /**
@@ -16,7 +16,7 @@ export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt'
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'codeFiles'), {
       ...fileData,
       siteId,
@@ -24,7 +24,7 @@ export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt'
     });
     return { success: true, id: docRef.id };
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to upload code file: ${error.message}`, source: 'uploadCodeFile' });
+    await logErrorToDatabase({ message: `Failed to upload code file: ${error.message}`, source: 'uploadCodeFile' });
     return { success: false, error: error.message || 'Failed to upload file.' };
   }
 }
@@ -38,7 +38,7 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const filesRef = collection(firestore, 'codeFiles');
     const siteQuery = query(filesRef, where('siteId', '==', siteId));
 
@@ -69,7 +69,7 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
 
     return { success: true, files, totalCount };
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to get code files: ${error.message}`, source: 'getCodeFiles' });
+    await logErrorToDatabase({ message: `Failed to get code files: ${error.message}`, source: 'getCodeFiles' });
     return { success: false, error: error.message || 'Failed to fetch files.' };
   }
 }
@@ -84,7 +84,7 @@ export async function deleteCodeFile(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const fileRef = doc(firestore, 'codeFiles', id);
     const fileSnap = await getDoc(fileRef);
 
@@ -95,7 +95,7 @@ export async function deleteCodeFile(id: string) {
     await deleteDoc(fileRef);
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to delete code file ${id}: ${error.message}`, source: 'deleteCodeFile' });
+    await logErrorToDatabase({ message: `Failed to delete code file ${id}: ${error.message}`, source: 'deleteCodeFile' });
     return { success: false, error: error.message || 'Failed to delete file.' };
   }
 }

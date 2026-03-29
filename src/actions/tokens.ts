@@ -12,9 +12,9 @@ import {
   serverTimestamp,
   Timestamp,
   orderBy,
-} from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+} from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import { ApiToken } from '@/schemas/token';
@@ -26,7 +26,7 @@ export async function createToken(name: string, tokenHash: string, tokenPrefix: 
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'api_tokens'), {
       accountId,
       name,
@@ -38,7 +38,7 @@ export async function createToken(name: string, tokenHash: string, tokenPrefix: 
     revalidatePath('/settings/tokens');
     return { success: true, id: docRef.id };
   } catch (e: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to create token: ${e.message}`,
       stack: e.stack,
       source: 'createToken',
@@ -54,7 +54,7 @@ export async function getTokens(): Promise<{ success: boolean; tokens?: ApiToken
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(
       collection(firestore, 'api_tokens'),
       where('accountId', '==', accountId),
@@ -75,7 +75,7 @@ export async function getTokens(): Promise<{ success: boolean; tokens?: ApiToken
     });
     return { success: true, tokens };
   } catch (e: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to get tokens: ${e.message}`,
       stack: e.stack,
       source: 'getTokens',
@@ -91,13 +91,13 @@ export async function revokeToken(id: string): Promise<{ success: boolean; error
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     // In a real app, you'd verify ownership before deleting
     await deleteDoc(doc(firestore, 'api_tokens', id));
     revalidatePath('/settings/tokens');
     return { success: true };
   } catch (e: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to revoke token: ${e.message}`,
       stack: e.stack,
       source: 'revokeToken',

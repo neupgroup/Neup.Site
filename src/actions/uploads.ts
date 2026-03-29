@@ -7,7 +7,7 @@ import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import { getSite } from './editor/site';
 
 export interface PublicFile {
@@ -96,7 +96,7 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
 
         return { success: true, files };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to read remote public directory at ${directoryPath}: ${e.message}`, source: 'getPublicFiles' });
+        await logErrorToDatabase({ message: `Failed to read remote public directory at ${directoryPath}: ${e.message}`, source: 'getPublicFiles' });
         return { success: false, error: `Could not read directory. ${e.message}` };
     } finally {
         ssh?.dispose();
@@ -125,7 +125,7 @@ export async function deletePublicFile(relativePath: string): Promise<{ success:
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to delete remote path ${relativePath}: ${e.message}`, source: 'deletePublicFile' });
+        await logErrorToDatabase({ message: `Failed to delete remote path ${relativePath}: ${e.message}`, source: 'deletePublicFile' });
         return { success: false, error: 'Failed to delete path.' };
     } finally {
         ssh?.dispose();

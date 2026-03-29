@@ -44,6 +44,10 @@ export interface Site {
   id: string;
   name: string;
   url: string;
+  domainSettings?: {
+    production?: DomainSetting;
+    development?: DomainSetting;
+  };
   domains?: {
     production?: DomainSetting;
     development?: DomainSetting;
@@ -52,12 +56,16 @@ export interface Site {
   logoUrl?: string;
   icons?: SiteIcons;
   hideSitename?: boolean;
+  hideLogo?: boolean;
   description?: string;
   socialProfiles?: { platformName: string; url: string; }[];
   contactEmail?: { value: string; }[];
   contactPhone?: { value: string; }[];
   modules?: { [key: string]: any };
   theme?: SiteTheme;
+  ownerAccountId?: string;
+  status?: string;
+  type?: string;
   createdAt?: string | null;
   updatedAt?: string | null;
 }

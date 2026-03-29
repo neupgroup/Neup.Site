@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import type { ServerAllocationStorage } from '@/schemas/server';
 
 function parseDuOutput(output: string): { value: number; unit: string } {
@@ -83,7 +83,7 @@ export async function getDetailedStorage(
     return { success: true, data: storageData };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to get detailed storage for server ${serverId}: ${error.message}`,
       stack: error.stack,
       source: 'getDetailedStorage',

@@ -16,9 +16,9 @@ import {
   limit,
   getCountFromServer,
   startAfter,
-} from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+} from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import type { EnvironmentVariable } from '@/schemas/environment';
@@ -35,7 +35,7 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'environments'), {
       ...data,
       siteId,
@@ -48,7 +48,7 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
     revalidatePath('/site/environment');
     return { success: true, id: docRef.id };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to create environment variable: ${e.message}`, stack: e.stack, source: 'createEnvironmentVariable' });
+    await logErrorToDatabase({ message: `Failed to create environment variable: ${e.message}`, stack: e.stack, source: 'createEnvironmentVariable' });
     return { success: false, error: 'Failed to create environment variable.' };
   }
 }
@@ -60,7 +60,7 @@ export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { pag
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const envRef = collection(firestore, 'environments');
     const siteQuery = query(envRef, where('siteId', '==', siteId));
     
@@ -96,7 +96,7 @@ export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { pag
     });
     return { success: true, variables, totalCount };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get environment variables: ${e.message}`, stack: e.stack, source: 'getEnvironmentVariables' });
+    await logErrorToDatabase({ message: `Failed to get environment variables: ${e.message}`, stack: e.stack, source: 'getEnvironmentVariables' });
     return { success: false, error: 'Failed to fetch environment variables.' };
   }
 }
@@ -108,13 +108,13 @@ export async function deleteEnvironmentVariable(id: string): Promise<{ success: 
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     await deleteDoc(doc(firestore, 'environments', id));
     await markEnvironmentsAsPending(siteId);
     revalidatePath('/site/environment');
     return { success: true };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to delete environment variable ${id}: ${e.message}`, stack: e.stack, source: 'deleteEnvironmentVariable' });
+    await logErrorToDatabase({ message: `Failed to delete environment variable ${id}: ${e.message}`, stack: e.stack, source: 'deleteEnvironmentVariable' });
     return { success: false, error: 'Failed to delete environment variable.' };
   }
 }

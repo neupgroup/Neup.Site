@@ -2,7 +2,7 @@
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users, Network, User, KeyRound, Terminal } from 'lucide-react';
+import { ArrowRight, Users, Network, User, KeyRound, Terminal, RefreshCw } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 export default function SettingsPage() {
@@ -38,6 +38,12 @@ export default function SettingsPage() {
       description: 'View technical details, server allocation, and ports.',
       icon: <Terminal className="h-6 w-6 text-primary" />,
       href: '/settings/info',
+    },
+    {
+      title: 'Syncer',
+      description: 'Manage synchronization workflows and sync-related controls.',
+      icon: <RefreshCw className="h-6 w-6 text-primary" />,
+      href: '/settings/syncer',
     },
   ];
 

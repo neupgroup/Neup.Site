@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 import { getServer, type Server } from '@/actions/servers';
 
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
@@ -42,7 +42,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
       } catch (e: any) {
         setError('An unexpected error occurred while fetching server data.');
-        logErrorToFirestore({
+        logErrorToDatabase({
           message: `Client-side error fetching server details for serverId: ${id}. Error: ${e.message}`,
           stack: e.stack,
           source: 'ServerDetailPage.fetchInitialData',

@@ -1,10 +1,10 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, writeBatch, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, writeBatch, serverTimestamp, setDoc, Timestamp } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 
@@ -59,7 +59,7 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'sources'), {
       ...sourceData,
       siteId,
@@ -80,7 +80,7 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, 'sources'), where('siteId', '==', siteId));
     const querySnapshot = await getDocs(q);
     const sources = querySnapshot.docs.map(doc => {
@@ -109,7 +109,7 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const sourceRef = doc(firestore, 'sources', id);
     const docSnap = await getDoc(sourceRef);
 
@@ -144,7 +144,7 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const sourceRef = doc(firestore, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
     if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
@@ -168,7 +168,7 @@ export async function deleteSource(id: string) {
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const batch = writeBatch(firestore);
     const sourceRef = doc(firestore, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
@@ -226,7 +226,7 @@ export async function testApiMethod(sourceId: string, method: SourceMethod, para
     const data = await response.json();
     return { success: true, data };
   } catch (e: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `API Test Failed for ${fullUrl}: ${e.message}`,
       source: 'testApiMethod',
       details: JSON.stringify({ sourceId, method, params }),

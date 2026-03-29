@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import { getSite } from '@/actions/editor/site';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { runCommand } from '@/actions/runner';
@@ -55,7 +55,7 @@ export async function checkPathExists(serverId: string, path?: string, isProduct
     return { exists: result.code === 0, resolvedPath: resolvedPathForOutput };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to check path existence for server ${serverId} at path ${pathToCheck}: ${error.message}`,
       stack: error.stack,
       source: 'checkPathExists',
@@ -122,7 +122,7 @@ echo "--- Rebuild Complete ---"
     return { success: result.success, error: result.error, logId: result.logId };
   } catch (error: any) {
     const errorMessage = `Failed to rebuild application for server ${serverId}: ${error.message}`;
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: errorMessage,
       stack: error.stack,
       source: 'rebuildApplication',

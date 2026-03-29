@@ -1,13 +1,11 @@
-
-
 'use server';
 
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { initializeFirebase } from '@/lib/firebase';
+import { getDataStore } from '@/lib/data-store';
 import type { Structure, PathStructure, Deployment, Site } from '@/schemas/site';
 import type { EnvironmentVariable } from '@/schemas/environment';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import { getPages } from './editor/pages';
 import { getSite } from './editor/site';
 import { getPrivateServerDetails } from '@/actions/servers';
@@ -29,7 +27,7 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const structureRef = doc(firestore, 'structure', siteId);
     const docSnap = await getDoc(structureRef);
 
@@ -52,7 +50,7 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
     };
     return { success: true, structure };
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to get structure: ${error.message}`, stack: error.stack, source: 'getStructure' });
+    await logErrorToDatabase({ message: `Failed to get structure: ${error.message}`, stack: error.stack, source: 'getStructure' });
     return { success: false, error: 'Failed to get structure.' };
   }
 }
@@ -66,7 +64,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const deploymentsRef = collection(firestore, 'deployments');
     const q = query(
       deploymentsRef,
@@ -97,7 +95,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
     return { success: true, deployment };
 
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to get last deployment: ${error.message}`, stack: error.stack, source: 'getLastDeployment' });
+    await logErrorToDatabase({ message: `Failed to get last deployment: ${error.message}`, stack: error.stack, source: 'getLastDeployment' });
     return { success: false, error: 'Failed to get last deployment.' };
   }
 }
@@ -111,7 +109,7 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const { success, pages, error } = await getPages();
 
     if (!success) {
@@ -145,7 +143,7 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to build structure: ${error.message}`, stack: error.stack, source: 'buildStructure' });
+    await logErrorToDatabase({ message: `Failed to build structure: ${error.message}`, stack: error.stack, source: 'buildStructure' });
     return { success: false, error: 'Failed to build site structure.' };
   }
 }
@@ -160,7 +158,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
   if (!siteId) return { success: false, error: 'Site ID not found.' };
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const structureRef = doc(firestore, 'structure', siteId);
     const structureSnap = await getDoc(structureRef);
 
@@ -217,7 +215,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToFirestore({ message: `Failed to create deployment: ${error.message}`, stack: error.stack, source: 'createDeployment' });
+    await logErrorToDatabase({ message: `Failed to create deployment: ${error.message}`, stack: error.stack, source: 'createDeployment' });
     return { success: false, error: error.message || 'Failed to create deployment record.' };
   }
 }
@@ -226,7 +224,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
   let logId: string | undefined;
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const allocationsQuery = query(
       collection(firestore, 'allocations'),
       where('siteId', '==', siteId),
@@ -393,7 +391,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
   } catch (e: any) {
     if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToFirestore({ message: `Failed to upload site data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
+    await logErrorToDatabase({ message: `Failed to upload site data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
     return { success: false, error: e.message };
   }
 }
@@ -404,7 +402,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
  */
 export async function markStructureAsPending(siteId: string, paths: string[], isDeletion: boolean = false): Promise<void> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const structureRef = doc(firestore, 'structure', siteId);
     const structureSnap = await getDoc(structureRef);
 
@@ -448,7 +446,7 @@ export async function markStructureAsPending(siteId: string, paths: string[], is
     }, { merge: true });
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to mark structure as pending: ${error.message}`,
       stack: error.stack,
       source: 'markStructureAsPending'
@@ -458,7 +456,7 @@ export async function markStructureAsPending(siteId: string, paths: string[], is
 
 export async function markAssetsAsPending(siteId: string): Promise<void> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const structureRef = doc(firestore, 'structure', siteId);
     await setDoc(structureRef, { assetsChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
@@ -468,7 +466,7 @@ export async function markAssetsAsPending(siteId: string): Promise<void> {
 
 export async function markThemeAsPending(siteId: string): Promise<void> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const structureRef = doc(firestore, 'structure', siteId);
     await setDoc(structureRef, { themeChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
@@ -478,7 +476,7 @@ export async function markThemeAsPending(siteId: string): Promise<void> {
 
 export async function markRedirectsAsPending(siteId: string): Promise<void> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const structureRef = doc(firestore, 'structure', siteId);
     await setDoc(structureRef, { redirectsChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
@@ -488,7 +486,7 @@ export async function markRedirectsAsPending(siteId: string): Promise<void> {
 
 export async function markEnvironmentsAsPending(siteId: string): Promise<void> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const structureRef = doc(firestore, 'structure', siteId);
     await setDoc(structureRef, { environmentsChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
@@ -498,7 +496,7 @@ export async function markEnvironmentsAsPending(siteId: string): Promise<void> {
 
 export async function markAppBaseAsPending(siteId: string): Promise<void> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const structureRef = doc(firestore, 'structure', siteId);
         await setDoc(structureRef, { appBaseChanged: true, status: 'pendingDeployment' }, { merge: true });
     } catch (e: any) {

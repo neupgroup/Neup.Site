@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export interface ProcessManagerInfo {
   name: string;
@@ -107,7 +107,7 @@ export async function getPm2Processes(serverId: string): Promise<{ success: bool
     return { success: true, processes };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to get PM2 processes for server ${serverId}: ${error.message}`,
       stack: error.stack,
       source: 'getPm2Processes',
@@ -157,7 +157,7 @@ export async function managePm2Process(
     return { success: true };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to ${action} PM2 process on server ${serverId}: ${error.message}`,
       stack: error.stack,
       source: 'managePm2Process',
@@ -193,7 +193,7 @@ export async function getPm2Logs(serverId: string, processId: number | string): 
     return { success: true, logs: logs || "No logs to display." };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to get PM2 logs for server ${serverId}, process ${processId}: ${error.message}`,
       stack: error.stack,
       source: 'getPm2Logs',

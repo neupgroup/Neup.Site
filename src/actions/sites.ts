@@ -1,8 +1,8 @@
 
 'use server';
 
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+import { collection, query, where, getDocs, Timestamp } from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 import { getAccountId } from './accounts';
 import type { Site } from '@/schemas/site';
 
@@ -17,19 +17,38 @@ export async function getSitesForAccount(): Promise<{ sites?: Site[]; error?: st
   }
 
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, 'sites'), where('ownerAccountId', '==', accountId));
-    // In a real multi-tenant app, you would query a 'user_sites' mapping collection
-    // For this demo, we assume a simple ownership model on the site itself.
-    // This is NOT a scalable approach for production.
-    
-    // A more scalable approach would be to have a `sites` collection and a `users` collection.
-    // A `user_sites` collection could map user IDs to site IDs they have access to.
-    // For now, we will simulate this by fetching all sites and filtering.
-    // THIS IS INEFFICIENT and for demo purposes only.
+    const sitesSnapshot = await getDocs(q);
+    const sites = sitesSnapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      const createdAt = data.createdAt;
+      const updatedAt = data.updatedAt;
 
-    const allSitesSnapshot = await getDocs(collection(firestore, 'sites'));
-    const sites = allSitesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Site));
+      return {
+        id: docSnap.id,
+        name: data.name || '',
+        url: data.url || '',
+        domainSettings: data.domainSettings,
+        domains: data.domains,
+        tier: data.tier || 'free',
+        logoUrl: data.logoUrl,
+        icons: data.icons || {},
+        hideSitename: data.hideSitename || false,
+        hideLogo: data.hideLogo || false,
+        description: data.description,
+        socialProfiles: data.socialProfiles || [],
+        contactEmail: data.contactEmail || [],
+        contactPhone: data.contactPhone || [],
+        modules: data.modules || {},
+        theme: data.theme,
+        ownerAccountId: data.ownerAccountId,
+        status: data.status,
+        type: data.type,
+        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+        updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
+      } as Site;
+    });
 
     return { sites };
   } catch (e: any) {

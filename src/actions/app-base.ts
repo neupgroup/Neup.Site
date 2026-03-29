@@ -6,9 +6,9 @@ import { getPrivateServerDetails } from '@/actions/servers';
 import { getSite } from '@/actions/editor/site';
 import { getAccountId } from './accounts';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
-import { initializeFirebase } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, doc, getDoc } from 'firebase/firestore';
+import { logErrorToDatabase } from '@/lib/logging';
+import { getDataStore } from '@/lib/data-store';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, doc, getDoc } from '@/lib/firestore';
 import type { AppBaseBackup, AppBaseFile } from '@/schemas/app-base';
 import { cookies } from 'next/headers';
 import { markAppBaseAsPending } from './structure';
@@ -81,7 +81,7 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
         return { success: true, files: sortedFiles };
 
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get app base files: ${e.message}`, source: 'getAppBaseFiles' });
+        await logErrorToDatabase({ message: `Failed to get app base files: ${e.message}`, source: 'getAppBaseFiles' });
         return { success: false, error: e.message };
     }
 }
@@ -125,7 +125,7 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to create app base file: ${e.message}`, source: 'createAppBaseFile' });
+        await logErrorToDatabase({ message: `Failed to create app base file: ${e.message}`, source: 'createAppBaseFile' });
         return { success: false, error: e.message };
     } finally {
         ssh?.dispose();
@@ -154,7 +154,7 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
 
         return { success: true, content: result.stdout };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get app base file content: ${e.message}`, source: 'getAppBaseFileContent' });
+        await logErrorToDatabase({ message: `Failed to get app base file content: ${e.message}`, source: 'getAppBaseFileContent' });
         return { success: false, error: e.message };
     } finally {
         ssh?.dispose();
@@ -184,7 +184,7 @@ export async function saveAppBaseFileContent(serverId: string, fileName: string,
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to save app base file content: ${e.message}`, source: 'saveAppBaseFileContent' });
+        await logErrorToDatabase({ message: `Failed to save app base file content: ${e.message}`, source: 'saveAppBaseFileContent' });
         return { success: false, error: e.message };
     } finally {
         ssh?.dispose();
@@ -205,7 +205,7 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
             throw new Error("Site context not found.");
         }
 
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         await addDoc(collection(firestore, 'appBaseBackups'), {
             siteId: site.id,
             fileName: `${fileName}.json`, // Store full filename
@@ -217,7 +217,7 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to backup file ${fileName}: ${e.message}`, source: 'backupAppBaseFile' });
+        await logErrorToDatabase({ message: `Failed to backup file ${fileName}: ${e.message}`, source: 'backupAppBaseFile' });
         return { success: false, error: e.message };
     }
 }
@@ -230,7 +230,7 @@ export async function getAppBaseBackups(): Promise<{ success: boolean; backups?:
             throw new Error("Site context not found.");
         }
 
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const q = query(
             collection(firestore, 'appBaseBackups'),
             where('siteId', '==', site.id),
@@ -253,14 +253,14 @@ export async function getAppBaseBackups(): Promise<{ success: boolean; backups?:
 
         return { success: true, backups };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get backups: ${e.message}`, source: 'getAppBaseBackups' });
+        await logErrorToDatabase({ message: `Failed to get backups: ${e.message}`, source: 'getAppBaseBackups' });
         return { success: false, error: e.message };
     }
 }
 
 export async function restoreAppBaseBackup(backupId: string, serverId: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const backupRef = doc(firestore, 'appBaseBackups', backupId);
         const backupSnap = await getDoc(backupRef);
 
@@ -280,7 +280,7 @@ export async function restoreAppBaseBackup(backupId: string, serverId: string): 
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to restore backup ${backupId}: ${e.message}`, source: 'restoreAppBaseBackup' });
+        await logErrorToDatabase({ message: `Failed to restore backup ${backupId}: ${e.message}`, source: 'restoreAppBaseBackup' });
         return { success: false, error: e.message };
     }
 }

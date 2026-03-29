@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
@@ -19,7 +19,7 @@ export default function GlobalError({
     const logError = async () => {
         console.error("Caught an error:", error);
         try {
-            await logErrorToFirestore({
+            await logErrorToDatabase({
                 message: error.message,
                 stack: error.stack,
                 source: 'global-error-boundary',

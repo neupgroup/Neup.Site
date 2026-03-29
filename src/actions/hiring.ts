@@ -11,10 +11,10 @@ import {
   deleteDoc,
   serverTimestamp,
   addDoc,
-} from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+} from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 import { revalidatePath } from 'next/cache';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export interface JobPosting {
   id: string;
@@ -32,7 +32,7 @@ export interface JobPosting {
 
 export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'status'>>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'hiring'), {
       ...data,
       status: 'Draft',
@@ -42,14 +42,14 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
     revalidatePath('/manage/hiring');
     return { success: true, id: docRef.id };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
+    await logErrorToDatabase({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
     return { success: false, error: 'Failed to create job posting.' };
   }
 }
 
 export async function getJobPostings(): Promise<{ success: boolean; postings?: JobPosting[]; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const querySnapshot = await getDocs(collection(firestore, 'hiring'));
     const postings = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
@@ -66,14 +66,14 @@ export async function getJobPostings(): Promise<{ success: boolean; postings?: J
     });
     return { success: true, postings };
   } catch (e: any) {
-    await logErrorToFirestore({ message: `Failed to get job postings: ${e.message}`, stack: e.stack, source: 'getJobPostings' });
+    await logErrorToDatabase({ message: `Failed to get job postings: ${e.message}`, stack: e.stack, source: 'getJobPostings' });
     return { success: false, error: 'Failed to fetch job postings.' };
   }
 }
 
 export async function getJobPostingById(id: string): Promise<{ success: boolean; posting?: JobPosting; error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = doc(firestore, 'hiring', id);
         const docSnap = await getDoc(docRef);
 
@@ -101,33 +101,33 @@ export async function getJobPostingById(id: string): Promise<{ success: boolean;
         return { success: true, posting };
 
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get job posting ${id}: ${e.message}`, stack: e.stack, source: 'getJobPostingById' });
+        await logErrorToDatabase({ message: `Failed to get job posting ${id}: ${e.message}`, stack: e.stack, source: 'getJobPostingById' });
         return { success: false, error: 'Failed to fetch job posting.' };
     }
 }
 
 export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting, 'id'>>): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = doc(firestore, 'hiring', id);
         await setDoc(docRef, { ...data, updatedAt: serverTimestamp() }, { merge: true });
         revalidatePath(`/manage/hiring`);
         revalidatePath(`/manage/hiring/${id}`);
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to update job posting ${id}: ${e.message}`, stack: e.stack, source: 'updateJobPosting' });
+        await logErrorToDatabase({ message: `Failed to update job posting ${id}: ${e.message}`, stack: e.stack, source: 'updateJobPosting' });
         return { success: false, error: 'Failed to update job posting.' };
     }
 }
 
 export async function deleteJobPosting(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         await deleteDoc(doc(firestore, 'hiring', id));
         revalidatePath('/manage/hiring');
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to delete job posting ${id}: ${e.message}`, stack: e.stack, source: 'deleteJobPosting' });
+        await logErrorToDatabase({ message: `Failed to delete job posting ${id}: ${e.message}`, stack: e.stack, source: 'deleteJobPosting' });
         return { success: false, error: 'Failed to delete job posting.' };
     }
 }

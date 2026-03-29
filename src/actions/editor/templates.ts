@@ -1,17 +1,17 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, setDoc, getDocs, getDoc, deleteDoc, serverTimestamp, Timestamp, query } from '@/lib/firestore';
 import { Template } from '@/schemas/template';
-import { initializeFirebase } from '@/lib/firebase';
-import { logErrorToFirestore } from '@/lib/logging';
+import { getDataStore } from '@/lib/data-store';
+import { logErrorToDatabase } from '@/lib/logging';
 
 /**
  * Saves or updates a template in Firestore.
  */
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     
     // Ensure no undefined values are sent to Firestore.
     const dataToSave: any = { 
@@ -37,7 +37,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
       return { success: true, id: docRef.id };
     }
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
         message: `Failed to save template: ${error.message}`,
         stack: error.stack,
         source: 'saveTemplate',
@@ -52,7 +52,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
  */
 export async function getTemplates(): Promise<{ success: boolean, templates?: Template[], error?: string }> {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const q = query(collection(firestore, 'templates'));
     const querySnapshot = await getDocs(q);
     const templates = querySnapshot.docs.map(doc => {
@@ -86,7 +86,7 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
  */
 export async function getTemplate(id: string): Promise<{ success: boolean, template?: Template, error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const templateRef = doc(firestore, 'templates', id);
         const docSnap = await getDoc(templateRef);
 
@@ -123,7 +123,7 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
  */
 export async function deleteTemplate(id: string) {
   try {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
     const templateRef = doc(firestore, 'templates', id);
     await deleteDoc(templateRef);
     return { success: true };

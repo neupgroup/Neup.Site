@@ -18,16 +18,16 @@ import {
     startAfter,
     getCountFromServer,
     where,
-} from 'firebase/firestore';
-import { initializeFirebase } from '@/lib/firebase';
+} from '@/lib/firestore';
+import { getDataStore } from '@/lib/data-store';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/schemas/command';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 import { getConfigureNginxCommand } from './server/management/configure-nginx';
 import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
 
 async function createBuiltInCommands() {
-    const { firestore } = initializeFirebase();
+    const { firestore } = getDataStore();
 
     const commandsToCreate = [
         {
@@ -292,7 +292,7 @@ export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'crea
             return { success: false, error: JSON.stringify(errorDetails) };
         }
 
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = await addDoc(collection(firestore, 'serverCommands'), {
             ...validatedData.data,
             createdAt: serverTimestamp(),
@@ -300,7 +300,7 @@ export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'crea
 
         return { success: true, id: docRef.id };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
+        await logErrorToDatabase({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
         return { success: false, error: 'Failed to create command.' };
     }
 }
@@ -315,7 +315,7 @@ export async function getServerCommands({
     pageSize?: number;
 }): Promise<{ success: boolean; commands?: ServerCommand[]; error?: string; totalCount?: number }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const commandsRef = collection(firestore, 'serverCommands');
 
         const allDocsQuery = query(commandsRef, orderBy('name'));
@@ -352,14 +352,14 @@ export async function getServerCommands({
 
         return { success: true, commands: paginatedCommands, totalCount };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get server commands: ${e.message}`, stack: e.stack, source: 'getServerCommands' });
+        await logErrorToDatabase({ message: `Failed to get server commands: ${e.message}`, stack: e.stack, source: 'getServerCommands' });
         return { success: false, error: 'Failed to fetch commands.' };
     }
 }
 
 export async function getServerCommand(id: string): Promise<{ success: boolean; command?: ServerCommand; error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = doc(firestore, 'serverCommands', id);
         const docSnap = await getDoc(docRef);
 
@@ -387,7 +387,7 @@ export async function getServerCommand(id: string): Promise<{ success: boolean; 
         return { success: true, command };
 
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to get server command ${id}: ${e.message}`, stack: e.stack, source: 'getServerCommand' });
+        await logErrorToDatabase({ message: `Failed to get server command ${id}: ${e.message}`, stack: e.stack, source: 'getServerCommand' });
         return { success: false, error: 'Failed to fetch command.' };
     }
 }
@@ -400,25 +400,25 @@ export async function updateServerCommand(id: string, data: Partial<Omit<ServerC
             return { success: false, error: JSON.stringify(errorDetails) };
         }
 
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const docRef = doc(firestore, 'serverCommands', id);
         await setDoc(docRef, validatedData.data, { merge: true });
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to update server command ${id}: ${e.message}`, stack: e.stack, source: 'updateServerCommand' });
+        await logErrorToDatabase({ message: `Failed to update server command ${id}: ${e.message}`, stack: e.stack, source: 'updateServerCommand' });
         return { success: false, error: 'Failed to update command.' };
     }
 }
 
 export async function deleteServerCommand(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         await deleteDoc(doc(firestore, 'serverCommands', id));
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToFirestore({ message: `Failed to delete server command ${id}: ${e.message}`, stack: e.stack, source: 'deleteServerCommand' });
+        await logErrorToDatabase({ message: `Failed to delete server command ${id}: ${e.message}`, stack: e.stack, source: 'deleteServerCommand' });
         return { success: false, error: 'Failed to delete command.' };
     }
 }

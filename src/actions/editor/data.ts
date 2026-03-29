@@ -1,10 +1,10 @@
 
 'use server';
 
-import { getFirestore, collection, doc, setDoc, getDoc, query, where, getDocs, limit } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, getDoc, query, where, getDocs, limit } from '@/lib/firestore';
 import { cookies } from 'next/headers';
 import { PageDataSourceBinding } from '@/schemas/data';
-import { initializeFirebase } from '@/lib/firebase';
+import { getDataStore } from '@/lib/data-store';
 
 
 /**
@@ -16,7 +16,7 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const bindingId = `${pageId}_${sourceId}`; // Create a deterministic ID
         const bindingRef = doc(firestore, 'page_data_sources', bindingId);
 
@@ -43,7 +43,7 @@ export async function getPageDataSource(pageId: string): Promise<{ success: bool
     if (!siteId) return { success: false, error: 'Site ID not found.' };
 
     try {
-        const { firestore } = initializeFirebase();
+        const { firestore } = getDataStore();
         const q = query(collection(firestore, 'page_data_sources'), where('pageId', '==', pageId), where('siteId', '==', siteId), limit(1));
         const querySnapshot = await getDocs(q);
 

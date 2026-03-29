@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export async function getUptime(serverId: string): Promise<{ success: boolean; uptime?: string; error?: string }> {
   const ssh = new NodeSSH();
@@ -30,7 +30,7 @@ export async function getUptime(serverId: string): Promise<{ success: boolean; u
     return { success: true, uptime };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to get uptime for server ${serverId}: ${error.message}`,
       stack: error.stack,
       source: 'getUptime',

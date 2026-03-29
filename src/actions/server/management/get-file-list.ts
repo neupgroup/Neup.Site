@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToFirestore } from '@/lib/logging';
+import { logErrorToDatabase } from '@/lib/logging';
 
 export interface FileInfo {
   type: 'd' | '-' | 'l'; // directory, file, link
@@ -116,7 +116,7 @@ export async function getFileList(serverId: string, path: string = '/'): Promise
     return { success: true, files };
 
   } catch (error: any) {
-    await logErrorToFirestore({
+    await logErrorToDatabase({
       message: `Failed to get file list for server ${serverId} at path ${path}: ${error.message}`,
       stack: error.stack,
       source: 'getFileList',
