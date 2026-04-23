@@ -6,6 +6,12 @@ datasource db {
   provider = "postgresql"
 }
 
+model Account {
+  id String @id
+
+  @@map("accounts")
+}
+
 model Site {
   id             String                 @id
   name           String                 @default("")
