@@ -2,9 +2,32 @@
 
 Source: prisma/schema.prisma
 
-## accounts (Account)
+## account (Account)
 Columns:
 - id: String; primary key
+
+## artifact (Artifact)
+Columns:
+- id: String; primary key
+- name: String
+- type: String
+- logo: String
+- description: String
+
+## role (Role)
+Columns:
+- id: String; primary key
+- artifactId: String; references Artifact.id
+- portfolioId: String
+- accountId: String; references Account.id
+- role: String
+
+## domain (Domain)
+Columns:
+- id: String; primary key
+- artifactId: String; references Artifact.id
+- domain: String
+- isPrimary: Boolean
 
 ## sites (Site)
 Columns:

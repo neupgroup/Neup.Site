@@ -8,8 +8,43 @@ datasource db {
 
 model Account {
   id String @id
+  roles Role[]
 
-  @@map("accounts")
+  @@map("account")
+}
+
+model Artifact {
+  id          String  @id
+  name        String
+  type        String
+  logo        String
+  description String
+  roles       Role[]
+  domains     Domain[]
+
+  @@map("artifact")
+}
+
+model Role {
+  id         String   @id
+  artifactId String
+  portfolioId String
+  accountId  String
+  role       String
+  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("role")
+}
+
+model Domain {
+  id         String   @id
+  artifactId String
+  domain     String
+  isPrimary  Boolean
+  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+
+  @@map("domain")
 }
 
 model Site {
@@ -31,8 +66,6 @@ model Site {
   ownerAccountId String?
   status         String?
   type           String?
-  createdAt      DateTime?
-  updatedAt      DateTime?
   pages          Page[]
   paths          PagePath[]
   sections       Section[]
