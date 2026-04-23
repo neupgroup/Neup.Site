@@ -1,7 +1,7 @@
 
 export interface CodeFile {
   id: string;
-  siteId: string;
+  artifactId: string;
   fileName: string;
   filePath: string;
   content: string; // base64

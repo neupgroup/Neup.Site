@@ -12,7 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/schemas/server';
-import type { Site, Structure } from '@/schemas/site';
+import type { Artifact, Structure } from '@/schemas/artifact';
 import { getPm2Processes } from '@/actions/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/actions/server/management/check-build';
 import { useProfile } from '@/context/ProfileContext';
@@ -27,7 +27,7 @@ interface DeploymentStep {
     subActions?: { commandId: string; label: string; }[];
 }
 
-const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { server: Server, allocation: ServerAllocation, site: Site | null, isProduction: boolean }) => {
+const DeploymentStatusChecker = ({ server, allocation, artifact, isProduction }: { server: Server, allocation: ServerAllocation, artifact: Artifact | null, isProduction: boolean }) => {
     const router = useRouter();
     const { toast } = useToast();
     const [isChecking, setIsChecking] = useState(true);
@@ -55,8 +55,8 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
     };
 
     const runChecks = useCallback(async () => {
-        if (!site) {
-            setSteps(prev => prev.map(s => ({ ...s, status: 'failure', description: 'Site context not available.' })));
+        if (!artifact) {
+            setSteps(prev => prev.map(s => ({ ...s, status: 'failure', description: 'Artifact context not available.' })));
             setIsChecking(false);
             return;
         }
@@ -66,8 +66,8 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
 
         // Check if domain is configured
         const domainUrl = isProduction
-            ? site.domains?.production?.url
-            : site.domains?.development?.url;
+            ? artifact.domains?.production?.url
+            : artifact.domains?.development?.url;
 
         if (!domainUrl) {
             // Domain not configured - skip all checks
@@ -182,8 +182,8 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         // STEP 5: Check if App is Started and Proxy is Configured
         updateStep(4, 'loading', 'Checking PM2 process and Nginx configuration...');
 
-        const pm2ProcessName = isProduction ? site.id : `${site.id}.development`;
-        const nginxConfigName = isProduction ? site.id : `${site.id}.development`;
+        const pm2ProcessName = isProduction ? artifact.id : `${artifact.id}.development`;
+        const nginxConfigName = isProduction ? artifact.id : `${artifact.id}.development`;
 
         const [pm2Check, nginxAvailableCheck, nginxEnabledCheck] = await Promise.all([
             getPm2Processes(server.id),
@@ -225,7 +225,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
         }
 
         setIsChecking(false);
-    }, [server.id, site, isProduction]);
+    }, [server.id, artifact, isProduction]);
 
     useEffect(() => {
         if (!hasRunChecks.current) {
@@ -235,7 +235,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
     }, [runChecks]);
 
     const handleActionClick = async (clickedStepIndex: number) => {
-        if (!site) return;
+        if (!artifact) return;
 
         const clickedStep = steps[clickedStepIndex];
         if (!clickedStep || !clickedStep.action) return;
@@ -408,8 +408,8 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
                         <Globe className="h-5 w-5" />
                         <span className="truncate">
                             {isProduction
-                                ? (site?.domains?.production?.url || 'Production Domain Not Set')
-                                : (site?.domains?.development?.url || 'Development Domain Not Set')
+                                ? (artifact?.domains?.production?.url || 'Production Domain Not Set')
+                                : (artifact?.domains?.development?.url || 'Development Domain Not Set')
                             }
                         </span>
                     </CardTitle>
@@ -420,7 +420,7 @@ const DeploymentStatusChecker = ({ server, allocation, site, isProduction }: { s
                 <CardDescription className="truncate font-mono">{server.name} • {server.publicIp}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {!site?.domains?.[isProduction ? 'production' : 'development']?.url ? (
+                {!artifact?.domains?.[isProduction ? 'production' : 'development']?.url ? (
                     <div className="text-center py-8">
                         <p className="text-muted-foreground mb-4">
                             Configure your {isProduction ? 'production' : 'development'} domain to check your app's status.
@@ -457,7 +457,7 @@ export default function ApplicationStatusPage() {
     const [servers, setServers] = useState<(Server & { allocation: ServerAllocation })[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { site, loading: profileLoading } = useProfile();
+    const { artifact, loading: profileLoading } = useProfile();
 
     useEffect(() => {
         const fetchServers = async () => {
@@ -476,8 +476,8 @@ export default function ApplicationStatusPage() {
     // Use the first allocated server for both production and development
     const allocatedServer = servers.length > 0 ? servers[0] : null;
 
-    const productionDomain = site?.domains?.production?.url;
-    const developmentDomain = site?.domains?.development?.url;
+    const productionDomain = artifact?.domains?.production?.url;
+    const developmentDomain = artifact?.domains?.development?.url;
 
     return (
         <div className="w-full max-w-4xl mx-auto">
@@ -505,7 +505,7 @@ export default function ApplicationStatusPage() {
                             key={`${allocatedServer.id}-production`}
                             server={allocatedServer}
                             allocation={allocatedServer.allocation}
-                            site={site}
+                            artifact={artifact}
                             isProduction={true}
                         />
                     ) : (
@@ -547,7 +547,7 @@ export default function ApplicationStatusPage() {
                             key={`${allocatedServer.id}-development`}
                             server={allocatedServer}
                             allocation={allocatedServer.allocation}
-                            site={site}
+                            artifact={artifact}
                             isProduction={false}
                         />
                     ) : (

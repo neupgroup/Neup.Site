@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { saveSite, type Site } from '@/actions/editor/site';
+import { saveArtifact, type Artifact } from '@/actions/editor/artifact';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -120,7 +120,7 @@ const ProxyFields = ({ nestIndex, control }: { nestIndex: "domains.production.pr
 };
 
 export default function DomainPage() {
-    const { site, setSite, loading } = useProfile();
+    const { artifact, setArtifact, loading } = useProfile();
     const { toast } = useToast();
     usePageTitle('Domain Settings');
 
@@ -135,25 +135,25 @@ export default function DomainPage() {
     });
 
     useEffect(() => {
-        if (!loading && site) {
+        if (!loading && artifact) {
             form.reset({
                 domains: {
                     production: {
-                        url: site.domains?.production?.url || '',
-                        forceHttps: site.domains?.production?.forceHttps ?? true,
-                        ignoredPaths: site.domains?.production?.ignoredPaths?.map(p => ({ value: p })) || [],
-                        proxies: site.domains?.production?.proxies || [],
+                        url: artifact.domains?.production?.url || '',
+                        forceHttps: artifact.domains?.production?.forceHttps ?? true,
+                        ignoredPaths: artifact.domains?.production?.ignoredPaths?.map(p => ({ value: p })) || [],
+                        proxies: artifact.domains?.production?.proxies || [],
                     },
                     development: {
-                        url: site.domains?.development?.url || '',
-                        forceHttps: site.domains?.development?.forceHttps ?? false,
-                        ignoredPaths: site.domains?.development?.ignoredPaths?.map(p => ({ value: p })) || [],
-                        proxies: site.domains?.development?.proxies || [],
+                        url: artifact.domains?.development?.url || '',
+                        forceHttps: artifact.domains?.development?.forceHttps ?? false,
+                        ignoredPaths: artifact.domains?.development?.ignoredPaths?.map(p => ({ value: p })) || [],
+                        proxies: artifact.domains?.development?.proxies || [],
                     },
                 },
             });
         }
-    }, [loading, site, form]);
+    }, [loading, artifact, form]);
 
     const onSubmit = async (data: DomainFormData) => {
         // Transform ignoredPaths back to array of strings
@@ -170,15 +170,15 @@ export default function DomainPage() {
             }
         };
 
-        const result = await saveSite(dataToSave);
+        const result = await saveArtifact(dataToSave);
 
         if (result.success && result.id) {
             toast({ title: 'Settings Saved', description: 'Your domain and proxy settings have been updated.' });
-            if (site) {
-                setSite({
-                    ...site,
+            if (artifact) {
+                setArtifact({
+                    ...artifact,
                     domains: {
-                        ...site.domains,
+                        ...artifact.domains,
                         ...dataToSave.domains
                     },
                 });
@@ -203,7 +203,7 @@ export default function DomainPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-4xl space-y-8">
                 <header>
                     <h1 className="text-3xl font-bold font-headline">Domains and Proxy</h1>
-                    <p className="text-muted-foreground">Manage your site's domains and reverse proxy rules.</p>
+                    <p className="text-muted-foreground">Manage your artifact's domains and reverse proxy rules.</p>
                 </header>
 
                 <div className="space-y-6">

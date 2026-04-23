@@ -54,8 +54,14 @@ type CollectionConfig = {
 const SERVER_TIMESTAMP_SENTINEL = '__server_timestamp__';
 
 const COLLECTIONS: Record<string, CollectionConfig> = {
+  // Backwards-compatible alias: historically called "sites".
+  // Use "artifacts" going forward.
   sites: {
-    model: 'site',
+    model: 'artifact',
+    jsonFields: ['socialProfiles', 'contactEmail', 'contactPhone', 'modules', 'theme', 'icons', 'domains'],
+  },
+  artifacts: {
+    model: 'artifact',
     jsonFields: ['socialProfiles', 'contactEmail', 'contactPhone', 'modules', 'theme', 'icons', 'domains'],
   },
   pages: {

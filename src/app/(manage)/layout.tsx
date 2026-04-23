@@ -5,19 +5,19 @@ import { ProfileProvider, useProfile } from '@/context/ProfileContext';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Dashboard } from '@/components/dashboard';
 import { cn } from '@/lib/utils';
-import type { Site } from '@/schemas/site';
+import type { Artifact } from '@/schemas/artifact';
 import { useEffect } from 'react';
 import { initializeUserAccount } from '@/actions/auth/initialize';
 
 function ThemedDashboard({ children }: { children: React.ReactNode }) {
-  const { site } = useProfile();
+  const { artifact } = useProfile();
   
   useEffect(() => {
     // Ensure an account_id is set for the session
     initializeUserAccount();
   }, []);
 
-  return <Dashboard theme={site?.theme}>{children}</Dashboard>;
+  return <Dashboard theme={artifact?.theme}>{children}</Dashboard>;
 }
 
 export default function DashboardLayout({

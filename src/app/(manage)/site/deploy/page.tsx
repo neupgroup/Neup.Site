@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
 import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/actions/structure';
-import type { Structure, Deployment } from '@/schemas/site';
+import type { Structure, Deployment } from '@/schemas/artifact';
 import { getSiteServers } from '@/actions/servers';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -89,18 +89,18 @@ export default function DeployPage() {
     }
     
     const handleForceDeploy = async (type: 'theme' | 'redirects' | 'assets' | 'structure') => {
-        if (!structure?.siteId) return;
+        if (!structure?.artifactId) return;
 
         setIsDeploying(true);
         toast({ title: "Initiating Deployment...", description: `Marking ${type} as pending.` });
 
         try {
             if (type === 'theme') {
-                await markThemeAsPending(structure.siteId);
+                await markThemeAsPending(structure.artifactId);
             } else if (type === 'redirects') {
-                await markRedirectsAsPending(structure.siteId);
+                await markRedirectsAsPending(structure.artifactId);
             } else if (type === 'assets') {
-                await markAssetsAsPending(structure.siteId);
+                await markAssetsAsPending(structure.artifactId);
             }
             
             await handleDeploy();
@@ -167,7 +167,7 @@ export default function DeployPage() {
                          onDeploy={() => handleForceDeploy('redirects')}
                     />
                      <StatusCard 
-                        title="Site Assets" 
+                        title="Artifact Assets" 
                         description={hasPendingAssets ? "Logo or profile changes pending" : "Up to date"}
                         status={getStatus(hasPendingAssets)}
                         icon={ImageIcon}

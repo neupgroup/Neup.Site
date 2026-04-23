@@ -12,8 +12,8 @@ import { getDataStore } from '@/lib/data-store';
  */
 export async function setPageDataSource(pageId: string, sourceId: string, methodName: string): Promise<{ success: boolean; id?: string; error?: string }> {
     const cookieStore = await cookies();
-    const siteId = cookieStore.get('siteId')?.value;
-    if (!siteId) return { success: false, error: 'Site ID not found.' };
+    const artifactId = cookieStore.get('artifactId')?.value;
+    if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
     try {
         const { firestore } = getDataStore();
@@ -21,7 +21,7 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
         const bindingRef = doc(firestore, 'page_data_sources', bindingId);
 
         await setDoc(bindingRef, {
-            siteId,
+            artifactId,
             pageId,
             sourceId,
             methodName,
@@ -39,12 +39,12 @@ export async function setPageDataSource(pageId: string, sourceId: string, method
  */
 export async function getPageDataSource(pageId: string): Promise<{ success: boolean; binding?: PageDataSourceBinding; error?: string }> {
     const cookieStore = await cookies();
-    const siteId = cookieStore.get('siteId')?.value;
-    if (!siteId) return { success: false, error: 'Site ID not found.' };
+    const artifactId = cookieStore.get('artifactId')?.value;
+    if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
     try {
         const { firestore } = getDataStore();
-        const q = query(collection(firestore, 'page_data_sources'), where('pageId', '==', pageId), where('siteId', '==', siteId), limit(1));
+        const q = query(collection(firestore, 'page_data_sources'), where('pageId', '==', pageId), where('artifactId', '==', artifactId), limit(1));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {

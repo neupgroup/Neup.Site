@@ -7,7 +7,7 @@ import { getDataStore } from '@/lib/data-store';
 
 export interface Section {
   id: string;
-  siteId: string;
+  artifactId: string;
   name: string;
   description?: string;
   type: string;
@@ -20,15 +20,15 @@ export interface Section {
 /**
  * Saves or updates a section in Firestore.
  */
-export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'siteId'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'artifactId'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     let dataToSave: any = {
-      siteId,
+      artifactId,
       name: section.name,
       type: section.type,
       content: section.content,
@@ -39,7 +39,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
     if (id) {
       const sectionRef = doc(firestore, 'sections', id);
       const sectionSnap = await getDoc(sectionRef);
-      if (!sectionSnap.exists() || sectionSnap.data().siteId !== siteId) {
+      if (!sectionSnap.exists() || sectionSnap.data().artifactId !== artifactId) {
         return { success: false, error: 'Unauthorized.' };
       }
       await setDoc(sectionRef, dataToSave, { merge: true });
@@ -55,16 +55,16 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 's
 }
 
 /**
- * Fetches all sections from Firestore for the current siteId.
+ * Fetches all sections from Firestore for the current artifactId.
  */
 export async function getSections(): Promise<{ success: boolean; sections?: Section[]; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'sections'), where('siteId', '==', siteId));
+    const q = query(collection(firestore, 'sections'), where('artifactId', '==', artifactId));
     const querySnapshot = await getDocs(q);
     const sections = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
@@ -72,7 +72,7 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
 
       const section: Section = {
         id: docSnap.id,
-        siteId: data.siteId,
+        artifactId: data.artifactId,
         name: data.name || '',
         type: data.type || '',
         content: data.content || '{}',
@@ -93,8 +93,8 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
  */
 export async function getSection(id: string): Promise<{ success: boolean; section?: Section; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
@@ -106,7 +106,7 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
     }
 
     const data = docSnap.data();
-    if (data.siteId !== siteId) {
+    if (data.artifactId !== artifactId) {
       return { success: false, error: 'Unauthorized.' };
     }
 
@@ -114,7 +114,7 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
 
     const section: Section = {
       id: docSnap.id,
-      siteId: data.siteId,
+      artifactId: data.artifactId,
       name: data.name || '',
       type: data.type || '',
       content: data.content || '{}',
@@ -133,14 +133,14 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
  */
 export async function deleteSection(id: string): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const sectionRef = doc(firestore, 'sections', id);
     const sectionSnap = await getDoc(sectionRef);
-    if (!sectionSnap.exists() || sectionSnap.data().siteId !== siteId) {
+    if (!sectionSnap.exists() || sectionSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Unauthorized.' };
     }
     await deleteDoc(sectionRef);

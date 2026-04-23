@@ -14,18 +14,18 @@ async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
   // Query for all redirects on the site. In a high-traffic app, this would be cached.
   // We can't easily query for a pattern match in Firestore, so we fetch all and match in memory.
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return null;
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return null;
 
   const redirectsRef = collection(firestore, 'redirects');
-  const q = query(redirectsRef, where('siteId', '==', siteId));
+  const q = query(redirectsRef, where('artifactId', '==', artifactId));
   const redirectsSnapshot = await getDocs(q);
 
   if (redirectsSnapshot.empty) {
     return null;
   }
 
-  const redirects = redirectsSnapshot.docs.map(doc => doc.data() as Redirect);
+  const redirects = redirectsSnapshot.docs.map((docSnap: any) => docSnap.data() as Redirect);
 
   for (const redirect of redirects) {
     const fromPattern = redirect.from.replace(/\{\{\w+\}\}/g, '([^/]+)');
@@ -33,10 +33,10 @@ async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
     const match = incomingPath.match(regex);
 
     if (match) {
-      const wildcardNames = (redirect.from.match(/\{\{(\w+)\}\}/g) || []).map(p => p.slice(2, -2));
+      const wildcardNames = (redirect.from.match(/\{\{(\w+)\}\}/g) || []).map((p: string) => p.slice(2, -2));
       let destination = redirect.to;
 
-      wildcardNames.forEach((name, index) => {
+      wildcardNames.forEach((name: string, index: number) => {
         destination = destination.replace(new RegExp(`\\{\\{${name}\\}\\}`, 'g'), match[index + 1]);
       });
 
@@ -74,12 +74,12 @@ async function getPageForPath(slug: string[]): Promise<{ html: string | null, th
 
     const pathData = pathSnapshot.docs[0].data();
     const pageId = pathData.pageId;
-    const siteId = pathData.siteId;
+    const artifactId = pathData.artifactId;
 
     const pageRef = doc(firestore, 'pages', pageId);
-    const siteRef = doc(firestore, 'sites', siteId);
+    const artifactRef = doc(firestore, 'artifacts', artifactId);
 
-    const [pageSnap, siteSnap] = await Promise.all([getDoc(pageRef), getDoc(siteRef)]);
+    const [pageSnap, artifactSnap] = await Promise.all([getDoc(pageRef), getDoc(artifactRef)]);
 
 
     if (!pageSnap.exists()) {
@@ -89,11 +89,11 @@ async function getPageForPath(slug: string[]): Promise<{ html: string | null, th
     const pageData = pageSnap.data();
     const elements = pageData.elements;
 
-    const siteData = siteSnap.exists() ? siteSnap.data() : null;
+    const artifactData = artifactSnap.exists() ? artifactSnap.data() : null;
 
-    const html = convertJsonToHtml(elements, siteData?.theme);
+    const html = convertJsonToHtml(elements, artifactData?.theme);
 
-    return { html, theme: siteData?.theme };
+    return { html, theme: artifactData?.theme };
 
   } catch (error) {
     console.error("Error resolving path:", error);

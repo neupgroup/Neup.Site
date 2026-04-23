@@ -9,15 +9,15 @@ import { createServerLog } from '@/actions/server-logs';
 // This legacy entrypoint now records an informative log and exits.
 export async function deployCodebaseFromStorage(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
     const cookieStore = await cookies();
-    const siteId = cookieStore.get('siteId')?.value;
-    if (!siteId) return { success: false, error: 'Site ID not found.' };
+    const artifactId = cookieStore.get('artifactId')?.value;
+    if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
     const { firestore } = getDataStore();
 
     // 1. Find the server allocation for this site
     const allocationsQuery = query(
         collection(firestore, 'allocations'),
-        where('siteId', '==', siteId),
+        where('artifactId', '==', artifactId),
         limit(1)
     );
     const allocationsSnapshot = await getDocs(allocationsQuery);
@@ -29,7 +29,7 @@ export async function deployCodebaseFromStorage(): Promise<{ success: boolean; e
 
     const createLogResult = await createServerLog({
         serverId: serverId,
-        commandName: `Asset Deployment for site: ${siteId}`,
+        commandName: `Asset Deployment for site: ${artifactId}`,
         command: 'Legacy asset deployment has been removed.',
         output: 'Use the server-based public file workflow instead.',
         status: 'cancelled',

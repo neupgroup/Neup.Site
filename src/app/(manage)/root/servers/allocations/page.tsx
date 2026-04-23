@@ -84,7 +84,7 @@ export default function AllocationsPage() {
              <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Site ID</TableHead>
+                  <TableHead>Artifact ID</TableHead>
                   <TableHead>Server ID</TableHead>
                   <TableHead>Port</TableHead>
                   <TableHead>Status</TableHead>
@@ -95,7 +95,7 @@ export default function AllocationsPage() {
               <TableBody>
                 {allocations.map((alloc) => (
                   <TableRow key={alloc.id}>
-                    <TableCell className="font-mono">{alloc.siteId}</TableCell>
+                    <TableCell className="font-mono">{alloc.artifactId}</TableCell>
                     <TableCell className="font-mono">{alloc.serverId}</TableCell>
                     <TableCell>{alloc.port}</TableCell>
                     <TableCell>

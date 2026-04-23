@@ -126,7 +126,7 @@ const FileManager = () => {
 
 export default function SiteUploadsPage() {
   const { toast } = useToast();
-  const { site } = useProfile();
+  const { artifact } = useProfile();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -151,7 +151,7 @@ export default function SiteUploadsPage() {
 
   const handleUpload = async () => {
     const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
-    if (filesToUpload.length === 0 || !site?.id) return;
+    if (filesToUpload.length === 0 || !artifact?.id) return;
 
     setUploadingFiles(prev => prev.map(f => f.status === 'pending' ? { ...f, status: 'uploading' } : f));
 
@@ -159,7 +159,7 @@ export default function SiteUploadsPage() {
         const formData = new FormData();
         formData.append('file', fileToUpload.file);
         formData.append('platform', 'neupsites');
-        formData.append('contentIds', JSON.stringify([site.id]));
+        formData.append('contentIds', JSON.stringify([artifact.id]));
 
         try {
             const response = await fetch('https://neupgroup.com/api/v1/upload', {
@@ -196,7 +196,7 @@ export default function SiteUploadsPage() {
     <div className="w-full space-y-6">
       <header>
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Uploads</h1>
-        <p className="text-muted-foreground">Manage your site's public assets with intelligent parallel uploads.</p>
+        <p className="text-muted-foreground">Manage your artifact's public assets with intelligent parallel uploads.</p>
       </header>
 
       <Card>
@@ -208,7 +208,7 @@ export default function SiteUploadsPage() {
         </CardHeader>
         <CardContent>
           <div {...getRootProps({ className: cn("p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors", isDragActive ? "border-primary bg-primary/10" : "border-border hover:border-primary/50") })}>
-            <input {...getInputProps({ directory: "true", webkitdirectory: "true" })} />
+            <input {...getInputProps(({ directory: "true", webkitdirectory: "true" } as any))} />
             <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <p>{isDragActive ? "Drop to upload" : "Drag 'n' drop files or a folder here, or click to select"}</p>
           </div>
@@ -217,7 +217,7 @@ export default function SiteUploadsPage() {
             <Label htmlFor="upload-path">Upload Location</Label>
             <div className="flex items-center">
               <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground sm:text-sm h-10">
-                /content/neupsites/{site?.id || '...'}/
+                /content/neupsites/{artifact?.id || '...'}/
               </span>
               <Input
                 id="upload-path"
@@ -257,4 +257,3 @@ export default function SiteUploadsPage() {
     </div>
   );
 }
-

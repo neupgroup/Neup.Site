@@ -9,7 +9,7 @@ import { markStructureAsPending } from './structure';
 
 export interface Path {
   id: string;
-  siteId: string;
+  artifactId: string;
   pageId: string;
   path: string;
   createdAt: string | null;
@@ -20,8 +20,8 @@ export interface Path {
  */
 export async function addPath(pageId: string, path: string): Promise<{ success: boolean; id?: string; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   if (!path.startsWith('/')) {
     return { success: false, error: 'Path must start with a "/"' };
@@ -31,20 +31,20 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
     const { firestore } = getDataStore();
 
     // Check if path already exists for this site
-    const q = query(collection(firestore, 'paths'), where('siteId', '==', siteId), where('path', '==', path));
+    const q = query(collection(firestore, 'paths'), where('artifactId', '==', artifactId), where('path', '==', path));
     const existingPaths = await getDocs(q);
     if (!existingPaths.empty) {
       return { success: false, error: `Path "${path}" is already in use on this site.` };
     }
 
     const docRef = await addDoc(collection(firestore, 'paths'), {
-      siteId,
+      artifactId,
       pageId,
       path,
       createdAt: serverTimestamp(),
     });
 
-    await markStructureAsPending(siteId, [path]);
+    await markStructureAsPending(artifactId, [path]);
 
     return { success: true, id: docRef.id };
   } catch (error: any) {
@@ -62,19 +62,19 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
  */
 export async function getPathsForPage(pageId: string): Promise<{ success: boolean; paths?: Path[]; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'paths'), where('siteId', '==', siteId), where('pageId', '==', pageId));
+    const q = query(collection(firestore, 'paths'), where('artifactId', '==', artifactId), where('pageId', '==', pageId));
     const querySnapshot = await getDocs(q);
     const paths = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
       const createdAt = data.createdAt;
       return {
         id: docSnap.id,
-        siteId: data.siteId,
+        artifactId: data.artifactId,
         pageId: data.pageId,
         path: data.path,
         createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
@@ -96,20 +96,20 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
  */
 export async function deletePath(id: string): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const pathRef = doc(firestore, 'paths', id);
     const pathSnap = await getDoc(pathRef);
-    if (!pathSnap.exists() || pathSnap.data().siteId !== siteId) {
+    if (!pathSnap.exists() || pathSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Path not found or unauthorized.' };
     }
     const pathData = pathSnap.data();
     await deleteDoc(pathRef);
 
-    await markStructureAsPending(siteId, [pathData.path], true);
+    await markStructureAsPending(artifactId, [pathData.path], true);
 
     return { success: true };
   } catch (error: any) {

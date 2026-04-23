@@ -9,29 +9,6 @@ Columns:
 ## artifact (Artifact)
 Columns:
 - id: String; primary key
-- name: String
-- type: String
-- logo: String
-- description: String
-
-## role (Role)
-Columns:
-- id: String; primary key
-- artifactId: String; references Artifact.id
-- portfolioId: String
-- accountId: String; references Account.id
-- role: String
-
-## domain (Domain)
-Columns:
-- id: String; primary key
-- artifactId: String; references Artifact.id
-- domain: String
-- isPrimary: Boolean
-
-## sites (Site)
-Columns:
-- id: String; primary key
 - name: String; default ""
 - url: String?
 - tier: String; default "free"
@@ -49,15 +26,28 @@ Columns:
 - ownerAccountId: String?
 - status: String?
 - type: String?
-- createdAt: DateTime?
-- updatedAt: DateTime?
 Indexes:
 - index (ownerAccountId)
+
+## role (Role)
+Columns:
+- id: String; primary key
+- artifactId: String; references Artifact.id
+- portfolioId: String
+- accountId: String; references Account.id
+- role: String
+
+## domain (Domain)
+Columns:
+- id: String; primary key
+- artifactId: String; references Artifact.id
+- domain: String
+- isPrimary: Boolean
 
 ## pages (Page)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - name: String; default ""
 - elements: Json?
 - reactComponent: String?
@@ -65,23 +55,23 @@ Columns:
 - createdAt: DateTime?
 - updatedAt: DateTime?
 Indexes:
-- index (siteId)
+- index (artifactId)
 
 ## paths (PagePath)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - pageId: String; references Page.id
 - path: String
 - createdAt: DateTime?
 Indexes:
-- unique (siteId, path)
+- unique (artifactId, path)
 - index (pageId)
 
 ## sections (Section)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - name: String
 - type: String
 - content: String
@@ -89,7 +79,7 @@ Columns:
 - createdBy: String
 - createdAt: DateTime?
 Indexes:
-- index (siteId)
+- index (artifactId)
 
 ## templates (Template)
 Columns:
@@ -109,7 +99,7 @@ Columns:
 ## sources (DataSource)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - name: String
 - type: String
 - methods: Json?
@@ -120,45 +110,45 @@ Columns:
 - datalistId: String?
 - createdAt: DateTime?
 Indexes:
-- index (siteId)
+- index (artifactId)
 
 ## page_data_sources (PageDataSourceBinding)
 Columns:
 - id: String; primary key
-- siteId: String
+- artifactId: String
 - pageId: String; references Page.id
 - sourceId: String; references DataSource.id
 - methodName: String
 Indexes:
-- index (siteId, pageId)
+- index (artifactId, pageId)
 
 ## datalists (Datalist)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - name: String
 - data: String
 - createdAt: DateTime?
 - updatedAt: DateTime?
 Indexes:
-- index (siteId)
+- index (artifactId)
 
 ## redirects (Redirect)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - from: String
 - to: String
 - type: String
 - created_by: String
 - created_on: DateTime?
 Indexes:
-- index (siteId, created_on)
+- index (artifactId, created_on)
 
 ## environments (EnvironmentVariable)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - name: String
 - value: String
 - dataType: String
@@ -166,12 +156,12 @@ Columns:
 - createdBy: String
 - createdOn: DateTime?
 Indexes:
-- index (siteId, createdOn)
+- index (artifactId, createdOn)
 
 ## structure (SiteStructure)
 Columns:
 - id: String; primary key
-- siteId: String; unique; references Site.id
+- artifactId: String; unique; references Artifact.id
 - structure: Json?
 - status: String
 - themeChanged: Boolean; default false
@@ -184,7 +174,7 @@ Columns:
 ## deployments (Deployment)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - structure: Json?
 - status: String
 - theme: Json?
@@ -193,7 +183,7 @@ Columns:
 - environments: Json?
 - attemptedOn: DateTime?
 Indexes:
-- index (siteId, status, attemptedOn)
+- index (artifactId, status, attemptedOn)
 
 ## servers (Server)
 Columns:
@@ -222,7 +212,7 @@ Columns:
 Columns:
 - id: String; primary key; default cuid()
 - serverId: String; references Server.id
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - username: String?
 - deploymentPath: String?
 - storageAllocation: String?
@@ -231,7 +221,7 @@ Columns:
 - allocatedOn: DateTime?
 - status: String; default "active"
 Indexes:
-- index (siteId, serverId)
+- index (artifactId, serverId)
 
 ## serverLogs (ServerLog)
 Columns:
@@ -266,14 +256,14 @@ Columns:
 ## codeFiles (CodeFile)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - fileName: String
 - filePath: String
 - content: String
 - size: Int; default 0
 - createdAt: DateTime?
 Indexes:
-- index (siteId, createdAt)
+- index (artifactId, createdAt)
 
 ## linked_accounts (LinkedAccount)
 Columns:
@@ -360,14 +350,14 @@ Indexes:
 ## appBaseBackups (AppBaseBackup)
 Columns:
 - id: String; primary key; default cuid()
-- siteId: String; references Site.id
+- artifactId: String; references Artifact.id
 - fileName: String
 - fileType: String
 - content: String
 - backedUpAt: DateTime?
 - backedUpBy: String
 Indexes:
-- index (siteId, backedUpAt)
+- index (artifactId, backedUpAt)
 
 ## news (NewsArticle)
 Columns:

@@ -17,11 +17,11 @@ import * as path from 'path';
 
 export type { Redirect };
 
-export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createRedirect(data: Omit<Redirect, 'id' | 'artifactId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();
-  const siteId = (await cookies()).get('siteId')?.value;
+  const artifactId = (await cookies()).get('artifactId')?.value;
 
-  if (!accountId || !siteId) {
+  if (!accountId || !artifactId) {
     return { success: false, error: 'User or site context not found.' };
   }
 
@@ -29,12 +29,12 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
     const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'redirects'), {
       ...data,
-      siteId,
+      artifactId,
       created_by: accountId,
       created_on: serverTimestamp(),
     });
 
-    await markRedirectsAsPending(siteId);
+    await markRedirectsAsPending(artifactId);
 
     revalidatePath('/manage/redirects');
     return { success: true, id: docRef.id };
@@ -45,15 +45,15 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'siteId' | 'cre
 }
 
 export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }): Promise<{ success: boolean; redirects?: Redirect[]; error?: string; totalCount?: number }> {
-  const siteId = (await cookies()).get('siteId')?.value;
-  if (!siteId) {
-    return { success: false, error: 'Site context not found.' };
+  const artifactId = (await cookies()).get('artifactId')?.value;
+  if (!artifactId) {
+    return { success: false, error: 'Artifact context not found.' };
   }
 
   try {
     const { firestore } = getDataStore();
     const redirectsRef = collection(firestore, 'redirects');
-    const siteQuery = query(redirectsRef, where('siteId', '==', siteId));
+    const siteQuery = query(redirectsRef, where('artifactId', '==', artifactId));
 
     const countSnapshot = await getCountFromServer(siteQuery);
     const totalCount = countSnapshot.data().count;
@@ -76,7 +76,7 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
       const createdOn = data.created_on;
       return {
         id: docSnap.id,
-        siteId: data.siteId,
+        artifactId: data.artifactId,
         from: data.from,
         to: data.to,
         type: data.type,
@@ -92,16 +92,16 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
 }
 
 export async function deleteRedirect(id: string): Promise<{ success: boolean; error?: string }> {
-  const siteId = (await cookies()).get('siteId')?.value;
-  if (!siteId) {
-    return { success: false, error: 'Site context not found.' };
+  const artifactId = (await cookies()).get('artifactId')?.value;
+  if (!artifactId) {
+    return { success: false, error: 'Artifact context not found.' };
   }
 
   try {
     const { firestore } = getDataStore();
     await deleteDoc(doc(firestore, 'redirects', id));
 
-    await markRedirectsAsPending(siteId);
+    await markRedirectsAsPending(artifactId);
 
     revalidatePath('/manage/redirects');
     return { success: true };
@@ -112,15 +112,15 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
 }
 
 export async function getAllRedirects(): Promise<{ success: boolean; redirects?: Redirect[]; error?: string }> {
-  const siteId = (await cookies()).get('siteId')?.value;
-  if (!siteId) {
-    return { success: false, error: 'Site context not found.' };
+  const artifactId = (await cookies()).get('artifactId')?.value;
+  if (!artifactId) {
+    return { success: false, error: 'Artifact context not found.' };
   }
 
   try {
     const { firestore } = getDataStore();
     const redirectsRef = collection(firestore, 'redirects');
-    const q = query(redirectsRef, where('siteId', '==', siteId), orderBy('created_on', 'desc'));
+    const q = query(redirectsRef, where('artifactId', '==', artifactId), orderBy('created_on', 'desc'));
 
     const querySnapshot = await getDocs(q);
     const redirects = querySnapshot.docs.map(docSnap => {
@@ -128,7 +128,7 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
       const createdOn = data.created_on;
       return {
         id: docSnap.id,
-        siteId: data.siteId,
+        artifactId: data.artifactId,
         from: data.from,
         to: data.to,
         type: data.type,
@@ -144,9 +144,9 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
 }
 
 export async function deployRedirects(): Promise<{ success: boolean; error?: string }> {
-  const siteId = (await cookies()).get('siteId')?.value;
-  if (!siteId) {
-    return { success: false, error: 'Site context not found.' };
+  const artifactId = (await cookies()).get('artifactId')?.value;
+  if (!artifactId) {
+    return { success: false, error: 'Artifact context not found.' };
   }
 
   let logId: string | undefined;
@@ -155,7 +155,7 @@ export async function deployRedirects(): Promise<{ success: boolean; error?: str
     const { firestore } = getDataStore();
     const allocationsQuery = query(
       collection(firestore, 'allocations'),
-      where('siteId', '==', siteId),
+      where('artifactId', '==', artifactId),
       limit(1)
     );
     const allocationsSnapshot = await getDocs(allocationsQuery);
@@ -186,7 +186,7 @@ export async function deployRedirects(): Promise<{ success: boolean; error?: str
     }
 
     const username = server.username || 'root';
-    const resolvedAppPath = `/home/${username}/${siteId}`;
+    const resolvedAppPath = `/home/${username}/${artifactId}`;
     const coreDir = `${resolvedAppPath}/base/core`;
 
     const ssh = new NodeSSH();

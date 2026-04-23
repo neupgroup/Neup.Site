@@ -28,7 +28,7 @@ const allPossibleModules = [
 ];
 
 export default function SiteModulesPage() {
-  usePageTitle('Site Modules');
+  usePageTitle('Artifact Modules');
   const [modules, setModules] = useState<SiteModules>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,11 +96,11 @@ export default function SiteModulesPage() {
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Site Modules</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Artifact Modules</h1>
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Manage Site Modules</CardTitle>
+          <CardTitle>Manage Artifact Modules</CardTitle>
           <CardDescription>
             Enable or disable modules to add or remove functionality from this site.
           </CardDescription>

@@ -11,7 +11,7 @@ export interface ServerAllocationStorage {
 
 export interface ServerAllocation {
   id: string;
-  siteId: string;
+  artifactId: string;
   serverId: string;
   username?: string;
   deploymentPath?: string;

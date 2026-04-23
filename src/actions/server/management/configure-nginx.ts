@@ -1,8 +1,8 @@
 
 "use server";
 
-import { getSite } from "@/actions/editor/site";
-import type { DomainSetting } from '@/schemas/site';
+import { getArtifact } from "@/actions/editor/artifact";
+import type { DomainSetting } from '@/schemas/artifact';
 
 interface NginxConfigParams {
     urls: string[];
@@ -52,15 +52,17 @@ server {
 
 
 export async function getConfigureNginxCommand({ proxyUrl, listenPort }: Omit<NginxConfigParams, 'urls'>): Promise<string> {
-    const { site } = await getSite();
+    const { artifact } = await getArtifact();
 
-    if (!site?.domainSettings) {
-        throw new Error('No domain settings found for the site.');
+    const domainSettings = artifact?.domains ?? artifact?.domainSettings;
+    if (!domainSettings) {
+        throw new Error('No domain settings found for the artifact.');
     }
     
     const domains: { url: string; forceHttps?: boolean }[] = [];
-    if (site.domainSettings.production?.url) domains.push({url: site.domainSettings.production.url, forceHttps: site.domainSettings.production.forceHttps});
-    if (site.domainSettings.staging?.url) domains.push({url: site.domainSettings.staging.url, forceHttps: site.domainSettings.staging.forceHttps});
+    if (domainSettings.production?.url) domains.push({ url: domainSettings.production.url, forceHttps: domainSettings.production.forceHttps });
+    if (domainSettings.development?.url) domains.push({ url: domainSettings.development.url, forceHttps: domainSettings.development.forceHttps });
+    if ((domainSettings as any).staging?.url) domains.push({ url: (domainSettings as any).staging.url, forceHttps: (domainSettings as any).staging.forceHttps });
 
     if (domains.length === 0) {
         throw new Error('At least one domain must be configured.');
@@ -84,7 +86,7 @@ export async function getConfigureNginxCommand({ proxyUrl, listenPort }: Omit<Ng
     }
 
     const mergedNginxConfig = domainConfigs.join('\n');
-    const safeDomainName = site.id.replace(/[^a-zA-Z0-9]/g, '_');
+    const safeDomainName = (artifact?.id || 'artifact').replace(/[^a-zA-Z0-9]/g, '_');
     const configFileName = `${safeDomainName}.conf`;
     const configFilePath = `/etc/nginx/sites-available/${configFileName}`;
     const enabledConfigPath = `/etc/nginx/sites-enabled/${configFileName}`;

@@ -8,6 +8,6 @@ import { cookies } from 'next/headers';
  */
 export async function logout(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete('siteId');
+  cookieStore.delete('artifactId');
   cookieStore.delete('account_id');
 }

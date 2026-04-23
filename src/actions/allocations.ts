@@ -46,7 +46,7 @@ export async function getAllocations(): Promise<{ success: boolean; allocations?
       return {
         id: docSnap.id,
         serverId: data.serverId,
-        siteId: data.siteId,
+        artifactId: data.artifactId,
         port: data.port,
         allocatedStorage: data.allocatedStorage,
         allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
@@ -75,7 +75,7 @@ export async function getAllocation(id: string): Promise<{ success: boolean; all
     const allocation: Allocation = {
       id: docSnap.id,
       serverId: data.serverId,
-      siteId: data.siteId,
+      artifactId: data.artifactId,
       port: data.port,
       allocatedStorage: data.allocatedStorage,
       allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
@@ -115,10 +115,10 @@ export async function deleteAllocation(id: string): Promise<{ success: boolean; 
   }
 }
 
-export async function updateAllocationPort(siteId: string, serverId: string, port: number): Promise<{ success: boolean; error?: string }> {
+export async function updateAllocationPort(artifactId: string, serverId: string, port: number): Promise<{ success: boolean; error?: string }> {
   try {
     const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'allocations'), where('siteId', '==', siteId), where('serverId', '==', serverId));
+    const q = query(collection(firestore, 'allocations'), where('artifactId', '==', artifactId), where('serverId', '==', serverId));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
@@ -133,7 +133,7 @@ export async function updateAllocationPort(siteId: string, serverId: string, por
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update allocation port for site ${siteId}: ${e.message}`, stack: e.stack, source: 'updateAllocationPort' });
+    await logErrorToDatabase({ message: `Failed to update allocation port for site ${artifactId}: ${e.message}`, stack: e.stack, source: 'updateAllocationPort' });
     return { success: false, error: 'Failed to update allocation port.' };
   }
 }

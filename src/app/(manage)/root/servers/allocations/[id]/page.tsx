@@ -133,8 +133,8 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <h4 className="font-semibold text-sm text-muted-foreground">Site ID</h4>
-                        <p className="font-mono text-sm">{allocation.siteId}</p>
+                        <h4 className="font-semibold text-sm text-muted-foreground">Artifact ID</h4>
+                        <p className="font-mono text-sm">{allocation.artifactId}</p>
                     </div>
                     <div>
                         <h4 className="font-semibold text-sm text-muted-foreground">Server ID</h4>

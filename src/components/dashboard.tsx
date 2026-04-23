@@ -51,7 +51,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Site, SiteTheme } from '@/schemas/site';
+import type { Artifact, ArtifactTheme } from '@/schemas/artifact';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from './ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -120,10 +120,10 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
         <NavLink href="/tourio/dish" currentPath={currentPath} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></NavLink>
       </div>
 
-      {/* Site Section */}
+      {/* Artifact Section */}
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
-          Site
+          Artifact
         </div>
         <NavLink href="/site/pages" currentPath={currentPath} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
         <NavLink href="/site/sources" currentPath={currentPath} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
@@ -169,11 +169,11 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
 }
 
 function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: boolean, toggleMobileMenu: () => void }) {
-  const { site, loading } = useProfile();
+  const { artifact, loading } = useProfile();
 
-  const profileName = site?.name;
-  const logoUrl = site?.logoUrl;
-  const hideSitename = site?.hideSitename;
+  const profileName = artifact?.name;
+  const logoUrl = artifact?.logoUrl;
+  const hideSitename = artifact?.hideSitename;
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow">
@@ -184,7 +184,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
               <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image src={logoUrl} alt="Site Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
+                <Image src={logoUrl} alt="Artifact Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
               </div>
             ) : (
               <Rocket className="h-6 w-6 text-primary" />
@@ -207,15 +207,15 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
   );
 }
 
-export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: SiteTheme }) {
+export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: ArtifactTheme }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     // This component is client-side, so we can check for the cookie here.
-    const siteId = getCookie('siteId');
-    setIsAuthenticated(!!siteId);
+    const artifactId = getCookie('artifactId');
+    setIsAuthenticated(!!artifactId);
   }, [pathname]); // Re-check on every navigation
 
   useEffect(() => {

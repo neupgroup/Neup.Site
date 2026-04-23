@@ -26,11 +26,11 @@ import { cookies } from 'next/headers';
 import { markEnvironmentsAsPending } from './structure';
 
 
-export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 'id' | 'siteId' | 'createdBy' | 'createdOn'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 'id' | 'artifactId' | 'createdBy' | 'createdOn'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();
-  const siteId = cookies().get('siteId')?.value;
+  const artifactId = cookies().get('artifactId')?.value;
 
-  if (!accountId || !siteId) {
+  if (!accountId || !artifactId) {
     return { success: false, error: 'User or site context not found.' };
   }
 
@@ -38,12 +38,12 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
     const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'environments'), {
       ...data,
-      siteId,
+      artifactId,
       createdBy: accountId,
       createdOn: serverTimestamp(),
     });
 
-    await markEnvironmentsAsPending(siteId);
+    await markEnvironmentsAsPending(artifactId);
 
     revalidatePath('/site/environment');
     return { success: true, id: docRef.id };
@@ -54,15 +54,15 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
 }
 
 export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number } = {}): Promise<{ success: boolean; variables?: EnvironmentVariable[]; error?: string; totalCount?: number }> {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) {
-    return { success: false, error: 'Site context not found.' };
+  const artifactId = cookies().get('artifactId')?.value;
+  if (!artifactId) {
+    return { success: false, error: 'Artifact context not found.' };
   }
 
   try {
     const { firestore } = getDataStore();
     const envRef = collection(firestore, 'environments');
-    const siteQuery = query(envRef, where('siteId', '==', siteId));
+    const siteQuery = query(envRef, where('artifactId', '==', artifactId));
     
     const countSnapshot = await getCountFromServer(siteQuery);
     const totalCount = countSnapshot.data().count;
@@ -85,7 +85,7 @@ export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { pag
       const createdOn = data.createdOn;
       return {
         id: docSnap.id,
-        siteId: data.siteId,
+        artifactId: data.artifactId,
         name: data.name,
         value: data.value,
         dataType: data.dataType,
@@ -102,15 +102,15 @@ export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { pag
 }
 
 export async function deleteEnvironmentVariable(id: string): Promise<{ success: boolean; error?: string }> {
-  const siteId = cookies().get('siteId')?.value;
-  if (!siteId) {
-    return { success: false, error: 'Site context not found.' };
+  const artifactId = cookies().get('artifactId')?.value;
+  if (!artifactId) {
+    return { success: false, error: 'Artifact context not found.' };
   }
 
   try {
     const { firestore } = getDataStore();
     await deleteDoc(doc(firestore, 'environments', id));
-    await markEnvironmentsAsPending(siteId);
+    await markEnvironmentsAsPending(artifactId);
     revalidatePath('/site/environment');
     return { success: true };
   } catch (e: any) {

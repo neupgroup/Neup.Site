@@ -2,22 +2,21 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { toIsoString } from '@/lib/db-utils';
 import { getAccountId } from './accounts';
-import type { Site } from '@/schemas/site';
+import type { Artifact } from '@/schemas/artifact';
 
 /**
- * Fetches all sites associated with the current account ID.
- * This is used for the site switcher functionality.
+ * Fetches all artifacts owned by the current account ID.
+ * Kept as a backwards-compatible helper (historically named "sites").
  */
-export async function getSitesForAccount(): Promise<{ sites?: Site[]; error?: string }> {
+export async function getSitesForAccount(): Promise<{ sites?: Artifact[]; error?: string }> {
   const accountId = await getAccountId();
   if (!accountId) {
     return { error: 'User account not found.' };
   }
 
   try {
-    const records = await db.site.findMany({
+    const records = await db.artifact.findMany({
       where: { ownerAccountId: accountId },
     });
 
@@ -27,23 +26,21 @@ export async function getSitesForAccount(): Promise<{ sites?: Site[]; error?: st
       url: record.url || '',
       domainSettings: undefined,
       domains: record.domains ?? undefined,
-      tier: (record.tier as Site['tier']) || 'free',
+      tier: (record.tier as Artifact['tier']) || 'free',
       logoUrl: record.logoUrl ?? undefined,
-      icons: (record.icons as Site['icons']) ?? {},
+      icons: (record.icons as Artifact['icons']) ?? {},
       hideSitename: record.hideSitename ?? false,
       hideLogo: record.hideLogo ?? false,
       description: record.description ?? undefined,
-      socialProfiles: (record.socialProfiles as Site['socialProfiles']) ?? [],
-      contactEmail: (record.contactEmail as Site['contactEmail']) ?? [],
-      contactPhone: (record.contactPhone as Site['contactPhone']) ?? [],
-      modules: (record.modules as Site['modules']) ?? {},
-      theme: (record.theme as Site['theme']) ?? undefined,
+      socialProfiles: (record.socialProfiles as Artifact['socialProfiles']) ?? [],
+      contactEmail: (record.contactEmail as Artifact['contactEmail']) ?? [],
+      contactPhone: (record.contactPhone as Artifact['contactPhone']) ?? [],
+      modules: (record.modules as Artifact['modules']) ?? {},
+      theme: (record.theme as Artifact['theme']) ?? undefined,
       ownerAccountId: record.ownerAccountId ?? undefined,
       status: record.status ?? undefined,
       type: record.type ?? undefined,
-      createdAt: toIsoString(record.createdAt),
-      updatedAt: toIsoString(record.updatedAt),
-    })) as Site[];
+    })) as Artifact[];
 
     return { sites };
   } catch (e: any) {

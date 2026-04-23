@@ -5,7 +5,7 @@ import { updateAllocationPort } from '@/actions/allocations';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';
 
-export async function detectAndAppPortFromPm2(siteId: string, serverId: string): Promise<{ success: boolean; port?: number; error?: string }> {
+export async function detectAndAppPortFromPm2(artifactId: string, serverId: string): Promise<{ success: boolean; port?: number; error?: string }> {
     const ssh = new NodeSSH();
 
     try {
@@ -28,10 +28,10 @@ export async function detectAndAppPortFromPm2(siteId: string, serverId: string):
         }
 
         const processes = JSON.parse(result.stdout);
-        const appProcess = processes.find((p: any) => p.name === siteId);
+        const appProcess = processes.find((p: any) => p.name === artifactId);
 
         if (!appProcess) {
-            return { success: false, error: `PM2 process "${siteId}" not found.` };
+            return { success: false, error: `PM2 process "${artifactId}" not found.` };
         }
 
         // Try to find port in arguments
@@ -53,7 +53,7 @@ export async function detectAndAppPortFromPm2(siteId: string, serverId: string):
         }
 
         if (port) {
-            await updateAllocationPort(siteId, serverId, port);
+            await updateAllocationPort(artifactId, serverId, port);
             return { success: true, port };
         }
 
@@ -61,7 +61,7 @@ export async function detectAndAppPortFromPm2(siteId: string, serverId: string):
 
     } catch (e: any) {
         console.error('Port detection error:', e);
-        await logErrorToDatabase({ message: `Port detection failed for ${siteId}: ${e.message}`, stack: e.stack, source: 'detectAndAppPortFromPm2' });
+        await logErrorToDatabase({ message: `Port detection failed for ${artifactId}: ${e.message}`, stack: e.stack, source: 'detectAndAppPortFromPm2' });
         return { success: false, error: e.message };
     } finally {
         ssh.dispose();

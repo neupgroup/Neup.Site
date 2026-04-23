@@ -3,11 +3,11 @@
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, Timestamp, collection, getDocs, addDoc, query, orderBy, limit, where } from '@/lib/firestore';
 import { cookies } from 'next/headers';
 import { getDataStore } from '@/lib/data-store';
-import type { Structure, PathStructure, Deployment, Site } from '@/schemas/site';
+import type { Structure, PathStructure, Deployment, Artifact } from '@/schemas/artifact';
 import type { EnvironmentVariable } from '@/schemas/environment';
 import { logErrorToDatabase } from '@/lib/logging';
 import { getPages } from './editor/pages';
-import { getSite } from './editor/site';
+import { getArtifact } from './editor/artifact';
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
@@ -19,16 +19,16 @@ import { getEnvironmentVariables } from './environment';
 
 
 /**
- * Gets the deployment structure for the current site.
+ * Gets the deployment structure for the current artifact.
  */
 export async function getStructure(): Promise<{ success: boolean; structure?: Structure; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     const docSnap = await getDoc(structureRef);
 
     if (!docSnap.exists()) {
@@ -38,7 +38,7 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
     const data = docSnap.data();
     const structure: Structure = {
       id: docSnap.id,
-      siteId: data.siteId,
+      artifactId: data.artifactId,
       status: data.status,
       structure: data.structure || [],
       themeChanged: data.themeChanged || false,
@@ -56,19 +56,19 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
 }
 
 /**
- * Gets the last successful deployment record for the current site.
+ * Gets the last successful deployment record for the current artifact.
  */
 export async function getLastDeployment(): Promise<{ success: boolean; deployment?: Deployment; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const deploymentsRef = collection(firestore, 'deployments');
     const q = query(
       deploymentsRef,
-      where('siteId', '==', siteId),
+      where('artifactId', '==', artifactId),
       where('status', '==', 'deployed'),
       orderBy('attemptedOn', 'desc'),
       limit(1)
@@ -83,7 +83,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
     const data = docSnap.data();
     const deployment: Deployment = {
       id: docSnap.id,
-      siteId: data.siteId,
+      artifactId: data.artifactId,
       structure: data.structure || [],
       status: data.status,
       theme: data.theme,
@@ -105,8 +105,8 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
  */
 export async function buildStructure(): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
@@ -133,9 +133,9 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
       }
     }
 
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     await setDoc(structureRef, {
-      siteId,
+      artifactId,
       structure: structureDoc,
       status: 'pendingDeployment',
       updatedAt: serverTimestamp(),
@@ -144,7 +144,7 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
     return { success: true };
   } catch (error: any) {
     await logErrorToDatabase({ message: `Failed to build structure: ${error.message}`, stack: error.stack, source: 'buildStructure' });
-    return { success: false, error: 'Failed to build site structure.' };
+    return { success: false, error: 'Failed to build artifact structure.' };
   }
 }
 
@@ -154,19 +154,19 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
  */
 export async function createDeployment(): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     const structureSnap = await getDoc(structureRef);
 
     if (!structureSnap.exists()) {
       return { success: false, error: 'No structure found to deploy. Please build first.' };
     }
 
-    const { site } = await getSite();
+    const { artifact } = await getArtifact();
     const currentStructure = structureSnap.data() as Structure;
 
     const redirectsResult = await getAllRedirects();
@@ -177,22 +177,22 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
 
     // Create a new document in the 'deployments' collection
     await addDoc(collection(firestore, 'deployments'), {
-      siteId,
+      artifactId,
       structure: currentStructure.structure || [],
       status: 'deployed',
-      theme: site?.theme || {},
+      theme: artifact?.theme || {},
       redirects: redirects || [],
-      siteProfile: { 
-        name: site?.name || '', 
-        logoUrl: site?.logoUrl || null,
-        hideSitename: site?.hideSitename || false 
+      siteProfile: {
+        name: artifact?.name || '',
+        logoUrl: artifact?.logoUrl || null,
+        hideSitename: artifact?.hideSitename || false,
       },
       environments: environments || [],
       attemptedOn: serverTimestamp(),
     });
 
     // Upload structure, theme, and redirects to the server
-    const uploadResult = await uploadStructureToServer(siteId, currentStructure, site || null, environments || []);
+    const uploadResult = await uploadStructureToServer(artifactId, currentStructure, artifact || null, environments || []);
 
     // Even if upload fails, we still mark as deployed in the database
     // The upload can be retried later
@@ -220,20 +220,20 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
   }
 }
 
-async function uploadStructureToServer(siteId: string, structure: Structure, site: Site | null, environments: EnvironmentVariable[]): Promise<{ success: boolean; error?: string }> {
+async function uploadStructureToServer(artifactId: string, structure: Structure, artifact: Artifact | null, environments: EnvironmentVariable[]): Promise<{ success: boolean; error?: string }> {
   let logId: string | undefined;
 
   try {
     const { firestore } = getDataStore();
     const allocationsQuery = query(
       collection(firestore, 'allocations'),
-      where('siteId', '==', siteId),
+      where('artifactId', '==', artifactId),
       limit(1)
     );
     const allocationsSnapshot = await getDocs(allocationsQuery);
 
     if (allocationsSnapshot.empty) {
-      console.warn(`No server allocated for site ${siteId}. Data not uploaded.`);
+      console.warn(`No server allocated for artifact ${artifactId}. Data not uploaded.`);
       return { success: true };
     }
 
@@ -248,7 +248,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
     const logResult = await createServerLog({
       serverId: serverId,
-      commandName: 'Deploy Site Data',
+      commandName: 'Deploy Artifact Data',
       command: 'Uploading site structure, theme, redirects, and profile to server...',
       output: 'Starting deployment process...',
       status: 'pending',
@@ -260,7 +260,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
     }
 
     const username = server.username || 'root';
-    const resolvedAppPath = `/home/${username}/${siteId}`;
+    const resolvedAppPath = `/home/${username}/${artifactId}`;
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
     const baseDir = `${resolvedAppPath}/base`;
@@ -342,7 +342,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
         const redirectsResult = await getAllRedirects();
         const redirects = redirectsResult.success ? redirectsResult.redirects : [];
-        const siteProfile = { name: site?.name || '', logoUrl: site?.logoUrl || null, hideSitename: site?.hideSitename || false };
+        const siteProfile = { name: artifact?.name || '', logoUrl: artifact?.logoUrl || null, hideSitename: artifact?.hideSitename || false };
 
         const localCoreDir = path.join(tempBaseDir, 'core');
         const localSiteDir = path.join(tempBaseDir, 'site');
@@ -350,7 +350,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         await fs.mkdir(localSiteDir, { recursive: true });
 
         await fs.writeFile(path.join(tempBaseDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
-        await fs.writeFile(path.join(localSiteDir, 'theme.json'), JSON.stringify(site?.theme || {}, null, 2));
+        await fs.writeFile(path.join(localSiteDir, 'theme.json'), JSON.stringify(artifact?.theme || {}, null, 2));
         await fs.writeFile(path.join(localCoreDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
         await fs.writeFile(path.join(localSiteDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
         
@@ -370,7 +370,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
         await ssh.putDirectory(localSiteDir, siteDir, { recursive: true, concurrency: 1 });
         outputLog += `site directory uploaded.\n`;
 
-        const successMsg = outputLog + '\n--- Site data upload complete ---\n';
+        const successMsg = outputLog + '\n--- Artifact data upload complete ---\n';
         console.log(successMsg);
         if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
 
@@ -379,7 +379,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
       }
 
     } catch (sshError: any) {
-      console.error('SSH Error uploading site data:', sshError);
+      console.error('SSH Error uploading artifact data:', sshError);
       const errMsg = outputLog + `\n\n--- FAILED ---\n${sshError.message}`;
       if (logId) await updateServerLog(logId, { status: 'failed', output: errMsg });
       throw new Error(errMsg);
@@ -391,7 +391,7 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 
   } catch (e: any) {
     if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToDatabase({ message: `Failed to upload site data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
+    await logErrorToDatabase({ message: `Failed to upload artifact data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
     return { success: false, error: e.message };
   }
 }
@@ -400,10 +400,10 @@ async function uploadStructureToServer(siteId: string, structure: Structure, sit
 /**
  * Marks specific paths as changed and sets the structure status to pendingDeployment.
  */
-export async function markStructureAsPending(siteId: string, paths: string[], isDeletion: boolean = false): Promise<void> {
+export async function markStructureAsPending(artifactId: string, paths: string[], isDeletion: boolean = false): Promise<void> {
   try {
     const { firestore } = getDataStore();
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     const structureSnap = await getDoc(structureRef);
 
     let finalStructure: PathStructure[] = [];
@@ -439,7 +439,7 @@ export async function markStructureAsPending(siteId: string, paths: string[], is
     }
 
     await setDoc(structureRef, {
-      siteId: siteId,
+      artifactId: artifactId,
       status: 'pendingDeployment',
       structure: finalStructure,
       updatedAt: serverTimestamp()
@@ -454,50 +454,50 @@ export async function markStructureAsPending(siteId: string, paths: string[], is
   }
 }
 
-export async function markAssetsAsPending(siteId: string): Promise<void> {
+export async function markAssetsAsPending(artifactId: string): Promise<void> {
   try {
     const { firestore } = getDataStore();
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     await setDoc(structureRef, { assetsChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
     console.error("Failed to mark assets as pending:", e);
   }
 }
 
-export async function markThemeAsPending(siteId: string): Promise<void> {
+export async function markThemeAsPending(artifactId: string): Promise<void> {
   try {
     const { firestore } = getDataStore();
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     await setDoc(structureRef, { themeChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
     console.error("Failed to mark theme as pending:", e);
   }
 }
 
-export async function markRedirectsAsPending(siteId: string): Promise<void> {
+export async function markRedirectsAsPending(artifactId: string): Promise<void> {
   try {
     const { firestore } = getDataStore();
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     await setDoc(structureRef, { redirectsChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
     console.error("Failed to mark redirects as pending:", e);
   }
 }
 
-export async function markEnvironmentsAsPending(siteId: string): Promise<void> {
+export async function markEnvironmentsAsPending(artifactId: string): Promise<void> {
   try {
     const { firestore } = getDataStore();
-    const structureRef = doc(firestore, 'structure', siteId);
+    const structureRef = doc(firestore, 'structure', artifactId);
     await setDoc(structureRef, { environmentsChanged: true, status: 'pendingDeployment' }, { merge: true });
   } catch (e: any) {
     console.error("Failed to mark environments as pending:", e);
   }
 }
 
-export async function markAppBaseAsPending(siteId: string): Promise<void> {
+export async function markAppBaseAsPending(artifactId: string): Promise<void> {
     try {
         const { firestore } = getDataStore();
-        const structureRef = doc(firestore, 'structure', siteId);
+        const structureRef = doc(firestore, 'structure', artifactId);
         await setDoc(structureRef, { appBaseChanged: true, status: 'pendingDeployment' }, { merge: true });
     } catch (e: any) {
         console.error("Failed to mark app base as pending:", e);

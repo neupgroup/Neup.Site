@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { saveSite, type Site } from '@/actions/editor/site';
+import { saveArtifact, type Artifact } from '@/actions/editor/artifact';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export const ProfileFormSchema = z.object({
     contactEmail: z.array(z.object({ value: z.string().email() })).max(9, 'You can add a maximum of 9 emails.'),
     contactPhone: z.array(z.object({ value: z.string() })).max(9, 'You can add a maximum of 9 phone numbers.'),
 }).refine(data => !data.hideSitename, {
-    message: "You cannot hide the site name.",
+    message: "You cannot hide the artifact name.",
     path: ["hideSitename"],
 });
 
@@ -44,7 +44,7 @@ export const ProfileFormSchema = z.object({
 export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
 
 export default function ProfilePage() {
-    const { site, setSite, loading } = useProfile();
+    const { artifact, setArtifact, loading } = useProfile();
     const { toast } = useToast();
     usePageTitle('Profile Settings');
 
@@ -81,43 +81,43 @@ export default function ProfilePage() {
             return url.replace(/^(https?:\/\/)/, '');
         }
 
-        if (site) {
+        if (artifact) {
             form.reset({
-                name: site.name,
-                hideSitename: site.hideSitename || false,
-                description: site.description || '',
-                socialProfiles: site.socialProfiles?.map(p => ({ ...p, url: removeUrlPrefix(p.url) })) || [],
-                contactEmail: site.contactEmail || [],
-                contactPhone: site.contactPhone || [],
+                name: artifact.name,
+                hideSitename: artifact.hideSitename || false,
+                description: artifact.description || '',
+                socialProfiles: artifact.socialProfiles?.map(p => ({ ...p, url: removeUrlPrefix(p.url) })) || [],
+                contactEmail: artifact.contactEmail || [],
+                contactPhone: artifact.contactPhone || [],
             });
         } else {
-            toast({ variant: 'destructive', title: 'Notice', description: 'Could not load site data. A new site profile will be created on save.' });
+            toast({ variant: 'destructive', title: 'Notice', description: 'Could not load artifact data. A new artifact profile will be created on save.' });
             form.reset({
-                name: 'My New Site',
+                name: 'My New Artifact',
                 hideSitename: false,
-                description: 'A brief description of my new site.',
+                description: 'A brief description of my new artifact.',
                 socialProfiles: [],
                 contactEmail: [],
                 contactPhone: [],
             })
         }
-    }, [loading, site, form, toast]);
+    }, [loading, artifact, form, toast]);
 
     const onSubmit = async (data: ProfileFormData) => {
         const dataToSave = {
-            ...site, // carry over all existing fields
+            ...artifact, // carry over all existing fields
             ...data, // overwrite with form data
         };
 
-        const result = await saveSite(dataToSave);
+        const result = await saveArtifact(dataToSave);
 
         if (result.success && result.id) {
-            toast({ title: 'Profile Saved', description: 'Your site information has been updated.' });
-            const newSiteData = {
-                ...(site || { id: result.id, tier: 'free', url: '' }),
+            toast({ title: 'Profile Saved', description: 'Your artifact information has been updated.' });
+            const newArtifactData = {
+                ...(artifact || { id: result.id, tier: 'free', url: '' }),
                 ...dataToSave,
             };
-            setSite(newSiteData as Site);
+            setArtifact(newArtifactData as Artifact);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }
@@ -147,14 +147,14 @@ export default function ProfilePage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-4xl mx-auto space-y-8">
                 <header>
                     <h1 className="text-3xl font-bold font-headline">Profile</h1>
-                    <p className="text-muted-foreground">Manage your site's public information.</p>
+                    <p className="text-muted-foreground">Manage your artifact's public information.</p>
                 </header>
 
                 <Card>
                     <CardHeader>
                         <div className="flex justify-between items-center">
                             <div>
-                                <CardTitle>Site Information</CardTitle>
+                                <CardTitle>Artifact Information</CardTitle>
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
                             <Button asChild variant="outline">
@@ -166,7 +166,7 @@ export default function ProfilePage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem><FormLabel>Site Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Artifact Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField
                             control={form.control}
@@ -174,7 +174,7 @@ export default function ProfilePage() {
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                                     <div className="space-y-0.5">
-                                        <FormLabel>Hide Site Name</FormLabel>
+                                        <FormLabel>Hide Artifact Name</FormLabel>
                                         <FormDescription>
                                             Enable this if your logo already contains the site name.
                                         </FormDescription>

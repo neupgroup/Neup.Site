@@ -8,11 +8,14 @@ import { logErrorToDatabase } from '@/lib/logging';
 import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
-import { getSite } from './editor/site';
+import { getArtifact } from './editor/artifact';
 import type { ServerLog } from '@/schemas/server';
 import { generateReverseProxyBashScript } from './server/management/reverse-proxy-config';
 import { updateAllocationPort } from './allocations';
 
+function escapeRegExp(value: string) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 function parseCommandTemplate(template: string): { preExecutionScript?: string; bashCommand: string; } {
     const preProcessorMatch = template.match(/<javascript.preProcessor>([\s\S]*?)<\/javascript.preProcessor>/);
@@ -107,24 +110,30 @@ export async function runCommand(
             }
         }
 
-        const siteResult = await getSite();
-        const site = siteResult.success ? siteResult.site : null;
+        const siteResult = await getArtifact();
+        const artifact = siteResult.success ? siteResult.artifact : null;
 
-        const resolvedAppPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site?.id || '') || `/var/www/${site?.id}`;
+        const resolvedAppPath =
+            server.appPath
+                ?.replace(/\{\{\s*universal\.(?:site_id|artifact_id)\s*\}\}/g, artifact?.id || '') ||
+            (artifact?.id ? `/var/www/${artifact.id}` : `/var/www`);
 
-        const productionProxies = site?.domains?.production?.proxies || [];
-        const productionIgnored = site?.domains?.production?.ignoredPaths || [];
+        const productionProxies = artifact?.domains?.production?.proxies || [];
+        const productionIgnored = artifact?.domains?.production?.ignoredPaths || [];
 
         const appServerVariables = {
             'universal.server_name': server.name,
             'universal.server_publicIp': server.publicIp,
             'universal.server_basePath': server.basePath || `/home/${server.username || 'root'}`,
             'universal.server_appPath': resolvedAppPath,
-            'universal.siteId': site?.id || '',
-            'universal.site_id': site?.id || '',
-            'universal.site_name': site?.name || '',
-            'universal.productionDomain': site?.domains?.production?.url || '',
-            'universal.developmentDomain': site?.domains?.development?.url || '',
+            'universal.artifactId': artifact?.id || '',
+            'universal.artifact_id': artifact?.id || '',
+            'universal.artifact_name': artifact?.name || '',
+            // Backwards-compatible aliases for older server command templates.
+            'universal.site_id': artifact?.id || '',
+            'universal.site_name': artifact?.name || '',
+            'universal.productionDomain': artifact?.domains?.production?.url || '',
+            'universal.developmentDomain': artifact?.domains?.development?.url || '',
             'universal.account_id': accountId || '',
             'universal.account_githubToken': githubAccessToken,
             'universal.proxy_datas': JSON.stringify(productionProxies),
@@ -137,7 +146,7 @@ export async function runCommand(
         if (preExecutionScript) {
             let scriptWithInjectedParams = preExecutionScript;
             for (const [key, value] of Object.entries(allParamsForPreExecution)) {
-                const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+                const placeholderRegex = new RegExp(`\\{\\{\\s*${escapeRegExp(key)}\\s*\\}\\}`, 'g');
                 scriptWithInjectedParams = scriptWithInjectedParams.replace(placeholderRegex, JSON.stringify(value));
             }
 
@@ -162,7 +171,7 @@ export async function runCommand(
 
         let commandToExecute = bashCommand;
         for (const [key, value] of Object.entries(allFinalParams)) {
-            const placeholderRegex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+            const placeholderRegex = new RegExp(`\\{\\{\\s*${escapeRegExp(key)}\\s*\\}\\}`, 'g');
             commandToExecute = commandToExecute.replace(placeholderRegex, String(value));
         }
 

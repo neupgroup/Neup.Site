@@ -1,6 +1,6 @@
 
 import { getSiteServers } from '@/actions/servers';
-import { getSite } from '@/actions/editor/site';
+import { getArtifact } from '@/actions/editor/artifact';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -11,7 +11,7 @@ import { SyncPortButton } from './sync-port-button';
 export default async function DevSettingsPage() {
     const [serversData, siteData] = await Promise.all([
         getSiteServers(),
-        getSite()
+        getArtifact()
     ]);
 
     const servers = serversData.success ? serversData.servers || [] : [];
@@ -37,12 +37,12 @@ export default async function DevSettingsPage() {
             </header>
 
             <div className="grid gap-6">
-                {/* Site Overview Card */}
+                {/* Artifact Overview Card */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Globe className="h-5 w-5 text-primary" />
-                            Site Overview
+                            Artifact Overview
                         </CardTitle>
                         <CardDescription>General information about your production site.</CardDescription>
                     </CardHeader>
@@ -116,7 +116,7 @@ export default async function DevSettingsPage() {
                                                     Port: {server.allocation.port}
                                                 </Badge>
                                                 <span className="text-xs text-muted-foreground mr-2">(Internal Traffic)</span>
-                                                <SyncPortButton siteId={site.id} serverId={server.id} />
+                                                <SyncPortButton artifactId={site.id} serverId={server.id} />
                                             </div>
                                         </div>
 

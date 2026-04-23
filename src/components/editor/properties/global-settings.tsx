@@ -288,7 +288,7 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="site-json">
-                        <AccordionTrigger className="text-sm font-medium">Site JSON</AccordionTrigger>
+                        <AccordionTrigger className="text-sm font-medium">Artifact JSON</AccordionTrigger>
                         <AccordionContent className="space-y-4">
                             <p className="text-sm text-muted-foreground">
                                 View and edit the JSON structure of your entire site. Changes here will update the canvas.

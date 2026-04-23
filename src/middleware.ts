@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
  
 export function middleware(request: NextRequest) {
-  const siteId = request.cookies.get('siteId')?.value
+  const artifactId = request.cookies.get('artifactId')?.value
 
   const { pathname } = request.nextUrl
 
-  // If the user is trying to access the dashboard and doesn't have a siteId,
+  // If the user is trying to access the dashboard and doesn't have a artifactId,
   // redirect them to the /switch page.
-  if (!siteId && !pathname.startsWith('/switch')) {
+  if (!artifactId && !pathname.startsWith('/switch')) {
     const url = request.nextUrl.clone()
     url.pathname = '/switch'
     return NextResponse.redirect(url)

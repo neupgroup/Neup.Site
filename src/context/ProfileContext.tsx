@@ -2,21 +2,21 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { getSite, type Site } from '@/actions/editor/site';
+import { getArtifact, type Artifact } from '@/actions/editor/artifact';
 import { validateSession, saveSessionData, getCookie } from '@/lib/session-manager';
 
-const SESSION_STORAGE_KEY_SITE = 'siteProfileData';
+const SESSION_STORAGE_KEY_ARTIFACT = 'artifactProfileData';
 
 interface ProfileContextType {
-  site: Site | null;
-  setSite: Dispatch<SetStateAction<Site | null>>;
+  artifact: Artifact | null;
+  setArtifact: Dispatch<SetStateAction<Artifact | null>>;
   loading: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [site, setSite] = useState<Site | null>(null);
+  const [artifact, setArtifact] = useState<Artifact | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,24 +31,24 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
           // Clear sessionStorage
           if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.removeItem(SESSION_STORAGE_KEY_SITE);
+            sessionStorage.removeItem(SESSION_STORAGE_KEY_ARTIFACT);
           }
 
           // Automatically fetch fresh data instead of showing banner
           console.log('Fetching fresh data due to invalid session...');
-          const { success, site: dbSite } = await getSite();
-          if (success && dbSite) {
-            setSite(dbSite);
+          const { success, artifact: dbArtifact } = await getArtifact();
+          if (success && dbArtifact) {
+            setArtifact(dbArtifact);
 
             // Save to sessionStorage
             if (typeof sessionStorage !== 'undefined') {
-              sessionStorage.setItem(SESSION_STORAGE_KEY_SITE, JSON.stringify(dbSite));
+              sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(dbArtifact));
             }
 
             // Save session metadata
-            const cookieSiteId = getCookie('siteId');
-            if (cookieSiteId) {
-              saveSessionData(cookieSiteId);
+            const cookieArtifactId = getCookie('artifactId');
+            if (cookieArtifactId) {
+              saveSessionData(cookieArtifactId);
             }
           }
           setLoading(false);
@@ -56,29 +56,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         }
 
         // Try to get from sessionStorage first
-        const cachedSite = typeof sessionStorage !== 'undefined'
-          ? sessionStorage.getItem(SESSION_STORAGE_KEY_SITE)
+        const cachedArtifact = typeof sessionStorage !== 'undefined'
+          ? sessionStorage.getItem(SESSION_STORAGE_KEY_ARTIFACT)
           : null;
 
-        if (cachedSite && sessionValidation.valid) {
-          const parsedSite = JSON.parse(cachedSite);
-          setSite(parsedSite);
+        if (cachedArtifact && sessionValidation.valid) {
+          const parsedArtifact = JSON.parse(cachedArtifact);
+          setArtifact(parsedArtifact);
           setLoading(false);
         } else {
           // Fetch from server
-          const { success, site: dbSite } = await getSite();
-          if (success && dbSite) {
-            setSite(dbSite);
+          const { success, artifact: dbArtifact } = await getArtifact();
+          if (success && dbArtifact) {
+            setArtifact(dbArtifact);
 
             // Save to sessionStorage
             if (typeof sessionStorage !== 'undefined') {
-              sessionStorage.setItem(SESSION_STORAGE_KEY_SITE, JSON.stringify(dbSite));
+              sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(dbArtifact));
             }
 
             // Save session metadata
-            const cookieSiteId = getCookie('siteId');
-            if (cookieSiteId) {
-              saveSessionData(cookieSiteId);
+            const cookieArtifactId = getCookie('artifactId');
+            if (cookieArtifactId) {
+              saveSessionData(cookieArtifactId);
             }
           }
           setLoading(false);
@@ -92,15 +92,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     initializeProfile();
   }, []);
 
-  // Update sessionStorage when site changes
+  // Update sessionStorage when artifact changes
   useEffect(() => {
-    if (site && typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(SESSION_STORAGE_KEY_SITE, JSON.stringify(site));
+    if (artifact && typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(artifact));
     }
-  }, [site]);
+  }, [artifact]);
 
   return (
-    <ProfileContext.Provider value={{ site, setSite, loading }}>
+    <ProfileContext.Provider value={{ artifact, setArtifact, loading }}>
       {children}
     </ProfileContext.Provider>
   );

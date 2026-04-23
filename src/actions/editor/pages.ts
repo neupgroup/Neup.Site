@@ -21,20 +21,20 @@ import { logErrorToDatabase } from '@/lib/logging';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { cookies } from 'next/headers';
-import { Page } from '@/schemas/site';
+import { Page } from '@/schemas/artifact';
 import { getDataStore } from '@/lib/data-store';
 import { getPathsForPage } from '../paths';
 import { markStructureAsPending } from '../structure';
 
 export async function createPage(type: Page['type'] = 'editor') {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'pages'), {
-      siteId: siteId,
+      artifactId: artifactId,
       name: 'New Page',
       elements: [],
       type: type,
@@ -52,16 +52,16 @@ export async function createPage(type: Page['type'] = 'editor') {
   }
 }
 
-export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'siteId'>>) {
+export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'artifactId'>>) {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const pageRef = doc(firestore, 'pages', id);
     const pageSnap = await getDoc(pageRef);
-    if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
+    if (!pageSnap.exists() || pageSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Unauthorized.' };
     }
 
@@ -77,7 +77,7 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
     const { paths } = await getPathsForPage(id);
     if (paths && paths.length > 0) {
       const pathStrings = paths.map(p => p.path);
-      await markStructureAsPending(siteId, pathStrings);
+      await markStructureAsPending(artifactId, pathStrings);
     }
 
     return { success: true, id };
@@ -93,15 +93,15 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'site
 
 export async function getPage(id: string): Promise<{ success: boolean, page?: Page, error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const q = query(
       collection(firestore, 'pages'),
       where('__name__', '==', id),
-      where('siteId', '==', siteId),
+      where('artifactId', '==', artifactId),
       limit(1)
     );
 
@@ -119,7 +119,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
 
     const page: Page = {
       id: docSnap.id,
-      siteId: data.siteId,
+      artifactId: data.artifactId,
       name: data.name || '',
       elements: data.elements || [],
       reactComponent: data.reactComponent,
@@ -141,16 +141,16 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
 }
 
 /**
- * Fetches all pages from Firestore for the current siteId, including their paths.
+ * Fetches all pages from Firestore for the current artifactId, including their paths.
  */
 export async function getPages(): Promise<{ success: boolean, pages?: Page[], error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'pages'), where('siteId', '==', siteId));
+    const q = query(collection(firestore, 'pages'), where('artifactId', '==', artifactId));
     const querySnapshot = await getDocs(q);
 
     const pages = await Promise.all(querySnapshot.docs.map(async (doc) => {
@@ -162,7 +162,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
 
       return {
         id: doc.id,
-        siteId: data.siteId,
+        artifactId: data.artifactId,
         name: data.name || '',
         elements: data.elements,
         reactComponent: data.reactComponent,
@@ -190,8 +190,8 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
  */
 export async function deletePage(id: string) {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
@@ -199,7 +199,7 @@ export async function deletePage(id: string) {
 
     const pageRef = doc(firestore, 'pages', id);
     const pageSnap = await getDoc(pageRef);
-    if (!pageSnap.exists() || pageSnap.data().siteId !== siteId) {
+    if (!pageSnap.exists() || pageSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Unauthorized.' };
     }
 
@@ -210,7 +210,7 @@ export async function deletePage(id: string) {
     batch.delete(pageRef);
 
     // Also delete all paths associated with this page
-    const pathsQuery = query(collection(firestore, 'paths'), where('pageId', '==', id), where('siteId', '==', siteId));
+    const pathsQuery = query(collection(firestore, 'paths'), where('pageId', '==', id), where('artifactId', '==', artifactId));
     const pathsSnapshot = await getDocs(pathsQuery);
     pathsSnapshot.forEach(doc => {
       batch.delete(doc.ref);
@@ -219,7 +219,7 @@ export async function deletePage(id: string) {
     await batch.commit();
 
     if (pathStrings.length > 0) {
-      await markStructureAsPending(siteId, pathStrings, true);
+      await markStructureAsPending(artifactId, pathStrings, true);
     }
 
     return { success: true };

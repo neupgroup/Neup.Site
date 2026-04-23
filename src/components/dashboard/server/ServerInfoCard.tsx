@@ -9,7 +9,6 @@ import { Server as ServerIcon, Globe, Warehouse, User, Share2, ServerCrash, Refr
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useProfile } from '@/context/ProfileContext';
 
 import type { Server } from '@/schemas/server';
 import { runCommand } from '@/actions/runner';
@@ -33,7 +32,6 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
     const [showRebootConfirm, setShowRebootConfirm] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(true);
 
-    const { site } = useProfile();
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
     const router = useRouter();

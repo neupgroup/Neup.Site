@@ -67,16 +67,16 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
 }
 
 /**
- * Fetches servers relevant to the current siteId by checking the serverAllocations collection.
+ * Fetches servers relevant to the current artifactId by checking the serverAllocations collection.
  */
 export async function getSiteServers(): Promise<{ success: boolean; servers?: (Server & { allocation: ServerAllocation })[]; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const allocationsQuery = query(collection(firestore, 'allocations'), where('siteId', '==', siteId));
+    const allocationsQuery = query(collection(firestore, 'allocations'), where('artifactId', '==', artifactId));
     const allocationsSnapshot = await getDocs(allocationsQuery);
 
     if (allocationsSnapshot.empty) {

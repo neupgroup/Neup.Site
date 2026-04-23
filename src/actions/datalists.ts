@@ -9,16 +9,16 @@ import type { Datalist } from '@/schemas/datalist';
 /**
  * Creates a new datalist.
  */
-export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'createdAt' | 'updatedAt' | 'siteId'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'createdAt' | 'updatedAt' | 'artifactId'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'datalists'), {
       ...datalistData,
-      siteId,
+      artifactId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -33,12 +33,12 @@ export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'create
  */
 export async function getDatalists(): Promise<{ success: boolean; datalists?: Datalist[]; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'datalists'), where('siteId', '==', siteId));
+    const q = query(collection(firestore, 'datalists'), where('artifactId', '==', artifactId));
     const querySnapshot = await getDocs(q);
     const datalists = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
@@ -58,22 +58,22 @@ export async function getDatalists(): Promise<{ success: boolean; datalists?: Da
  */
 export async function getDatalist(id: string): Promise<{ success: boolean; datalist?: Datalist; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const docRef = doc(firestore, 'datalists', id);
     const docSnap = await getDoc(docRef);
 
-    if (!docSnap.exists() || docSnap.data().siteId !== siteId) {
+    if (!docSnap.exists() || docSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Datalist not found or unauthorized.' };
     }
 
     const data = docSnap.data();
     const datalist: Datalist = {
       id: docSnap.id,
-      siteId: data.siteId,
+      artifactId: data.artifactId,
       name: data.name,
       data: data.data,
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null,
@@ -88,17 +88,17 @@ export async function getDatalist(id: string): Promise<{ success: boolean; datal
 /**
  * Updates a datalist.
  */
-export async function updateDatalist(id: string, datalistData: Partial<Omit<Datalist, 'id' | 'siteId' | 'createdAt'>>): Promise<{ success: boolean; error?: string }> {
+export async function updateDatalist(id: string, datalistData: Partial<Omit<Datalist, 'id' | 'artifactId' | 'createdAt'>>): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const docRef = doc(firestore, 'datalists', id);
     const docSnap = await getDoc(docRef);
 
-    if (!docSnap.exists() || docSnap.data().siteId !== siteId) {
+    if (!docSnap.exists() || docSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Datalist not found or unauthorized.' };
     }
 
@@ -118,15 +118,15 @@ export async function updateDatalist(id: string, datalistData: Partial<Omit<Data
  */
 export async function deleteDatalist(id: string): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const docRef = doc(firestore, 'datalists', id);
     const docSnap = await getDoc(docRef);
 
-    if (!docSnap.exists() || docSnap.data().siteId !== siteId) {
+    if (!docSnap.exists() || docSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Datalist not found or unauthorized.' };
     }
 

@@ -1,23 +1,24 @@
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
-import { getSite } from '@/actions/editor/site';
+import { getArtifact } from '@/actions/editor/artifact';
 
-export async function resolveAppPath(serverId: string, isProduction: boolean = true): Promise<{ resolvedPath: string, error?: string, siteId?: string }> {
+export async function resolveAppPath(serverId: string, isProduction: boolean = true): Promise<{ resolvedPath: string, error?: string, artifactId?: string }> {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
     if (serverError || !server) {
         return { resolvedPath: '', error: 'Could not retrieve server details for path resolution.' };
     }
 
-    const { site, error: siteError } = await getSite();
-    if (siteError || !site) {
-        return { resolvedPath: '', error: 'Could not retrieve site details for path resolution.' };
+    const { artifact, error: artifactError } = await getArtifact();
+    if (artifactError || !artifact) {
+        return { resolvedPath: '', error: 'Could not retrieve artifact details for path resolution.' };
     }
 
-    let resolvedPath = server.appPath || `/var/www/{{universal.site_id}}`;
+    let resolvedPath = server.appPath || `/var/www/{{universal.artifact_id}}`;
 
     const variables: Record<string, string> = {
-        '{{universal.site_id}}': site.id,
+        '{{universal.site_id}}': artifact.id, // backwards-compatible
+        '{{universal.artifact_id}}': artifact.id,
         '{{server.username}}': server.username || 'root',
     };
 
@@ -30,5 +31,5 @@ export async function resolveAppPath(serverId: string, isProduction: boolean = t
         resolvedPath = `${resolvedPath}.development`;
     }
 
-    return { resolvedPath, siteId: site.id };
+    return { resolvedPath, artifactId: artifact.id };
 }

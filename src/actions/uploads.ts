@@ -8,7 +8,7 @@ import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { logErrorToDatabase } from '@/lib/logging';
-import { getSite } from './editor/site';
+import { getArtifact } from './editor/artifact';
 
 export interface PublicFile {
   name: string;
@@ -18,10 +18,10 @@ export interface PublicFile {
   modified?: Date;
 }
 
-async function getRemoteServerConnection(siteId: string) {
+async function getRemoteServerConnection(artifactId: string) {
     const serverResult = await getSiteServers();
     if (!serverResult.success || !serverResult.servers || serverResult.servers.length === 0) {
-        throw new Error('No server is allocated to this site.');
+        throw new Error('No server is allocated to this artifact.');
     }
     const serverId = serverResult.servers[0].id;
     const { server, error } = await getPrivateServerDetails(serverId);
@@ -29,12 +29,14 @@ async function getRemoteServerConnection(siteId: string) {
         throw new Error(`Failed to get server credentials: ${error}`);
     }
 
-    const { site } = await getSite();
-    if (!site) {
-        throw new Error('Could not resolve site context.');
+    const { artifact } = await getArtifact();
+    if (!artifact) {
+        throw new Error('Could not resolve artifact context.');
     }
 
-    const appPath = server.appPath?.replace(/\{\{\s*universal\.site_id\s*\}\}/g, site.id) || `/var/www/${site.id}`;
+    const appPath =
+        server.appPath?.replace(/\{\{\s*universal\.(?:site_id|artifact_id)\s*\}\}/g, artifact.id) ||
+        `/var/www/${artifact.id}`;
     const publicPath = `${appPath}/public`;
 
     const ssh = new NodeSSH();
@@ -53,10 +55,10 @@ async function getRemoteServerConnection(siteId: string) {
  */
 export async function getPublicFiles(directoryPath: string = '/'): Promise<{ success: boolean; files?: PublicFile[]; error?: string }> {
     let ssh: NodeSSH | undefined;
-    const siteId = 'current-site'; // Placeholder, as getRemoteServerConnection will use the cookie
+    const artifactId = 'current-site'; // Placeholder, as getRemoteServerConnection will use the cookie
 
     try {
-        const connection = await getRemoteServerConnection(siteId);
+        const connection = await getRemoteServerConnection(artifactId);
         ssh = connection.ssh;
         const remoteBaseDir = connection.publicPath;
         
@@ -108,10 +110,10 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
  */
 export async function deletePublicFile(relativePath: string): Promise<{ success: boolean; error?: string }> {
      let ssh: NodeSSH | undefined;
-     const siteId = 'current-site'; // Placeholder
+     const artifactId = 'current-site'; // Placeholder
     
     try {
-        const { ssh: sshConnection, publicPath: remoteBaseDir } = await getRemoteServerConnection(siteId);
+        const { ssh: sshConnection, publicPath: remoteBaseDir } = await getRemoteServerConnection(artifactId);
         ssh = sshConnection;
 
         const remoteFullPath = path.posix.join(remoteBaseDir, relativePath);

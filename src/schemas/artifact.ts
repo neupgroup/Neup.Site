@@ -11,14 +11,14 @@ export interface GeneratedTheme {
   black: Record<string, string>;
 }
 
-export interface SiteTheme {
+export interface ArtifactTheme {
   mode?: 'light' | 'dark' | 'black';
   colors: string[];
   radius?: 'none' | 'low' | 'medium' | 'high';
   generated?: GeneratedTheme;
 }
 
-export interface SiteIcons {
+export interface ArtifactIcons {
   favicon?: string;
   favicon16?: string;
   favicon32?: string;
@@ -40,7 +40,7 @@ export interface DomainSetting {
   ignoredPaths?: string[];
 }
 
-export interface Site {
+export interface Artifact {
   id: string;
   name: string;
   url: string;
@@ -54,7 +54,7 @@ export interface Site {
   },
   tier: 'free' | 'premium';
   logoUrl?: string;
-  icons?: SiteIcons;
+  icons?: ArtifactIcons;
   hideSitename?: boolean;
   hideLogo?: boolean;
   description?: string;
@@ -62,7 +62,7 @@ export interface Site {
   contactEmail?: { value: string; }[];
   contactPhone?: { value: string; }[];
   modules?: { [key: string]: any };
-  theme?: SiteTheme;
+  theme?: ArtifactTheme;
   ownerAccountId?: string;
   status?: string;
   type?: string;
@@ -72,7 +72,7 @@ export interface Site {
 
 export interface Page {
   id: string;
-  siteId: string;
+  artifactId: string;
   name: string;
   elements: CanvasElementData[];
   reactComponent?: string;
@@ -92,7 +92,7 @@ export interface PathStructure {
 
 export interface Structure {
   id: string;
-  siteId: string;
+  artifactId: string;
   structure: PathStructure[];
   status: 'deployed' | 'pendingDeployment';
   themeChanged: boolean;
@@ -105,11 +105,11 @@ export interface Structure {
 
 export interface Deployment {
   id: string;
-  siteId: string;
+  artifactId: string;
   structure: PathStructure[];
   status: 'deployed' | 'cancelled';
-  theme: SiteTheme;
-  redirects: Omit<Redirect, 'siteId'>[];
+  theme: ArtifactTheme;
+  redirects: Omit<Redirect, 'artifactId'>[];
   siteProfile: { name: string, logoUrl?: string, hideSitename?: boolean };
   environments: EnvironmentVariable[];
   attemptedOn: string | null;

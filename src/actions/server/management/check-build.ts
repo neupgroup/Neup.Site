@@ -4,7 +4,7 @@
 import { getPrivateServerDetails } from '@/actions/servers';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';
-import { getSite } from '@/actions/editor/site';
+import { getArtifact } from '@/actions/editor/artifact';
 import { createServerLog, updateServerLog } from '@/actions/server-logs';
 import { runCommand } from '@/actions/runner';
 import { resolveAppPath } from './server-paths';
@@ -32,13 +32,15 @@ export async function checkPathExists(serverId: string, path?: string, isProduct
       pathToCheck = resolvedPath;
     }
 
-    // Resolve {{universal.site_id}} if it exists in the path
-    if (pathToCheck.includes('{{universal.site_id}}')) {
-      const { site } = await getSite();
-      if (site) {
-        pathToCheck = pathToCheck.replace(/\{\{universal.site_id\}\}/g, site.id);
+    // Resolve {{universal.site_id}} / {{universal.artifact_id}} if present in the path
+    if (pathToCheck.includes('{{universal.site_id}}') || pathToCheck.includes('{{universal.artifact_id}}')) {
+      const { artifact } = await getArtifact();
+      if (artifact) {
+        pathToCheck = pathToCheck
+          .replace(/\{\{universal.site_id\}\}/g, artifact.id)
+          .replace(/\{\{universal.artifact_id\}\}/g, artifact.id);
       } else {
-        throw new Error('Could not resolve {{universal.site_id}} because site context is not available.');
+        throw new Error('Could not resolve universal artifact ID because artifact context is not available.');
       }
     }
     resolvedPathForOutput = pathToCheck;
@@ -69,9 +71,9 @@ export async function checkPathExists(serverId: string, path?: string, isProduct
 }
 
 export async function rebuildApplication(serverId: string, isProduction: boolean = true): Promise<{ success: boolean; error?: string, logId?: string }> {
-  const { resolvedPath, error: resolveError, siteId } = await resolveAppPath(serverId, isProduction);
-  if (resolveError || !siteId) {
-    return { success: false, error: resolveError || "Could not resolve application path or site ID." };
+  const { resolvedPath, error: resolveError, artifactId } = await resolveAppPath(serverId, isProduction);
+  if (resolveError || !artifactId) {
+    return { success: false, error: resolveError || "Could not resolve application path or artifact ID." };
   }
 
   // Set status to building
@@ -85,13 +87,13 @@ set -e
 echo "--- Starting Rebuild in ${resolvedPath} ---"
 cd '${resolvedPath}'
 
-echo "--- Step 1: Deleting existing PM2 process for ${siteId}${isProduction ? '' : '.development'} ---"
-(pm2 list | grep -q "${siteId}${isProduction ? '' : '.development'}" && pm2 delete "${siteId}${isProduction ? '' : '.development'}") || echo "No old PM2 process to delete."
+echo "--- Step 1: Deleting existing PM2 process for ${artifactId}${isProduction ? '' : '.development'} ---"
+(pm2 list | grep -q "${artifactId}${isProduction ? '' : '.development'}" && pm2 delete "${artifactId}${isProduction ? '' : '.development'}") || echo "No old PM2 process to delete."
 pm2 save
 
-echo "--- Step 2: Deleting old Nginx configs for ${siteId}${isProduction ? '' : '.development'} ---"
-sudo rm -f /etc/nginx/sites-available/${siteId}${isProduction ? '' : '.development'}.conf
-sudo rm -f /etc/nginx/sites-enabled/${siteId}${isProduction ? '' : '.development'}.conf
+echo "--- Step 2: Deleting old Nginx configs for ${artifactId}${isProduction ? '' : '.development'} ---"
+sudo rm -f /etc/nginx/sites-available/${artifactId}${isProduction ? '' : '.development'}.conf
+sudo rm -f /etc/nginx/sites-enabled/${artifactId}${isProduction ? '' : '.development'}.conf
 sudo systemctl reload nginx
 
 echo "--- Step 3: Deleting .next and node_modules folders ---"

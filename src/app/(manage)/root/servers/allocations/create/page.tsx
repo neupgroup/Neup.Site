@@ -22,7 +22,7 @@ import { createAllocation } from '@/actions/allocations';
 import Link from 'next/link';
 
 const formSchema = z.object({
-  siteId: z.string().min(1, 'Site ID is required'),
+  artifactId: z.string().min(1, 'Artifact ID is required'),
   serverId: z.string().min(1, 'Server ID is required'),
   port: z.coerce.number().min(1024, 'Port must be 1024 or greater.'),
   allocatedStorage: z.coerce.number().min(1, 'Storage must be at least 1MB.'),
@@ -39,7 +39,7 @@ export default function CreateAllocationPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      siteId: '',
+      artifactId: '',
       serverId: serverIdFromQuery || '',
       port: 1024,
       allocatedStorage: 512,
@@ -75,7 +75,7 @@ export default function CreateAllocationPage() {
           </CardHeader>
           <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="siteId" render={({ field }) => ( <FormItem><FormLabel>Site ID</FormLabel><FormControl><Input {...field} placeholder="e.g., my-awesome-site" /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={form.control} name="artifactId" render={({ field }) => ( <FormItem><FormLabel>Artifact ID</FormLabel><FormControl><Input {...field} placeholder="e.g., my-awesome-site" /></FormControl><FormMessage /></FormItem> )} />
                   <FormField control={form.control} name="serverId" render={({ field }) => ( <FormItem><FormLabel>Server ID</FormLabel><FormControl><Input {...field} placeholder="e.g., srv_123abc" /></FormControl><FormMessage /></FormItem> )} />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">

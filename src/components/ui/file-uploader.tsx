@@ -18,7 +18,7 @@ interface FileUploaderProps {
 }
 
 export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, currentImageUrl }: FileUploaderProps) {
-  const { site } = useProfile();
+  const { artifact } = useProfile();
   const { toast } = useToast();
   
   const [file, setFile] = useState<File | null>(null);
@@ -26,7 +26,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
 
-  const siteId = site?.id;
+  const artifactId = artifact?.id;
 
   useEffect(() => {
     setPreviewUrl(currentImageUrl || null);
@@ -48,7 +48,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
   });
 
   const handleUpload = async () => {
-    if (!file || !siteId) return;
+    if (!file || !artifactId) return;
 
     setStatus('uploading');
     setError(null);
@@ -56,7 +56,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
     const formData = new FormData();
     formData.append('file', file, uploadPath);
     formData.append('platform', 'neupsites');
-    formData.append('contentIds', JSON.stringify([siteId]));
+    formData.append('contentIds', JSON.stringify([artifactId]));
 
     const fileName = uploadPath.split('/').pop()?.split('.')[0] || 'file';
     formData.append('name', fileName);

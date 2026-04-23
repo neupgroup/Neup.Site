@@ -5,21 +5,21 @@ import { cookies } from 'next/headers'
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from '@/lib/firestore';
 import { getDataStore } from '@/lib/data-store';
 
-export async function setSiteIdCookie(siteId: string) {
-  if (!siteId) {
-    throw new Error('Site ID cannot be empty.');
+export async function setArtifactIdCookie(artifactId: string) {
+  if (!artifactId) {
+    throw new Error('Artifact ID cannot be empty.');
   }
 
   try {
     const { firestore } = getDataStore();
-    const siteRef = doc(firestore, 'sites', siteId);
-    const docSnap = await getDoc(siteRef);
+    const artifactRef = doc(firestore, 'artifacts', artifactId);
+    const docSnap = await getDoc(artifactRef);
 
     // If the document does not exist, create it.
     if (!docSnap.exists()) {
-      await setDoc(siteRef, {
-        id: siteId,
-        name: siteId, // Default name to the siteId
+      await setDoc(artifactRef, {
+        id: artifactId,
+        name: artifactId, // Default name to the artifactId
         status: 'active', // Default status
         type: 'corporate portfolio', // Default type
         createdAt: serverTimestamp(),
@@ -27,8 +27,8 @@ export async function setSiteIdCookie(siteId: string) {
       });
     }
 
-    // Set the cookie after ensuring the site document exists
-    (await cookies()).set('siteId', siteId, {
+    // Set the cookie after ensuring the artifact document exists
+    (await cookies()).set('artifactId', artifactId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 7, // One week
@@ -38,8 +38,8 @@ export async function setSiteIdCookie(siteId: string) {
     return { success: true };
 
   } catch (error: any) {
-    console.error(`Failed to check or create site for siteId "${siteId}":`, error);
+    console.error(`Failed to check or create artifact for artifactId "${artifactId}":`, error);
     // In a real app, you might want to log this error
-    return { success: false, error: 'Could not set up the site. Please try again.' };
+    return { success: false, error: 'Could not set up the artifact. Please try again.' };
   }
 }

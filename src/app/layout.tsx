@@ -5,9 +5,9 @@ import './globals.css';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense } from 'react';
 import { ProgressBar } from '@/components/ui/progress-bar';
-import { getSite } from '@/actions/editor/site';
+import { getArtifact } from '@/actions/editor/artifact';
 import { cn } from '@/lib/utils';
-import type { Site } from '@/schemas/site';
+import type { Artifact } from '@/schemas/artifact';
 
 
 export const metadata: Metadata = {
@@ -19,11 +19,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { site } = await getSite();
-  const radius = site?.theme?.radius;
+  const { artifact } = await getArtifact();
+  const radius = artifact?.theme?.radius;
   const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
-  const themeMode = site?.theme?.mode || 'light';
-  const generatedTheme = site?.theme?.generated;
+  const themeMode = artifact?.theme?.mode || 'light';
+  const generatedTheme = artifact?.theme?.generated;
   const renderThemeStyles = !!(generatedTheme && generatedTheme.light && generatedTheme.dark && generatedTheme.black);
 
   const themeStyleString = renderThemeStyles ? `

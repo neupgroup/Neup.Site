@@ -3,39 +3,39 @@
 
 import { getFirestore, doc, getDoc, setDoc, Timestamp } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import type { Site } from '@/schemas/site';
+import type { Artifact } from '@/schemas/artifact';
 import { getDataStore } from '@/lib/data-store';
 import { logErrorToDatabase } from '@/lib/logging';
 
-export interface SiteModule {
+export interface ArtifactModule {
   active: boolean;
   enabledOn?: string | null;
   expiresOn?: string | null;
 }
 
-export interface SiteModules {
-  [key: string]: SiteModule;
+export interface ArtifactModules {
+  [key: string]: ArtifactModule;
 }
 
 /**
- * Fetches the modules for the current site.
+ * Fetches the modules for the current artifact.
  */
-export async function getSiteModules(): Promise<{ success: boolean; modules?: SiteModules; error?: string }> {
+export async function getArtifactModules(): Promise<{ success: boolean; modules?: ArtifactModules; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const siteRef = doc(firestore, 'sites', siteId);
-    const docSnap = await getDoc(siteRef);
+    const artifactRef = doc(firestore, 'artifacts', artifactId);
+    const docSnap = await getDoc(artifactRef);
 
     if (!docSnap.exists()) {
-      // If the site document doesn't exist, we can't get modules.
+      // If the artifact document doesn't exist, we can't get modules.
       return { success: true, modules: {} };
     }
 
-    const data = docSnap.data() as Site;
+    const data = docSnap.data() as Artifact;
     const modules = (data as any).modules || {};
 
     // Ensure date fields are serialized correctly
@@ -50,23 +50,22 @@ export async function getSiteModules(): Promise<{ success: boolean; modules?: Si
 
     return { success: true, modules };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get site modules: ${e.message}`, stack: e.stack, source: 'getSiteModules' });
-    return { success: false, error: 'Failed to fetch site modules.' };
+    await logErrorToDatabase({ message: `Failed to get artifact modules: ${e.message}`, stack: e.stack, source: 'getArtifactModules' });
+    return { success: false, error: 'Failed to fetch artifact modules.' };
   }
 }
 
 /**
- * Updates a specific module's status for the current site.
+ * Updates a specific module's status for the current artifact.
  */
-export async function updateSiteModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
+export async function updateArtifactModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const siteRef = doc(firestore, 'sites', siteId);
-    const key = `modules.${moduleId}`;
+    const artifactRef = doc(firestore, 'artifacts', artifactId);
 
     let updateData: any = {
       active: isActive,
@@ -78,7 +77,7 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
       updateData.expiresOn = null;
     }
 
-    await setDoc(siteRef, {
+    await setDoc(artifactRef, {
       modules: {
         [moduleId]: updateData
       }
@@ -86,7 +85,17 @@ export async function updateSiteModule(moduleId: string, isActive: boolean): Pro
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateSiteModule' });
+    await logErrorToDatabase({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateArtifactModule' });
     return { success: false, error: 'Failed to update module.' };
   }
+}
+
+// Backwards-compatible exports (historically named "site modules").
+export type SiteModule = ArtifactModule;
+export type SiteModules = ArtifactModules;
+export async function getSiteModules() {
+  return getArtifactModules();
+}
+export async function updateSiteModule(moduleId: string, isActive: boolean) {
+  return updateArtifactModule(moduleId, isActive);
 }

@@ -34,7 +34,7 @@ export default function ModulesPage() {
         <CardHeader>
           <CardTitle>Global Module Definitions</CardTitle>
           <CardDescription>
-            This is a global list of all possible modules available in the system. Enable or disable modules for individual sites under "Site" &gt; "Modules".
+            This is a global list of all possible modules available in the system. Enable or disable modules for individual sites under "Artifact" &gt; "Modules".
           </CardDescription>
         </CardHeader>
         <CardContent>

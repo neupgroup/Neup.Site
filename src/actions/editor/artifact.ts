@@ -11,36 +11,36 @@ import {
 } from '@/lib/firestore';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/lib/url-utils';
-import { Site, SiteTheme, SiteIcons } from '@/schemas/site';
+import { Artifact, ArtifactTheme, ArtifactIcons } from '@/schemas/artifact';
 import { getDataStore } from '@/lib/data-store';
 import { generateThemeFromColor } from '@/lib/color-utils';
 import { markAssetsAsPending, markThemeAsPending } from '../structure';
 
-export type { Site, SiteTheme, SiteIcons };
+export type { Artifact, ArtifactTheme, ArtifactIcons };
 
 /**
- * Fetches a single site configuration document.
- * The ID of the document is expected to be the siteId from the cookie.
+ * Fetches a single artifact configuration document.
+ * The ID of the document is expected to be the artifactId from the cookie.
  */
-export async function getSite(): Promise<{ success: boolean, site?: Site, error?: string }> {
+export async function getArtifact(): Promise<{ success: boolean, artifact?: Artifact, error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: true, site: undefined };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: true, artifact: undefined };
 
   try {
     const { firestore } = getDataStore();
-    const siteRef = doc(firestore, 'sites', siteId);
-    const docSnap = await getDoc(siteRef);
+    const artifactRef = doc(firestore, 'artifacts', artifactId);
+    const docSnap = await getDoc(artifactRef);
 
     if (!docSnap.exists()) {
-      return { success: true, site: undefined };
+      return { success: true, artifact: undefined };
     }
 
     const data = docSnap.data();
     const createdAt = data.createdAt;
     const updatedAt = data.updatedAt;
 
-    const site: Site = {
+    const artifact: Artifact = {
       id: docSnap.id,
       name: data.name || '',
       url: data.url,
@@ -60,28 +60,28 @@ export async function getSite(): Promise<{ success: boolean, site?: Site, error?
       updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
     }
 
-    return { success: true, site };
+    return { success: true, artifact };
 
   } catch (error: any) {
-    return { success: false, error: 'Failed to fetch site configuration. An error has been logged.' };
+    return { success: false, error: 'Failed to fetch artifact configuration. An error has been logged.' };
   }
 }
 
 
 /**
- * Saves or creates a site configuration document.
+ * Saves or creates an artifact configuration document.
  */
-export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
+export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const siteRef = doc(firestore, 'sites', siteId);
+    const artifactRef = doc(firestore, 'artifacts', artifactId);
 
-    const docSnap = await getDoc(siteRef);
-    const existingData = docSnap.exists() ? docSnap.data() as Site : {};
+    const docSnap = await getDoc(artifactRef);
+    const existingData = docSnap.exists() ? docSnap.data() as Artifact : {};
 
     let dataToSave: any = { ...data, updatedAt: serverTimestamp() };
 
@@ -105,16 +105,16 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
 
     if (data.logoUrl && data.logoUrl !== existingData.logoUrl) {
       dataToSave.logoUrl = normalizeUrl(data.logoUrl);
-      await markAssetsAsPending(siteId);
+      await markAssetsAsPending(artifactId);
     }
 
     if (data.icons) {
       dataToSave.icons = { ...(existingData.icons || {}), ...data.icons };
-      await markAssetsAsPending(siteId);
+      await markAssetsAsPending(artifactId);
     }
 
     if (data.name !== existingData.name || data.hideSitename !== existingData.hideSitename) {
-      await markAssetsAsPending(siteId);
+      await markAssetsAsPending(artifactId);
     }
 
     if (data.socialProfiles) {
@@ -122,7 +122,7 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
         ...p,
         url: normalizeUrl(p.url)
       }));
-      await markAssetsAsPending(siteId);
+      await markAssetsAsPending(artifactId);
     }
 
     if (data.theme) {
@@ -130,13 +130,13 @@ export async function saveSite(data: Partial<Omit<Site, 'id'>>) {
       if (data.theme.colors && data.theme.colors.length > 0) {
         dataToSave.theme.generated = generateThemeFromColor(data.theme.colors);
       }
-      await markThemeAsPending(siteId);
+      await markThemeAsPending(artifactId);
     }
 
 
-    await setDoc(siteRef, dataToSave, { merge: true });
-    return { success: true, id: siteId };
+    await setDoc(artifactRef, dataToSave, { merge: true });
+    return { success: true, id: artifactId };
   } catch (error: any) {
-    return { success: false, error: `Failed to save site config for ${siteId}. An error has been logged.` };
+    return { success: false, error: `Failed to save artifact config for ${artifactId}. An error has been logged.` };
   }
 }

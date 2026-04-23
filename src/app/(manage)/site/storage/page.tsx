@@ -11,7 +11,7 @@ export default function SiteStorageHubPage() {
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Site Storage</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Artifact Storage</h1>
       </header>
       <Card>
         <CardHeader>

@@ -3,9 +3,9 @@
  * Handles session validation and synchronization between cookies and sessionStorage
  */
 
-const COOKIE_SITE_ID = 'siteId';
+const COOKIE_ARTIFACT_ID = 'artifactId';
 const COOKIE_LAST_FETCH = 'lastFetch';
-const SESSION_SITE_ID = 'sessionSiteId';
+const SESSION_ARTIFACT_ID = 'sessionArtifactId';
 const SESSION_LAST_FETCH = 'lastFetch';
 
 /**
@@ -61,15 +61,15 @@ export function updateLastFetch() {
  * Clear session data (for logout)
  */
 export function clearSession() {
-    // Clear siteId from cookie
-    deleteCookie(COOKIE_SITE_ID);
+    // Clear artifactId from cookie
+    deleteCookie(COOKIE_ARTIFACT_ID);
     deleteCookie(COOKIE_LAST_FETCH);
 
     // Clear sessionStorage
     if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.removeItem(SESSION_SITE_ID);
+        sessionStorage.removeItem(SESSION_ARTIFACT_ID);
         sessionStorage.removeItem(SESSION_LAST_FETCH);
-        sessionStorage.removeItem('siteProfileData');
+        sessionStorage.removeItem('artifactProfileData');
     }
 }
 
@@ -82,12 +82,12 @@ export function validateSession(): { valid: boolean; reason?: string } {
         return { valid: false, reason: 'sessionStorage not available' };
     }
 
-    const cookieSiteId = getCookie(COOKIE_SITE_ID);
-    const sessionSiteId = sessionStorage.getItem(SESSION_SITE_ID);
+    const cookieArtifactId = getCookie(COOKIE_ARTIFACT_ID);
+    const sessionArtifactId = sessionStorage.getItem(SESSION_ARTIFACT_ID);
 
     // Check if siteIds match
-    if (cookieSiteId !== sessionSiteId) {
-        return { valid: false, reason: 'siteId mismatch' };
+    if (cookieArtifactId !== sessionArtifactId) {
+        return { valid: false, reason: 'artifactId mismatch' };
     }
 
     // Check if lastFetch exists in both cookies and sessionStorage
@@ -114,16 +114,16 @@ export function validateSession(): { valid: boolean; reason?: string } {
 /**
  * Save session data after successful fetch
  */
-export function saveSessionData(siteId: string) {
+export function saveSessionData(artifactId: string) {
     const timestamp = Date.now().toString();
 
     // Save to cookies
-    setCookie(COOKIE_SITE_ID, siteId);
+    setCookie(COOKIE_ARTIFACT_ID, artifactId);
     setCookie(COOKIE_LAST_FETCH, timestamp);
 
     // Save to sessionStorage
     if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem(SESSION_SITE_ID, siteId);
+        sessionStorage.setItem(SESSION_ARTIFACT_ID, artifactId);
         sessionStorage.setItem(SESSION_LAST_FETCH, timestamp);
     }
 }
@@ -133,9 +133,9 @@ export function saveSessionData(siteId: string) {
  */
 export function getSessionMetadata() {
     return {
-        cookieSiteId: getCookie(COOKIE_SITE_ID),
+        cookieArtifactId: getCookie(COOKIE_ARTIFACT_ID),
         cookieLastFetch: getCookie(COOKIE_LAST_FETCH),
-        sessionSiteId: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_SITE_ID) : null,
+        sessionArtifactId: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_ARTIFACT_ID) : null,
         sessionLastFetch: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_LAST_FETCH) : null,
     };
 }

@@ -3,7 +3,7 @@
 'use server';
 
 import { getPrivateServerDetails } from '@/actions/servers';
-import { getSite } from '@/actions/editor/site';
+import { getArtifact } from '@/actions/editor/artifact';
 import { getAccountId } from './accounts';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';
@@ -19,12 +19,14 @@ async function resolveAppBasePath(serverId: string, type: 'internal' | 'external
         throw new Error('Could not retrieve server details for path resolution.');
     }
 
-    const { site, error: siteError } = await getSite();
-    if (siteError || !site) {
-        throw new Error('Could not retrieve site details for path resolution.');
+    const { artifact, error: artifactError } = await getArtifact();
+    if (artifactError || !artifact) {
+        throw new Error('Could not retrieve artifact details for path resolution.');
     }
 
-    const appPath = server.appPath?.replace(/\{\{universal.site_id\}\}/g, site.id) || `/var/www/${site.id}`;
+    const appPath =
+        server.appPath?.replace(/\{\{universal\.(?:site_id|artifact_id)\}\}/g, artifact.id) ||
+        `/var/www/${artifact.id}`;
 
     // Corrected logic: Internal is /src/base, External is /base
     const basePath = type === 'internal' ? `${appPath}/src/base` : `${appPath}/base`;
@@ -90,7 +92,7 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
 export async function createAppBaseFile(serverId: string, name: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
     const sanitizedName = name.replace(/[^a-zA-Z0-9-]/g, '_');
     const fileName = `${sanitizedName}.json`;
-    const siteId = cookies().get('siteId')?.value;
+    const artifactId = cookies().get('artifactId')?.value;
 
     let ssh: NodeSSH | undefined;
     try {
@@ -119,8 +121,8 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
 
         await ssh.exec('tee', [filePath], { stdin: content });
         
-        if (siteId) {
-            await markAppBaseAsPending(siteId);
+        if (artifactId) {
+            await markAppBaseAsPending(artifactId);
         }
 
         return { success: true };
@@ -163,7 +165,7 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
 
 export async function saveAppBaseFileContent(serverId: string, fileName: string, content: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
     const fullFileName = `${fileName}.json`;
-    const siteId = cookies().get('siteId')?.value;
+    const artifactId = cookies().get('artifactId')?.value;
     let ssh: NodeSSH | undefined;
     try {
         const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
@@ -178,8 +180,8 @@ export async function saveAppBaseFileContent(serverId: string, fileName: string,
         const filePath = `${basePath}/${fullFileName}`;
         await ssh.exec('tee', [filePath], { stdin: content });
         
-        if (siteId) {
-            await markAppBaseAsPending(siteId);
+        if (artifactId) {
+            await markAppBaseAsPending(artifactId);
         }
 
         return { success: true };
@@ -200,14 +202,14 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
         }
 
         const accountId = await getAccountId();
-        const { site } = await getSite();
-        if (!site) {
-            throw new Error("Site context not found.");
+        const { artifact } = await getArtifact();
+        if (!artifact) {
+            throw new Error("Artifact context not found.");
         }
 
         const { firestore } = getDataStore();
         await addDoc(collection(firestore, 'appBaseBackups'), {
-            siteId: site.id,
+            artifactId: artifact.id,
             fileName: `${fileName}.json`, // Store full filename
             fileType: type,
             content: contentResult.content,
@@ -225,15 +227,15 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
 
 export async function getAppBaseBackups(): Promise<{ success: boolean; backups?: AppBaseBackup[]; error?: string }> {
     try {
-        const { site } = await getSite();
-        if (!site) {
-            throw new Error("Site context not found.");
+        const { artifact } = await getArtifact();
+        if (!artifact) {
+            throw new Error("Artifact context not found.");
         }
 
         const { firestore } = getDataStore();
         const q = query(
             collection(firestore, 'appBaseBackups'),
-            where('siteId', '==', site.id),
+            where('artifactId', '==', artifact.id),
             orderBy('backedUpAt', 'desc')
         );
 
@@ -242,7 +244,7 @@ export async function getAppBaseBackups(): Promise<{ success: boolean; backups?:
             const data = docSnap.data();
             return {
                 id: docSnap.id,
-                siteId: data.siteId,
+                artifactId: data.artifactId,
                 fileName: data.fileName,
                 fileType: data.fileType,
                 content: data.content,

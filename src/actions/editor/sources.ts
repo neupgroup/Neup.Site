@@ -18,7 +18,7 @@ export interface SourceMethod {
 
 export interface BaseSource {
   id: string;
-  siteId: string;
+  artifactId: string;
   name: string;
   type: SourceType;
   createdAt?: string | null;
@@ -53,16 +53,16 @@ export type Source = ApiSource | DatabaseSource | StaticSource | DatalistSource;
 /**
  * Creates a new data source.
  */
-export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'siteId'>) {
+export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'artifactId'>) {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const docRef = await addDoc(collection(firestore, 'sources'), {
       ...sourceData,
-      siteId,
+      artifactId,
       createdAt: serverTimestamp(),
     });
     return { success: true, id: docRef.id };
@@ -72,16 +72,16 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
 }
 
 /**
- * Fetches all data sources for the current siteId.
+ * Fetches all data sources for the current artifactId.
  */
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'sources'), where('siteId', '==', siteId));
+    const q = query(collection(firestore, 'sources'), where('artifactId', '==', artifactId));
     const querySnapshot = await getDocs(q);
     const sources = querySnapshot.docs.map(doc => {
       const data = doc.data();
@@ -105,8 +105,8 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
  */
 export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
@@ -118,7 +118,7 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
     }
 
     const data = docSnap.data();
-    if (data.siteId !== siteId) {
+    if (data.artifactId !== artifactId) {
       return { success: false, error: 'Unauthorized.' };
     }
 
@@ -138,16 +138,16 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
 /**
  * Updates a data source.
  */
-export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'siteId'>>) {
+export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'artifactId'>>) {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
     const sourceRef = doc(firestore, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
-    if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
+    if (!sourceSnap.exists() || sourceSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Unauthorized' };
     }
 
@@ -164,8 +164,8 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
  */
 export async function deleteSource(id: string) {
   const cookieStore = await cookies();
-  const siteId = cookieStore.get('siteId')?.value;
-  if (!siteId) return { success: false, error: 'Site ID not found.' };
+  const artifactId = cookieStore.get('artifactId')?.value;
+  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
     const { firestore } = getDataStore();
@@ -173,7 +173,7 @@ export async function deleteSource(id: string) {
     const sourceRef = doc(firestore, 'sources', id);
     const sourceSnap = await getDoc(sourceRef);
 
-    if (!sourceSnap.exists() || sourceSnap.data().siteId !== siteId) {
+    if (!sourceSnap.exists() || sourceSnap.data().artifactId !== artifactId) {
       return { success: false, error: 'Unauthorized' };
     }
     batch.delete(sourceRef);

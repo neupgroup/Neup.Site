@@ -1,7 +1,7 @@
 
 export interface PageDataSourceBinding {
     id: string;
-    siteId: string; // The cookie siteId
+    artifactId: string; // The cookie artifactId
     pageId: string; // The page document ID
     sourceId: string;
     methodName: string;
