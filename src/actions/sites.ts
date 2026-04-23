@@ -18,6 +18,7 @@ export async function getSitesForAccount(): Promise<{ sites?: Artifact[]; error?
   try {
     const records = await db.artifact.findMany({
       where: { ownerAccountId: accountId },
+      include: { themeEntry: true },
     });
 
     const sites = records.map((record) => ({
@@ -29,14 +30,14 @@ export async function getSitesForAccount(): Promise<{ sites?: Artifact[]; error?
       tier: (record.tier as Artifact['tier']) || 'free',
       logoUrl: record.logoUrl ?? undefined,
       icons: (record.icons as Artifact['icons']) ?? {},
-      hideSitename: record.hideSitename ?? false,
-      hideLogo: record.hideLogo ?? false,
+      hideSitename: record.themeEntry?.hideSitename ?? false,
+      hideLogo: record.themeEntry?.hideLogo ?? false,
       description: record.description ?? undefined,
       socialProfiles: (record.socialProfiles as Artifact['socialProfiles']) ?? [],
       contactEmail: (record.contactEmail as Artifact['contactEmail']) ?? [],
       contactPhone: (record.contactPhone as Artifact['contactPhone']) ?? [],
       modules: (record.modules as Artifact['modules']) ?? {},
-      theme: (record.theme as Artifact['theme']) ?? undefined,
+      theme: (record.themeEntry?.theme as Artifact['theme']) ?? undefined,
       ownerAccountId: record.ownerAccountId ?? undefined,
       status: record.status ?? undefined,
       type: record.type ?? undefined,

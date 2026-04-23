@@ -77,9 +77,9 @@ async function getPageForPath(slug: string[]): Promise<{ html: string | null, th
     const artifactId = pathData.artifactId;
 
     const pageRef = doc(firestore, 'pages', pageId);
-    const artifactRef = doc(firestore, 'artifacts', artifactId);
+    const themeRef = doc(firestore, 'themes', artifactId);
 
-    const [pageSnap, artifactSnap] = await Promise.all([getDoc(pageRef), getDoc(artifactRef)]);
+    const [pageSnap, themeSnap] = await Promise.all([getDoc(pageRef), getDoc(themeRef)]);
 
 
     if (!pageSnap.exists()) {
@@ -89,11 +89,11 @@ async function getPageForPath(slug: string[]): Promise<{ html: string | null, th
     const pageData = pageSnap.data();
     const elements = pageData.elements;
 
-    const artifactData = artifactSnap.exists() ? artifactSnap.data() : null;
+    const themeData = themeSnap.exists() ? themeSnap.data() : null;
 
-    const html = convertJsonToHtml(elements, artifactData?.theme);
+    const html = convertJsonToHtml(elements, themeData?.theme);
 
-    return { html, theme: artifactData?.theme };
+    return { html, theme: themeData?.theme };
 
   } catch (error) {
     console.error("Error resolving path:", error);

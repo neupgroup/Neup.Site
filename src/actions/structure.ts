@@ -186,6 +186,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
         name: artifact?.name || '',
         logoUrl: artifact?.logoUrl || null,
         hideSitename: artifact?.hideSitename || false,
+        hideLogo: artifact?.hideLogo || false,
       },
       environments: environments || [],
       attemptedOn: serverTimestamp(),
@@ -342,7 +343,12 @@ async function uploadStructureToServer(artifactId: string, structure: Structure,
 
         const redirectsResult = await getAllRedirects();
         const redirects = redirectsResult.success ? redirectsResult.redirects : [];
-        const siteProfile = { name: artifact?.name || '', logoUrl: artifact?.logoUrl || null, hideSitename: artifact?.hideSitename || false };
+        const siteProfile = {
+          name: artifact?.name || '',
+          logoUrl: artifact?.logoUrl || null,
+          hideSitename: artifact?.hideSitename || false,
+          hideLogo: artifact?.hideLogo || false,
+        };
 
         const localCoreDir = path.join(tempBaseDir, 'core');
         const localSiteDir = path.join(tempBaseDir, 'site');

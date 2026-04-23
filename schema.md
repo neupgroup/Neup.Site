@@ -13,21 +13,29 @@ Columns:
 - url: String?
 - tier: String; default "free"
 - logoUrl: String?
-- hideSitename: Boolean; default false
-- hideLogo: Boolean; default false
 - description: String?
 - socialProfiles: Json?
 - contactEmail: Json?
 - contactPhone: Json?
 - modules: Json?
-- theme: Json?
 - icons: Json?
 - domains: Json?
 - ownerAccountId: String?
 - status: String?
 - type: String?
+- createdAt: DateTime?
+- updatedAt: DateTime?
 Indexes:
 - index (ownerAccountId)
+
+## theme (Theme)
+Columns:
+- id: String; primary key; references Artifact.id
+- hideSitename: Boolean; default false
+- hideLogo: Boolean; default false
+- theme: Json?
+- createdAt: DateTime?
+- updatedAt: DateTime?
 
 ## role (Role)
 Columns:

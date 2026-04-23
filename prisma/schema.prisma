@@ -41,16 +41,16 @@ model Artifact {
   url            String?
   tier           String                 @default("free")
   logoUrl        String?
-  hideSitename   Boolean                @default(false)
-  hideLogo       Boolean                @default(false)
   description    String?
   socialProfiles Json?
   contactEmail   Json?
   contactPhone   Json?
   modules        Json?
-  theme          Json?
   icons          Json?
   domains        Json?
+  createdAt      DateTime?
+  updatedAt      DateTime?
+  themeEntry     Theme?
   roles          Role[]
   domainEntries  Domain[]
   ownerAccountId String?
@@ -71,6 +71,18 @@ model Artifact {
 
   @@index([ownerAccountId])
   @@map("artifact")
+}
+
+model Theme {
+  id           String  @id
+  hideSitename Boolean @default(false)
+  hideLogo     Boolean @default(false)
+  theme        Json?
+  createdAt    DateTime?
+  updatedAt    DateTime?
+  artifact     Artifact @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  @@map("theme")
 }
 
 model Page {

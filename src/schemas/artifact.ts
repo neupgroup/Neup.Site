@@ -110,7 +110,7 @@ export interface Deployment {
   status: 'deployed' | 'cancelled';
   theme: ArtifactTheme;
   redirects: Omit<Redirect, 'artifactId'>[];
-  siteProfile: { name: string, logoUrl?: string, hideSitename?: boolean };
+  siteProfile: { name: string, logoUrl?: string, hideSitename?: boolean, hideLogo?: boolean };
   environments: EnvironmentVariable[];
   attemptedOn: string | null;
 }

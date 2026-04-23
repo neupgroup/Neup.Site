@@ -1,7 +1,6 @@
 
 'use server';
 
-import { getFirestore } from '@/lib/firestore';
 import {
   doc,
   setDoc,
@@ -30,13 +29,16 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
   try {
     const { firestore } = getDataStore();
     const artifactRef = doc(firestore, 'artifacts', artifactId);
-    const docSnap = await getDoc(artifactRef);
+    const themeRef = doc(firestore, 'themes', artifactId);
+
+    const [docSnap, themeSnap] = await Promise.all([getDoc(artifactRef), getDoc(themeRef)]);
 
     if (!docSnap.exists()) {
       return { success: true, artifact: undefined };
     }
 
     const data = docSnap.data();
+    const themeData = themeSnap.exists() ? themeSnap.data() : {};
     const createdAt = data.createdAt;
     const updatedAt = data.updatedAt;
 
@@ -48,14 +50,14 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
       tier: data.tier,
       logoUrl: data.logoUrl,
       icons: data.icons || {},
-      hideSitename: data.hideSitename || false,
-      hideLogo: data.hideLogo || false,
+      hideSitename: themeData.hideSitename || false,
+      hideLogo: themeData.hideLogo || false,
       description: data.description,
       socialProfiles: data.socialProfiles || [],
       contactEmail: data.contactEmail || [],
       contactPhone: data.contactPhone || [],
       modules: data.modules || {},
-      theme: data.theme || {},
+      theme: themeData.theme || {},
       createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
       updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
     }
@@ -79,14 +81,27 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
   try {
     const { firestore } = getDataStore();
     const artifactRef = doc(firestore, 'artifacts', artifactId);
+    const themeRef = doc(firestore, 'themes', artifactId);
 
-    const docSnap = await getDoc(artifactRef);
+    const [docSnap, themeSnap] = await Promise.all([getDoc(artifactRef), getDoc(themeRef)]);
     const existingData = docSnap.exists() ? docSnap.data() as Artifact : {};
+    const existingThemeData = themeSnap.exists() ? (themeSnap.data() as Partial<Pick<Artifact, 'hideSitename' | 'hideLogo' | 'theme'>>) : {};
 
-    let dataToSave: any = { ...data, updatedAt: serverTimestamp() };
+    const {
+      hideSitename: nextHideSitename,
+      hideLogo: nextHideLogo,
+      theme: nextTheme,
+      ...artifactDataPatch
+    } = data;
+
+    let dataToSave: any = { ...artifactDataPatch, updatedAt: serverTimestamp() };
+    let themeToSave: any = { updatedAt: serverTimestamp() };
 
     if (!docSnap.exists()) {
       dataToSave.createdAt = serverTimestamp();
+    }
+    if (!themeSnap.exists()) {
+      themeToSave.createdAt = serverTimestamp();
     }
 
     if (data.domains) {
@@ -113,7 +128,12 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
       await markAssetsAsPending(artifactId);
     }
 
-    if (data.name !== existingData.name || data.hideSitename !== existingData.hideSitename) {
+    const hideSitenameChanged =
+      typeof nextHideSitename === 'boolean' && nextHideSitename !== existingThemeData.hideSitename;
+    const hideLogoChanged =
+      typeof nextHideLogo === 'boolean' && nextHideLogo !== existingThemeData.hideLogo;
+
+    if (data.name !== existingData.name || hideSitenameChanged || hideLogoChanged) {
       await markAssetsAsPending(artifactId);
     }
 
@@ -125,16 +145,24 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
       await markAssetsAsPending(artifactId);
     }
 
-    if (data.theme) {
-      dataToSave.theme = { ...data.theme };
-      if (data.theme.colors && data.theme.colors.length > 0) {
-        dataToSave.theme.generated = generateThemeFromColor(data.theme.colors);
+    if (typeof nextHideSitename === 'boolean') {
+      themeToSave.hideSitename = nextHideSitename;
+    }
+    if (typeof nextHideLogo === 'boolean') {
+      themeToSave.hideLogo = nextHideLogo;
+    }
+
+    if (nextTheme) {
+      themeToSave.theme = { ...nextTheme };
+      if (nextTheme.colors && nextTheme.colors.length > 0) {
+        themeToSave.theme.generated = generateThemeFromColor(nextTheme.colors);
       }
       await markThemeAsPending(artifactId);
     }
 
-
     await setDoc(artifactRef, dataToSave, { merge: true });
+    // Save theme separately from the Artifact table.
+    await setDoc(themeRef, themeToSave, { merge: true });
     return { success: true, id: artifactId };
   } catch (error: any) {
     return { success: false, error: `Failed to save artifact config for ${artifactId}. An error has been logged.` };
