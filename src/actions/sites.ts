@@ -1,8 +1,8 @@
 
 'use server';
 
-import { collection, query, where, getDocs, Timestamp } from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
+import { toIsoString } from '@/lib/db-utils';
 import { getAccountId } from './accounts';
 import type { Site } from '@/schemas/site';
 
@@ -17,38 +17,33 @@ export async function getSitesForAccount(): Promise<{ sites?: Site[]; error?: st
   }
 
   try {
-    const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'sites'), where('ownerAccountId', '==', accountId));
-    const sitesSnapshot = await getDocs(q);
-    const sites = sitesSnapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      const createdAt = data.createdAt;
-      const updatedAt = data.updatedAt;
-
-      return {
-        id: docSnap.id,
-        name: data.name || '',
-        url: data.url || '',
-        domainSettings: data.domainSettings,
-        domains: data.domains,
-        tier: data.tier || 'free',
-        logoUrl: data.logoUrl,
-        icons: data.icons || {},
-        hideSitename: data.hideSitename || false,
-        hideLogo: data.hideLogo || false,
-        description: data.description,
-        socialProfiles: data.socialProfiles || [],
-        contactEmail: data.contactEmail || [],
-        contactPhone: data.contactPhone || [],
-        modules: data.modules || {},
-        theme: data.theme,
-        ownerAccountId: data.ownerAccountId,
-        status: data.status,
-        type: data.type,
-        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-        updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
-      } as Site;
+    const records = await db.site.findMany({
+      where: { ownerAccountId: accountId },
     });
+
+    const sites = records.map((record) => ({
+      id: record.id,
+      name: record.name || '',
+      url: record.url || '',
+      domainSettings: undefined,
+      domains: record.domains ?? undefined,
+      tier: (record.tier as Site['tier']) || 'free',
+      logoUrl: record.logoUrl ?? undefined,
+      icons: (record.icons as Site['icons']) ?? {},
+      hideSitename: record.hideSitename ?? false,
+      hideLogo: record.hideLogo ?? false,
+      description: record.description ?? undefined,
+      socialProfiles: (record.socialProfiles as Site['socialProfiles']) ?? [],
+      contactEmail: (record.contactEmail as Site['contactEmail']) ?? [],
+      contactPhone: (record.contactPhone as Site['contactPhone']) ?? [],
+      modules: (record.modules as Site['modules']) ?? {},
+      theme: (record.theme as Site['theme']) ?? undefined,
+      ownerAccountId: record.ownerAccountId ?? undefined,
+      status: record.status ?? undefined,
+      type: record.type ?? undefined,
+      createdAt: toIsoString(record.createdAt),
+      updatedAt: toIsoString(record.updatedAt),
+    })) as Site[];
 
     return { sites };
   } catch (e: any) {
