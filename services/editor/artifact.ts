@@ -12,10 +12,10 @@ import { cookies } from 'next/headers';
 import { Artifact, ArtifactTheme, ArtifactIcons } from '@/schemas/artifact';
 import { getDataStore } from '@/lib/data-store';
 import { generateThemeFromColor } from '@/lib/color-utils';
-import { markAssetsAsPending, markThemeAsPending } from '@/server/structure';
+import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
-import { syncArtifactProfileSubjects } from '@/server/profiles';
+import { syncArtifactProfileSubjects } from '@/services/profiles';
 
 
 

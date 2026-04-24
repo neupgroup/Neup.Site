@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getAccountId } from '@/server/accounts';
+import { getAccountId } from '@/services/accounts';
 
 /**
  * Ensures an account ID exists for the current user session.

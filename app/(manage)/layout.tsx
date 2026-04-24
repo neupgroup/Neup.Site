@@ -7,7 +7,7 @@ import { Dashboard } from '@/components/dashboard';
 import { cn } from '@/lib/utils';
 import type { Artifact } from '@/schemas/artifact';
 import { useEffect } from 'react';
-import { initializeUserAccount } from '@/server/auth/initialize';
+import { initializeUserAccount } from '@/services/auth/initialize';
 
 function ThemedDashboard({ children }: { children: React.ReactNode }) {
   const { artifact } = useProfile();

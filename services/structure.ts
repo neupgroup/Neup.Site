@@ -8,12 +8,12 @@ import type { EnvironmentVariable } from '@/schemas/environment';
 import { logErrorToDatabase } from '@/lib/logging';
 import { getPages } from './editor/pages';
 import { getArtifact } from './editor/artifact';
-import { getPrivateServerDetails } from '@/server/servers';
+import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { createServerLog, updateServerLog } from '@/server/server-logs';
+import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { getRedirects, getAllRedirects, Redirect } from './redirects';
 import { getEnvironmentVariables } from './environment';
 
