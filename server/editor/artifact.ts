@@ -13,7 +13,7 @@ import { normalizeUrl } from '@/lib/url-utils';
 import { Artifact, ArtifactTheme, ArtifactIcons } from '@/schemas/artifact';
 import { getDataStore } from '@/lib/data-store';
 import { generateThemeFromColor } from '@/lib/color-utils';
-import { markAssetsAsPending, markThemeAsPending } from '@/actions/structure';
+import { markAssetsAsPending, markThemeAsPending } from '@/server/structure';
 import { revalidatePath } from 'next/cache';
 
 

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowRight, Code, Edit, MessageSquare, PlusSquare, Loader2 } from 'lucide-react';
-import { createPage, type Page } from '@/actions/editor/pages';
+import { createPage, type Page } from '@/server/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 import { usePageTitle } from '@/hooks/use-page-title';
 

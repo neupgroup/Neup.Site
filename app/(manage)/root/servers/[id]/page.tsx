@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 
-import { getServer } from '@/actions/servers';
+import { getServer } from '@/server/servers';
 import type { Server } from '@/schemas/server';
 
 import { logErrorToDatabase } from '@/lib/logging';

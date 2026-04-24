@@ -2,7 +2,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { getArtifact } from '@/actions/editor/artifact';
+import { getArtifact } from '@/server/editor/artifact';
 import type { Artifact } from '@/schemas/artifact';
 import { validateSession, saveSessionData, getCookie } from '@/lib/session-manager';
 

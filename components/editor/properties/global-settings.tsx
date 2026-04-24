@@ -14,8 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getSources, type Source } from '@/actions/editor/sources';
-import { setPageDataSource, getPageDataSource } from '@/actions/editor/data';
+import { getSources, type Source } from '@/server/editor/sources';
+import { setPageDataSource, getPageDataSource } from '@/server/editor/data';
 
 const breakpoints = [
     { name: 'sm', value: '640px' },

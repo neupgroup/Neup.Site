@@ -4,7 +4,7 @@
 
 import { useState, useTransition } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { runCommand } from '@/actions/runner';
+import { runCommand } from '@/server/runner';
 import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';

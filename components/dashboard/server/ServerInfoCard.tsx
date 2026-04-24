@@ -11,8 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
 import type { Server } from '@/schemas/server';
-import { runCommand } from '@/actions/runner';
-import { getUptime } from '@/actions/server/management/get-uptime';
+import { runCommand } from '@/server/runner';
+import { getUptime } from '@/server/server/management/get-uptime';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ServerInfoCardProps {

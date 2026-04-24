@@ -1,8 +1,8 @@
 
 'use server';
 
-import { getSiteServers } from '@/actions/servers';
-import { getPrivateServerDetails } from '@/actions/servers';
+import { getSiteServers } from '@/server/servers';
+import { getPrivateServerDetails } from '@/server/servers';
 import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';

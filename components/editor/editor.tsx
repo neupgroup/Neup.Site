@@ -8,7 +8,7 @@ import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
 import { logErrorToDatabase } from '@/lib/logging';
-import { savePage, createPage } from '@/actions/editor/pages';
+import { savePage, createPage } from '@/server/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { elementDefinitions } from '@/elements';

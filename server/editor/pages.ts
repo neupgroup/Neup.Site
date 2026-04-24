@@ -23,8 +23,8 @@ import { convertJsonToJsx } from '@/lib/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/schemas/artifact';
 import { getDataStore } from '@/lib/data-store';
-import { getPathsForPage } from '@/actions/paths';
-import { markStructureAsPending } from '@/actions/structure';
+import { getPathsForPage } from '@/server/paths';
+import { markStructureAsPending } from '@/server/structure';
 
 export async function createPage(type: Page['type'] = 'editor') {
   const cookieStore = await cookies();

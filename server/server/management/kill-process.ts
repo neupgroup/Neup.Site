@@ -1,11 +1,11 @@
 
 'use server';
 
-import { getPrivateServerDetails } from '@/actions/servers';
+import { getPrivateServerDetails } from '@/server/servers';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';
 
-export async function createFile(serverId: string, filePath: string): Promise<{ success: boolean; error?: string }> {
+export async function killProcess(serverId: string, pid: number): Promise<{ success: boolean; error?: string }> {
   const ssh = new NodeSSH();
   try {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -19,26 +19,28 @@ export async function createFile(serverId: string, filePath: string): Promise<{ 
       privateKey: server.privateKey,
     });
 
-    // Determine if sudo is needed based on path
-    const userHome = server.username === 'root' ? '/root' : `/home/${server.username}`;
-    const useSudo = !filePath.startsWith(userHome);
-    const sanitizedFilePath = `'${filePath.replace(/'/g, "'\\''")}'`;
-
-    const command = useSudo ? `sudo touch ${sanitizedFilePath}` : `touch ${sanitizedFilePath}`;
+    // Using 'kill' (SIGTERM) for a graceful shutdown. 
+    // For a forceful kill, 'kill -9' could be used, but this is safer.
+    const command = `kill ${pid}`;
     
     const result = await ssh.execCommand(command);
 
     if (result.code !== 0) {
-      throw new Error(`Failed to create file: ${result.stderr}`);
+      // It's possible the process ended before the command ran.
+      // We can check the error message. If it says "No such process", it's not a true error.
+      if (result.stderr && result.stderr.includes('No such process')) {
+        return { success: true };
+      }
+      throw new Error(`Failed to kill process ${pid}: ${result.stderr}`);
     }
 
     return { success: true };
 
   } catch (error: any) {
     await logErrorToDatabase({
-      message: `Failed to create file for server ${serverId} at path ${filePath}: ${error.message}`,
+      message: `Failed to kill process ${pid} for server ${serverId}: ${error.message}`,
       stack: error.stack,
-      source: 'createFile',
+      source: 'killProcess',
     });
     return { success: false, error: error.message };
   } finally {

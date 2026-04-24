@@ -1,7 +1,7 @@
 'use server';
 
-import { getPrivateServerDetails } from '@/actions/servers';
-import { getArtifact } from '@/actions/editor/artifact';
+import { getPrivateServerDetails } from '@/server/servers';
+import { getArtifact } from '@/server/editor/artifact';
 
 export async function resolveAppPath(serverId: string, isProduction: boolean = true): Promise<{ resolvedPath: string, error?: string, artifactId?: string }> {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);

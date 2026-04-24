@@ -20,7 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { AlertCircle, Plus, Database, ArrowRight } from 'lucide-react';
-import { getSources, type Source } from '@/actions/editor/sources';
+import { getSources, type Source } from '@/server/editor/sources';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';

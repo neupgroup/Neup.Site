@@ -7,7 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { useProfile } from '@/context/ProfileContext';
-import { saveArtifact } from '@/actions/editor/artifact';
+import { saveArtifact } from '@/server/editor/artifact';
 import type { Artifact, ArtifactIcons } from '@/schemas/artifact';
 import { useToast } from '@/hooks/use-toast';
 

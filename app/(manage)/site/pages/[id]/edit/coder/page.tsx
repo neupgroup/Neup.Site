@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { getPage, savePage } from '@/actions/editor/pages';
+import { getPage, savePage } from '@/server/editor/pages';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';

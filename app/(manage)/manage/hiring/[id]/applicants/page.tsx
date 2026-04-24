@@ -3,7 +3,7 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { getApplicantsForJob, type Applicant } from '@/actions/applicants';
+import { getApplicantsForJob, type Applicant } from '@/server/applicants';
 import { Button } from '@/components/ui/button';
 import {
   Card,

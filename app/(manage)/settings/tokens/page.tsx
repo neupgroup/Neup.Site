@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { KeyRound, Plus, Trash2, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { createToken, getTokens, revokeToken, type ApiToken } from '@/actions/tokens';
+import { createToken, getTokens, revokeToken, type ApiToken } from '@/server/tokens';
 import { format } from 'date-fns';
 import { usePageTitle } from '@/hooks/use-page-title';
 

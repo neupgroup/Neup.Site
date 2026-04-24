@@ -13,7 +13,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Terminal, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getErrorLogsAction, type ErrorLog } from '@/actions/errors';
+import { getErrorLogsAction, type ErrorLog } from '@/server/errors';
 import { Button } from '@/components/ui/button';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';

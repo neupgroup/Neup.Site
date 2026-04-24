@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { getEnvironmentVariables, deleteEnvironmentVariable, type EnvironmentVariable } from '@/actions/environment';
+import { getEnvironmentVariables, deleteEnvironmentVariable, type EnvironmentVariable } from '@/server/environment';
 import { FileLock, Plus, Trash2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 import Link from 'next/link';

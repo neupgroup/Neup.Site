@@ -1,8 +1,8 @@
 
 'use client';
 import { useState, useEffect, use } from 'react';
-import { getTeams, type Team } from '@/actions/teams';
-import { getMember, updateMember, type Member } from '@/actions/members';
+import { getTeams, type Team } from '@/server/teams';
+import { getMember, updateMember, type Member } from '@/server/members';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

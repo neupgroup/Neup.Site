@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sun, Moon, Loader2, Save, Plus, Trash2, Contrast } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { saveArtifact } from '@/actions/editor/artifact';
+import { saveArtifact } from '@/server/editor/artifact';
 import type { ArtifactTheme } from '@/schemas/artifact';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProfile } from '@/context/ProfileContext';

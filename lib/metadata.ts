@@ -1,4 +1,4 @@
-import { getArtifact } from '@/actions/editor/artifact';
+import { getArtifact } from '@/server/editor/artifact';
 
 /**
  * Generate page metadata with artifact name

@@ -5,7 +5,7 @@ import './globals.css';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense } from 'react';
 import { ProgressBar } from '@/components/ui/progress-bar';
-import { getArtifact } from '@/actions/editor/artifact';
+import { getArtifact } from '@/server/editor/artifact';
 import { cn } from '@/lib/utils';
 import type { Artifact } from '@/schemas/artifact';
 

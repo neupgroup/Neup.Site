@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getServers } from '@/actions/servers';
+import { getServers } from '@/server/servers';
 import type { Server } from '@/schemas/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';

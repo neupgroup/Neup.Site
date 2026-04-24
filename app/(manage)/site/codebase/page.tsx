@@ -11,8 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
-import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/actions/codebase';
-import { deployCodebaseFromStorage } from '@/actions/deploy';
+import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/server/codebase';
+import { deployCodebaseFromStorage } from '@/server/deploy';
 import type { CodeFile } from '@/schemas/codebase';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';

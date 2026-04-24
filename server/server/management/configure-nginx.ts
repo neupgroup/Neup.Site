@@ -1,7 +1,7 @@
 
 "use server";
 
-import { getArtifact } from "@/actions/editor/artifact";
+import { getArtifact } from "@/server/editor/artifact";
 import type { DomainSetting } from '@/schemas/artifact';
 
 interface NginxConfigParams {

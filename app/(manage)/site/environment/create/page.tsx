@@ -27,7 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { createEnvironmentVariable } from '@/actions/environment';
+import { createEnvironmentVariable } from '@/server/environment';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePageTitle } from '@/hooks/use-page-title';

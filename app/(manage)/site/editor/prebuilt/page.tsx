@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { savePage } from '@/actions/editor/pages';
-import { getPrebuiltEditorData, type LibraryItem } from '@/actions/editor/prebuilt';
+import { savePage } from '@/server/editor/pages';
+import { getPrebuiltEditorData, type LibraryItem } from '@/server/editor/prebuilt';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';

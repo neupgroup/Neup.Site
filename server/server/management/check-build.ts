@@ -1,12 +1,12 @@
 
 'use server';
 
-import { getPrivateServerDetails } from '@/actions/servers';
+import { getPrivateServerDetails } from '@/server/servers';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';
-import { getArtifact } from '@/actions/editor/artifact';
-import { createServerLog, updateServerLog } from '@/actions/server-logs';
-import { runCommand } from '@/actions/runner';
+import { getArtifact } from '@/server/editor/artifact';
+import { createServerLog, updateServerLog } from '@/server/server-logs';
+import { runCommand } from '@/server/runner';
 import { resolveAppPath } from './server-paths';
 import { updateAppStatus } from './app-status';
 

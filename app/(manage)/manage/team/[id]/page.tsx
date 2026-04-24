@@ -1,5 +1,5 @@
 
-import { getTeam } from '@/actions/teams';
+import { getTeam } from '@/server/teams';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

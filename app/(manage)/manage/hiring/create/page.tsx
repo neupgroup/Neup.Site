@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { createJobPosting } from '@/actions/hiring';
+import { createJobPosting } from '@/server/hiring';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import { usePageTitle } from '@/hooks/use-page-title';
 
