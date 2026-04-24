@@ -471,6 +471,18 @@ model NewsArticle {
   @@map("news")
 }
 
+model SyncRequest {
+  id          String   @id @default(cuid())
+  source      String
+  destination String
+  data        Json
+  status      String   @default("pending")
+  requestedOn DateTime @default(now())
+  attemptOn   DateTime?
+
+  @@map("requests")
+}
+
 model SyncerLog {
   id         String   @id @default(cuid())
   appId      String?  @map("app_id")

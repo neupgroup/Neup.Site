@@ -69,7 +69,7 @@ Composition and orchestration layer.
 
 ---
 
-## 1.5 API / Webhooks / Callbacks Layer (`/app/bridge/api.v1/...`)
+## 1.5 API / Webhooks / Callbacks Layer (`/app/bridge/`)
 
 ### Purpose
 External interface for:
@@ -78,8 +78,17 @@ External interface for:
 - Callbacks
 
 ### Structure:
-/app/bridge/api.v1/<domain>/<subdomain>/...
+```
+/app/bridge/webhook.v1/<domain>/route.ts   ← receives incoming external requests
+/app/bridge/api.v1/<domain>/route.ts       ← exposes queryable/actionable API
+/app/bridge/callback.v1/<domain>/route.ts  ← handles OAuth and external callbacks
+```
 
+### Folder Naming Convention (STRICT)
+- Folders use dot-notation: `webhook.v1`, `api.v1`, `callback.v1`
+- NEVER use `/api/v1`, `/webhook/v1`, or `/callback/v1` (slash-separated versions)
+- Version is part of the folder name: `api.v1`, `api.v2`, etc.
+- This applies to ALL bridge routes without exception
 
 ### Rules:
 - MUST NOT contain business logic
@@ -87,7 +96,7 @@ External interface for:
 - Acts only as a bridge between external requests and internal services
 
 ### Example Flow:
-API Route → Service → Database
+webhook.v1 → saves to DB → api.v1 → reads/updates DB
 
 
 ---
