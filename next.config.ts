@@ -5,9 +5,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
+  turbopack: {
+    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
+  serverExternalPackages: ['ssh2', 'node-ssh', '@prisma/client', '.prisma/client'],
   images: {
     remotePatterns: [
       {
@@ -40,10 +41,6 @@ const nextConfig: NextConfig = {
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GITHUB_REDIRECT_URI: process.env.GITHUB_REDIRECT_URI,
-  },
-  webpack: (config) => {
-    config.externals.push('ssh2', 'node-ssh');
-    return config;
   },
 };
 
