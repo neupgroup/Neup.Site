@@ -1,7 +1,6 @@
 'use server';
 
-import { collection, doc, setDoc, getDocs, Timestamp, deleteDoc, serverTimestamp, addDoc, query, where, orderBy, limit, getCountFromServer, startAfter } from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import type { Redirect } from '@/schemas/redirect';
 import { logErrorToDatabase } from '@/lib/logging';
@@ -24,18 +23,22 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'artifactId' | 
   }
 
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'redirects'), {
-      ...data,
-      artifactId,
-      created_by: accountId,
-      created_on: serverTimestamp(),
+    const record = await db.redirect.create({
+      data: {
+        artifactId,
+        from: data.from,
+        to: data.to,
+        type: data.type,
+        created_by: accountId,
+        created_on: new Date(),
+      },
+      select: { id: true },
     });
 
     await markRedirectsAsPending(artifactId);
 
     revalidatePath('/manage/redirects');
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to create redirect: ${e.message}`, stack: e.stack, source: 'createRedirect' });
     return { success: false, error: 'Failed to create redirect.' };
@@ -49,39 +52,23 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
   }
 
   try {
-    const { firestore } = getDataStore();
-    const redirectsRef = collection(firestore, 'redirects');
-    const siteQuery = query(redirectsRef, where('artifactId', '==', artifactId));
-
-    const countSnapshot = await getCountFromServer(siteQuery);
-    const totalCount = countSnapshot.data().count;
-
-    const baseQuery = query(siteQuery, orderBy('created_on', 'desc'));
-
-    let finalQuery;
-    if (page > 1) {
-      const prevPageQuery = query(baseQuery, limit((page - 1) * pageSize));
-      const prevPageSnapshot = await getDocs(prevPageQuery);
-      const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
-      finalQuery = query(baseQuery, startAfter(lastVisible), limit(pageSize));
-    } else {
-      finalQuery = query(baseQuery, limit(pageSize));
-    }
-
-    const querySnapshot = await getDocs(finalQuery);
-    const redirects = querySnapshot.docs.map(docSnap => {
-      const data = docSnap.data();
-      const createdOn = data.created_on;
-      return {
-        id: docSnap.id,
-        artifactId: data.artifactId,
-        from: data.from,
-        to: data.to,
-        type: data.type,
-        created_by: data.created_by,
-        created_on: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-      } as Redirect;
+    const totalCount = await db.redirect.count({ where: { artifactId } });
+    const records = await db.redirect.findMany({
+      where: { artifactId },
+      orderBy: [{ created_on: 'desc' }, { id: 'asc' }],
+      skip: Math.max(0, page - 1) * pageSize,
+      take: pageSize,
     });
+
+    const redirects = records.map((record) => ({
+      id: record.id,
+      artifactId: record.artifactId,
+      from: record.from,
+      to: record.to,
+      type: record.type,
+      created_by: record.created_by,
+      created_on: record.created_on ? record.created_on.toISOString() : null,
+    })) as Redirect[];
     return { success: true, redirects, totalCount };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to get redirects: ${e.message}`, stack: e.stack, source: 'getRedirects' });
@@ -96,8 +83,10 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
   }
 
   try {
-    const { firestore } = getDataStore();
-    await deleteDoc(doc(firestore, 'redirects', id));
+    const result = await db.redirect.deleteMany({ where: { id, artifactId } });
+    if (result.count === 0) {
+      return { success: false, error: 'Redirect not found.' };
+    }
 
     await markRedirectsAsPending(artifactId);
 
@@ -116,24 +105,19 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
   }
 
   try {
-    const { firestore } = getDataStore();
-    const redirectsRef = collection(firestore, 'redirects');
-    const q = query(redirectsRef, where('artifactId', '==', artifactId), orderBy('created_on', 'desc'));
-
-    const querySnapshot = await getDocs(q);
-    const redirects = querySnapshot.docs.map(docSnap => {
-      const data = docSnap.data();
-      const createdOn = data.created_on;
-      return {
-        id: docSnap.id,
-        artifactId: data.artifactId,
-        from: data.from,
-        to: data.to,
-        type: data.type,
-        created_by: data.created_by,
-        created_on: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-      } as Redirect;
+    const records = await db.redirect.findMany({
+      where: { artifactId },
+      orderBy: [{ created_on: 'desc' }, { id: 'asc' }],
     });
+    const redirects = records.map((record) => ({
+      id: record.id,
+      artifactId: record.artifactId,
+      from: record.from,
+      to: record.to,
+      type: record.type,
+      created_by: record.created_by,
+      created_on: record.created_on ? record.created_on.toISOString() : null,
+    })) as Redirect[];
     return { success: true, redirects };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to get all redirects: ${e.message}`, stack: e.stack, source: 'getAllRedirects' });
@@ -150,19 +134,15 @@ export async function deployRedirects(): Promise<{ success: boolean; error?: str
   let logId: string | undefined;
 
   try {
-    const { firestore } = getDataStore();
-    const allocationsQuery = query(
-      collection(firestore, 'allocations'),
-      where('artifactId', '==', artifactId),
-      limit(1)
-    );
-    const allocationsSnapshot = await getDocs(allocationsQuery);
+    const allocation = await db.allocation.findFirst({
+      where: { artifactId },
+      orderBy: [{ allocatedOn: 'desc' }, { id: 'asc' }],
+    });
 
-    if (allocationsSnapshot.empty) {
+    if (!allocation) {
       return { success: false, error: 'No server allocated for this site.' };
     }
 
-    const allocation = allocationsSnapshot.docs[0].data();
     const serverId = allocation.serverId;
 
     const { server, error } = await getPrivateServerDetails(serverId);

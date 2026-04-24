@@ -2,25 +2,41 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, serverTimestamp, setDoc, Timestamp } from '@/lib/firestore';
 import { Server, ServerAllocation } from '@/schemas/server';
-import { getDataStore } from '@/lib/data-store';
 import { cookies } from 'next/headers';
 import { logErrorToDatabase } from '@/lib/logging';
+import { db } from '@/lib/db';
 
 /**
  * Creates a new server.
  */
 export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' | 'expiresOn'>) {
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'servers'), {
-      ...serverData,
-      serverConfigured: false, // Default to not configured
-      createdOn: serverTimestamp(),
-      expiresOn: null,
+    const record = await db.server.create({
+      data: {
+        name: serverData.name,
+        publicIp: serverData.publicIp,
+        privateIp: serverData.privateIp ?? null,
+        privateKey: serverData.privateKey ?? null,
+        serverType: serverData.serverType ?? null,
+        platform: serverData.platform ?? null,
+        provider: serverData.provider ?? null,
+        isPrivate: serverData.isPrivate ?? null,
+        username: serverData.username ?? null,
+        basePath: serverData.basePath ?? null,
+        appPath: serverData.appPath ?? null,
+        storageUsed: serverData.storageUsed ?? null,
+        storageTotal: serverData.storageTotal ?? null,
+        storageUnit: serverData.storageUnit ?? null,
+        portsOpen: serverData.portsOpen ? (serverData.portsOpen as any) : undefined,
+        serverConfigured: false,
+        defaultNginxConfigStatus: serverData.defaultNginxConfigStatus ?? null,
+        createdOn: new Date(),
+        expiresOn: null,
+      },
+      select: { id: true },
     });
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to create server: ${e.message}`, stack: e.stack, source: 'createServer' });
     return { success: false, error: 'Failed to create server.' };
@@ -32,30 +48,29 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' |
  */
 export async function getServers(): Promise<{ success: boolean; servers?: Server[]; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'servers'));
-    const querySnapshot = await getDocs(q);
-    const servers = querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      const createdOn = data.createdOn;
-      const expiresOn = data.expiresOn;
-      // Exclude privateIp and privateKey for security
-      return {
-        id: doc.id,
-        name: data.name,
-        publicIp: data.publicIp,
-        serverType: data.serverType,
-        platform: data.platform,
-        provider: data.provider,
-        isPrivate: data.isPrivate,
-        username: data.username,
-        basePath: data.basePath,
-        appPath: data.appPath,
-        serverConfigured: data.serverConfigured || false,
-        createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-        expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
-      } as Server
+    const records = await db.server.findMany({
+      orderBy: [{ createdOn: 'desc' }, { id: 'asc' }],
     });
+    const servers = records.map((record) => ({
+      id: record.id,
+      name: record.name,
+      publicIp: record.publicIp,
+      serverType: (record.serverType as Server['serverType']) ?? undefined,
+      platform: (record.platform as Server['platform']) ?? undefined,
+      provider: record.provider ?? undefined,
+      isPrivate: record.isPrivate ?? undefined,
+      username: record.username ?? undefined,
+      basePath: record.basePath ?? undefined,
+      appPath: record.appPath ?? undefined,
+      storageUsed: record.storageUsed ?? undefined,
+      storageTotal: record.storageTotal ?? undefined,
+      storageUnit: record.storageUnit ?? undefined,
+      portsOpen: (record.portsOpen as any) ?? undefined,
+      serverConfigured: record.serverConfigured ?? false,
+      defaultNginxConfigStatus: (record.defaultNginxConfigStatus as any) ?? undefined,
+      createdOn: record.createdOn ? record.createdOn.toISOString() : null,
+      expiresOn: record.expiresOn ? record.expiresOn.toISOString() : null,
+    })) as Server[];
     return { success: true, servers };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to get servers: ${e.message}`, stack: e.stack, source: 'getServers' });
@@ -72,42 +87,38 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const allocationsQuery = query(collection(firestore, 'allocations'), where('artifactId', '==', artifactId));
-    const allocationsSnapshot = await getDocs(allocationsQuery);
-
-    if (allocationsSnapshot.empty) {
-      return { success: true, servers: [] };
-    }
-
-    const serverPromises = allocationsSnapshot.docs.map(async (allocDoc) => {
-      const allocationData = allocDoc.data() as Omit<ServerAllocation, 'id'>;
-      const serverDoc = await getDoc(doc(firestore, 'servers', allocationData.serverId));
-
-      if (serverDoc.exists()) {
-        const serverData = serverDoc.data();
-        const createdOn = serverData.createdOn;
+    const allocations = await db.allocation.findMany({
+      where: { artifactId },
+      orderBy: [{ allocatedOn: 'desc' }, { id: 'asc' }],
+      include: { server: true },
+    });
+    const servers = allocations
+      .map((allocation) => {
+        const server = allocation.server;
+        if (!server) return null;
 
         const serverInfo: Server = {
-          id: serverDoc.id,
-          name: serverData.name,
-          publicIp: serverData.publicIp,
-          serverConfigured: serverData.serverConfigured || false,
-          createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
+          id: server.id,
+          name: server.name,
+          publicIp: server.publicIp,
+          serverConfigured: server.serverConfigured ?? false,
+          createdOn: server.createdOn ? server.createdOn.toISOString() : null,
         };
 
-        const allocation: ServerAllocation = {
-          id: allocDoc.id,
-          ...allocationData,
-          allocatedOn: (allocationData.allocatedOn as any) instanceof Timestamp ? (allocationData.allocatedOn as any).toDate().toISOString() : null,
-        }
+        const allocationInfo: ServerAllocation = {
+          id: allocation.id,
+          artifactId: allocation.artifactId,
+          serverId: allocation.serverId,
+          username: allocation.username ?? undefined,
+          deploymentPath: allocation.deploymentPath ?? undefined,
+          storageAllocation: allocation.storageAllocation ?? '',
+          port: allocation.port ?? undefined,
+          allocatedOn: allocation.allocatedOn ? allocation.allocatedOn.toISOString() : null,
+        };
 
-        return { ...serverInfo, allocation };
-      }
-      return null;
-    });
-
-    const servers = (await Promise.all(serverPromises)).filter(s => s !== null) as (Server & { allocation: ServerAllocation })[];
+        return { ...serverInfo, allocation: allocationInfo };
+      })
+      .filter(Boolean) as (Server & { allocation: ServerAllocation })[];
 
     return { success: true, servers };
   } catch (e: any) {
@@ -122,33 +133,27 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
  */
 export async function getServer(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const serverRef = doc(firestore, 'servers', id);
-    const docSnap = await getDoc(serverRef);
-
-    if (!docSnap.exists()) {
+    const record = await db.server.findUnique({ where: { id } });
+    if (!record) {
       return { success: false, error: 'Server not found or unauthorized.' };
     }
 
-    const data = docSnap.data()!;
-    const createdOn = data.createdOn;
-    const expiresOn = data.expiresOn;
     // Exclude privateIp and privateKey for security
     const server: Server = {
-      id: docSnap.id,
-      name: data.name,
-      publicIp: data.publicIp,
-      privateIp: data.privateIp,
-      serverType: data.serverType,
-      platform: data.platform,
-      provider: data.provider,
-      isPrivate: data.isPrivate,
-      username: data.username,
-      basePath: data.basePath,
-      appPath: data.appPath,
-      serverConfigured: data.serverConfigured || false,
-      createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-      expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
+      id: record.id,
+      name: record.name,
+      publicIp: record.publicIp,
+      privateIp: record.privateIp ?? undefined,
+      serverType: (record.serverType as Server['serverType']) ?? undefined,
+      platform: (record.platform as Server['platform']) ?? undefined,
+      provider: record.provider ?? undefined,
+      isPrivate: record.isPrivate ?? undefined,
+      username: record.username ?? undefined,
+      basePath: record.basePath ?? undefined,
+      appPath: record.appPath ?? undefined,
+      serverConfigured: record.serverConfigured ?? false,
+      createdOn: record.createdOn ? record.createdOn.toISOString() : null,
+      expiresOn: record.expiresOn ? record.expiresOn.toISOString() : null,
     };
     return { success: true, server };
   } catch (e: any) {
@@ -163,34 +168,27 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
  */
 export async function getPrivateServerDetails(id: string): Promise<{ success: boolean, server?: Server, error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const serverRef = doc(firestore, 'servers', id);
-    const docSnap = await getDoc(serverRef);
-
-    if (!docSnap.exists()) {
+    const record = await db.server.findUnique({ where: { id } });
+    if (!record) {
       return { success: false, error: 'Server not found.' };
     }
 
-    const data = docSnap.data();
-    const createdOn = data.createdOn;
-    const expiresOn = data.expiresOn;
-
     const server: Server = {
-      id: docSnap.id,
-      name: data.name,
-      publicIp: data.publicIp,
-      privateIp: data.privateIp,
-      privateKey: data.privateKey,
-      serverType: data.serverType,
-      platform: data.platform,
-      provider: data.provider,
-      isPrivate: data.isPrivate,
-      username: data.username,
-      basePath: data.basePath,
-      appPath: data.appPath,
-      serverConfigured: data.serverConfigured || false,
-      createdOn: createdOn instanceof Timestamp ? createdOn.toDate().toISOString() : null,
-      expiresOn: expiresOn instanceof Timestamp ? expiresOn.toDate().toISOString() : null,
+      id: record.id,
+      name: record.name,
+      publicIp: record.publicIp,
+      privateIp: record.privateIp ?? undefined,
+      privateKey: record.privateKey ?? undefined,
+      serverType: (record.serverType as Server['serverType']) ?? undefined,
+      platform: (record.platform as Server['platform']) ?? undefined,
+      provider: record.provider ?? undefined,
+      isPrivate: record.isPrivate ?? undefined,
+      username: record.username ?? undefined,
+      basePath: record.basePath ?? undefined,
+      appPath: record.appPath ?? undefined,
+      serverConfigured: record.serverConfigured ?? false,
+      createdOn: record.createdOn ? record.createdOn.toISOString() : null,
+      expiresOn: record.expiresOn ? record.expiresOn.toISOString() : null,
     };
     return { success: true, server };
   } catch (e: any) {
@@ -204,20 +202,36 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
  */
 export async function updateServer(id: string, serverData: Partial<Omit<Server, 'id' | 'createdOn'>>) {
   try {
-    const { firestore } = getDataStore();
-    const serverRef = doc(firestore, 'servers', id);
+    const dataToUpdate: Record<string, any> = {
+      ...(serverData.name !== undefined ? { name: serverData.name } : {}),
+      ...(serverData.publicIp !== undefined ? { publicIp: serverData.publicIp } : {}),
+      ...(serverData.serverType !== undefined ? { serverType: serverData.serverType ?? null } : {}),
+      ...(serverData.platform !== undefined ? { platform: serverData.platform ?? null } : {}),
+      ...(serverData.provider !== undefined ? { provider: serverData.provider ?? null } : {}),
+      ...(serverData.isPrivate !== undefined ? { isPrivate: serverData.isPrivate ?? null } : {}),
+      ...(serverData.username !== undefined ? { username: serverData.username ?? null } : {}),
+      ...(serverData.basePath !== undefined ? { basePath: serverData.basePath ?? null } : {}),
+      ...(serverData.appPath !== undefined ? { appPath: serverData.appPath ?? null } : {}),
+      ...(serverData.storageUsed !== undefined ? { storageUsed: serverData.storageUsed ?? null } : {}),
+      ...(serverData.storageTotal !== undefined ? { storageTotal: serverData.storageTotal ?? null } : {}),
+      ...(serverData.storageUnit !== undefined ? { storageUnit: serverData.storageUnit ?? null } : {}),
+      ...(serverData.portsOpen !== undefined ? { portsOpen: (serverData.portsOpen as any) ?? null } : {}),
+      ...(serverData.serverConfigured !== undefined ? { serverConfigured: Boolean(serverData.serverConfigured) } : {}),
+      ...(serverData.defaultNginxConfigStatus !== undefined
+        ? { defaultNginxConfigStatus: (serverData.defaultNginxConfigStatus as any) ?? null }
+        : {}),
+      ...(serverData.expiresOn !== undefined ? { expiresOn: serverData.expiresOn ? new Date(serverData.expiresOn) : null } : {}),
+    };
 
-    const dataToUpdate: Record<string, any> = { ...serverData };
-
-    // Only include private fields if they are explicitly provided and not empty
-    if (!serverData.privateIp) {
-      delete dataToUpdate.privateIp;
+    // Only include private fields if explicitly provided and non-empty.
+    if (typeof serverData.privateIp === 'string' && serverData.privateIp.trim()) {
+      dataToUpdate.privateIp = serverData.privateIp.trim();
     }
-    if (!serverData.privateKey) {
-      delete dataToUpdate.privateKey;
+    if (typeof serverData.privateKey === 'string' && serverData.privateKey.trim()) {
+      dataToUpdate.privateKey = serverData.privateKey;
     }
 
-    await setDoc(serverRef, dataToUpdate, { merge: true });
+    await db.server.update({ where: { id }, data: dataToUpdate });
     return { success: true, id };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to update server ${id}: ${e.message}`, stack: e.stack, source: 'updateServer' });
@@ -230,9 +244,7 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
  */
 export async function deleteServer(id: string) {
   try {
-    const { firestore } = getDataStore();
-    const serverRef = doc(firestore, 'servers', id);
-    await deleteDoc(serverRef);
+    await db.server.delete({ where: { id } });
     return { success: true };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to delete server ${id}: ${e.message}`, stack: e.stack, source: 'deleteServer' });

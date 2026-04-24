@@ -1,17 +1,7 @@
 
 'use server';
 
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  Timestamp,
-  deleteDoc,
-  serverTimestamp,
-} from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { logErrorToDatabase } from '@/lib/logging';
 
@@ -37,24 +27,23 @@ function slugify(text: string) {
 
 export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | 'publishedAt' | 'createdAt' | 'updatedAt'>> & { title: string }): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    
     const slug = slugify(data.title);
     const randomId = Math.random().toString(36).substring(2, 8);
     const id = `${slug}-${randomId}`;
+    const now = new Date();
 
-    const newArticleRef = doc(firestore, 'news', id);
-
-    await setDoc(newArticleRef, {
-      slug,
-      title: data.title,
-      author: data.author || 'Author Name',
-      content: data.content || '<p>Start writing your article here...</p>',
-      imageUrl: data.imageUrl || '',
-      id,
-      publishedAt: serverTimestamp(),
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+    await db.newsArticle.create({
+      data: {
+        id,
+        slug,
+        title: data.title,
+        author: data.author || 'Author Name',
+        content: data.content || '<p>Start writing your article here...</p>',
+        imageUrl: data.imageUrl?.trim() ? data.imageUrl.trim() : null,
+        publishedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      },
     });
 
     revalidatePath('/news');
@@ -68,21 +57,19 @@ export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | '
 
 export async function getNewsArticles(): Promise<{ success: boolean; articles?: NewsArticle[]; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        const querySnapshot = await getDocs(collection(firestore, 'news'));
-        const articles = querySnapshot.docs.map(docSnap => {
-            const data = docSnap.data();
-            return {
-                id: docSnap.id,
-                title: data.title,
-                content: data.content,
-                author: data.author,
-                imageUrl: data.imageUrl,
-                publishedAt: data.publishedAt instanceof Timestamp ? data.publishedAt.toDate().toISOString() : null,
-                createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null,
-                updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : null,
-            } as NewsArticle;
+        const records = await db.newsArticle.findMany({
+          orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
         });
+        const articles = records.map((record) => ({
+          id: record.id,
+          title: record.title,
+          content: record.content,
+          author: record.author,
+          imageUrl: record.imageUrl ?? undefined,
+          publishedAt: record.publishedAt ? record.publishedAt.toISOString() : null,
+          createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+          updatedAt: record.updatedAt ? record.updatedAt.toISOString() : null,
+        })) as NewsArticle[];
         return { success: true, articles };
     } catch (e: any) {
         await logErrorToDatabase({ message: `Failed to get news articles: ${e.message}`, stack: e.stack, source: 'getNewsArticles' });
@@ -92,25 +79,20 @@ export async function getNewsArticles(): Promise<{ success: boolean; articles?: 
 
 export async function getNewsArticleById(id: string): Promise<{ success: boolean; article?: NewsArticle; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        const docRef = doc(firestore, 'news', id);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
+        const record = await db.newsArticle.findUnique({ where: { id } });
+        if (!record) {
             return { success: false, error: 'News article not found.' };
         }
-
-        const data = docSnap.data();
         
         const article: NewsArticle = {
-            id: docSnap.id,
-            title: data.title,
-            content: data.content,
-            author: data.author,
-            imageUrl: data.imageUrl,
-            publishedAt: data.publishedAt instanceof Timestamp ? data.publishedAt.toDate().toISOString() : null,
-            createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null,
-            updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : null,
+            id: record.id,
+            title: record.title,
+            content: record.content,
+            author: record.author,
+            imageUrl: record.imageUrl ?? undefined,
+            publishedAt: record.publishedAt ? record.publishedAt.toISOString() : null,
+            createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+            updatedAt: record.updatedAt ? record.updatedAt.toISOString() : null,
         };
         return { success: true, article };
 
@@ -122,12 +104,17 @@ export async function getNewsArticleById(id: string): Promise<{ success: boolean
 
 export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArticle, 'id'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const articleRef = doc(firestore, 'news', id);
-    
-    const dataToSave: Record<string, any> = { ...data, updatedAt: serverTimestamp() };
-
-    await setDoc(articleRef, dataToSave, { merge: true });
+    await db.newsArticle.update({
+      where: { id },
+      data: {
+        ...(typeof data.title === 'string' ? { title: data.title } : {}),
+        ...(typeof data.slug === 'string' ? { slug: data.slug } : {}),
+        ...(typeof data.author === 'string' ? { author: data.author } : {}),
+        ...(typeof data.content === 'string' ? { content: data.content } : {}),
+        ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl?.trim() ? data.imageUrl.trim() : null } : {}),
+        updatedAt: new Date(),
+      },
+    });
     revalidatePath('/news');
     revalidatePath(`/news/${id}`);
     
@@ -140,8 +127,7 @@ export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArtic
 
 export async function deleteNewsArticle(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        await deleteDoc(doc(firestore, 'news', id));
+        await db.newsArticle.delete({ where: { id } });
         revalidatePath('/news');
         return { success: true };
     } catch (e: any) {

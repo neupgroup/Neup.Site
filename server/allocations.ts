@@ -1,34 +1,26 @@
 
 'use server';
 
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  Timestamp,
-  deleteDoc,
-  serverTimestamp,
-  addDoc,
-  query,
-  where,
-} from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import type { Allocation } from '@/schemas/allocation';
 import { logErrorToDatabase } from '@/lib/logging';
 
 export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedOn' | 'status'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'allocations'), {
-      ...data,
-      allocatedOn: serverTimestamp(),
-      status: 'active', // Default status
+    const record = await db.allocation.create({
+      data: {
+        serverId: data.serverId,
+        artifactId: data.artifactId,
+        port: data.port,
+        allocatedStorage: data.allocatedStorage,
+        allocatedOn: new Date(),
+        status: 'active',
+      },
+      select: { id: true },
     });
     revalidatePath('/root/servers/allocations');
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to create allocation: ${e.message}`, stack: e.stack, source: 'createAllocation' });
     return { success: false, error: 'Failed to create allocation.' };
@@ -37,22 +29,27 @@ export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedO
 
 export async function getAllocations(): Promise<{ success: boolean; allocations?: Allocation[]; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'allocations'));
-    const querySnapshot = await getDocs(q);
-    const allocations = querySnapshot.docs.map(docSnap => {
-      const data = docSnap.data();
-      const allocatedOn = data.allocatedOn;
-      return {
-        id: docSnap.id,
-        serverId: data.serverId,
-        artifactId: data.artifactId,
-        port: data.port,
-        allocatedStorage: data.allocatedStorage,
-        allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
-        status: data.status || 'active',
-      } as Allocation;
+    const records = await db.allocation.findMany({
+      orderBy: [{ allocatedOn: 'desc' }, { id: 'asc' }],
+      select: {
+        id: true,
+        serverId: true,
+        artifactId: true,
+        port: true,
+        allocatedStorage: true,
+        allocatedOn: true,
+        status: true,
+      },
     });
+    const allocations = records.map((record) => ({
+      id: record.id,
+      serverId: record.serverId,
+      artifactId: record.artifactId,
+      port: record.port ?? 0,
+      allocatedStorage: record.allocatedStorage ?? 0,
+      allocatedOn: record.allocatedOn ? record.allocatedOn.toISOString() : null,
+      status: (record.status as Allocation['status']) || 'active',
+    })) as Allocation[];
     return { success: true, allocations };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to get allocations: ${e.message}`, stack: e.stack, source: 'getAllocations' });
@@ -62,24 +59,30 @@ export async function getAllocations(): Promise<{ success: boolean; allocations?
 
 export async function getAllocation(id: string): Promise<{ success: boolean; allocation?: Allocation; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const docRef = doc(firestore, 'allocations', id);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
+    const record = await db.allocation.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        serverId: true,
+        artifactId: true,
+        port: true,
+        allocatedStorage: true,
+        allocatedOn: true,
+        status: true,
+      },
+    });
+    if (!record) {
       return { success: false, error: 'Allocation not found.' };
     }
 
-    const data = docSnap.data();
-    const allocatedOn = data.allocatedOn;
     const allocation: Allocation = {
-      id: docSnap.id,
-      serverId: data.serverId,
-      artifactId: data.artifactId,
-      port: data.port,
-      allocatedStorage: data.allocatedStorage,
-      allocatedOn: allocatedOn instanceof Timestamp ? allocatedOn.toDate().toISOString() : null,
-      status: data.status || 'active',
+      id: record.id,
+      serverId: record.serverId,
+      artifactId: record.artifactId,
+      port: record.port ?? 0,
+      allocatedStorage: record.allocatedStorage ?? 0,
+      allocatedOn: record.allocatedOn ? record.allocatedOn.toISOString() : null,
+      status: (record.status as Allocation['status']) || 'active',
     };
     return { success: true, allocation };
 
@@ -91,9 +94,16 @@ export async function getAllocation(id: string): Promise<{ success: boolean; all
 
 export async function updateAllocation(id: string, data: Partial<Omit<Allocation, 'id' | 'allocatedOn'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const docRef = doc(firestore, 'allocations', id);
-    await setDoc(docRef, data, { merge: true });
+    await db.allocation.update({
+      where: { id },
+      data: {
+        ...(data.serverId !== undefined ? { serverId: data.serverId } : {}),
+        ...(data.artifactId !== undefined ? { artifactId: data.artifactId } : {}),
+        ...(data.port !== undefined ? { port: data.port } : {}),
+        ...(data.allocatedStorage !== undefined ? { allocatedStorage: data.allocatedStorage } : {}),
+        ...(data.status !== undefined ? { status: data.status } : {}),
+      },
+    });
     revalidatePath('/root/servers/allocations');
     revalidatePath(`/root/servers/allocations/${id}`);
     return { success: true };
@@ -105,8 +115,7 @@ export async function updateAllocation(id: string, data: Partial<Omit<Allocation
 
 export async function deleteAllocation(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    await deleteDoc(doc(firestore, 'allocations', id));
+    await db.allocation.delete({ where: { id } });
     revalidatePath('/root/servers/allocations');
     return { success: true };
   } catch (e: any) {
@@ -117,16 +126,15 @@ export async function deleteAllocation(id: string): Promise<{ success: boolean; 
 
 export async function updateAllocationPort(artifactId: string, serverId: string, port: number): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'allocations'), where('artifactId', '==', artifactId), where('serverId', '==', serverId));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
+    const allocation = await db.allocation.findFirst({
+      where: { artifactId, serverId },
+      orderBy: [{ allocatedOn: 'desc' }, { id: 'asc' }],
+      select: { id: true },
+    });
+    if (!allocation) {
       return { success: false, error: 'Allocation not found for this site and server.' };
     }
-
-    const docRef = querySnapshot.docs[0].ref;
-    await setDoc(docRef, { port }, { merge: true });
+    await db.allocation.update({ where: { id: allocation.id }, data: { port } });
 
     revalidatePath('/root/servers/allocations');
     revalidatePath('/settings/info');

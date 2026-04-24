@@ -2,8 +2,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 
 export async function setArtifactIdCookie(artifactId: string) {
   if (!artifactId) {
@@ -11,19 +10,17 @@ export async function setArtifactIdCookie(artifactId: string) {
   }
 
   try {
-    const { firestore } = getDataStore();
-    const artifactRef = doc(firestore, 'artifacts', artifactId);
-    const docSnap = await getDoc(artifactRef);
-
-    // If the document does not exist, create it.
-    if (!docSnap.exists()) {
-      await setDoc(artifactRef, {
-        id: artifactId,
-        name: artifactId, // Default name to the artifactId
-        status: 'active', // Default status
-        type: 'corporate portfolio', // Default type
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+    const existing = await db.artifact.findUnique({ where: { id: artifactId }, select: { id: true } });
+    if (!existing) {
+      await db.artifact.create({
+        data: {
+          id: artifactId,
+          name: artifactId,
+          status: 'active',
+          type: 'corporate portfolio',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       });
     }
 

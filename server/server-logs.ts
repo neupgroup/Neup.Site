@@ -2,8 +2,7 @@
 
 'use server';
 
-import { getFirestore, collection, getDocs, orderBy, query, limit, startAfter, doc, getDoc, addDoc, setDoc, serverTimestamp, Timestamp, where } from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import type { ServerLog } from '@/schemas/server';
 import { logErrorToDatabase } from '@/lib/logging';
 
@@ -12,14 +11,21 @@ import { logErrorToDatabase } from '@/lib/logging';
  */
 export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiatedAt' | 'completedAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'serverLogs'), {
-      ...logData,
-      initiatedBy: 'system', // Placeholder for user auth
-      initiatedAt: serverTimestamp(),
-      completedAt: null,
+    const record = await db.serverLog.create({
+      data: {
+        serverId: logData.serverId,
+        commandId: logData.commandId ?? null,
+        commandName: logData.commandName ?? null,
+        command: logData.command,
+        output: logData.output,
+        status: logData.status,
+        initiatedBy: logData.initiatedBy || 'system',
+        initiatedAt: new Date(),
+        completedAt: null,
+      },
+      select: { id: true },
     });
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (e: any) {
     // Cannot log to Firestore here as it might cause an infinite loop if logging itself fails
     console.error("CRITICAL: Failed to create server log.", e);
@@ -32,14 +38,24 @@ export async function createServerLog(logData: Omit<ServerLog, 'id' | 'initiated
  */
 export async function updateServerLog(id: string, logData: Partial<Omit<ServerLog, 'id' | 'initiatedAt'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const logRef = doc(firestore, 'serverLogs', id);
+    const completedAt =
+      logData.status === 'completed' || logData.status === 'failed' || logData.status === 'cancelled'
+        ? new Date()
+        : undefined;
 
-    let dataToUpdate: Record<string, any> = { ...logData };
-    if (logData.status === 'completed' || logData.status === 'failed' || logData.status === 'cancelled') {
-        dataToUpdate.completedAt = serverTimestamp();
-    }
-    await setDoc(logRef, dataToUpdate, { merge: true });
+    await db.serverLog.update({
+      where: { id },
+      data: {
+        ...(logData.serverId !== undefined ? { serverId: logData.serverId } : {}),
+        ...(logData.commandId !== undefined ? { commandId: logData.commandId ?? null } : {}),
+        ...(logData.commandName !== undefined ? { commandName: logData.commandName ?? null } : {}),
+        ...(logData.command !== undefined ? { command: logData.command } : {}),
+        ...(logData.output !== undefined ? { output: logData.output } : {}),
+        ...(logData.status !== undefined ? { status: logData.status } : {}),
+        ...(logData.initiatedBy !== undefined ? { initiatedBy: logData.initiatedBy } : {}),
+        ...(completedAt ? { completedAt } : {}),
+      },
+    });
     return { success: true };
   } catch (e: any) {
      // Cannot log to Firestore here as it might cause an infinite loop if logging itself fails
@@ -55,26 +71,21 @@ export async function updateServerLog(id: string, logData: Partial<Omit<ServerLo
  */
 export async function getServerLog(id: string): Promise<{ success: boolean; log?: ServerLog; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        const docRef = doc(firestore, 'serverLogs', id);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
+        const record = await db.serverLog.findUnique({ where: { id } });
+        if (!record) {
             return { success: false, error: 'Log not found.' };
         }
-
-        const data = docSnap.data();
         const log: ServerLog = {
-            id: docSnap.id,
-            serverId: data.serverId,
-            command: data.command,
-            commandId: data.commandId,
-            commandName: data.commandName,
-            output: data.output,
-            status: data.status,
-            initiatedBy: data.initiatedBy,
-            initiatedAt: data.initiatedAt instanceof Timestamp ? data.initiatedAt.toDate().toISOString() : null,
-            completedAt: data.completedAt instanceof Timestamp ? data.completedAt.toDate().toISOString() : null,
+            id: record.id,
+            serverId: record.serverId,
+            command: record.command,
+            commandId: record.commandId ?? undefined,
+            commandName: record.commandName ?? undefined,
+            output: record.output,
+            status: record.status,
+            initiatedBy: record.initiatedBy,
+            initiatedAt: record.initiatedAt ? record.initiatedAt.toISOString() : null,
+            completedAt: record.completedAt ? record.completedAt.toISOString() : null,
         };
         return { success: true, log };
 
@@ -92,45 +103,27 @@ export async function getServerLog(id: string): Promise<{ success: boolean; log?
  */
 export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { serverId: string, page?: number, pageSize?: number }): Promise<{ logs?: ServerLog[], error?: string, hasMore?: boolean, success: boolean }> {
     try {
-        const { firestore } = getDataStore();
-        const logsRef = collection(firestore, 'serverLogs');
-        
-        let q = query(
-            logsRef, 
-            where('serverId', '==', serverId), 
-            orderBy('initiatedAt', 'desc')
-        );
-
-        if (page > 1) {
-            const prevPageQuery = query(q, limit((page - 1) * pageSize));
-            const prevPageSnapshot = await getDocs(prevPageQuery);
-            if (!prevPageSnapshot.empty) {
-                const lastVisible = prevPageSnapshot.docs[prevPageSnapshot.docs.length - 1];
-                q = query(q, startAfter(lastVisible));
-            }
-        }
-        
-        q = query(q, limit(pageSize + 1)); // Fetch one extra to check if there's a next page
-
-        const querySnapshot = await getDocs(q);
-        
-        const logs = querySnapshot.docs.slice(0, pageSize).map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                serverId: data.serverId,
-                command: data.command,
-                commandId: data.commandId,
-                commandName: data.commandName,
-                output: data.output,
-                status: data.status,
-                initiatedBy: data.initiatedBy,
-                initiatedAt: data.initiatedAt instanceof Timestamp ? data.initiatedAt.toDate().toISOString() : null,
-                completedAt: data.completedAt instanceof Timestamp ? data.completedAt.toDate().toISOString() : null,
-            } as ServerLog;
+        const records = await db.serverLog.findMany({
+          where: { serverId },
+          orderBy: [{ initiatedAt: 'desc' }, { id: 'asc' }],
+          skip: Math.max(0, page - 1) * pageSize,
+          take: pageSize + 1,
         });
 
-        const hasMore = querySnapshot.docs.length > pageSize;
+        const logs = records.slice(0, pageSize).map((record) => ({
+          id: record.id,
+          serverId: record.serverId,
+          command: record.command,
+          commandId: record.commandId ?? undefined,
+          commandName: record.commandName ?? undefined,
+          output: record.output,
+          status: record.status,
+          initiatedBy: record.initiatedBy,
+          initiatedAt: record.initiatedAt ? record.initiatedAt.toISOString() : null,
+          completedAt: record.completedAt ? record.completedAt.toISOString() : null,
+        })) as ServerLog[];
+
+        const hasMore = records.length > pageSize;
         
         return { logs, hasMore, success: true };
 

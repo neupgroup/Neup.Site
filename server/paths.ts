@@ -1,9 +1,8 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, query, where, serverTimestamp, Timestamp, getDoc } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { logErrorToDatabase } from '@/lib/logging';
 import { markStructureAsPending } from './structure';
 
@@ -28,25 +27,23 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
   }
 
   try {
-    const { firestore } = getDataStore();
-
     // Check if path already exists for this site
-    const q = query(collection(firestore, 'paths'), where('artifactId', '==', artifactId), where('path', '==', path));
-    const existingPaths = await getDocs(q);
-    if (!existingPaths.empty) {
+    const existing = await db.pagePath.findFirst({
+      where: { artifactId, path },
+      select: { id: true },
+    });
+    if (existing) {
       return { success: false, error: `Path "${path}" is already in use on this site.` };
     }
 
-    const docRef = await addDoc(collection(firestore, 'paths'), {
-      artifactId,
-      pageId,
-      path,
-      createdAt: serverTimestamp(),
+    const record = await db.pagePath.create({
+      data: { artifactId, pageId, path, createdAt: new Date() },
+      select: { id: true },
     });
 
     await markStructureAsPending(artifactId, [path]);
 
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (error: any) {
     await logErrorToDatabase({
       message: `Failed to add path: ${error.message}`,
@@ -66,20 +63,17 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'paths'), where('artifactId', '==', artifactId), where('pageId', '==', pageId));
-    const querySnapshot = await getDocs(q);
-    const paths = querySnapshot.docs.map(docSnap => {
-      const data = docSnap.data();
-      const createdAt = data.createdAt;
-      return {
-        id: docSnap.id,
-        artifactId: data.artifactId,
-        pageId: data.pageId,
-        path: data.path,
-        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-      } as Path;
+    const records = await db.pagePath.findMany({
+      where: { artifactId, pageId },
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     });
+    const paths = records.map((record) => ({
+      id: record.id,
+      artifactId: record.artifactId,
+      pageId: record.pageId,
+      path: record.path,
+      createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+    })) as Path[];
     return { success: true, paths };
   } catch (error: any) {
     await logErrorToDatabase({
@@ -100,16 +94,16 @@ export async function deletePath(id: string): Promise<{ success: boolean; error?
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const pathRef = doc(firestore, 'paths', id);
-    const pathSnap = await getDoc(pathRef);
-    if (!pathSnap.exists() || pathSnap.data().artifactId !== artifactId) {
+    const record = await db.pagePath.findUnique({
+      where: { id },
+      select: { artifactId: true, path: true },
+    });
+    if (!record || record.artifactId !== artifactId) {
       return { success: false, error: 'Path not found or unauthorized.' };
     }
-    const pathData = pathSnap.data();
-    await deleteDoc(pathRef);
+    await db.pagePath.delete({ where: { id } });
 
-    await markStructureAsPending(artifactId, [pathData.path], true);
+    await markStructureAsPending(artifactId, [record.path], true);
 
     return { success: true };
   } catch (error: any) {

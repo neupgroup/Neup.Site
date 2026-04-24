@@ -1,29 +1,28 @@
 
 'use server';
 
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  Timestamp,
-  deleteDoc,
-  serverTimestamp,
-  addDoc,
-  writeBatch,
-} from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import type { Member } from '@/schemas/member';
 import { logErrorToDatabase } from '@/lib/logging';
 
 export async function createMember(data: Omit<Member, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'members'), data);
+    const record = await db.member.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        imageUrl: data.imageUrl ?? null,
+        permissions: data.permissions ? (data.permissions as any) : undefined,
+        teams: {
+          connect: (data.teamIds ?? []).filter(Boolean).map((id) => ({ id })),
+        },
+      },
+      select: { id: true },
+    });
     revalidatePath('/manage/members');
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to create member: ${e.message}`, stack: e.stack, source: 'createMember' });
     return { success: false, error: 'Failed to create member.' };
@@ -32,19 +31,20 @@ export async function createMember(data: Omit<Member, 'id'>): Promise<{ success:
 
 export async function getMembers(): Promise<{ success: boolean; members?: Member[]; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const querySnapshot = await getDocs(collection(firestore, 'members'));
-    const members = querySnapshot.docs.map(docSnap => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        name: data.name,
-        email: data.email,
-        role: data.role,
-        imageUrl: data.imageUrl,
-        teamIds: data.teamIds || [],
-      } as Member;
+    const records = await db.member.findMany({
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      include: { teams: { select: { id: true } } },
     });
+
+    const members = records.map((record) => ({
+      id: record.id,
+      name: record.name,
+      email: record.email,
+      role: record.role,
+      imageUrl: record.imageUrl ?? undefined,
+      teamIds: record.teams.map((team) => team.id),
+      permissions: (record.permissions as any) ?? undefined,
+    })) as Member[];
     return { success: true, members };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to get members: ${e.message}`, stack: e.stack, source: 'getMembers' });
@@ -54,22 +54,22 @@ export async function getMembers(): Promise<{ success: boolean; members?: Member
 
 export async function getMember(id: string): Promise<{ success: boolean; member?: Member; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const docRef = doc(firestore, 'members', id);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
+    const record = await db.member.findUnique({
+      where: { id },
+      include: { teams: { select: { id: true } } },
+    });
+    if (!record) {
       return { success: false, error: 'Member not found.' };
     }
 
-    const data = docSnap.data();
     const member: Member = {
-      id: docSnap.id,
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      imageUrl: data.imageUrl,
-      teamIds: data.teamIds || [],
+      id: record.id,
+      name: record.name,
+      email: record.email,
+      role: record.role,
+      imageUrl: record.imageUrl ?? undefined,
+      teamIds: record.teams.map((team) => team.id),
+      permissions: (record.permissions as any) ?? undefined,
     };
     return { success: true, member };
   } catch (e: any) {
@@ -80,9 +80,19 @@ export async function getMember(id: string): Promise<{ success: boolean; member?
 
 export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const memberRef = doc(firestore, 'members', id);
-    await setDoc(memberRef, data, { merge: true });
+    await db.member.update({
+      where: { id },
+      data: {
+        ...(typeof data.name === 'string' ? { name: data.name } : {}),
+        ...(typeof data.email === 'string' ? { email: data.email } : {}),
+        ...(typeof data.role === 'string' ? { role: data.role } : {}),
+        ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl ?? null } : {}),
+        ...(data.permissions !== undefined ? { permissions: (data.permissions as any) ?? null } : {}),
+        ...(data.teamIds !== undefined
+          ? { teams: { set: (data.teamIds ?? []).filter(Boolean).map((teamId) => ({ id: teamId })) } }
+          : {}),
+      },
+    });
     revalidatePath(`/manage/members`);
     revalidatePath(`/manage/members/${id}`);
     return { success: true };
@@ -94,8 +104,7 @@ export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>
 
 export async function deleteMember(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    await deleteDoc(doc(firestore, 'members', id));
+    await db.member.delete({ where: { id } });
     revalidatePath('/manage/members');
     return { success: true };
   } catch (e: any) {

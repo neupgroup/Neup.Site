@@ -1,8 +1,7 @@
 
 'use server';
 
-import { getFirestore, collection, query, where, getDocs, deleteDoc, doc, Timestamp } from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { logErrorToDatabase } from '@/lib/logging';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
@@ -44,17 +43,24 @@ export async function getLinkedAccounts(): Promise<{ accounts?: LinkedAccount[],
         return { accounts: [] };
     }
     try {
-        const { firestore } = getDataStore();
-        const q = query(collection(firestore, 'linked_accounts'), where('account_id', '==', accountId));
-        const querySnapshot = await getDocs(q);
-        const accounts = querySnapshot.docs.map(docSnap => {
-            const data = docSnap.data();
-            return {
-                id: docSnap.id,
-                ...data,
-                authorized_on: data.authorized_on instanceof Timestamp ? data.authorized_on.toDate().toISOString() : null,
-            } as LinkedAccount
+        const records = await db.linkedAccount.findMany({
+            where: { account_id: accountId },
+            orderBy: [{ authorized_on: 'desc' }, { id: 'asc' }],
         });
+
+        const accounts = records.map((record) => ({
+            id: record.id,
+            account_id: record.account_id,
+            platform: record.platform as LinkedAccount['platform'],
+            authorized_on: record.authorized_on ? record.authorized_on.toISOString() : null,
+            authorization_info: {
+                access_token: record.accessToken,
+                refresh_token: record.refreshToken ?? null,
+                scope: record.scope,
+                provider_user_id: record.providerUserId,
+                provider_username: record.providerUsername,
+            },
+        })) as LinkedAccount[];
         return { accounts };
     } catch (e: any) {
         await logErrorToDatabase({
@@ -72,14 +78,12 @@ export async function deleteLinkedAccount(id: string): Promise<{ success: boolea
         return { success: false, error: 'User not authenticated.' };
     }
     try {
-        const { firestore } = getDataStore();
-        const docRef = doc(firestore, 'linked_accounts', id);
-        // Optional: You might want to verify ownership before deleting
-        // const docSnap = await getDoc(docRef);
-        // if (!docSnap.exists() || docSnap.data().account_id !== accountId) {
-        //     return { success: false, error: 'Unauthorized or account not found.' };
-        // }
-        await deleteDoc(docRef);
+        const result = await db.linkedAccount.deleteMany({
+            where: { id, account_id: accountId },
+        });
+        if (result.count === 0) {
+            return { success: false, error: 'Unauthorized or account not found.' };
+        }
         return { success: true };
     } catch (e: any) {
         await logErrorToDatabase({

@@ -1,18 +1,7 @@
 
 'use server';
 
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  Timestamp,
-  deleteDoc,
-  serverTimestamp,
-  addDoc,
-} from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { logErrorToDatabase } from '@/lib/logging';
 
@@ -32,15 +21,24 @@ export interface JobPosting {
 
 export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'status'>>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'hiring'), {
-      ...data,
-      status: 'Draft',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+    const now = new Date();
+    const record = await db.jobPosting.create({
+      data: {
+        title: data.title ?? '',
+        location: data.location ?? null,
+        type: data.type ?? null,
+        description: data.description ?? null,
+        status: 'Draft',
+        qualifications: data.qualifications ? (data.qualifications as any) : undefined,
+        salary: data.salary ?? null,
+        openings: data.openings ?? null,
+        createdAt: now,
+        updatedAt: now,
+      },
+      select: { id: true },
     });
     revalidatePath('/manage/hiring');
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
     return { success: false, error: 'Failed to create job posting.' };
@@ -49,21 +47,18 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
 
 export async function getJobPostings(): Promise<{ success: boolean; postings?: JobPosting[]; error?: string }> {
   try {
-    const { firestore } = getDataStore();
-    const querySnapshot = await getDocs(collection(firestore, 'hiring'));
-    const postings = querySnapshot.docs.map(docSnap => {
-      const data = docSnap.data();
-      const createdAt = data.createdAt;
-      return {
-        id: docSnap.id,
-        title: data.title,
-        location: data.location,
-        type: data.type,
-        description: data.description,
-        status: data.status,
-        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-      } as JobPosting;
+    const records = await db.jobPosting.findMany({
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     });
+    const postings = records.map((record) => ({
+      id: record.id,
+      title: record.title,
+      location: record.location ?? undefined,
+      type: (record.type as JobPosting['type']) ?? undefined,
+      description: record.description ?? undefined,
+      status: record.status as JobPosting['status'],
+      createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+    })) as JobPosting[];
     return { success: true, postings };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to get job postings: ${e.message}`, stack: e.stack, source: 'getJobPostings' });
@@ -73,30 +68,23 @@ export async function getJobPostings(): Promise<{ success: boolean; postings?: J
 
 export async function getJobPostingById(id: string): Promise<{ success: boolean; posting?: JobPosting; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        const docRef = doc(firestore, 'hiring', id);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
+        const record = await db.jobPosting.findUnique({ where: { id } });
+        if (!record) {
             return { success: false, error: 'Job posting not found.' };
         }
 
-        const data = docSnap.data();
-        const createdAt = data.createdAt;
-        const updatedAt = data.updatedAt;
-
         const posting: JobPosting = {
-            id: docSnap.id,
-            title: data.title,
-            location: data.location,
-            type: data.type,
-            description: data.description,
-            status: data.status,
-            qualifications: data.qualifications || [],
-            salary: data.salary,
-            openings: data.openings,
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-            updatedAt: updatedAt instanceof Timestamp ? updatedAt.toDate().toISOString() : null,
+            id: record.id,
+            title: record.title,
+            location: record.location ?? undefined,
+            type: (record.type as JobPosting['type']) ?? undefined,
+            description: record.description ?? undefined,
+            status: record.status as JobPosting['status'],
+            qualifications: (record.qualifications as any) ?? [],
+            salary: record.salary ?? undefined,
+            openings: record.openings ?? undefined,
+            createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+            updatedAt: record.updatedAt ? record.updatedAt.toISOString() : null,
         };
         return { success: true, posting };
 
@@ -108,9 +96,20 @@ export async function getJobPostingById(id: string): Promise<{ success: boolean;
 
 export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting, 'id'>>): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        const docRef = doc(firestore, 'hiring', id);
-        await setDoc(docRef, { ...data, updatedAt: serverTimestamp() }, { merge: true });
+        await db.jobPosting.update({
+          where: { id },
+          data: {
+            ...(typeof data.title === 'string' ? { title: data.title } : {}),
+            ...(data.location !== undefined ? { location: data.location ?? null } : {}),
+            ...(data.type !== undefined ? { type: data.type ?? null } : {}),
+            ...(data.description !== undefined ? { description: data.description ?? null } : {}),
+            ...(data.status !== undefined ? { status: data.status } : {}),
+            ...(data.qualifications !== undefined ? { qualifications: (data.qualifications as any) ?? null } : {}),
+            ...(data.salary !== undefined ? { salary: data.salary ?? null } : {}),
+            ...(data.openings !== undefined ? { openings: data.openings ?? null } : {}),
+            updatedAt: new Date(),
+          },
+        });
         revalidatePath(`/manage/hiring`);
         revalidatePath(`/manage/hiring/${id}`);
         return { success: true };
@@ -122,8 +121,7 @@ export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting
 
 export async function deleteJobPosting(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        await deleteDoc(doc(firestore, 'hiring', id));
+        await db.jobPosting.delete({ where: { id } });
         revalidatePath('/manage/hiring');
         return { success: true };
     } catch (e: any) {

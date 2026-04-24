@@ -1,19 +1,7 @@
 
 'use server';
 
-import {
-  collection,
-  doc,
-  deleteDoc,
-  getDocs,
-  query,
-  where,
-  addDoc,
-  serverTimestamp,
-  Timestamp,
-  orderBy,
-} from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { logErrorToDatabase } from '@/lib/logging';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
@@ -26,17 +14,19 @@ export async function createToken(name: string, tokenHash: string, tokenPrefix: 
   }
 
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'api_tokens'), {
-      accountId,
-      name,
-      tokenHash,
-      tokenPrefix,
-      createdAt: serverTimestamp(),
-      lastUsed: null,
+    const record = await db.apiToken.create({
+      data: {
+        accountId,
+        name,
+        tokenHash,
+        tokenPrefix,
+        createdAt: new Date(),
+        lastUsed: null,
+      },
+      select: { id: true },
     });
     revalidatePath('/settings/tokens');
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (e: any) {
     await logErrorToDatabase({
       message: `Failed to create token: ${e.message}`,
@@ -54,25 +44,19 @@ export async function getTokens(): Promise<{ success: boolean; tokens?: ApiToken
   }
 
   try {
-    const { firestore } = getDataStore();
-    const q = query(
-      collection(firestore, 'api_tokens'),
-      where('accountId', '==', accountId),
-      orderBy('createdAt', 'desc')
-    );
-    const querySnapshot = await getDocs(q);
-    const tokens = querySnapshot.docs.map(docSnap => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        accountId: data.accountId,
-        name: data.name,
-        // The full token is NOT returned for security reasons, only a prefix
-        token: `${data.tokenPrefix}...`,
-        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : null,
-        lastUsed: data.lastUsed instanceof Timestamp ? data.lastUsed.toDate().toISOString() : null,
-      } as ApiToken;
+    const records = await db.apiToken.findMany({
+      where: { accountId },
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     });
+
+    const tokens = records.map((record) => ({
+      id: record.id,
+      accountId: record.accountId,
+      name: record.name,
+      token: `${record.tokenPrefix}...`,
+      createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+      lastUsed: record.lastUsed ? record.lastUsed.toISOString() : null,
+    })) as ApiToken[];
     return { success: true, tokens };
   } catch (e: any) {
     await logErrorToDatabase({
@@ -91,9 +75,10 @@ export async function revokeToken(id: string): Promise<{ success: boolean; error
   }
 
   try {
-    const { firestore } = getDataStore();
-    // In a real app, you'd verify ownership before deleting
-    await deleteDoc(doc(firestore, 'api_tokens', id));
+    const result = await db.apiToken.deleteMany({ where: { id, accountId } });
+    if (result.count === 0) {
+      return { success: false, error: 'Unauthorized or token not found.' };
+    }
     revalidatePath('/settings/tokens');
     return { success: true };
   } catch (e: any) {

@@ -2,24 +2,7 @@
 
 'use server';
 
-import {
-    collection,
-    doc,
-    setDoc,
-    getDoc,
-    getDocs,
-    Timestamp,
-    deleteDoc,
-    serverTimestamp,
-    addDoc,
-    query,
-    orderBy,
-    limit,
-    startAfter,
-    getCountFromServer,
-    where,
-} from '@/lib/firestore';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/schemas/command';
 import { logErrorToDatabase } from '@/lib/logging';
@@ -27,8 +10,6 @@ import { getConfigureNginxCommand } from './server/management/configure-nginx';
 import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
 
 async function createBuiltInCommands() {
-    const { firestore } = getDataStore();
-
     const commandsToCreate = [
         {
             id: 'app-start-prod',
@@ -268,11 +249,35 @@ pm2 save
 
     for (const cmd of commandsToCreate) {
         try {
-            const docRef = doc(firestore, 'serverCommands', cmd.id);
-            await setDoc(docRef, {
-                ...cmd.data,
-                createdAt: serverTimestamp(),
-            }, { merge: true });
+            await db.serverCommand.upsert({
+                where: { id: cmd.id },
+                create: {
+                    id: cmd.id,
+                    name: cmd.data.name,
+                    description: cmd.data.description ?? null,
+                    commandTemplate: cmd.data.commandTemplate,
+                    parameters: cmd.data.parameters ? (cmd.data.parameters as any) : undefined,
+                    preExecutionScript: (cmd.data as any).preExecutionScript ?? null,
+                    allocatesPort: Boolean((cmd.data as any).allocatesPort),
+                    portToReserve: (cmd.data as any).portToReserve ?? null,
+                    type: (cmd.data as any).type ?? 'view',
+                    danger: (cmd.data as any).danger ?? 'low',
+                    nextCommands: (cmd.data as any).nextCommands ? ((cmd.data as any).nextCommands as any) : undefined,
+                    createdAt: new Date(),
+                },
+                update: {
+                    name: cmd.data.name,
+                    description: cmd.data.description ?? null,
+                    commandTemplate: cmd.data.commandTemplate,
+                    parameters: cmd.data.parameters ? (cmd.data.parameters as any) : undefined,
+                    preExecutionScript: (cmd.data as any).preExecutionScript ?? null,
+                    allocatesPort: Boolean((cmd.data as any).allocatesPort),
+                    portToReserve: (cmd.data as any).portToReserve ?? null,
+                    type: (cmd.data as any).type ?? 'view',
+                    danger: (cmd.data as any).danger ?? 'low',
+                    nextCommands: (cmd.data as any).nextCommands ? ((cmd.data as any).nextCommands as any) : undefined,
+                },
+            });
         } catch (e) {
             console.error(`Failed to upsert built-in command "${cmd.id}"`, e);
         }
@@ -282,7 +287,7 @@ pm2 save
 
 // Immediately try to create the built-in command when this module is loaded.
 // This is a simple way to ensure it exists. A more robust system might use a migration script.
-createBuiltInCommands();
+void createBuiltInCommands();
 
 export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'createdAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
     try {
@@ -292,13 +297,24 @@ export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'crea
             return { success: false, error: JSON.stringify(errorDetails) };
         }
 
-        const { firestore } = getDataStore();
-        const docRef = await addDoc(collection(firestore, 'serverCommands'), {
-            ...validatedData.data,
-            createdAt: serverTimestamp(),
+        const record = await db.serverCommand.create({
+            data: {
+                name: validatedData.data.name,
+                description: validatedData.data.description ?? null,
+                commandTemplate: validatedData.data.commandTemplate,
+                parameters: validatedData.data.parameters ? (validatedData.data.parameters as any) : undefined,
+                preExecutionScript: (validatedData.data as any).preExecutionScript ?? null,
+                allocatesPort: Boolean((validatedData.data as any).allocatesPort),
+                portToReserve: (validatedData.data as any).portToReserve ?? null,
+                type: (validatedData.data as any).type ?? 'view',
+                danger: (validatedData.data as any).danger ?? 'low',
+                nextCommands: (validatedData.data as any).nextCommands ? ((validatedData.data as any).nextCommands as any) : undefined,
+                createdAt: new Date(),
+            },
+            select: { id: true },
         });
 
-        return { success: true, id: docRef.id };
+        return { success: true, id: record.id };
     } catch (e: any) {
         await logErrorToDatabase({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
         return { success: false, error: 'Failed to create command.' };
@@ -315,42 +331,41 @@ export async function getServerCommands({
     pageSize?: number;
 }): Promise<{ success: boolean; commands?: ServerCommand[]; error?: string; totalCount?: number }> {
     try {
-        const { firestore } = getDataStore();
-        const commandsRef = collection(firestore, 'serverCommands');
+        const where = searchQuery
+            ? {
+                OR: [
+                    { name: { contains: searchQuery, mode: 'insensitive' as const } },
+                    { description: { contains: searchQuery, mode: 'insensitive' as const } },
+                ],
+            }
+            : {};
 
-        const allDocsQuery = query(commandsRef, orderBy('name'));
-        const allDocsSnapshot = await getDocs(allDocsQuery);
+        const [totalCount, records] = await Promise.all([
+            db.serverCommand.count({ where }),
+            db.serverCommand.findMany({
+                where,
+                orderBy: [{ name: 'asc' }, { id: 'asc' }],
+                skip: Math.max(0, page - 1) * pageSize,
+                take: pageSize,
+            }),
+        ]);
 
-        let allCommands = allDocsSnapshot.docs.map(docSnap => {
-            const data = docSnap.data();
-            const createdAt = data.createdAt;
-            return {
-                id: docSnap.id,
-                name: data.name,
-                description: data.description,
-                commandTemplate: data.commandTemplate,
-                parameters: data.parameters || [],
-                preExecutionScript: data.preExecutionScript,
-                type: data.type || 'view',
-                danger: data.danger || 'low',
-                allocatesPort: data.allocatesPort ?? false,
-                portToReserve: data.portToReserve,
-                nextCommands: data.nextCommands || [],
-                createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-            } as ServerCommand;
-        });
+        const commands = records.map((record) => ({
+            id: record.id,
+            name: record.name,
+            description: record.description ?? undefined,
+            commandTemplate: record.commandTemplate,
+            parameters: (record.parameters as any) || [],
+            preExecutionScript: record.preExecutionScript ?? undefined,
+            type: (record.type as any) || 'view',
+            danger: (record.danger as any) || 'low',
+            allocatesPort: record.allocatesPort ?? false,
+            portToReserve: record.portToReserve ?? undefined,
+            nextCommands: (record.nextCommands as any) || [],
+            createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+        })) as ServerCommand[];
 
-        if (searchQuery) {
-            allCommands = allCommands.filter(command =>
-                command.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (command.description && command.description.toLowerCase().includes(searchQuery.toLowerCase()))
-            );
-        }
-
-        const totalCount = allCommands.length;
-        const paginatedCommands = allCommands.slice((page - 1) * pageSize, page * pageSize);
-
-        return { success: true, commands: paginatedCommands, totalCount };
+        return { success: true, commands, totalCount };
     } catch (e: any) {
         await logErrorToDatabase({ message: `Failed to get server commands: ${e.message}`, stack: e.stack, source: 'getServerCommands' });
         return { success: false, error: 'Failed to fetch commands.' };
@@ -359,30 +374,24 @@ export async function getServerCommands({
 
 export async function getServerCommand(id: string): Promise<{ success: boolean; command?: ServerCommand; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        const docRef = doc(firestore, 'serverCommands', id);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
+        const record = await db.serverCommand.findUnique({ where: { id } });
+        if (!record) {
             return { success: false, error: 'Command not found.' };
         }
 
-        const data = docSnap.data();
-        const createdAt = data.createdAt;
-
         const command: ServerCommand = {
-            id: docSnap.id,
-            name: data.name,
-            description: data.description,
-            commandTemplate: data.commandTemplate,
-            parameters: data.parameters || [],
-            preExecutionScript: data.preExecutionScript,
-            type: data.type || 'view',
-            danger: data.danger || 'low',
-            allocatesPort: data.allocatesPort ?? false,
-            portToReserve: data.portToReserve,
-            nextCommands: data.nextCommands || [],
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
+            id: record.id,
+            name: record.name,
+            description: record.description ?? undefined,
+            commandTemplate: record.commandTemplate,
+            parameters: (record.parameters as any) || [],
+            preExecutionScript: record.preExecutionScript ?? undefined,
+            type: (record.type as any) || 'view',
+            danger: (record.danger as any) || 'low',
+            allocatesPort: record.allocatesPort ?? false,
+            portToReserve: record.portToReserve ?? undefined,
+            nextCommands: (record.nextCommands as any) || [],
+            createdAt: record.createdAt ? record.createdAt.toISOString() : null,
         };
         return { success: true, command };
 
@@ -400,9 +409,29 @@ export async function updateServerCommand(id: string, data: Partial<Omit<ServerC
             return { success: false, error: JSON.stringify(errorDetails) };
         }
 
-        const { firestore } = getDataStore();
-        const docRef = doc(firestore, 'serverCommands', id);
-        await setDoc(docRef, validatedData.data, { merge: true });
+        await db.serverCommand.update({
+            where: { id },
+            data: {
+                ...(validatedData.data.name !== undefined ? { name: validatedData.data.name } : {}),
+                ...(validatedData.data.description !== undefined ? { description: validatedData.data.description ?? null } : {}),
+                ...(validatedData.data.commandTemplate !== undefined ? { commandTemplate: validatedData.data.commandTemplate } : {}),
+                ...(validatedData.data.parameters !== undefined ? { parameters: (validatedData.data.parameters as any) ?? null } : {}),
+                ...((validatedData.data as any).preExecutionScript !== undefined
+                    ? { preExecutionScript: (validatedData.data as any).preExecutionScript ?? null }
+                    : {}),
+                ...((validatedData.data as any).type !== undefined ? { type: (validatedData.data as any).type ?? 'view' } : {}),
+                ...((validatedData.data as any).danger !== undefined ? { danger: (validatedData.data as any).danger ?? 'low' } : {}),
+                ...((validatedData.data as any).allocatesPort !== undefined
+                    ? { allocatesPort: Boolean((validatedData.data as any).allocatesPort) }
+                    : {}),
+                ...((validatedData.data as any).portToReserve !== undefined
+                    ? { portToReserve: (validatedData.data as any).portToReserve ?? null }
+                    : {}),
+                ...((validatedData.data as any).nextCommands !== undefined
+                    ? { nextCommands: ((validatedData.data as any).nextCommands as any) ?? null }
+                    : {}),
+            },
+        });
 
         return { success: true };
     } catch (e: any) {
@@ -413,8 +442,7 @@ export async function updateServerCommand(id: string, data: Partial<Omit<ServerC
 
 export async function deleteServerCommand(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const { firestore } = getDataStore();
-        await deleteDoc(doc(firestore, 'serverCommands', id));
+        await db.serverCommand.delete({ where: { id } });
 
         return { success: true };
     } catch (e: any) {
@@ -422,7 +450,6 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
         return { success: false, error: 'Failed to delete command.' };
     }
 }
-
 
 
 
