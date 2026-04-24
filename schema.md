@@ -37,6 +37,16 @@ Columns:
 - createdAt: DateTime?
 - updatedAt: DateTime?
 
+## profile (Profile)
+Columns:
+- id: String; primary key; default cuid()
+- artifactId: String; references Artifact.id
+- subject: String
+- value: String; varchar(512)
+Indexes:
+- index (artifactId)
+- index (artifactId, subject)
+
 ## role (Role)
 Columns:
 - id: String; primary key

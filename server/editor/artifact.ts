@@ -15,6 +15,8 @@ import { getDataStore } from '@/lib/data-store';
 import { generateThemeFromColor } from '@/lib/color-utils';
 import { markAssetsAsPending, markThemeAsPending } from '@/server/structure';
 import { revalidatePath } from 'next/cache';
+import { db } from '@/lib/db';
+import { syncArtifactProfileSubjects } from '@/server/profiles';
 
 
 
@@ -32,7 +34,14 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
     const artifactRef = doc(firestore, 'artifacts', artifactId);
     const themeRef = doc(firestore, 'themes', artifactId);
 
-    const [docSnap, themeSnap] = await Promise.all([getDoc(artifactRef), getDoc(themeRef)]);
+    const [docSnap, themeSnap, profileEntries] = await Promise.all([
+      getDoc(artifactRef),
+      getDoc(themeRef),
+      db.profile.findMany({
+        where: { artifactId },
+        select: { subject: true, value: true },
+      }),
+    ]);
 
     if (!docSnap.exists()) {
       return { success: true, artifact: undefined };
@@ -42,6 +51,25 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
     const themeData = themeSnap.exists() ? themeSnap.data() : {};
     const createdAt = data.createdAt;
     const updatedAt = data.updatedAt;
+
+    const subjectToValues = new Map<string, string[]>();
+    const socialProfilesFromDb: { platformName: string; url: string }[] = [];
+
+    profileEntries.forEach((entry) => {
+      const values = subjectToValues.get(entry.subject) ?? [];
+      values.push(entry.value);
+      subjectToValues.set(entry.subject, values);
+
+      if (entry.subject.startsWith('socialProfile.')) {
+        const platformName = entry.subject.slice('socialProfile.'.length);
+        if (platformName) {
+          socialProfilesFromDb.push({ platformName, url: entry.value });
+        }
+      }
+    });
+
+    const contactEmailFromDb = subjectToValues.get('contact.email')?.map((value) => ({ value })) ?? [];
+    const contactPhoneFromDb = subjectToValues.get('contact.phone')?.map((value) => ({ value })) ?? [];
 
     const artifact: Artifact = {
       id: docSnap.id,
@@ -54,9 +82,9 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
       hideSitename: themeData.hideSitename || false,
       hideLogo: themeData.hideLogo || false,
       description: data.description,
-      socialProfiles: data.socialProfiles || [],
-      contactEmail: data.contactEmail || [],
-      contactPhone: data.contactPhone || [],
+      socialProfiles: socialProfilesFromDb.length ? socialProfilesFromDb : (data.socialProfiles || []),
+      contactEmail: contactEmailFromDb.length ? contactEmailFromDb : (data.contactEmail || []),
+      contactPhone: contactPhoneFromDb.length ? contactPhoneFromDb : (data.contactPhone || []),
       modules: data.modules || {},
       theme: themeData.theme || {},
       createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
@@ -164,6 +192,22 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
     await setDoc(artifactRef, dataToSave, { merge: true });
     // Save theme separately from the Artifact table.
     await setDoc(themeRef, themeToSave, { merge: true });
+
+    const profileSync = await syncArtifactProfileSubjects({
+      artifactId,
+      name: typeof data.name === 'string' ? data.name : undefined,
+      logoUrl: typeof (dataToSave as any).logoUrl === 'string' ? (dataToSave as any).logoUrl : (typeof data.logoUrl === 'string' ? data.logoUrl : undefined),
+      description: typeof data.description === 'string' ? data.description : undefined,
+      hideLogo: typeof nextHideLogo === 'boolean' ? nextHideLogo : undefined,
+      hideSitename: typeof nextHideSitename === 'boolean' ? nextHideSitename : undefined,
+      socialProfiles: (dataToSave as any).socialProfiles ?? data.socialProfiles,
+      contactEmail: data.contactEmail,
+      contactPhone: data.contactPhone,
+    });
+    if (!profileSync.success) {
+      return { success: false, error: profileSync.error || 'Failed to sync profile subjects.' };
+    }
+
     revalidatePath('/', 'layout');
     return { success: true, id: artifactId };
   } catch (error: any) {

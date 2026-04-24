@@ -53,6 +53,7 @@ model Artifact {
   themeEntry     Theme?
   roles          Role[]
   domainEntries  Domain[]
+  profiles       Profile[]
   ownerAccountId String?
   status         String?
   type           String?
@@ -71,6 +72,18 @@ model Artifact {
 
   @@index([ownerAccountId])
   @@map("artifact")
+}
+
+model Profile {
+  id         String   @id @default(cuid())
+  artifactId String
+  subject    String
+  value      String   @db.VarChar(512)
+  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+
+  @@index([artifactId])
+  @@index([artifactId, subject])
+  @@map("profile")
 }
 
 model Theme {

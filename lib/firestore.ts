@@ -68,6 +68,9 @@ const COLLECTIONS: Record<string, CollectionConfig> = {
     model: 'theme',
     jsonFields: ['theme'],
   },
+  profiles: {
+    model: 'profile',
+  },
   pages: {
     model: 'page',
     jsonFields: ['elements'],
