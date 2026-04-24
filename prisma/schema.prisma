@@ -40,11 +40,6 @@ model Artifact {
   name           String                 @default("")
   url            String?
   tier           String                 @default("free")
-  logoUrl        String?
-  description    String?
-  socialProfiles Json?
-  contactEmail   Json?
-  contactPhone   Json?
   modules        Json?
   icons          Json?
   domains        Json?

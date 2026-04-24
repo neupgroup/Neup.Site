@@ -58,11 +58,11 @@ const COLLECTIONS: Record<string, CollectionConfig> = {
   // Use "artifacts" going forward.
   sites: {
     model: 'artifact',
-    jsonFields: ['socialProfiles', 'contactEmail', 'contactPhone', 'modules', 'icons', 'domains'],
+    jsonFields: ['modules', 'icons', 'domains'],
   },
   artifacts: {
     model: 'artifact',
-    jsonFields: ['socialProfiles', 'contactEmail', 'contactPhone', 'modules', 'icons', 'domains'],
+    jsonFields: ['modules', 'icons', 'domains'],
   },
   themes: {
     model: 'theme',

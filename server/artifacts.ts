@@ -3,6 +3,7 @@
 import crypto from 'crypto';
 import { db } from '@/lib/db';
 import { getAccountId } from './accounts';
+import { normalizeUrl } from '@/lib/url-utils';
 
 export interface ArtifactSummary {
   id: string;
@@ -20,7 +21,16 @@ export async function getArtifactsForAccount(): Promise<{ artifacts?: ArtifactSu
   try {
     const roles = await db.role.findMany({
       where: { accountId },
-      include: { artifact: true },
+      include: {
+        artifact: {
+          include: {
+            profiles: {
+              where: { subject: { in: ['brand.logo', 'brand.description'] } },
+              select: { subject: true, value: true },
+            },
+          },
+        },
+      },
     });
 
     const artifactsById = new Map<string, ArtifactSummary>();
@@ -28,11 +38,15 @@ export async function getArtifactsForAccount(): Promise<{ artifacts?: ArtifactSu
     roles.forEach((role) => {
       if (!role.artifact) return;
       if (!artifactsById.has(role.artifact.id)) {
+        const logoUrl = role.artifact.profiles.find((entry) => entry.subject === 'brand.logo')?.value ?? null;
+        const description =
+          role.artifact.profiles.find((entry) => entry.subject === 'brand.description')?.value ?? null;
+
         artifactsById.set(role.artifact.id, {
           id: role.artifact.id,
           name: role.artifact.name,
-          logoUrl: role.artifact.logoUrl ?? null,
-          description: role.artifact.description,
+          logoUrl,
+          description,
         });
       }
     });
@@ -64,8 +78,6 @@ export async function createArtifactForAccount(input: {
   const artifactData = {
     id: artifactId,
     name,
-    logoUrl: input.logoUrl?.trim() || null,
-    description: input.description?.trim() || null,
   };
 
   try {
@@ -76,6 +88,16 @@ export async function createArtifactForAccount(input: {
         update: {},
       }),
       db.artifact.create({ data: artifactData }),
+      db.profile.createMany({
+        data: [
+          ...(input.logoUrl?.trim()
+            ? [{ artifactId, subject: 'brand.logo', value: normalizeUrl(input.logoUrl.trim()).slice(0, 512) }]
+            : []),
+          ...(input.description?.trim()
+            ? [{ artifactId, subject: 'brand.description', value: input.description.trim().slice(0, 512) }]
+            : []),
+        ],
+      }),
       db.role.create({
         data: {
           id: roleId,
@@ -87,7 +109,14 @@ export async function createArtifactForAccount(input: {
       }),
     ]);
 
-    return { success: true, artifact: artifactData };
+    return {
+      success: true,
+      artifact: {
+        ...artifactData,
+        logoUrl: input.logoUrl?.trim() || null,
+        description: input.description?.trim() || null,
+      },
+    };
   } catch (error: any) {
     return { success: false, error: 'Failed to create artifact.' };
   }

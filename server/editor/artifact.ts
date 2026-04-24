@@ -9,7 +9,6 @@ import {
   serverTimestamp
 } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { normalizeUrl } from '@/lib/url-utils';
 import { Artifact, ArtifactTheme, ArtifactIcons } from '@/schemas/artifact';
 import { getDataStore } from '@/lib/data-store';
 import { generateThemeFromColor } from '@/lib/color-utils';
@@ -70,6 +69,8 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
 
     const contactEmailFromDb = subjectToValues.get('contact.email')?.map((value) => ({ value })) ?? [];
     const contactPhoneFromDb = subjectToValues.get('contact.phone')?.map((value) => ({ value })) ?? [];
+    const logoUrlFromDb = subjectToValues.get('brand.logo')?.[0];
+    const descriptionFromDb = subjectToValues.get('brand.description')?.[0];
 
     const artifact: Artifact = {
       id: docSnap.id,
@@ -77,11 +78,11 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
       url: data.url,
       domains: data.domains,
       tier: data.tier,
-      logoUrl: data.logoUrl,
+      logoUrl: logoUrlFromDb ?? data.logoUrl,
       icons: data.icons || {},
       hideSitename: themeData.hideSitename || false,
       hideLogo: themeData.hideLogo || false,
-      description: data.description,
+      description: descriptionFromDb ?? data.description,
       socialProfiles: socialProfilesFromDb.length ? socialProfilesFromDb : (data.socialProfiles || []),
       contactEmail: contactEmailFromDb.length ? contactEmailFromDb : (data.contactEmail || []),
       contactPhone: contactPhoneFromDb.length ? contactPhoneFromDb : (data.contactPhone || []),
@@ -126,6 +127,13 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
     let dataToSave: any = { ...artifactDataPatch, updatedAt: serverTimestamp() };
     let themeToSave: any = { updatedAt: serverTimestamp() };
 
+    // These fields are now stored in the `profile` table (subject/value), not on `artifact`.
+    delete dataToSave.logoUrl;
+    delete dataToSave.description;
+    delete dataToSave.socialProfiles;
+    delete dataToSave.contactEmail;
+    delete dataToSave.contactPhone;
+
     if (!docSnap.exists()) {
       dataToSave.createdAt = serverTimestamp();
     }
@@ -147,8 +155,7 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
       };
     }
 
-    if (data.logoUrl && data.logoUrl !== existingData.logoUrl) {
-      dataToSave.logoUrl = normalizeUrl(data.logoUrl);
+    if (typeof data.logoUrl === 'string' && data.logoUrl.trim()) {
       await markAssetsAsPending(artifactId);
     }
 
@@ -167,10 +174,6 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
     }
 
     if (data.socialProfiles) {
-      dataToSave.socialProfiles = data.socialProfiles.map(p => ({
-        ...p,
-        url: normalizeUrl(p.url)
-      }));
       await markAssetsAsPending(artifactId);
     }
 
@@ -196,11 +199,11 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
     const profileSync = await syncArtifactProfileSubjects({
       artifactId,
       name: typeof data.name === 'string' ? data.name : undefined,
-      logoUrl: typeof (dataToSave as any).logoUrl === 'string' ? (dataToSave as any).logoUrl : (typeof data.logoUrl === 'string' ? data.logoUrl : undefined),
+      logoUrl: typeof data.logoUrl === 'string' ? data.logoUrl : undefined,
       description: typeof data.description === 'string' ? data.description : undefined,
       hideLogo: typeof nextHideLogo === 'boolean' ? nextHideLogo : undefined,
       hideSitename: typeof nextHideSitename === 'boolean' ? nextHideSitename : undefined,
-      socialProfiles: (dataToSave as any).socialProfiles ?? data.socialProfiles,
+      socialProfiles: data.socialProfiles,
       contactEmail: data.contactEmail,
       contactPhone: data.contactPhone,
     });
