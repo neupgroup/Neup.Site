@@ -12,20 +12,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { usePageTitle } from '@/core/hooks/use-page-title';
-
-const allPossibleModules = [
-    { id: 'user', name: 'User Module', description: 'Manages user authentication and profiles.' },
-    { id: 'neupid', name: 'NeupID Module', description: 'Integrates with NeupID for single sign-on.' },
-    { id: 'analytics', name: 'Analytics Module', description: 'Tracks user engagement and site metrics.' },
-    { id: 'ad', name: 'Ad Module', description: 'Manages and displays advertisements.' },
-    { id: 'social', name: 'Social Module', description: 'Handles social sharing and feeds.' },
-    { id: 'meta-pixel', name: 'Meta Pixel Module', description: 'Integrates with Meta Pixel for tracking.' },
-    { id: 'news', name: 'News Module', description: 'Adds a news/articles section to your site.' },
-    { id: 'blog', name: 'Blog Module', description: 'Adds a blog section to your site.' },
-    { id: 'database', name: 'Database Integration', description: 'Connects to a database for dynamic content.' },
-    { id: 'google-analytics', name: 'Google Analytics Integration', description: 'Integrates with Google Analytics for detailed tracking.' },
-    { id: 'payment', name: 'Payment Processing Module', description: 'Handles payments and subscriptions.' },
-];
+import allPossibleModules from '@/services/site/modules/list.json';
 
 export default function SiteModulesPage() {
   usePageTitle('Artifact Modules');
