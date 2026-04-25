@@ -64,6 +64,7 @@ model Artifact {
   structures     SiteStructure[]
   deployments    Deployment[]
   appBaseBackups AppBaseBackup[]
+  artifactModules ArtifactModule[]
 
   @@index([ownerAccountId])
   @@map("artifact")
@@ -489,6 +490,17 @@ model SyncRequest {
   attemptOn   DateTime?
 
   @@map("sync_request")
+}
+
+model ArtifactModule {
+  id         String   @id @default(cuid())
+  artifactId String
+  title      String
+  status     String
+  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+
+  @@index([artifactId])
+  @@map("modules")
 }
 
 model SyncerLog {
