@@ -8,7 +8,7 @@ import { AlertCircle, Plus, Users, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { generatePageMetadata } from '@/lib/metadata';
+import { generatePageMetadata } from '@/core/lib/metadata';
 
 export async function generateMetadata() {
     return await generatePageMetadata('Members');

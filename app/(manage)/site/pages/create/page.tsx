@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowRight, Code, Edit, MessageSquare, PlusSquare, Loader2 } from 'lucide-react';
 import { createPage, type Page } from '@/services/editor/pages';
-import { useToast } from '@/hooks/use-toast';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { useToast } from '@/core/hooks/use-toast';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 type CreationType = Page['type'];
 

@@ -1,5 +1,5 @@
 
-import type { CanvasElementData } from "@/lib/schemas";
+import type { CanvasElementData } from "@/core/lib/schemas";
 
 export const image: CanvasElementData = {
     id: '',

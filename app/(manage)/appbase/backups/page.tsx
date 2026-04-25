@@ -10,12 +10,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, RotateCcw, HardDrive } from 'lucide-react';
 import Link from 'next/link';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { getAppBaseBackups, restoreAppBaseBackup, type AppBaseBackup } from '@/services/app-base';
 import { getSiteServers } from '@/services/servers';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export default function BackupsPage() {
   usePageTitle('App Base Backups');

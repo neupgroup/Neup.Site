@@ -4,8 +4,8 @@
 
 import { Server, ServerAllocation } from '@/schemas/server';
 import { cookies } from 'next/headers';
-import { logErrorToDatabase } from '@/lib/logging';
-import { db } from '@/lib/db';
+import { logErrorToDatabase } from '@/core/lib/logging';
+import { db } from '@/core/lib/db';
 
 /**
  * Creates a new server.

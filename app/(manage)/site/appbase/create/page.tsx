@@ -11,12 +11,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { createAppBaseFile } from '@/services/app-base';
 import { getSiteServers } from '@/services/servers';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required.'),

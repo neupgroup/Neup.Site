@@ -3,10 +3,10 @@
 
 import { cookies } from 'next/headers';
 import { Artifact, ArtifactTheme, ArtifactIcons } from '@/schemas/artifact';
-import { generateThemeFromColor } from '@/lib/color-utils';
+import { generateThemeFromColor } from '@/core/lib/color-utils';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { syncArtifactProfileSubjects } from '@/services/profiles';
 
 export async function getArtifact(): Promise<{ success: boolean, artifact?: Artifact, error?: string }> {

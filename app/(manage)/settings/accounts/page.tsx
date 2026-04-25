@@ -7,13 +7,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Github, Trash2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { getLinkedAccounts, deleteLinkedAccount } from '@/services/accounts';
 import type { LinkedAccount } from '@/services/accounts';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 function LinkedAccountCard({ account, onDisconnect }: { account: LinkedAccount, onDisconnect: (id: string) => void }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);

@@ -1,9 +1,9 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { revalidatePath } from 'next/cache';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export interface JobPosting {
   id: string;

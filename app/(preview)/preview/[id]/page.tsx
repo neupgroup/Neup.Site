@@ -1,7 +1,7 @@
 import { getPage } from '@/services/editor/pages';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { convertJsonToHtml } from '@/lib/json-to-html';
+import { convertJsonToHtml } from '@/core/lib/json-to-html';
 import { use } from 'react';
 
 export default async function PreviewPage({ params }: { params: Promise<{ id: string }> }) {

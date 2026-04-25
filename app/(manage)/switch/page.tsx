@@ -4,8 +4,8 @@
 import { useState, useEffect } from 'react';
 import { getArtifactsForAccount, createArtifactForAccount, type ArtifactSummary } from '@/services/artifacts';
 import { setArtifactIdCookie } from '@/services/auth';
-import { useToast } from '@/hooks/use-toast';
-import { useProfile } from '@/context/ProfileContext';
+import { useToast } from '@/core/hooks/use-toast';
+import { useProfile } from '@/core/context/ProfileContext';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, Package, Loader2, ArrowRight, CheckCircle, Plus } from 'lucide-react';
-import { getCookie } from '@/lib/session-manager';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { getCookie } from '@/core/lib/session-manager';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 function ArtifactList() {
     const [allArtifacts, setAllArtifacts] = useState<ArtifactSummary[]>([]);

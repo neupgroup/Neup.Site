@@ -2,7 +2,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { createServerLog } from '@/services/server-logs';
 
 export async function deployCodebaseFromStorage(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {

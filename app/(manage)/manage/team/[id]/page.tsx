@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, ArrowLeft, Pencil } from 'lucide-react';
 import Link from 'next/link';
-import { generatePageMetadata } from '@/lib/metadata';
+import { generatePageMetadata } from '@/core/lib/metadata';
 
 export async function generateMetadata({ params }: { params: { id: string }}) {
     const { team } = await getTeam(params.id);

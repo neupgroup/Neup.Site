@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export interface FileInfo {
   type: 'd' | '-' | 'l'; // directory, file, link

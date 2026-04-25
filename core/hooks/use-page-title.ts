@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useProfile } from '@/context/ProfileContext';
+import { useProfile } from '@/core/context/ProfileContext';
 
 /**
  * Custom hook to set page title with artifact name

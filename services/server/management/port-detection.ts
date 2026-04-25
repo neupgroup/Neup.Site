@@ -3,7 +3,7 @@
 import { getPrivateServerDetails } from '@/services/servers';
 import { updateAllocationPort } from '@/services/allocations';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export async function detectAndAppPortFromPm2(artifactId: string, serverId: string): Promise<{ success: boolean; port?: number; error?: string }> {
     const ssh = new NodeSSH();

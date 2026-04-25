@@ -19,12 +19,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { useProfile } from '@/context/ProfileContext';
+import { useProfile } from '@/core/context/ProfileContext';
 import { Checkbox } from '@/components/ui/checkbox';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 function getInitials(name: string) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();

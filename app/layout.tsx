@@ -6,7 +6,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense } from 'react';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { getArtifact } from '@/services/editor/artifact';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 import type { Artifact } from '@/schemas/artifact';
 
 

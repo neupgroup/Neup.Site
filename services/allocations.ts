@@ -1,10 +1,10 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { revalidatePath } from 'next/cache';
 import type { Allocation } from '@/schemas/allocation';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedOn' | 'status'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {

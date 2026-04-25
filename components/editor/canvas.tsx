@@ -2,10 +2,10 @@
 'use client';
 
 import React, { type FC, useRef, DragEvent, Fragment } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 import type { CanvasElementData } from '@/schemas/canvas';
 
-import { useElementResizing } from '@/hooks/useElementResizing';
+import { useElementResizing } from '@/core/hooks/useElementResizing';
 
 import CanvasElement from './CanvasElement';
 import SectionDropZone from './SectionDropZone';

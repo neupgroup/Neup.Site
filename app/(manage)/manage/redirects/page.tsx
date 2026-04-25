@@ -4,7 +4,7 @@
 import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redirects';
 import type { Redirect } from '@/schemas/redirect';
 
@@ -15,7 +15,7 @@ import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { CardFooter } from '@/components/ui/card';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export default function RedirectsPage() {
   const { toast } = useToast();

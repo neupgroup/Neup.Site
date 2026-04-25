@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { getTeams, type Team } from '@/services/teams';
 import { getMember, updateMember, type Member } from '@/services/members';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export default function EditMemberHierarchyPage({ params }: { params: Promise<{ id: string }> }) {
     usePageTitle('Assign Team Members');

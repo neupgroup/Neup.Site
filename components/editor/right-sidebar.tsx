@@ -4,7 +4,7 @@
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
 import { Settings, Database, ArrowUp, ArrowDown, Copy, Trash2, CornerUpLeft } from 'lucide-react';
 import type { CanvasElementData } from '@/schemas/canvas';
-import { elementDefinitions } from '@/elements';
+import { elementDefinitions } from '@/components/elements';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ import RepeaterProperties from './properties/repeater';
 import DataBindingProperties from './properties/data-binding';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 
 interface RightSidebarProps {
   selectedElementId: string | null;

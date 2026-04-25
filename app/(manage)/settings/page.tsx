@@ -3,7 +3,7 @@
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
 import { ArrowRight, Users, Network, User, KeyRound, Terminal, RefreshCw } from 'lucide-react';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export default function SettingsPage() {
   usePageTitle('Settings');

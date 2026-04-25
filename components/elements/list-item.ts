@@ -1,11 +1,11 @@
 
-import type { CanvasElementData } from "@/lib/schemas";
+import type { CanvasElementData } from "@/core/lib/schemas";
 
-export const label: CanvasElementData = {
+export const listItem: CanvasElementData = {
     id: '',
-    type: 'label',
+    type: 'list-item',
     properties: {
-        'text': 'Label',
+        'text': 'List Item',
         'padding': '10px',
         'display': 'block',
     },

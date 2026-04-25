@@ -2,8 +2,8 @@
 'use server';
 
 import { Template } from '@/schemas/template';
-import { db } from '@/lib/db';
-import { logErrorToDatabase } from '@/lib/logging';
+import { db } from '@/core/lib/db';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
   try {

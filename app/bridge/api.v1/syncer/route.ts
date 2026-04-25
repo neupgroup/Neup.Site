@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 
 const SYNCER_KEY = process.env.SYNCER_KEY;
 

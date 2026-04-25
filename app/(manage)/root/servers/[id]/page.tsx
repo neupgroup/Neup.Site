@@ -10,12 +10,12 @@ import Link from 'next/link';
 import { getServer } from '@/services/servers';
 import type { Server } from '@/schemas/server';
 
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
 import ServerManagement from '@/components/dashboard/server/ServerManagement';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export default function ServerDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;

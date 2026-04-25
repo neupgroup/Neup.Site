@@ -1,10 +1,10 @@
 
 'use client';
 
-import { ProfileProvider, useProfile } from '@/context/ProfileContext';
+import { ProfileProvider, useProfile } from '@/core/context/ProfileContext';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Dashboard } from '@/components/dashboard';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 import type { Artifact } from '@/schemas/artifact';
 import { useEffect } from 'react';
 import { initializeUserAccount } from '@/services/auth/initialize';

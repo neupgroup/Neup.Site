@@ -10,9 +10,9 @@ import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPen
 import type { Structure, Deployment } from '@/schemas/artifact';
 import { getSiteServers } from '@/services/servers';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 const StatusCard = ({ title, description, status, icon: Icon, onDeploy }: { title: string; description: string; status: 'loading' | 'pending' | 'deployed'; icon: React.ElementType, onDeploy: () => void }) => {
     return (

@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import type { ServerAllocationStorage } from '@/schemas/server';
 
 function parseDuOutput(output: string): { value: number; unit: string } {

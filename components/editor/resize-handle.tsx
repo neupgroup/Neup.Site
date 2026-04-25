@@ -1,6 +1,6 @@
 'use client';
 import { FC } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 
 interface ResizeHandleProps {
   position: 'top-left' | 'top' | 'top-right' | 'left' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';

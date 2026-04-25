@@ -15,9 +15,9 @@ import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, Chevr
 import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/services/codebase';
 import { deployCodebaseFromStorage } from '@/services/deploy';
 import type { CodeFile } from '@/schemas/codebase';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { format } from 'date-fns';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 interface UploadingFile {

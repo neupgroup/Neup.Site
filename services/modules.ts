@@ -1,10 +1,10 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { cookies } from 'next/headers';
 import type { Artifact } from '@/schemas/artifact';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export interface ArtifactModule {
   active: boolean;

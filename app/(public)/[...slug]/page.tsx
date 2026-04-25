@@ -1,7 +1,7 @@
 
 
-import { db } from '@/lib/db';
-import { convertJsonToHtml } from '@/lib/json-to-html';
+import { db } from '@/core/lib/db';
+import { convertJsonToHtml } from '@/core/lib/json-to-html';
 import { NextResponse } from 'next/server';
 import { cookies, headers } from 'next/headers';
 import type { Redirect } from '@/schemas/redirect';

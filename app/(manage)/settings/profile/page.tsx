@@ -14,15 +14,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Save, Loader2, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
-import { useProfile } from '@/context/ProfileContext';
+import { useProfile } from '@/core/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export const SocialProfileSchema = z.object({
     platformName: z.string().min(1, 'Platform name is required'),

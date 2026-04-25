@@ -3,11 +3,11 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { UploadCloud, Loader2, CheckCircle, AlertCircle, File as FileIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 import { Button } from './button';
-import { useProfile } from '@/context/ProfileContext';
+import { useProfile } from '@/core/context/ProfileContext';
 import Image from 'next/image';
 
 interface FileUploaderProps {

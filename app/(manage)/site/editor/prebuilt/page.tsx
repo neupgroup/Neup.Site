@@ -7,14 +7,14 @@ import { savePage } from '@/services/editor/pages';
 import { getPrebuiltEditorData, type LibraryItem } from '@/services/editor/prebuilt';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Save, Loader2, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export default function PrebuiltEditorPage() {
     const searchParams = useSearchParams();

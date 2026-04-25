@@ -33,10 +33,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { createJobPosting } from '@/services/hiring';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Job title is required'),

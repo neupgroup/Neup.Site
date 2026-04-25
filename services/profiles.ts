@@ -1,8 +1,8 @@
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { cookies } from 'next/headers';
-import { normalizeUrl } from '@/lib/url-utils';
+import { normalizeUrl } from '@/core/lib/url-utils';
 
 type ProfileEntryInput = {
   subject: string;

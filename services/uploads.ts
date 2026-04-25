@@ -7,7 +7,7 @@ import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import { getArtifact } from './editor/artifact';
 
 export interface PublicFile {

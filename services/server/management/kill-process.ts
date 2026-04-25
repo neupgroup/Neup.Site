@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export async function killProcess(serverId: string, pid: number): Promise<{ success: boolean; error?: string }> {
   const ssh = new NodeSSH();

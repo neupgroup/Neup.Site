@@ -2,10 +2,10 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/schemas/command';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import { getConfigureNginxCommand } from './server/management/configure-nginx';
 import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
 

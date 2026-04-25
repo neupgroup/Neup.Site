@@ -1,9 +1,9 @@
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { revalidatePath } from 'next/cache';
 import type { Redirect } from '@/schemas/redirect';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import { getAccountId } from '@/services/accounts';
 import { cookies } from 'next/headers';
 import { markRedirectsAsPending } from './structure';

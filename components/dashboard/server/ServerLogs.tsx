@@ -10,8 +10,8 @@ import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } 
 import { getServerLogs } from '@/services/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
-import { logErrorToDatabase } from '@/lib/logging';
-import { cn } from '@/lib/utils';
+import { logErrorToDatabase } from '@/core/lib/logging';
+import { cn } from '@/core/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const ServerLogs = ({ serverId }: { serverId: string }) => {

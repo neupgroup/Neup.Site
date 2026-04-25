@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { runCommand } from '@/services/runner';
 import { useRouter } from 'next/navigation';
 

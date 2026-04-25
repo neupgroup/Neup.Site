@@ -5,7 +5,7 @@ import { useState, useEffect, use } from 'react';
 import { getPage, savePage } from '@/services/editor/pages';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Save, Loader2, ArrowLeft } from 'lucide-react';

@@ -1,10 +1,10 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { revalidatePath } from 'next/cache';
 import type { Team } from '@/schemas/team';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {

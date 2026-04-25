@@ -2,9 +2,9 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import type { ServerLog } from '@/schemas/server';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 /**
  * Creates a new server log entry.

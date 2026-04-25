@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Server as ServerIcon, Globe, Warehouse, User, Share2, ServerCrash, RefreshCw, Loader2, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
 import type { Server } from '@/schemas/server';

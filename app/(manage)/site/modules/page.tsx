@@ -8,10 +8,10 @@ import { useState, useEffect } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { getSiteModules, updateSiteModule, type SiteModules } from '@/services/modules';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 const allPossibleModules = [
     { id: 'user', name: 'User Module', description: 'Manages user authentication and profiles.' },

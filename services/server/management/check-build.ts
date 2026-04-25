@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import { getArtifact } from '@/services/editor/artifact';
 import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { runCommand } from '@/services/runner';

@@ -2,8 +2,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { db } from '@/lib/db';
-import { logErrorToDatabase } from '@/lib/logging';
+import { db } from '@/core/lib/db';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import type { CodeFile } from '@/schemas/codebase';
 
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'artifactId'>) {

@@ -1,9 +1,9 @@
 'use server';
 
 import crypto from 'crypto';
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { getAccountId } from './accounts';
-import { normalizeUrl } from '@/lib/url-utils';
+import { normalizeUrl } from '@/core/lib/url-utils';
 
 export interface ArtifactSummary {
   id: string;

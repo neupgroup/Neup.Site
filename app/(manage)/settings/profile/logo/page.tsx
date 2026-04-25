@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { FileUploader } from '@/components/ui/file-uploader';
-import { useProfile } from '@/context/ProfileContext';
+import { useProfile } from '@/core/context/ProfileContext';
 import { saveArtifact } from '@/services/editor/artifact';
 import type { Artifact, ArtifactIcons } from '@/schemas/artifact';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 
 export default function LogoUploadPage() {
   const { artifact, setArtifact } = useProfile();

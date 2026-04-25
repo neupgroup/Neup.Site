@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import type { LogErrorParams } from '@/schemas/logging';
 
 export async function logErrorToDatabase(params: LogErrorParams): Promise<{ success: boolean, error?: string }> {

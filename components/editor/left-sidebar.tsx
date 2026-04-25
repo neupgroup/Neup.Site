@@ -10,15 +10,15 @@ import { Button } from '@/components/ui/button';
 import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search, ArrowUp, ArrowDown, Copy, Trash2, CornerUpLeft } from 'lucide-react';
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Template } from '@/schemas/template';
-import { cn } from '@/lib/utils';
-import { logErrorToDatabase } from '@/lib/logging';
+import { cn } from '@/core/lib/utils';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import Link from 'next/link';
 import { getTemplates } from '@/services/editor/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import NProgress from 'nprogress';
 
 const ContentBlock: FC<{ icon: React.ReactNode; label: string, type: string, props?: Record<string, any> }> = ({ icon, label, type, props }) => (

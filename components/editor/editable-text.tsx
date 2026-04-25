@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useRef, useEffect, FC } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 import { Bold, Italic, Strikethrough, Link as LinkIcon, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -16,7 +16,7 @@ import { useEffect, useState, use } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 const formSchema = z.object({
     name: z.string().min(1, 'Team name is required'),

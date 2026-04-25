@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Users } from 'lucide-react';
 import Link from 'next/link';
-import { generatePageMetadata } from '@/lib/metadata';
+import { generatePageMetadata } from '@/core/lib/metadata';
 
 export async function generateMetadata() {
     return await generatePageMetadata('Teams');

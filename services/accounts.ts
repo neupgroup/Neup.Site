@@ -1,8 +1,8 @@
 
 'use server';
 
-import { db } from '@/lib/db';
-import { logErrorToDatabase } from '@/lib/logging';
+import { db } from '@/core/lib/db';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 

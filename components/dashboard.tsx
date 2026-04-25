@@ -48,17 +48,17 @@ import {
   Replace,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { useProfile } from '@/context/ProfileContext';
+import { cn } from '@/core/lib/utils';
+import { useProfile } from '@/core/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Artifact, ArtifactTheme } from '@/schemas/artifact';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { ScrollArea } from './ui/scroll-area';
-import { getCookie } from '@/lib/session-manager';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { getCookie } from '@/core/lib/session-manager';
 
 function NavLink({ href, children, currentPath, onClick }: { href: string; children: React.ReactNode; currentPath: string, onClick?: () => void }) {
   const isActive = href === '/' ? currentPath === href : currentPath.startsWith(href);

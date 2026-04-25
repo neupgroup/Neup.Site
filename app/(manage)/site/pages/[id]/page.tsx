@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPage, savePage, deletePage, type Page } from '@/services/editor/pages';
 import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/services/paths';
-import { convertJsonToHtml } from '@/lib/json-to-html';
+import { convertJsonToHtml } from '@/core/lib/json-to-html';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ import {
 
 import Link from 'next/link';
 import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2, Settings, X, Save, Layers } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 

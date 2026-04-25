@@ -10,7 +10,7 @@ import { getErrorLogById, type ErrorLog } from '@/services/errors';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export default function ErrorDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;

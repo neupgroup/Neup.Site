@@ -1,11 +1,11 @@
 
 'use server';
 
-import { logErrorToDatabase } from '@/lib/logging';
-import { convertJsonToJsx } from '@/lib/json-to-jsx';
+import { logErrorToDatabase } from '@/core/lib/logging';
+import { convertJsonToJsx } from '@/core/lib/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/schemas/artifact';
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { getPathsForPage } from '@/services/paths';
 import { markStructureAsPending } from '@/services/structure';
 

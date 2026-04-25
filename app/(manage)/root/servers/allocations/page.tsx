@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Share2, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn } from '@/core/lib/utils';
 
 export default function AllocationsPage() {
   const [allocations, setAllocations] = useState<Allocation[]>([]);

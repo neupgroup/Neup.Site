@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import { getAccountId } from './accounts';
 import type { Artifact } from '@/schemas/artifact';
 

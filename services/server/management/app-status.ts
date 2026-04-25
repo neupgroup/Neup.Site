@@ -3,7 +3,7 @@
 import { resolveAppPath } from './server-paths';
 import { readFileContent } from './read-file-content';
 import { saveFileContent } from './save-file-content';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 
 export interface DeploymentStepStatus {
     status: 'pending' | 'success' | 'failure' | 'loading' | 'warning' | 'built' | 'notBuilt' | 'building';

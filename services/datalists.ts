@@ -2,7 +2,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import type { Datalist } from '@/schemas/datalist';
 
 /**

@@ -12,7 +12,7 @@ import {
     Shield,
     Loader2
 } from 'lucide-react';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 import { Badge } from '@/components/ui/badge';
 
 export default function NginxPage() {

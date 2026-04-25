@@ -13,11 +13,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Save, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 import Link from 'next/link';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { usePageTitle } from '@/core/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),

@@ -1,10 +1,10 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { db } from '@/lib/db';
+import { db } from '@/core/lib/db';
 import type { Structure, PathStructure, Deployment, Artifact } from '@/schemas/artifact';
 import type { EnvironmentVariable } from '@/schemas/environment';
-import { logErrorToDatabase } from '@/lib/logging';
+import { logErrorToDatabase } from '@/core/lib/logging';
 import { getPages } from './editor/pages';
 import { getArtifact } from './editor/artifact';
 import { getPrivateServerDetails } from '@/services/servers';
