@@ -2,8 +2,8 @@
 
 'use server';
 
-import { getPrivateServerDetails } from '@/server/servers';
-import { getArtifact } from '@/server/editor/artifact';
+import { getPrivateServerDetails } from '@/services/servers';
+import { getArtifact } from '@/services/editor/artifact';
 import { getAccountId } from './accounts';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';

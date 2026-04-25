@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X, Play, Eraser } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getSource, updateSource, testApiMethod, type Source, type SourceMethod, ApiSource } from '@/server/editor/sources';
+import { getSource, updateSource, testApiMethod, type Source, type SourceMethod, ApiSource } from '@/services/editor/sources';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

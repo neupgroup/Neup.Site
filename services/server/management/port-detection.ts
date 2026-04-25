@@ -1,7 +1,7 @@
 'use server';
 
-import { getPrivateServerDetails } from '@/server/servers';
-import { updateAllocationPort } from '@/server/allocations';
+import { getPrivateServerDetails } from '@/services/servers';
+import { updateAllocationPort } from '@/services/allocations';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';
 

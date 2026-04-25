@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { getNewsArticles, type NewsArticle } from '@/server/news';
+import { getNewsArticles, type NewsArticle } from '@/services/news';
 import { Button } from '@/components/ui/button';
 import {
   Card,

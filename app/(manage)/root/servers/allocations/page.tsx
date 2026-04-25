@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllocations, type Allocation } from '@/server/allocations';
+import { getAllocations, type Allocation } from '@/services/allocations';
 import { Button } from '@/components/ui/button';
 import {
   Table,

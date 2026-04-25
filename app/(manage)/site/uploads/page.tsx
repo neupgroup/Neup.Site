@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { deletePublicFile, type PublicFile, getPublicFiles } from '@/server/uploads';
+import { deletePublicFile, type PublicFile, getPublicFiles } from '@/services/uploads';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useProfile } from '@/context/ProfileContext';
 

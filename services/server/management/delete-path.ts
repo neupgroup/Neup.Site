@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getPrivateServerDetails } from '@/server/servers';
+import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';
 

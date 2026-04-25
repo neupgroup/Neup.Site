@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Save, ArrowLeft, Loader2, AlertCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getNewsArticleById, updateNewsArticle, deleteNewsArticle, type NewsArticle } from '@/server/news';
+import { getNewsArticleById, updateNewsArticle, deleteNewsArticle, type NewsArticle } from '@/services/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';

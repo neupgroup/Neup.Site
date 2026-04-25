@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { createAllocation } from '@/server/allocations';
+import { createAllocation } from '@/services/allocations';
 import Link from 'next/link';
 
 const formSchema = z.object({

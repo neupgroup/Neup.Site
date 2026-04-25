@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getTemplates, type Template, deleteTemplate } from '@/server/editor/templates';
+import { getTemplates, type Template, deleteTemplate } from '@/services/editor/templates';
 import { Button } from '@/components/ui/button';
 import {
   Card,

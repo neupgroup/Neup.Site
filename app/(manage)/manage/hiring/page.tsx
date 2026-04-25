@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getJobPostings, type JobPosting } from '@/server/hiring';
+import { getJobPostings, type JobPosting } from '@/services/hiring';
 import { Button } from '@/components/ui/button';
 import {
   Card,

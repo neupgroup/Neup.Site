@@ -1,6 +1,6 @@
 
-import { getSiteServers } from '@/server/servers';
-import { getArtifact } from '@/server/editor/artifact';
+import { getSiteServers } from '@/services/servers';
+import { getArtifact } from '@/services/editor/artifact';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';

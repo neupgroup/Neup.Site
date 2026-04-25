@@ -1,4 +1,4 @@
-import { getPage } from '@/server/editor/pages';
+import { getPage } from '@/services/editor/pages';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { convertJsonToHtml } from '@/lib/json-to-html';

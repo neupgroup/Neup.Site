@@ -3,8 +3,8 @@
 
 import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPage, savePage, deletePage, type Page } from '@/server/editor/pages';
-import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/server/paths';
+import { getPage, savePage, deletePage, type Page } from '@/services/editor/pages';
+import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/services/paths';
 import { convertJsonToHtml } from '@/lib/json-to-html';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

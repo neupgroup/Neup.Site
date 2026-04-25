@@ -1,9 +1,9 @@
 
 'use server';
 
-import { getPage } from '@/server/editor/pages';
-import { getTemplates } from '@/server/editor/templates';
-import { getSections } from '@/server/editor/sections';
+import { getPage } from '@/services/editor/pages';
+import { getTemplates } from '@/services/editor/templates';
+import { getSections } from '@/services/editor/sections';
 import type { CanvasElementData } from '@/schemas/canvas';
 import { logErrorToDatabase } from '@/lib/logging';
 

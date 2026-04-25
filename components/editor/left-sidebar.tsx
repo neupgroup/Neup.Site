@@ -3,7 +3,7 @@
 
 import { FC, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getPages, createPage } from '@/server/editor/pages';
+import { getPages, createPage } from '@/services/editor/pages';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import type { Template } from '@/schemas/template';
 import { cn } from '@/lib/utils';
 import { logErrorToDatabase } from '@/lib/logging';
 import Link from 'next/link';
-import { getTemplates } from '@/server/editor/templates';
+import { getTemplates } from '@/services/editor/templates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';

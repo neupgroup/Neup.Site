@@ -1,5 +1,5 @@
 
-import { getNewsArticleById, type NewsArticle } from '@/server/news';
+import { getNewsArticleById, type NewsArticle } from '@/services/news';
 import {
   Card,
   CardContent,

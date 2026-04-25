@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { detectAndAppPortFromPm2 } from '@/server/server/management/port-detection';
+import { detectAndAppPortFromPm2 } from '@/services/server/management/port-detection';
 import { useRouter } from 'next/navigation';
 
 interface SyncPortButtonProps {

@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getArtifactsForAccount, createArtifactForAccount, type ArtifactSummary } from '@/server/artifacts';
-import { setArtifactIdCookie } from '@/server/auth';
+import { getArtifactsForAccount, createArtifactForAccount, type ArtifactSummary } from '@/services/artifacts';
+import { setArtifactIdCookie } from '@/services/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useProfile } from '@/context/ProfileContext';
 

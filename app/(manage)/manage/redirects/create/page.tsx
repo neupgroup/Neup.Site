@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { useToast } from '@/hooks/use-toast';
-import { createRedirect } from '@/server/redirects';
+import { createRedirect } from '@/services/redirects';
 import { useProfile } from '@/context/ProfileContext';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';

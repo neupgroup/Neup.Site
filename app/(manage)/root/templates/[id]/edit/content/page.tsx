@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { getTemplate, saveTemplate, type Template } from '@/server/editor/templates';
+import { getTemplate, saveTemplate, type Template } from '@/services/editor/templates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';

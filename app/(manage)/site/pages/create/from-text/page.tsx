@@ -8,7 +8,7 @@ import { Wand2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { createPage } from '@/server/editor/pages';
+import { createPage } from '@/services/editor/pages';
 import { useToast } from '@/hooks/use-toast';
 
 export default function CreateFromTextPage() {

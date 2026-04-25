@@ -1,7 +1,7 @@
 
 
 import type { CanvasElementData } from '@/schemas/canvas';
-import type { Path } from '@/server/paths';
+import type { Path } from '@/services/paths';
 import type { Redirect } from '@/schemas/redirect';
 import type { EnvironmentVariable } from '@/schemas/environment';
 

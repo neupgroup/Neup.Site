@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useState, useEffect } from 'react';
 import { Separator } from '@/components/ui/separator';
-import { getSiteModules, updateSiteModule, type SiteModules } from '@/server/modules';
+import { getSiteModules, updateSiteModule, type SiteModules } from '@/services/modules';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

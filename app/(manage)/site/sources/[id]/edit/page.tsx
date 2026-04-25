@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save, ArrowLeft, Loader2, Code, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getSource, updateSource, type Source } from '@/server/editor/sources';
+import { getSource, updateSource, type Source } from '@/services/editor/sources';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

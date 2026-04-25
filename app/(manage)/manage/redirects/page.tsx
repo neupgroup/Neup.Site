@@ -5,7 +5,7 @@ import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { getRedirects, deleteRedirect, deployRedirects } from '@/server/redirects';
+import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redirects';
 import type { Redirect } from '@/schemas/redirect';
 
 import { Button } from '@/components/ui/button';

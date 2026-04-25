@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } from 'lucide-react';
-import { getServerLogs } from '@/server/server-logs';
+import { getServerLogs } from '@/services/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
 import { logErrorToDatabase } from '@/lib/logging';

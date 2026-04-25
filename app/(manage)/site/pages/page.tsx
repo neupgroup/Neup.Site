@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getPages, type Page, deletePage } from '@/server/editor/pages';
+import { getPages, type Page, deletePage } from '@/services/editor/pages';
 import { Button } from '@/components/ui/button';
 import {
   Card,

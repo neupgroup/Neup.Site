@@ -1,6 +1,6 @@
 
-import { getMember } from '@/server/members';
-import { getTeam } from '@/server/teams';
+import { getMember } from '@/services/members';
+import { getTeam } from '@/services/teams';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

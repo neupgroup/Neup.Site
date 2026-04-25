@@ -1,7 +1,7 @@
 
 'use client';
 
-import { getTeam, updateTeam, deleteTeam } from '@/server/teams';
+import { getTeam, updateTeam, deleteTeam } from '@/services/teams';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

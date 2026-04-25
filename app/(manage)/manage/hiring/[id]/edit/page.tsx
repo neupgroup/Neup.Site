@@ -1,7 +1,7 @@
 'use client';
 
-import { getJobPostingById, updateJobPosting, type JobPosting } from '@/server/hiring';
-import { getApplicantsForJob, type Applicant } from '@/server/applicants';
+import { getJobPostingById, updateJobPosting, type JobPosting } from '@/services/hiring';
+import { getApplicantsForJob, type Applicant } from '@/services/applicants';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

@@ -1,7 +1,7 @@
 'use server';
 
-import { createServerLog, updateServerLog } from '@/server/server-logs';
-import { getPrivateServerDetails, updateServer } from '@/server/servers'; // Make sure updateServer is imported
+import { createServerLog, updateServerLog } from '@/services/server-logs';
+import { getPrivateServerDetails, updateServer } from '@/services/servers'; // Make sure updateServer is imported
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/lib/logging';

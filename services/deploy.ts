@@ -4,7 +4,7 @@
 import { cookies } from 'next/headers';
 import { collection, query, where, getDocs, limit } from '@/lib/firestore';
 import { getDataStore } from '@/lib/data-store';
-import { createServerLog } from '@/server/server-logs';
+import { createServerLog } from '@/services/server-logs';
 
 // This legacy entrypoint now records an informative log and exits.
 export async function deployCodebaseFromStorage(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {

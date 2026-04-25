@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSource, deleteSource, type Source, ApiSource, DatabaseSource, StaticSource, DatalistSource } from '@/server/editor/sources';
+import { getSource, deleteSource, type Source, ApiSource, DatabaseSource, StaticSource, DatalistSource } from '@/services/editor/sources';
 import {
   Card,
   CardContent,
