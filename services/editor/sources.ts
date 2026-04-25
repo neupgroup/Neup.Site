@@ -1,9 +1,8 @@
 
 'use server';
 
-import { getFirestore, collection, addDoc, doc, deleteDoc, getDocs, getDoc, query, where, writeBatch, serverTimestamp, setDoc, Timestamp } from '@/lib/firestore';
 import { cookies } from 'next/headers';
-import { getDataStore } from '@/lib/data-store';
+import { db } from '@/lib/db';
 import { logErrorToDatabase } from '@/lib/logging';
 
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';
@@ -13,7 +12,6 @@ export interface SourceMethod {
   path: string;
   httpMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   headers?: Record<string, string>;
-  // We can add more method-specific details here later
 }
 
 export interface BaseSource {
@@ -25,212 +23,118 @@ export interface BaseSource {
   methods: SourceMethod[];
 }
 
-export interface ApiSource extends BaseSource {
-  type: 'api';
-  url: string;
-  headers?: Record<string, string>;
-}
-
-export interface DatabaseSource extends BaseSource {
-  type: 'database';
-  connection: string;
-}
-
-export interface StaticSource extends BaseSource {
-  type: 'static';
-  data: Record<string, any>;
-}
-
-export interface DatalistSource extends BaseSource {
-  type: 'datalist';
-  datalistId: string;
-}
-
-
+export interface ApiSource extends BaseSource { type: 'api'; url: string; headers?: Record<string, string>; }
+export interface DatabaseSource extends BaseSource { type: 'database'; connection: string; }
+export interface StaticSource extends BaseSource { type: 'static'; data: Record<string, any>; }
+export interface DatalistSource extends BaseSource { type: 'datalist'; datalistId: string; }
 export type Source = ApiSource | DatabaseSource | StaticSource | DatalistSource;
 
+function toSource(r: any): Source {
+  return {
+    id: r.id,
+    artifactId: r.artifactId,
+    name: r.name,
+    type: r.type as SourceType,
+    methods: r.methods || [],
+    url: r.url ?? undefined,
+    headers: r.headers ?? undefined,
+    connection: r.connection ?? undefined,
+    data: r.data ?? undefined,
+    datalistId: r.datalistId ?? undefined,
+    createdAt: r.createdAt ? r.createdAt.toISOString() : null,
+  } as Source;
+}
 
-/**
- * Creates a new data source.
- */
 export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'artifactId'>) {
   const cookieStore = await cookies();
   const artifactId = cookieStore.get('artifactId')?.value;
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const docRef = await addDoc(collection(firestore, 'sources'), {
-      ...sourceData,
-      artifactId,
-      createdAt: serverTimestamp(),
+    const record = await db.dataSource.create({
+      data: { artifactId, name: sourceData.name, type: sourceData.type, methods: sourceData.methods as any, createdAt: new Date() },
+      select: { id: true },
     });
-    return { success: true, id: docRef.id };
+    return { success: true, id: record.id };
   } catch (error: any) {
     return { success: false, error: error.message || 'Failed to create source.' };
   }
 }
 
-/**
- * Fetches all data sources for the current artifactId.
- */
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
   const cookieStore = await cookies();
   const artifactId = cookieStore.get('artifactId')?.value;
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const q = query(collection(firestore, 'sources'), where('artifactId', '==', artifactId));
-    const querySnapshot = await getDocs(q);
-    const sources = querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      const createdAt = data.createdAt;
-      return {
-        id: doc.id,
-        ...data,
-        methods: data.methods || [],
-        createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-      } as Source
-    });
-    return { success: true, sources };
+    const records = await db.dataSource.findMany({ where: { artifactId } });
+    return { success: true, sources: records.map(toSource) };
   } catch (error: any) {
     return { success: false, error: error.message || 'Failed to fetch sources.' };
   }
 }
 
-
-/**
- * Fetches a single data source by its ID.
- */
 export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
   const cookieStore = await cookies();
   const artifactId = cookieStore.get('artifactId')?.value;
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const sourceRef = doc(firestore, 'sources', id);
-    const docSnap = await getDoc(sourceRef);
-
-    if (!docSnap.exists()) {
-      return { success: false, error: 'Source not found.' };
-    }
-
-    const data = docSnap.data();
-    if (data.artifactId !== artifactId) {
-      return { success: false, error: 'Unauthorized.' };
-    }
-
-    const createdAt = data.createdAt;
-    const source = {
-      id: docSnap.id,
-      ...data,
-      methods: data.methods || [],
-      createdAt: createdAt instanceof Timestamp ? createdAt.toDate().toISOString() : null,
-    } as Source;
-    return { success: true, source };
+    const record = await db.dataSource.findFirst({ where: { id, artifactId } });
+    if (!record) return { success: false, error: 'Source not found.' };
+    return { success: true, source: toSource(record) };
   } catch (error: any) {
     return { success: false, error: error.message || 'Failed to fetch source.' };
   }
 }
 
-/**
- * Updates a data source.
- */
 export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'artifactId'>>) {
   const cookieStore = await cookies();
   const artifactId = cookieStore.get('artifactId')?.value;
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const sourceRef = doc(firestore, 'sources', id);
-    const sourceSnap = await getDoc(sourceRef);
-    if (!sourceSnap.exists() || sourceSnap.data().artifactId !== artifactId) {
-      return { success: false, error: 'Unauthorized' };
-    }
-
-    await setDoc(sourceRef, sourceData, { merge: true });
+    const existing = await db.dataSource.findFirst({ where: { id, artifactId } });
+    if (!existing) return { success: false, error: 'Unauthorized' };
+    await db.dataSource.update({ where: { id }, data: sourceData as any });
     return { success: true, id };
   } catch (error: any) {
     return { success: false, error: error.message || `Failed to update source ${id}.` };
   }
 }
 
-
-/**
- * Deletes a data source and its associated credentials.
- */
 export async function deleteSource(id: string) {
   const cookieStore = await cookies();
   const artifactId = cookieStore.get('artifactId')?.value;
   if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
 
   try {
-    const { firestore } = getDataStore();
-    const batch = writeBatch(firestore);
-    const sourceRef = doc(firestore, 'sources', id);
-    const sourceSnap = await getDoc(sourceRef);
-
-    if (!sourceSnap.exists() || sourceSnap.data().artifactId !== artifactId) {
-      return { success: false, error: 'Unauthorized' };
-    }
-    batch.delete(sourceRef);
-
-    await batch.commit();
+    const existing = await db.dataSource.findFirst({ where: { id, artifactId } });
+    if (!existing) return { success: false, error: 'Unauthorized' };
+    await db.dataSource.delete({ where: { id } });
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message || 'Failed to delete source.' };
   }
 }
 
-/**
- * Tests an API method by executing a request.
- */
 export async function testApiMethod(sourceId: string, method: SourceMethod, params: Record<string, string>): Promise<{ success: boolean; data?: any; error?: string }> {
   const { success, source, error } = await getSource(sourceId);
-
-  if (!success || !source) {
-    return { success: false, error: `Failed to find source: ${error}` };
-  }
-
-  if (source.type !== 'api') {
-    return { success: false, error: 'This action is only valid for API sources.' };
-  }
+  if (!success || !source) return { success: false, error: `Failed to find source: ${error}` };
+  if (source.type !== 'api') return { success: false, error: 'This action is only valid for API sources.' };
 
   let endpoint = method.path;
-  for (const key in params) {
-    endpoint = endpoint.replace(`[${key}]`, encodeURIComponent(params[key]));
-  }
+  for (const key in params) endpoint = endpoint.replace(`[${key}]`, encodeURIComponent(params[key]));
 
-  const fullUrl = `${source.url}${endpoint}`;
-
-  const headers = {
-    ...(source.headers || {}),
-    ...(method.headers || {}),
-    'Content-Type': 'application/json',
-  };
+  const fullUrl = `${(source as ApiSource).url}${endpoint}`;
+  const headers = { ...(source as ApiSource).headers, ...(method.headers || {}), 'Content-Type': 'application/json' };
 
   try {
-    const response = await fetch(fullUrl, {
-      method: method.httpMethod || 'GET',
-      headers: headers,
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API returned status ${response.status}: ${errorText}`);
-    }
-
-    const data = await response.json();
-    return { success: true, data };
+    const response = await fetch(fullUrl, { method: method.httpMethod || 'GET', headers });
+    if (!response.ok) throw new Error(`API returned status ${response.status}: ${await response.text()}`);
+    return { success: true, data: await response.json() };
   } catch (e: any) {
-    await logErrorToDatabase({
-      message: `API Test Failed for ${fullUrl}: ${e.message}`,
-      source: 'testApiMethod',
-      details: JSON.stringify({ sourceId, method, params }),
-    });
+    await logErrorToDatabase({ message: `API Test Failed for ${fullUrl}: ${e.message}`, source: 'testApiMethod', details: JSON.stringify({ sourceId, method, params }) });
     return { success: false, error: e.message };
   }
 }
