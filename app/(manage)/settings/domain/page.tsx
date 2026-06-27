@@ -6,8 +6,8 @@ import { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { saveArtifact } from '@/services/editor/artifact';
-import type { Artifact } from '@/schemas/artifact';
+import { saveAsset } from '@/services/editor/asset';
+import type { Asset } from '@/schemas/asset';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -121,7 +121,7 @@ const ProxyFields = ({ nestIndex, control }: { nestIndex: "domains.production.pr
 };
 
 export default function DomainPage() {
-    const { artifact, setArtifact, loading } = useProfile();
+    const { asset, setAsset, loading } = useProfile();
     const { toast } = useToast();
     usePageTitle('Domain Settings');
 
@@ -136,25 +136,25 @@ export default function DomainPage() {
     });
 
     useEffect(() => {
-        if (!loading && artifact) {
+        if (!loading && asset) {
             form.reset({
                 domains: {
                     production: {
-                        url: artifact.domains?.production?.url || '',
-                        forceHttps: artifact.domains?.production?.forceHttps ?? true,
-                        ignoredPaths: artifact.domains?.production?.ignoredPaths?.map(p => ({ value: p })) || [],
-                        proxies: artifact.domains?.production?.proxies || [],
+                        url: asset.domains?.production?.url || '',
+                        forceHttps: asset.domains?.production?.forceHttps ?? true,
+                        ignoredPaths: asset.domains?.production?.ignoredPaths?.map(p => ({ value: p })) || [],
+                        proxies: asset.domains?.production?.proxies || [],
                     },
                     development: {
-                        url: artifact.domains?.development?.url || '',
-                        forceHttps: artifact.domains?.development?.forceHttps ?? false,
-                        ignoredPaths: artifact.domains?.development?.ignoredPaths?.map(p => ({ value: p })) || [],
-                        proxies: artifact.domains?.development?.proxies || [],
+                        url: asset.domains?.development?.url || '',
+                        forceHttps: asset.domains?.development?.forceHttps ?? false,
+                        ignoredPaths: asset.domains?.development?.ignoredPaths?.map(p => ({ value: p })) || [],
+                        proxies: asset.domains?.development?.proxies || [],
                     },
                 },
             });
         }
-    }, [loading, artifact, form]);
+    }, [loading, asset, form]);
 
     const onSubmit = async (data: DomainFormData) => {
         // Transform ignoredPaths back to array of strings
@@ -171,15 +171,15 @@ export default function DomainPage() {
             }
         };
 
-        const result = await saveArtifact(dataToSave);
+        const result = await saveAsset(dataToSave);
 
         if (result.success && result.id) {
             toast({ title: 'Settings Saved', description: 'Your domain and proxy settings have been updated.' });
-            if (artifact) {
-                setArtifact({
-                    ...artifact,
+            if (asset) {
+                setAsset({
+                    ...asset,
                     domains: {
-                        ...artifact.domains,
+                        ...asset.domains,
                         ...dataToSave.domains
                     },
                 });
@@ -204,7 +204,7 @@ export default function DomainPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-4xl space-y-8">
                 <header>
                     <h1 className="text-3xl font-bold font-headline">Domains and Proxy</h1>
-                    <p className="text-muted-foreground">Manage your artifact's domains and reverse proxy rules.</p>
+                    <p className="text-muted-foreground">Manage your asset's domains and reverse proxy rules.</p>
                 </header>
 
                 <div className="space-y-6">

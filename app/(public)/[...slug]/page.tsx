@@ -8,11 +8,11 @@ import type { Redirect } from '@/schemas/redirect';
 
 async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return null;
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return null;
 
   const incomingPath = `/${slug.join('/')}`;
-  const redirects = await db.redirect.findMany({ where: { artifactId } });
+  const redirects = await db.redirect.findMany({ where: { assetId } });
   if (!redirects.length) return null;
 
   for (const redirect of redirects) {
@@ -48,7 +48,7 @@ async function getPageForPath(slug: string[]): Promise<{ html: string | null, th
 
     const [pageRecord, themeRecord] = await Promise.all([
       db.page.findUnique({ where: { id: pathRecord.pageId } }),
-      db.theme.findUnique({ where: { id: pathRecord.artifactId } }),
+      db.theme.findUnique({ where: { id: pathRecord.assetId } }),
     ]);
 
     if (!pageRecord) return { html: null };

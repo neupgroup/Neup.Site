@@ -8,11 +8,11 @@ import { detectAndAppPortFromPm2 } from '@/services/server/management/port-detec
 import { useRouter } from 'next/navigation';
 
 interface SyncPortButtonProps {
-    artifactId: string;
+    assetId: string;
     serverId: string;
 }
 
-export function SyncPortButton({ artifactId, serverId }: SyncPortButtonProps) {
+export function SyncPortButton({ assetId, serverId }: SyncPortButtonProps) {
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
@@ -20,7 +20,7 @@ export function SyncPortButton({ artifactId, serverId }: SyncPortButtonProps) {
     const handleSync = async () => {
         setLoading(true);
         try {
-            const result = await detectAndAppPortFromPm2(artifactId, serverId);
+            const result = await detectAndAppPortFromPm2(assetId, serverId);
             if (result.success && result.port) {
                 toast({
                     title: "Port Synced",

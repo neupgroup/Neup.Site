@@ -6,7 +6,7 @@ import { db } from '@/core/lib/db';
 
 export interface Section {
   id: string;
-  artifactId: string;
+  assetId: string;
   name: string;
   description?: string;
   type: string;
@@ -16,14 +16,14 @@ export interface Section {
   createdAt: string | null;
 }
 
-export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'artifactId'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'assetId'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     if (id) {
-      const existing = await db.section.findFirst({ where: { id, artifactId } });
+      const existing = await db.section.findFirst({ where: { id, assetId } });
       if (!existing) return { success: false, error: 'Unauthorized.' };
       await db.section.update({
         where: { id },
@@ -32,7 +32,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'a
       return { success: true, id };
     } else {
       const record = await db.section.create({
-        data: { artifactId, name: section.name, type: section.type, content: section.content, source: 'json', createdBy: section.createdBy, createdAt: new Date() },
+        data: { assetId, name: section.name, type: section.type, content: section.content, source: 'json', createdBy: section.createdBy, createdAt: new Date() },
         select: { id: true },
       });
       return { success: true, id: record.id };
@@ -44,14 +44,14 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'a
 
 export async function getSections(): Promise<{ success: boolean; sections?: Section[]; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const records = await db.section.findMany({ where: { artifactId } });
+    const records = await db.section.findMany({ where: { assetId } });
     const sections: Section[] = records.map(r => ({
       id: r.id,
-      artifactId: r.artifactId,
+      assetId: r.assetId,
       name: r.name,
       type: r.type,
       content: r.content,
@@ -67,16 +67,16 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
 
 export async function getSection(id: string): Promise<{ success: boolean; section?: Section; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const record = await db.section.findFirst({ where: { id, artifactId } });
+    const record = await db.section.findFirst({ where: { id, assetId } });
     if (!record) return { success: false, error: 'Section not found.' };
 
     const section: Section = {
       id: record.id,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       name: record.name,
       type: record.type,
       content: record.content,
@@ -92,11 +92,11 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
 
 export async function deleteSection(id: string): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const existing = await db.section.findFirst({ where: { id, artifactId } });
+    const existing = await db.section.findFirst({ where: { id, assetId } });
     if (!existing) return { success: false, error: 'Unauthorized.' };
     await db.section.delete({ where: { id } });
     return { success: true };

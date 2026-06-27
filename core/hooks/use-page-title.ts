@@ -5,15 +5,15 @@ import { useEffect } from 'react';
 import { useProfile } from '@/core/context/ProfileContext';
 
 /**
- * Custom hook to set page title with artifact name
+ * Custom hook to set page title with asset name
  * @param pageTitle - The title of the current page (e.g., "Home", "Status", "Settings")
- * @param artifactNameOverride - Optional override for the artifact name
+ * @param assetNameOverride - Optional override for the asset name
  */
-export function usePageTitle(pageTitle: string, artifactNameOverride?: string) {
-    const { artifact } = useProfile();
+export function usePageTitle(pageTitle: string, assetNameOverride?: string) {
+    const { asset } = useProfile();
 
     useEffect(() => {
-        const artifactName = artifactNameOverride || artifact?.name || 'Artifact';
-        document.title = `${pageTitle}, ${artifactName}`;
-    }, [pageTitle, artifact?.name, artifactNameOverride]);
+        const assetName = assetNameOverride || asset?.name || 'Asset';
+        document.title = `${pageTitle}, ${assetName}`;
+    }, [pageTitle, asset?.name, assetNameOverride]);
 }

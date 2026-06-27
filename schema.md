@@ -6,7 +6,7 @@ Source: prisma/schema.prisma
 Columns:
 - id: String; primary key
 
-## artifact (Artifact)
+## asset (Asset)
 Columns:
 - id: String; primary key
 - name: String; default ""
@@ -25,7 +25,7 @@ Indexes:
 
 ## theme (Theme)
 Columns:
-- id: String; primary key; references Artifact.id
+- id: String; primary key; references Asset.id
 - hideSitename: Boolean; default false
 - hideLogo: Boolean; default false
 - theme: Json?
@@ -35,17 +35,17 @@ Columns:
 ## profile (Profile)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - subject: String
 - value: String; varchar(512)
 Indexes:
-- index (artifactId)
-- index (artifactId, subject)
+- index (assetId)
+- index (assetId, subject)
 
 ## role (Role)
 Columns:
 - id: String; primary key
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - portfolioId: String
 - accountId: String; references Account.id
 - role: String
@@ -53,14 +53,14 @@ Columns:
 ## domain (Domain)
 Columns:
 - id: String; primary key
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - domain: String
 - isPrimary: Boolean
 
 ## pages (Page)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - name: String; default ""
 - elements: Json?
 - reactComponent: String?
@@ -68,23 +68,23 @@ Columns:
 - createdAt: DateTime?
 - updatedAt: DateTime?
 Indexes:
-- index (artifactId)
+- index (assetId)
 
 ## paths (PagePath)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - pageId: String; references Page.id
 - path: String
 - createdAt: DateTime?
 Indexes:
-- unique (artifactId, path)
+- unique (assetId, path)
 - index (pageId)
 
 ## sections (Section)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - name: String
 - type: String
 - content: String
@@ -92,7 +92,7 @@ Columns:
 - createdBy: String
 - createdAt: DateTime?
 Indexes:
-- index (artifactId)
+- index (assetId)
 
 ## templates (Template)
 Columns:
@@ -112,7 +112,7 @@ Columns:
 ## sources (DataSource)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - name: String
 - type: String
 - methods: Json?
@@ -123,45 +123,45 @@ Columns:
 - datalistId: String?
 - createdAt: DateTime?
 Indexes:
-- index (artifactId)
+- index (assetId)
 
 ## page_data_sources (PageDataSourceBinding)
 Columns:
 - id: String; primary key
-- artifactId: String
+- assetId: String
 - pageId: String; references Page.id
 - sourceId: String; references DataSource.id
 - methodName: String
 Indexes:
-- index (artifactId, pageId)
+- index (assetId, pageId)
 
 ## datalists (Datalist)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - name: String
 - data: String
 - createdAt: DateTime?
 - updatedAt: DateTime?
 Indexes:
-- index (artifactId)
+- index (assetId)
 
 ## redirects (Redirect)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - from: String
 - to: String
 - type: String
 - created_by: String
 - created_on: DateTime?
 Indexes:
-- index (artifactId, created_on)
+- index (assetId, created_on)
 
 ## environments (EnvironmentVariable)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - name: String
 - value: String
 - dataType: String
@@ -169,12 +169,12 @@ Columns:
 - createdBy: String
 - createdOn: DateTime?
 Indexes:
-- index (artifactId, createdOn)
+- index (assetId, createdOn)
 
 ## structure (SiteStructure)
 Columns:
 - id: String; primary key
-- artifactId: String; unique; references Artifact.id
+- assetId: String; unique; references Asset.id
 - structure: Json?
 - status: String
 - themeChanged: Boolean; default false
@@ -187,7 +187,7 @@ Columns:
 ## deployments (Deployment)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - structure: Json?
 - status: String
 - theme: Json?
@@ -196,7 +196,7 @@ Columns:
 - environments: Json?
 - attemptedOn: DateTime?
 Indexes:
-- index (artifactId, status, attemptedOn)
+- index (assetId, status, attemptedOn)
 
 ## servers (Server)
 Columns:
@@ -225,7 +225,7 @@ Columns:
 Columns:
 - id: String; primary key; default cuid()
 - serverId: String; references Server.id
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - username: String?
 - deploymentPath: String?
 - storageAllocation: String?
@@ -234,7 +234,7 @@ Columns:
 - allocatedOn: DateTime?
 - status: String; default "active"
 Indexes:
-- index (artifactId, serverId)
+- index (assetId, serverId)
 
 ## serverLogs (ServerLog)
 Columns:
@@ -269,14 +269,14 @@ Columns:
 ## codeFiles (CodeFile)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - fileName: String
 - filePath: String
 - content: String
 - size: Int; default 0
 - createdAt: DateTime?
 Indexes:
-- index (artifactId, createdAt)
+- index (assetId, createdAt)
 
 ## linked_accounts (LinkedAccount)
 Columns:
@@ -363,14 +363,14 @@ Indexes:
 ## appBaseBackups (AppBaseBackup)
 Columns:
 - id: String; primary key; default cuid()
-- artifactId: String; references Artifact.id
+- assetId: String; references Asset.id
 - fileName: String
 - fileType: String
 - content: String
 - backedUpAt: DateTime?
 - backedUpBy: String
 Indexes:
-- index (artifactId, backedUpAt)
+- index (assetId, backedUpAt)
 
 ## news (NewsArticle)
 Columns:

@@ -15,11 +15,11 @@ model Account {
 
 model Role {
   id         String   @id
-  artifactId String
+  assetId String
   portfolioId String
   accountId  String
   role       String
-  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
   account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@map("role")
@@ -27,15 +27,15 @@ model Role {
 
 model Domain {
   id         String   @id
-  artifactId String
+  assetId String
   domain     String
   isPrimary  Boolean
-  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@map("domain")
 }
 
-model Artifact {
+model Asset {
   id             String                 @id
   name           String                 @default("")
   url            String?
@@ -64,21 +64,21 @@ model Artifact {
   structures     SiteStructure[]
   deployments    Deployment[]
   appBaseBackups AppBaseBackup[]
-  artifactModules ArtifactModule[]
+  assetModules  AssetModule[]
 
   @@index([ownerAccountId])
-  @@map("artifact")
+  @@map("assets")
 }
 
 model Profile {
   id         String   @id @default(cuid())
-  artifactId String
+  assetId String
   subject    String
   value      String   @db.VarChar(512)
-  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId])
-  @@index([artifactId, subject])
+  @@index([assetId])
+  @@index([assetId, subject])
   @@map("profile")
 }
 
@@ -89,54 +89,54 @@ model Theme {
   theme        Json?
   createdAt    DateTime?
   updatedAt    DateTime?
-  artifact     Artifact @relation(fields: [id], references: [id], onDelete: Cascade)
+  asset     Asset @relation(fields: [id], references: [id], onDelete: Cascade)
 
   @@map("theme")
 }
 
 model Page {
   id                 String                  @id @default(cuid())
-  artifactId         String
+  assetId         String
   name               String                  @default("")
   elements           Json?
   reactComponent     String?
   type               String                  @default("editor")
   createdAt          DateTime?
   updatedAt          DateTime?
-  artifact           Artifact                @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset           Asset                @relation(fields: [assetId], references: [id], onDelete: Cascade)
   paths              PagePath[]
   dataSourceBindings PageDataSourceBinding[]
 
-  @@index([artifactId])
+  @@index([assetId])
   @@map("pages")
 }
 
 model PagePath {
   id        String   @id @default(cuid())
-  artifactId String
+  assetId String
   pageId    String
   path      String
   createdAt DateTime?
-  artifact  Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
   page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
-  @@unique([artifactId, path])
+  @@unique([assetId, path])
   @@index([pageId])
   @@map("paths")
 }
 
 model Section {
   id        String   @id @default(cuid())
-  artifactId String
+  assetId String
   name      String
   type      String
   content   String
   source    String   @default("json")
   createdBy String
   createdAt DateTime?
-  artifact  Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId])
+  @@index([assetId])
   @@map("sections")
 }
 
@@ -159,7 +159,7 @@ model Template {
 
 model DataSource {
   id        String                  @id @default(cuid())
-  artifactId String
+  assetId String
   name      String
   type      String
   methods   Json?
@@ -169,71 +169,71 @@ model DataSource {
   data      Json?
   datalistId String?
   createdAt DateTime?
-  artifact  Artifact                @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset  Asset                @relation(fields: [assetId], references: [id], onDelete: Cascade)
   bindings  PageDataSourceBinding[]
 
-  @@index([artifactId])
+  @@index([assetId])
   @@map("sources")
 }
 
 model PageDataSourceBinding {
   id         String     @id
-  artifactId String
+  assetId String
   pageId     String
   sourceId   String
   methodName String
   page       Page       @relation(fields: [pageId], references: [id], onDelete: Cascade)
   source     DataSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId, pageId])
+  @@index([assetId, pageId])
   @@map("page_data_sources")
 }
 
 model Datalist {
   id        String   @id @default(cuid())
-  artifactId String
+  assetId String
   name      String
   data      String
   createdAt DateTime?
   updatedAt DateTime?
-  artifact  Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId])
+  @@index([assetId])
   @@map("datalists")
 }
 
 model Redirect {
   id         String   @id @default(cuid())
-  artifactId String
+  assetId String
   from       String
   to         String
   type       String
   created_by String
   created_on DateTime?
-  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId, created_on])
+  @@index([assetId, created_on])
   @@map("redirects")
 }
 
 model EnvironmentVariable {
   id        String   @id @default(cuid())
-  artifactId String
+  assetId String
   name      String
   value     String
   dataType  String
   isPrivate Boolean  @default(false)
   createdBy String
   createdOn DateTime?
-  artifact  Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId, createdOn])
+  @@index([assetId, createdOn])
   @@map("environments")
 }
 
 model SiteStructure {
   id                  String   @id
-  artifactId         String   @unique
+  assetId         String   @unique
   structure           Json?
   status              String
   themeChanged        Boolean  @default(false)
@@ -242,14 +242,14 @@ model SiteStructure {
   appBaseChanged      Boolean  @default(false)
   environmentsChanged Boolean  @default(false)
   updatedAt           DateTime?
-  artifact            Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset            Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@map("structure")
 }
 
 model Deployment {
   id          String   @id @default(cuid())
-  artifactId  String
+  assetId  String
   structure   Json?
   status      String
   theme       Json?
@@ -257,9 +257,9 @@ model Deployment {
   siteProfile Json?
   environments Json?
   attemptedOn DateTime?
-  artifact    Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset    Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId, status, attemptedOn])
+  @@index([assetId, status, attemptedOn])
   @@map("deployments")
 }
 
@@ -293,7 +293,7 @@ model Server {
 model Allocation {
   id               String   @id @default(cuid())
   serverId         String
-  artifactId       String
+  assetId       String
   username         String?
   deploymentPath   String?
   storageAllocation String?
@@ -302,9 +302,9 @@ model Allocation {
   allocatedOn      DateTime?
   status           String   @default("active")
   server           Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  artifact         Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset         Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId, serverId])
+  @@index([assetId, serverId])
   @@map("allocations")
 }
 
@@ -344,15 +344,15 @@ model ServerCommand {
 
 model CodeFile {
   id        String   @id @default(cuid())
-  artifactId String
+  assetId String
   fileName  String
   filePath  String
   content   String
   size      Int      @default(0)
   createdAt DateTime?
-  artifact  Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId, createdAt])
+  @@index([assetId, createdAt])
   @@map("codeFiles")
 }
 
@@ -454,15 +454,15 @@ model ErrorLog {
 
 model AppBaseBackup {
   id         String   @id @default(cuid())
-  artifactId String
+  assetId String
   fileName   String
   fileType   String
   content    String
   backedUpAt DateTime?
   backedUpBy String
-  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId, backedUpAt])
+  @@index([assetId, backedUpAt])
   @@map("appBaseBackups")
 }
 
@@ -492,14 +492,14 @@ model SyncRequest {
   @@map("sync_request")
 }
 
-model ArtifactModule {
+model AssetModule {
   id         String   @id @default(cuid())
-  artifactId String
+  assetId String
   title      String
   status     String
-  artifact   Artifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@index([artifactId])
+  @@index([assetId])
   @@map("modules")
 }
 

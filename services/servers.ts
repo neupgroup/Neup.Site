@@ -79,16 +79,16 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
 }
 
 /**
- * Fetches servers relevant to the current artifactId by checking the serverAllocations collection.
+ * Fetches servers relevant to the current assetId by checking the serverAllocations collection.
  */
 export async function getSiteServers(): Promise<{ success: boolean; servers?: (Server & { allocation: ServerAllocation })[]; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const allocations = await db.allocation.findMany({
-      where: { artifactId },
+      where: { assetId },
       orderBy: [{ allocatedOn: 'desc' }, { id: 'asc' }],
       include: { server: true },
     });
@@ -107,7 +107,7 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
 
         const allocationInfo: ServerAllocation = {
           id: allocation.id,
-          artifactId: allocation.artifactId,
+          assetId: allocation.assetId,
           serverId: allocation.serverId,
           username: allocation.username ?? undefined,
           deploymentPath: allocation.deploymentPath ?? undefined,

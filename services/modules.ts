@@ -3,48 +3,48 @@
 
 import { db } from '@/core/lib/db';
 import { cookies } from 'next/headers';
-import type { Artifact } from '@/schemas/artifact';
+import type { Asset } from '@/schemas/asset';
 import { logErrorToDatabase } from '@/core/lib/logging';
 
-export interface ArtifactModule {
+export interface AssetModule {
   active: boolean;
   enabledOn?: string | null;
   expiresOn?: string | null;
 }
 
-export interface ArtifactModules {
-  [key: string]: ArtifactModule;
+export interface AssetModules {
+  [key: string]: AssetModule;
 }
 
 /**
- * Fetches the modules for the current artifact.
+ * Fetches the modules for the current asset.
  */
-export async function getArtifactModules(): Promise<{ success: boolean; modules?: ArtifactModules; error?: string }> {
+export async function getAssetModules(): Promise<{ success: boolean; modules?: AssetModules; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const record = await db.artifact.findUnique({
-      where: { id: artifactId },
+    const record = await db.asset.findUnique({
+      where: { id: assetId },
       select: { modules: true },
     });
 
     const modules = (record?.modules as any) || {};
     return { success: true, modules };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get artifact modules: ${e.message}`, stack: e.stack, source: 'getArtifactModules' });
-    return { success: false, error: 'Failed to fetch artifact modules.' };
+    await logErrorToDatabase({ message: `Failed to get asset modules: ${e.message}`, stack: e.stack, source: 'getAssetModules' });
+    return { success: false, error: 'Failed to fetch asset modules.' };
   }
 }
 
 /**
- * Updates a specific module's status for the current artifact.
+ * Updates a specific module's status for the current asset.
  */
-export async function updateArtifactModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
+export async function updateAssetModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     let updateData: any = {
@@ -57,8 +57,8 @@ export async function updateArtifactModule(moduleId: string, isActive: boolean):
       updateData.expiresOn = null;
     }
 
-    const record = await db.artifact.findUnique({
-      where: { id: artifactId },
+    const record = await db.asset.findUnique({
+      where: { id: assetId },
       select: { modules: true },
     });
     const modules = ((record?.modules as any) || {}) as Record<string, unknown>;
@@ -67,24 +67,24 @@ export async function updateArtifactModule(moduleId: string, isActive: boolean):
       [moduleId]: updateData,
     };
 
-    await db.artifact.update({
-      where: { id: artifactId },
+    await db.asset.update({
+      where: { id: assetId },
       data: { modules: nextModules as any },
     });
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateArtifactModule' });
+    await logErrorToDatabase({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateAssetModule' });
     return { success: false, error: 'Failed to update module.' };
   }
 }
 
 // Backwards-compatible exports (historically named "site modules").
-export type SiteModule = ArtifactModule;
-export type SiteModules = ArtifactModules;
+export type SiteModule = AssetModule;
+export type SiteModules = AssetModules;
 export async function getSiteModules() {
-  return getArtifactModules();
+  return getAssetModules();
 }
 export async function updateSiteModule(moduleId: string, isActive: boolean) {
-  return updateArtifactModule(moduleId, isActive);
+  return updateAssetModule(moduleId, isActive);
 }

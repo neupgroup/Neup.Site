@@ -2,11 +2,11 @@
 
 import { cookies } from 'next/headers';
 import { db } from '@/core/lib/db';
-import type { Structure, PathStructure, Deployment, Artifact } from '@/schemas/artifact';
+import type { Structure, PathStructure, Deployment, Asset } from '@/schemas/asset';
 import type { EnvironmentVariable } from '@/schemas/environment';
 import { logErrorToDatabase } from '@/core/lib/logging';
 import { getPages } from './editor/pages';
-import { getArtifact } from './editor/artifact';
+import { getAsset } from './editor/asset';
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
@@ -18,16 +18,16 @@ import { getEnvironmentVariables } from './environment';
 
 export async function getStructure(): Promise<{ success: boolean; structure?: Structure; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const record = await db.siteStructure.findUnique({ where: { artifactId } });
+    const record = await db.siteStructure.findUnique({ where: { assetId } });
     if (!record) return { success: true, structure: undefined };
 
     const structure: Structure = {
       id: record.id,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       status: record.status as Structure['status'],
       structure: (record.structure as PathStructure[]) || [],
       themeChanged: record.themeChanged,
@@ -46,19 +46,19 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
 
 export async function getLastDeployment(): Promise<{ success: boolean; deployment?: Deployment; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const record = await db.deployment.findFirst({
-      where: { artifactId, status: 'deployed' },
+      where: { assetId, status: 'deployed' },
       orderBy: { attemptedOn: 'desc' },
     });
     if (!record) return { success: true, deployment: undefined };
 
     const deployment: Deployment = {
       id: record.id,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       structure: (record.structure as PathStructure[]) || [],
       status: record.status as Deployment['status'],
       theme: record.theme as any,
@@ -76,8 +76,8 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
 
 export async function buildStructure(): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const { success, pages, error } = await getPages();
@@ -95,28 +95,28 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
     }
 
     await db.siteStructure.upsert({
-      where: { artifactId },
-      create: { id: artifactId, artifactId, structure: structureDoc as any, status: 'pendingDeployment', updatedAt: new Date() },
+      where: { assetId },
+      create: { id: assetId, assetId, structure: structureDoc as any, status: 'pendingDeployment', updatedAt: new Date() },
       update: { structure: structureDoc as any, status: 'pendingDeployment', updatedAt: new Date() },
     });
 
     return { success: true };
   } catch (error: any) {
     await logErrorToDatabase({ message: `Failed to build structure: ${error.message}`, stack: error.stack, source: 'buildStructure' });
-    return { success: false, error: 'Failed to build artifact structure.' };
+    return { success: false, error: 'Failed to build asset structure.' };
   }
 }
 
 export async function createDeployment(): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const structureRecord = await db.siteStructure.findUnique({ where: { artifactId } });
+    const structureRecord = await db.siteStructure.findUnique({ where: { assetId } });
     if (!structureRecord) return { success: false, error: 'No structure found to deploy. Please build first.' };
 
-    const { artifact } = await getArtifact();
+    const { asset } = await getAsset();
     const currentStructure = structureRecord as unknown as Structure;
 
     const redirectsResult = await getAllRedirects();
@@ -127,23 +127,23 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
 
     await db.deployment.create({
       data: {
-        artifactId,
+        assetId,
         structure: currentStructure.structure as any || [],
         status: 'deployed',
-        theme: artifact?.theme as any || {},
+        theme: asset?.theme as any || {},
         redirects: redirects as any || [],
-        siteProfile: { name: artifact?.name || '', logoUrl: artifact?.logoUrl || null, hideSitename: artifact?.hideSitename || false, hideLogo: artifact?.hideLogo || false } as any,
+        siteProfile: { name: asset?.name || '', logoUrl: asset?.logoUrl || null, hideSitename: asset?.hideSitename || false, hideLogo: asset?.hideLogo || false } as any,
         environments: environments as any || [],
         attemptedOn: new Date(),
       },
     });
 
-    const uploadResult = await uploadStructureToServer(artifactId, currentStructure, artifact || null, environments || []);
+    const uploadResult = await uploadStructureToServer(assetId, currentStructure, asset || null, environments || []);
     if (!uploadResult.success) console.warn('Upload to server failed, but deployment record created:', uploadResult.error);
 
     const updatedPaths = (currentStructure.structure || []).map(p => ({ ...p, changesMade: false }));
     await db.siteStructure.update({
-      where: { artifactId },
+      where: { assetId },
       data: { status: 'deployed', structure: updatedPaths as any, themeChanged: false, redirectsChanged: false, assetsChanged: false, appBaseChanged: false, environmentsChanged: false, updatedAt: new Date() },
     });
 
@@ -154,13 +154,13 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
   }
 }
 
-async function uploadStructureToServer(artifactId: string, structure: Structure, artifact: Artifact | null, environments: EnvironmentVariable[]): Promise<{ success: boolean; error?: string }> {
+async function uploadStructureToServer(assetId: string, structure: Structure, asset: Asset | null, environments: EnvironmentVariable[]): Promise<{ success: boolean; error?: string }> {
   let logId: string | undefined;
 
   try {
-    const allocation = await db.allocation.findFirst({ where: { artifactId } });
+    const allocation = await db.allocation.findFirst({ where: { assetId } });
     if (!allocation) {
-      console.warn(`No server allocated for artifact ${artifactId}. Data not uploaded.`);
+      console.warn(`No server allocated for asset ${assetId}. Data not uploaded.`);
       return { success: true };
     }
 
@@ -169,11 +169,11 @@ async function uploadStructureToServer(artifactId: string, structure: Structure,
       return { success: false, error: error || 'Server details not found' };
     }
 
-    const logResult = await createServerLog({ serverId: allocation.serverId, commandName: 'Deploy Artifact Data', command: 'Uploading site structure, theme, redirects, and profile to server...', output: 'Starting deployment process...', status: 'pending', initiatedBy: 'system' });
+    const logResult = await createServerLog({ serverId: allocation.serverId, commandName: 'Deploy Asset Data', command: 'Uploading site structure, theme, redirects, and profile to server...', output: 'Starting deployment process...', status: 'pending', initiatedBy: 'system' });
     if (logResult.success && logResult.id) logId = logResult.id;
 
     const username = server.username || 'root';
-    const resolvedAppPath = `/home/${username}/${artifactId}`;
+    const resolvedAppPath = `/home/${username}/${assetId}`;
     const srcDir = `${resolvedAppPath}/src`;
     const dataDir = `${srcDir}/data`;
     const baseDir = `${resolvedAppPath}/base`;
@@ -225,7 +225,7 @@ async function uploadStructureToServer(artifactId: string, structure: Structure,
       try {
         const redirectsResult = await getAllRedirects();
         const redirects = redirectsResult.success ? redirectsResult.redirects : [];
-        const siteProfile = { name: artifact?.name || '', logoUrl: artifact?.logoUrl || null, hideSitename: artifact?.hideSitename || false, hideLogo: artifact?.hideLogo || false };
+        const siteProfile = { name: asset?.name || '', logoUrl: asset?.logoUrl || null, hideSitename: asset?.hideSitename || false, hideLogo: asset?.hideLogo || false };
 
         const localCoreDir = path.join(tempBaseDir, 'core');
         const localSiteDir = path.join(tempBaseDir, 'site');
@@ -233,7 +233,7 @@ async function uploadStructureToServer(artifactId: string, structure: Structure,
         await fs.mkdir(localSiteDir, { recursive: true });
 
         await fs.writeFile(path.join(tempBaseDir, 'structure.json'), JSON.stringify(structure.structure || [], null, 2));
-        await fs.writeFile(path.join(localSiteDir, 'theme.json'), JSON.stringify(artifact?.theme || {}, null, 2));
+        await fs.writeFile(path.join(localSiteDir, 'theme.json'), JSON.stringify(asset?.theme || {}, null, 2));
         await fs.writeFile(path.join(localCoreDir, 'redirects.json'), JSON.stringify(redirects || [], null, 2));
         await fs.writeFile(path.join(localSiteDir, 'profile.json'), JSON.stringify(siteProfile, null, 2));
 
@@ -241,7 +241,7 @@ async function uploadStructureToServer(artifactId: string, structure: Structure,
         await ssh.putDirectory(localCoreDir, coreDir, { recursive: true, concurrency: 1 });
         await ssh.putDirectory(localSiteDir, siteDir, { recursive: true, concurrency: 1 });
 
-        const successMsg = outputLog + '\n--- Artifact data upload complete ---\n';
+        const successMsg = outputLog + '\n--- Asset data upload complete ---\n';
         if (logId) await updateServerLog(logId, { status: 'completed', output: successMsg });
       } finally {
         await fs.rm(tempBaseDir, { recursive: true, force: true });
@@ -257,14 +257,14 @@ async function uploadStructureToServer(artifactId: string, structure: Structure,
     return { success: true };
   } catch (e: any) {
     if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToDatabase({ message: `Failed to upload artifact data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
+    await logErrorToDatabase({ message: `Failed to upload asset data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
     return { success: false, error: e.message };
   }
 }
 
-export async function markStructureAsPending(artifactId: string, paths: string[], isDeletion: boolean = false): Promise<void> {
+export async function markStructureAsPending(assetId: string, paths: string[], isDeletion: boolean = false): Promise<void> {
   try {
-    const record = await db.siteStructure.findUnique({ where: { artifactId } });
+    const record = await db.siteStructure.findUnique({ where: { assetId } });
     let finalStructure: PathStructure[] = [];
 
     if (record) {
@@ -283,8 +283,8 @@ export async function markStructureAsPending(artifactId: string, paths: string[]
     }
 
     await db.siteStructure.upsert({
-      where: { artifactId },
-      create: { id: artifactId, artifactId, status: 'pendingDeployment', structure: finalStructure as any, updatedAt: new Date() },
+      where: { assetId },
+      create: { id: assetId, assetId, status: 'pendingDeployment', structure: finalStructure as any, updatedAt: new Date() },
       update: { status: 'pendingDeployment', structure: finalStructure as any, updatedAt: new Date() },
     });
   } catch (error: any) {
@@ -292,30 +292,30 @@ export async function markStructureAsPending(artifactId: string, paths: string[]
   }
 }
 
-async function upsertStructureFlag(artifactId: string, flag: Record<string, any>): Promise<void> {
+async function upsertStructureFlag(assetId: string, flag: Record<string, any>): Promise<void> {
   await db.siteStructure.upsert({
-    where: { artifactId },
-    create: { id: artifactId, artifactId, status: 'pendingDeployment', ...flag },
+    where: { assetId },
+    create: { id: assetId, assetId, status: 'pendingDeployment', ...flag },
     update: { status: 'pendingDeployment', ...flag },
   });
 }
 
-export async function markAssetsAsPending(artifactId: string): Promise<void> {
-  try { await upsertStructureFlag(artifactId, { assetsChanged: true }); } catch (e: any) { console.error('Failed to mark assets as pending:', e); }
+export async function markAssetsAsPending(assetId: string): Promise<void> {
+  try { await upsertStructureFlag(assetId, { assetsChanged: true }); } catch (e: any) { console.error('Failed to mark assets as pending:', e); }
 }
 
-export async function markThemeAsPending(artifactId: string): Promise<void> {
-  try { await upsertStructureFlag(artifactId, { themeChanged: true }); } catch (e: any) { console.error('Failed to mark theme as pending:', e); }
+export async function markThemeAsPending(assetId: string): Promise<void> {
+  try { await upsertStructureFlag(assetId, { themeChanged: true }); } catch (e: any) { console.error('Failed to mark theme as pending:', e); }
 }
 
-export async function markRedirectsAsPending(artifactId: string): Promise<void> {
-  try { await upsertStructureFlag(artifactId, { redirectsChanged: true }); } catch (e: any) { console.error('Failed to mark redirects as pending:', e); }
+export async function markRedirectsAsPending(assetId: string): Promise<void> {
+  try { await upsertStructureFlag(assetId, { redirectsChanged: true }); } catch (e: any) { console.error('Failed to mark redirects as pending:', e); }
 }
 
-export async function markEnvironmentsAsPending(artifactId: string): Promise<void> {
-  try { await upsertStructureFlag(artifactId, { environmentsChanged: true }); } catch (e: any) { console.error('Failed to mark environments as pending:', e); }
+export async function markEnvironmentsAsPending(assetId: string): Promise<void> {
+  try { await upsertStructureFlag(assetId, { environmentsChanged: true }); } catch (e: any) { console.error('Failed to mark environments as pending:', e); }
 }
 
-export async function markAppBaseAsPending(artifactId: string): Promise<void> {
-  try { await upsertStructureFlag(artifactId, { appBaseChanged: true }); } catch (e: any) { console.error('Failed to mark app base as pending:', e); }
+export async function markAppBaseAsPending(assetId: string): Promise<void> {
+  try { await upsertStructureFlag(assetId, { appBaseChanged: true }); } catch (e: any) { console.error('Failed to mark app base as pending:', e); }
 }

@@ -11,7 +11,7 @@ export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedO
     const record = await db.allocation.create({
       data: {
         serverId: data.serverId,
-        artifactId: data.artifactId,
+        assetId: data.assetId,
         port: data.port,
         allocatedStorage: data.allocatedStorage,
         allocatedOn: new Date(),
@@ -34,7 +34,7 @@ export async function getAllocations(): Promise<{ success: boolean; allocations?
       select: {
         id: true,
         serverId: true,
-        artifactId: true,
+        assetId: true,
         port: true,
         allocatedStorage: true,
         allocatedOn: true,
@@ -44,7 +44,7 @@ export async function getAllocations(): Promise<{ success: boolean; allocations?
     const allocations = records.map((record) => ({
       id: record.id,
       serverId: record.serverId,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       port: record.port ?? 0,
       allocatedStorage: record.allocatedStorage ?? 0,
       allocatedOn: record.allocatedOn ? record.allocatedOn.toISOString() : null,
@@ -64,7 +64,7 @@ export async function getAllocation(id: string): Promise<{ success: boolean; all
       select: {
         id: true,
         serverId: true,
-        artifactId: true,
+        assetId: true,
         port: true,
         allocatedStorage: true,
         allocatedOn: true,
@@ -78,7 +78,7 @@ export async function getAllocation(id: string): Promise<{ success: boolean; all
     const allocation: Allocation = {
       id: record.id,
       serverId: record.serverId,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       port: record.port ?? 0,
       allocatedStorage: record.allocatedStorage ?? 0,
       allocatedOn: record.allocatedOn ? record.allocatedOn.toISOString() : null,
@@ -98,7 +98,7 @@ export async function updateAllocation(id: string, data: Partial<Omit<Allocation
       where: { id },
       data: {
         ...(data.serverId !== undefined ? { serverId: data.serverId } : {}),
-        ...(data.artifactId !== undefined ? { artifactId: data.artifactId } : {}),
+        ...(data.assetId !== undefined ? { assetId: data.assetId } : {}),
         ...(data.port !== undefined ? { port: data.port } : {}),
         ...(data.allocatedStorage !== undefined ? { allocatedStorage: data.allocatedStorage } : {}),
         ...(data.status !== undefined ? { status: data.status } : {}),
@@ -124,10 +124,10 @@ export async function deleteAllocation(id: string): Promise<{ success: boolean; 
   }
 }
 
-export async function updateAllocationPort(artifactId: string, serverId: string, port: number): Promise<{ success: boolean; error?: string }> {
+export async function updateAllocationPort(assetId: string, serverId: string, port: number): Promise<{ success: boolean; error?: string }> {
   try {
     const allocation = await db.allocation.findFirst({
-      where: { artifactId, serverId },
+      where: { assetId, serverId },
       orderBy: [{ allocatedOn: 'desc' }, { id: 'asc' }],
       select: { id: true },
     });
@@ -141,7 +141,7 @@ export async function updateAllocationPort(artifactId: string, serverId: string,
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update allocation port for site ${artifactId}: ${e.message}`, stack: e.stack, source: 'updateAllocationPort' });
+    await logErrorToDatabase({ message: `Failed to update allocation port for site ${assetId}: ${e.message}`, stack: e.stack, source: 'updateAllocationPort' });
     return { success: false, error: 'Failed to update allocation port.' };
   }
 }

@@ -2,7 +2,7 @@
 export interface Allocation {
   id: string;
   serverId: string;
-  artifactId: string;
+  assetId: string;
   port: number;
   allocatedStorage: number; // in MB
   allocatedOn: string | null;

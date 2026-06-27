@@ -4,18 +4,18 @@
 import { cookies } from 'next/headers'
 import { db } from '@/core/lib/db';
 
-export async function setArtifactIdCookie(artifactId: string) {
-  if (!artifactId) {
-    throw new Error('Artifact ID cannot be empty.');
+export async function setAssetIdCookie(assetId: string) {
+  if (!assetId) {
+    throw new Error('Asset ID cannot be empty.');
   }
 
   try {
-    const existing = await db.artifact.findUnique({ where: { id: artifactId }, select: { id: true } });
+    const existing = await db.asset.findUnique({ where: { id: assetId }, select: { id: true } });
     if (!existing) {
-      await db.artifact.create({
+      await db.asset.create({
         data: {
-          id: artifactId,
-          name: artifactId,
+          id: assetId,
+          name: assetId,
           status: 'active',
           type: 'corporate portfolio',
           createdAt: new Date(),
@@ -24,8 +24,8 @@ export async function setArtifactIdCookie(artifactId: string) {
       });
     }
 
-    // Set the cookie after ensuring the artifact document exists
-    (await cookies()).set('artifactId', artifactId, {
+    // Set the cookie after ensuring the asset document exists
+    (await cookies()).set('assetId', assetId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 7, // One week
@@ -35,8 +35,8 @@ export async function setArtifactIdCookie(artifactId: string) {
     return { success: true };
 
   } catch (error: any) {
-    console.error(`Failed to check or create artifact for artifactId "${artifactId}":`, error);
+    console.error(`Failed to check or create asset for assetId "${assetId}":`, error);
     // In a real app, you might want to log this error
-    return { success: false, error: 'Could not set up the artifact. Please try again.' };
+    return { success: false, error: 'Could not set up the asset. Please try again.' };
   }
 }

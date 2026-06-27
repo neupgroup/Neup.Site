@@ -3,7 +3,7 @@
 'use server';
 
 import { getPrivateServerDetails } from '@/services/servers';
-import { getArtifact } from '@/services/editor/artifact';
+import { getAsset } from '@/services/editor/asset';
 import { getAccountId } from './accounts';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/core/lib/logging';
@@ -16,10 +16,10 @@ async function resolveAppBasePath(serverId: string, type: 'internal' | 'external
   const { server, error: serverError } = await getPrivateServerDetails(serverId);
   if (serverError || !server) throw new Error('Could not retrieve server details for path resolution.');
 
-  const { artifact, error: artifactError } = await getArtifact();
-  if (artifactError || !artifact) throw new Error('Could not retrieve artifact details for path resolution.');
+  const { asset, error: assetError } = await getAsset();
+  if (assetError || !asset) throw new Error('Could not retrieve asset details for path resolution.');
 
-  const appPath = server.appPath?.replace(/\{\{universal\.(?:site_id|artifact_id)\}\}/g, artifact.id) || `/var/www/${artifact.id}`;
+  const appPath = server.appPath?.replace(/\{\{universal\.(?:site_id|asset_id)\}\}/g, asset.id) || `/var/www/${asset.id}`;
   const basePath = type === 'internal' ? `${appPath}/src/base` : `${appPath}/base`;
 
   return { ssh: new NodeSSH(), server, basePath };
@@ -59,7 +59,7 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
   const sanitizedName = name.replace(/[^a-zA-Z0-9-]/g, '_');
   const fileName = `${sanitizedName}.json`;
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
+  const assetId = cookieStore.get('assetId')?.value;
 
   let ssh: NodeSSH | undefined;
   try {
@@ -78,7 +78,7 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
     }
 
     await ssh.exec('tee', [filePath], { stdin: content });
-    if (artifactId) await markAppBaseAsPending(artifactId);
+    if (assetId) await markAppBaseAsPending(assetId);
     return { success: true };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to create app base file: ${e.message}`, source: 'createAppBaseFile' });
@@ -107,14 +107,14 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
 
 export async function saveAppBaseFileContent(serverId: string, fileName: string, content: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
+  const assetId = cookieStore.get('assetId')?.value;
   let ssh: NodeSSH | undefined;
   try {
     const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);
     ssh = sshInstance;
     await ssh.connect({ host: server.publicIp, username: server.username || 'root', privateKey: server.privateKey });
     await ssh.exec('tee', [`${basePath}/${fileName}.json`], { stdin: content });
-    if (artifactId) await markAppBaseAsPending(artifactId);
+    if (assetId) await markAppBaseAsPending(assetId);
     return { success: true };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to save app base file content: ${e.message}`, source: 'saveAppBaseFileContent' });
@@ -130,11 +130,11 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
     if (!contentResult.success || !contentResult.content) throw new Error(contentResult.error || 'Could not read file content for backup.');
 
     const accountId = await getAccountId();
-    const { artifact } = await getArtifact();
-    if (!artifact) throw new Error('Artifact context not found.');
+    const { asset } = await getAsset();
+    if (!asset) throw new Error('Asset context not found.');
 
     await db.appBaseBackup.create({
-      data: { artifactId: artifact.id, fileName: `${fileName}.json`, fileType: type, content: contentResult.content, backedUpAt: new Date(), backedUpBy: accountId },
+      data: { assetId: asset.id, fileName: `${fileName}.json`, fileType: type, content: contentResult.content, backedUpAt: new Date(), backedUpBy: accountId },
     });
     return { success: true };
   } catch (e: any) {
@@ -145,17 +145,17 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
 
 export async function getAppBaseBackups(): Promise<{ success: boolean; backups?: AppBaseBackup[]; error?: string }> {
   try {
-    const { artifact } = await getArtifact();
-    if (!artifact) throw new Error('Artifact context not found.');
+    const { asset } = await getAsset();
+    if (!asset) throw new Error('Asset context not found.');
 
     const records = await db.appBaseBackup.findMany({
-      where: { artifactId: artifact.id },
+      where: { assetId: asset.id },
       orderBy: { backedUpAt: 'desc' },
     });
 
     const backups: AppBaseBackup[] = records.map(r => ({
       id: r.id,
-      artifactId: r.artifactId,
+      assetId: r.assetId,
       fileName: r.fileName,
       fileType: r.fileType,
       content: r.content,

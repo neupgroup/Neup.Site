@@ -7,15 +7,15 @@ import { createServerLog } from '@/services/server-logs';
 
 export async function deployCodebaseFromStorage(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
-  const allocation = await db.allocation.findFirst({ where: { artifactId } });
+  const allocation = await db.allocation.findFirst({ where: { assetId } });
   if (!allocation) return { success: false, error: 'No server allocated to this site.' };
 
   const createLogResult = await createServerLog({
     serverId: allocation.serverId,
-    commandName: `Asset Deployment for site: ${artifactId}`,
+    commandName: `Asset Deployment for site: ${assetId}`,
     command: 'Legacy asset deployment has been removed.',
     output: 'Use the server-based public file workflow instead.',
     status: 'cancelled',

@@ -1,6 +1,6 @@
 
 import { getSiteServers } from '@/services/servers';
-import { getArtifact } from '@/services/editor/artifact';
+import { getAsset } from '@/services/editor/asset';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -11,11 +11,11 @@ import { SyncPortButton } from './sync-port-button';
 export default async function DevSettingsPage() {
     const [serversData, siteData] = await Promise.all([
         getSiteServers(),
-        getArtifact()
+        getAsset()
     ]);
 
     const servers = serversData.success ? serversData.servers || [] : [];
-    const site = siteData.success ? siteData.site : null;
+    const site = siteData.success ? siteData.asset : null;
 
     if (!site) {
         return (
@@ -37,12 +37,12 @@ export default async function DevSettingsPage() {
             </header>
 
             <div className="grid gap-6">
-                {/* Artifact Overview Card */}
+                {/* Asset Overview Card */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Globe className="h-5 w-5 text-primary" />
-                            Artifact Overview
+                            Asset Overview
                         </CardTitle>
                         <CardDescription>General information about your production site.</CardDescription>
                     </CardHeader>
@@ -116,7 +116,7 @@ export default async function DevSettingsPage() {
                                                     Port: {server.allocation.port}
                                                 </Badge>
                                                 <span className="text-xs text-muted-foreground mr-2">(Internal Traffic)</span>
-                                                <SyncPortButton artifactId={site.id} serverId={server.id} />
+                                                <SyncPortButton assetId={site.id} serverId={server.id} />
                                             </div>
                                         </div>
 

@@ -1,8 +1,8 @@
 
 "use server";
 
-import { getArtifact } from "@/services/editor/artifact";
-import type { DomainSetting } from '@/schemas/artifact';
+import { getAsset } from "@/services/editor/asset";
+import type { DomainSetting } from '@/schemas/asset';
 
 interface NginxConfigParams {
     urls: string[];
@@ -52,11 +52,11 @@ server {
 
 
 export async function getConfigureNginxCommand({ proxyUrl, listenPort }: Omit<NginxConfigParams, 'urls'>): Promise<string> {
-    const { artifact } = await getArtifact();
+    const { asset } = await getAsset();
 
-    const domainSettings = artifact?.domains ?? artifact?.domainSettings;
+    const domainSettings = asset?.domains ?? asset?.domainSettings;
     if (!domainSettings) {
-        throw new Error('No domain settings found for the artifact.');
+        throw new Error('No domain settings found for the asset.');
     }
     
     const domains: { url: string; forceHttps?: boolean }[] = [];
@@ -86,7 +86,7 @@ export async function getConfigureNginxCommand({ proxyUrl, listenPort }: Omit<Ng
     }
 
     const mergedNginxConfig = domainConfigs.join('\n');
-    const safeDomainName = (artifact?.id || 'artifact').replace(/[^a-zA-Z0-9]/g, '_');
+    const safeDomainName = (asset?.id || 'asset').replace(/[^a-zA-Z0-9]/g, '_');
     const configFileName = `${safeDomainName}.conf`;
     const configFilePath = `/etc/nginx/sites-available/${configFileName}`;
     const enabledConfigPath = `/etc/nginx/sites-enabled/${configFileName}`;

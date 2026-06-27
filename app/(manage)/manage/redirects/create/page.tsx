@@ -32,9 +32,9 @@ type FormValues = z.infer<typeof formSchema>;
 export default function CreateRedirectPage() {
   const { toast } = useToast();
   const router = useRouter();
-  const { artifact } = useProfile();
+  const { asset } = useProfile();
   usePageTitle('Create Redirect');
-  const displayDomain = artifact?.domains?.production?.url || 'yourdomain.com';
+  const displayDomain = asset?.domains?.production?.url || 'yourdomain.com';
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

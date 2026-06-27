@@ -7,7 +7,7 @@ import { useState } from 'react';
 // This is a placeholder for a real check against your site's status in Firestore
 const useSiteStatus = () => {
     // For now, we'll simulate a 'pending' status to show the page content.
-    // In a real app, you would fetch this from Firestore based on the current artifactId.
+    // In a real app, you would fetch this from Firestore based on the current assetId.
     const [status] = useState('pending'); // 'pending' | 'active' | 'inactive'
     return { status, isLoading: false };
 }

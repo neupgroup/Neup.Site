@@ -3,20 +3,20 @@
 
 import { db } from '@/core/lib/db';
 import { getAccountId } from './accounts';
-import type { Artifact } from '@/schemas/artifact';
+import type { Asset } from '@/schemas/asset';
 
 /**
- * Fetches all artifacts owned by the current account ID.
+ * Fetches all assets owned by the current account ID.
  * Kept as a backwards-compatible helper (historically named "sites").
  */
-export async function getSitesForAccount(): Promise<{ sites?: Artifact[]; error?: string }> {
+export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: string }> {
   const accountId = await getAccountId();
   if (!accountId) {
     return { error: 'User account not found.' };
   }
 
   try {
-    const records = await db.artifact.findMany({
+    const records = await db.asset.findMany({
       where: { ownerAccountId: accountId },
       include: {
         themeEntry: true,
@@ -52,22 +52,22 @@ export async function getSitesForAccount(): Promise<{ sites?: Artifact[]; error?
         url: record.url || '',
         domainSettings: undefined,
         domains: record.domains ?? undefined,
-        tier: (record.tier as Artifact['tier']) || 'free',
+        tier: (record.tier as Asset['tier']) || 'free',
         logoUrl: logoUrl ?? undefined,
-        icons: (record.icons as Artifact['icons']) ?? {},
+        icons: (record.icons as Asset['icons']) ?? {},
         hideSitename: record.themeEntry?.hideSitename ?? false,
         hideLogo: record.themeEntry?.hideLogo ?? false,
         description: description ?? undefined,
         socialProfiles,
         contactEmail,
         contactPhone,
-        modules: (record.modules as Artifact['modules']) ?? {},
-        theme: (record.themeEntry?.theme as Artifact['theme']) ?? undefined,
+        modules: (record.modules as Asset['modules']) ?? {},
+        theme: (record.themeEntry?.theme as Asset['theme']) ?? undefined,
         ownerAccountId: record.ownerAccountId ?? undefined,
         status: record.status ?? undefined,
         type: record.type ?? undefined,
       };
-    }) as Artifact[];
+    }) as Asset[];
 
     return { sites };
   } catch (e: any) {

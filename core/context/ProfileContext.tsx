@@ -2,22 +2,22 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { getArtifact } from '@/services/editor/artifact';
-import type { Artifact } from '@/schemas/artifact';
+import { getAsset } from '@/services/editor/asset';
+import type { Asset } from '@/schemas/asset';
 import { validateSession, saveSessionData, getCookie } from '@/core/lib/session-manager';
 
-const SESSION_STORAGE_KEY_ARTIFACT = 'artifactProfileData';
+const SESSION_STORAGE_KEY_ARTIFACT = 'assetProfileData';
 
 interface ProfileContextType {
-  artifact: Artifact | null;
-  setArtifact: Dispatch<SetStateAction<Artifact | null>>;
+  asset: Asset | null;
+  setAsset: Dispatch<SetStateAction<Asset | null>>;
   loading: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [artifact, setArtifact] = useState<Artifact | null>(null);
+  const [asset, setAsset] = useState<Asset | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,19 +37,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
           // Automatically fetch fresh data instead of showing banner
           console.log('Fetching fresh data due to invalid session...');
-          const { success, artifact: dbArtifact } = await getArtifact();
-          if (success && dbArtifact) {
-            setArtifact(dbArtifact);
+          const { success, asset: dbAsset } = await getAsset();
+          if (success && dbAsset) {
+            setAsset(dbAsset);
 
             // Save to sessionStorage
             if (typeof sessionStorage !== 'undefined') {
-              sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(dbArtifact));
+              sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(dbAsset));
             }
 
             // Save session metadata
-            const cookieArtifactId = getCookie('artifactId');
-            if (cookieArtifactId) {
-              saveSessionData(cookieArtifactId);
+            const cookieAssetId = getCookie('assetId');
+            if (cookieAssetId) {
+              saveSessionData(cookieAssetId);
             }
           }
           setLoading(false);
@@ -57,29 +57,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         }
 
         // Try to get from sessionStorage first
-        const cachedArtifact = typeof sessionStorage !== 'undefined'
+        const cachedAsset = typeof sessionStorage !== 'undefined'
           ? sessionStorage.getItem(SESSION_STORAGE_KEY_ARTIFACT)
           : null;
 
-        if (cachedArtifact && sessionValidation.valid) {
-          const parsedArtifact = JSON.parse(cachedArtifact);
-          setArtifact(parsedArtifact);
+        if (cachedAsset && sessionValidation.valid) {
+          const parsedAsset = JSON.parse(cachedAsset);
+          setAsset(parsedAsset);
           setLoading(false);
         } else {
           // Fetch from server
-          const { success, artifact: dbArtifact } = await getArtifact();
-          if (success && dbArtifact) {
-            setArtifact(dbArtifact);
+          const { success, asset: dbAsset } = await getAsset();
+          if (success && dbAsset) {
+            setAsset(dbAsset);
 
             // Save to sessionStorage
             if (typeof sessionStorage !== 'undefined') {
-              sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(dbArtifact));
+              sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(dbAsset));
             }
 
             // Save session metadata
-            const cookieArtifactId = getCookie('artifactId');
-            if (cookieArtifactId) {
-              saveSessionData(cookieArtifactId);
+            const cookieAssetId = getCookie('assetId');
+            if (cookieAssetId) {
+              saveSessionData(cookieAssetId);
             }
           }
           setLoading(false);
@@ -93,15 +93,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     initializeProfile();
   }, []);
 
-  // Update sessionStorage when artifact changes
+  // Update sessionStorage when asset changes
   useEffect(() => {
-    if (artifact && typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(artifact));
+    if (asset && typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(SESSION_STORAGE_KEY_ARTIFACT, JSON.stringify(asset));
     }
-  }, [artifact]);
+  }, [asset]);
 
   return (
-    <ProfileContext.Provider value={{ artifact, setArtifact, loading }}>
+    <ProfileContext.Provider value={{ asset, setAsset, loading }}>
       {children}
     </ProfileContext.Provider>
   );

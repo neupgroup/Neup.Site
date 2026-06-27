@@ -5,9 +5,9 @@ import './globals.css';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense } from 'react';
 import { ProgressBar } from '@/components/ui/progress-bar';
-import { getArtifact } from '@/services/editor/artifact';
+import { getAsset } from '@/services/editor/asset';
 import { cn } from '@/core/lib/utils';
-import type { Artifact } from '@/schemas/artifact';
+import type { Asset } from '@/schemas/asset';
 
 
 export const metadata: Metadata = {
@@ -19,11 +19,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { artifact } = await getArtifact();
-  const radius = artifact?.theme?.radius;
+  const { asset } = await getAsset();
+  const radius = asset?.theme?.radius;
   const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
-  const themeMode = artifact?.theme?.mode || 'light';
-  const generatedTheme = artifact?.theme?.generated;
+  const themeMode = asset?.theme?.mode || 'light';
+  const generatedTheme = asset?.theme?.generated;
   const renderThemeStyles = !!(generatedTheme && generatedTheme.light && generatedTheme.dark && generatedTheme.black);
 
   const themeStyleString = renderThemeStyles ? `

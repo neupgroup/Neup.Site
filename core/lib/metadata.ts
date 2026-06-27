@@ -1,15 +1,15 @@
-import { getArtifact } from '@/services/editor/artifact';
+import { getAsset } from '@/services/editor/asset';
 
 /**
- * Generate page metadata with artifact name
+ * Generate page metadata with asset name
  * @param pageTitle - The title of the current page (e.g., "Home", "Status", "Settings")
  * @returns Metadata object with formatted title
  */
 export async function generatePageMetadata(pageTitle: string) {
-    const { artifact } = await getArtifact();
-    const artifactName = artifact?.name || 'Artifact';
+    const { asset } = await getAsset();
+    const assetName = asset?.name || 'Asset';
 
     return {
-        title: `${pageTitle}, ${artifactName}`,
+        title: `${pageTitle}, ${assetName}`,
     };
 }

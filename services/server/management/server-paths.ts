@@ -1,24 +1,24 @@
 'use server';
 
 import { getPrivateServerDetails } from '@/services/servers';
-import { getArtifact } from '@/services/editor/artifact';
+import { getAsset } from '@/services/editor/asset';
 
-export async function resolveAppPath(serverId: string, isProduction: boolean = true): Promise<{ resolvedPath: string, error?: string, artifactId?: string }> {
+export async function resolveAppPath(serverId: string, isProduction: boolean = true): Promise<{ resolvedPath: string, error?: string, assetId?: string }> {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
     if (serverError || !server) {
         return { resolvedPath: '', error: 'Could not retrieve server details for path resolution.' };
     }
 
-    const { artifact, error: artifactError } = await getArtifact();
-    if (artifactError || !artifact) {
-        return { resolvedPath: '', error: 'Could not retrieve artifact details for path resolution.' };
+    const { asset, error: assetError } = await getAsset();
+    if (assetError || !asset) {
+        return { resolvedPath: '', error: 'Could not retrieve asset details for path resolution.' };
     }
 
-    let resolvedPath = server.appPath || `/var/www/{{universal.artifact_id}}`;
+    let resolvedPath = server.appPath || `/var/www/{{universal.asset_id}}`;
 
     const variables: Record<string, string> = {
-        '{{universal.site_id}}': artifact.id, // backwards-compatible
-        '{{universal.artifact_id}}': artifact.id,
+        '{{universal.site_id}}': asset.id, // backwards-compatible
+        '{{universal.asset_id}}': asset.id,
         '{{server.username}}': server.username || 'root',
     };
 
@@ -31,5 +31,5 @@ export async function resolveAppPath(serverId: string, isProduction: boolean = t
         resolvedPath = `${resolvedPath}.development`;
     }
 
-    return { resolvedPath, artifactId: artifact.id };
+    return { resolvedPath, assetId: asset.id };
 }

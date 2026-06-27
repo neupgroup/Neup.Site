@@ -1,7 +1,7 @@
 
 export interface EnvironmentVariable {
   id: string;
-  artifactId: string;
+  assetId: string;
   name: string;
   value: string;
   dataType: 'string' | 'number' | 'boolean';

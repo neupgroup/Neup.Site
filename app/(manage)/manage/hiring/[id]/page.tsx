@@ -136,7 +136,7 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
 }
 
 function EditPostingForm({ posting, onCancel, onSave }: { posting: JobPosting, onCancel: () => void, onSave: (data: PostingFormValues) => Promise<void> }) {
-    const { artifact } = useProfile();
+    const { asset } = useProfile();
     const [promotionOption, setPromotionOption] = useState('none');
     const form = useForm<PostingFormValues>({
         resolver: zodResolver(postingFormSchema),
@@ -165,7 +165,7 @@ function EditPostingForm({ posting, onCancel, onSave }: { posting: JobPosting, o
                                 <Checkbox id="place-on-website" defaultChecked />
                                 <div className="grid gap-1.5 leading-none">
                                     <label htmlFor="place-on-website" className="font-medium cursor-pointer">
-                                       {artifact?.name || 'Your'}'s Website
+                                       {asset?.name || 'Your'}'s Website
                                     </label>
                                     <p className="text-sm text-muted-foreground">Post for free on your current website's careers page.</p>
                                 </div>

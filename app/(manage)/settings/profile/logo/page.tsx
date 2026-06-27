@@ -7,41 +7,41 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { useProfile } from '@/core/context/ProfileContext';
-import { saveArtifact } from '@/services/editor/artifact';
-import type { Artifact, ArtifactIcons } from '@/schemas/artifact';
+import { saveAsset } from '@/services/editor/asset';
+import type { Asset, AssetIcons } from '@/schemas/asset';
 import { useToast } from '@/core/hooks/use-toast';
 
 export default function LogoUploadPage() {
-  const { artifact, setArtifact } = useProfile();
+  const { asset, setAsset } = useProfile();
   const { toast } = useToast();
 
-  const handleUploadSuccess = async (iconType: keyof ArtifactIcons, url: string) => {
-    const newIcons = { ...artifact?.icons, [iconType]: url };
-    const result = await saveArtifact({ icons: newIcons });
+  const handleUploadSuccess = async (iconType: keyof AssetIcons, url: string) => {
+    const newIcons = { ...asset?.icons, [iconType]: url };
+    const result = await saveAsset({ icons: newIcons });
 
     if (result.success) {
-      if (artifact) {
-        setArtifact({ ...artifact, icons: newIcons });
+      if (asset) {
+        setAsset({ ...asset, icons: newIcons });
       }
-      toast({ title: "Icon Updated", description: "Your new artifact icon has been saved." });
+      toast({ title: "Icon Updated", description: "Your new asset icon has been saved." });
     } else {
       toast({ variant: 'destructive', title: "Error", description: result.error });
     }
   };
   
   const handleLogoUploadSuccess = async (logoUrl: string) => {
-    const result = await saveArtifact({ logoUrl });
+    const result = await saveAsset({ logoUrl });
     if (result.success) {
-      if (artifact) {
-        setArtifact({ ...artifact, logoUrl });
+      if (asset) {
+        setAsset({ ...asset, logoUrl });
       }
-      toast({ title: "Logo Updated", description: "Your new artifact logo has been saved." });
+      toast({ title: "Logo Updated", description: "Your new asset logo has been saved." });
     } else {
       toast({ variant: 'destructive', title: "Error", description: result.error });
     }
   };
 
-  const iconUploads: { label: string; path: string; acceptedTypes: string; iconKey: keyof ArtifactIcons }[] = [
+  const iconUploads: { label: string; path: string; acceptedTypes: string; iconKey: keyof AssetIcons }[] = [
     { label: 'Favicon (favicon.ico)', path: '/favicon.ico', acceptedTypes: 'image/x-icon', iconKey: 'favicon' },
     { label: 'Apple Touch Icon (apple-touch-icon.png)', path: '/apple-touch-icon.png', acceptedTypes: 'image/png', iconKey: 'appleTouch' },
     { label: 'Favicon 16x16 (favicon-16x16.png)', path: '/favicon-16x16.png', acceptedTypes: 'image/png', iconKey: 'favicon16' },
@@ -62,9 +62,9 @@ export default function LogoUploadPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Artifact Logo</CardTitle>
+          <CardTitle>Asset Logo</CardTitle>
           <CardDescription>
-            Upload your main artifact logo. This will be displayed in the header.
+            Upload your main asset logo. This will be displayed in the header.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -72,7 +72,7 @@ export default function LogoUploadPage() {
                 uploadPath="/logo.png"
                 acceptedFileTypes="image/*"
                 onUploadSuccess={handleLogoUploadSuccess}
-                currentImageUrl={artifact?.logoUrl}
+                currentImageUrl={asset?.logoUrl}
             />
         </CardContent>
       </Card>
@@ -90,7 +90,7 @@ export default function LogoUploadPage() {
               uploadPath={upload.path}
               acceptedFileTypes={upload.acceptedTypes}
               onUploadSuccess={(url) => handleUploadSuccess(upload.iconKey, url)}
-              currentImageUrl={artifact?.icons?.[upload.iconKey]}
+              currentImageUrl={asset?.icons?.[upload.iconKey]}
             />
           </CardContent>
         </Card>

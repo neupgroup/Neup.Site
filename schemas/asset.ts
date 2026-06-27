@@ -11,14 +11,14 @@ export interface GeneratedTheme {
   black: Record<string, string>;
 }
 
-export interface ArtifactTheme {
+export interface AssetTheme {
   mode?: 'light' | 'dark' | 'black';
   colors: string[];
   radius?: 'none' | 'low' | 'medium' | 'high';
   generated?: GeneratedTheme;
 }
 
-export interface ArtifactIcons {
+export interface AssetIcons {
   favicon?: string;
   favicon16?: string;
   favicon32?: string;
@@ -40,10 +40,10 @@ export interface DomainSetting {
   ignoredPaths?: string[];
 }
 
-export interface Artifact {
+export interface Asset {
   id: string;
   name: string;
-  url: string;
+  url?: string;
   domainSettings?: {
     production?: DomainSetting;
     development?: DomainSetting;
@@ -54,7 +54,7 @@ export interface Artifact {
   },
   tier: 'free' | 'premium';
   logoUrl?: string;
-  icons?: ArtifactIcons;
+  icons?: AssetIcons;
   hideSitename?: boolean;
   hideLogo?: boolean;
   description?: string;
@@ -62,7 +62,7 @@ export interface Artifact {
   contactEmail?: { value: string; }[];
   contactPhone?: { value: string; }[];
   modules?: { [key: string]: any };
-  theme?: ArtifactTheme;
+  theme?: Partial<AssetTheme>;
   ownerAccountId?: string;
   status?: string;
   type?: string;
@@ -72,7 +72,7 @@ export interface Artifact {
 
 export interface Page {
   id: string;
-  artifactId: string;
+  assetId: string;
   name: string;
   elements: CanvasElementData[];
   reactComponent?: string;
@@ -92,7 +92,7 @@ export interface PathStructure {
 
 export interface Structure {
   id: string;
-  artifactId: string;
+  assetId: string;
   structure: PathStructure[];
   status: 'deployed' | 'pendingDeployment';
   themeChanged: boolean;
@@ -105,11 +105,11 @@ export interface Structure {
 
 export interface Deployment {
   id: string;
-  artifactId: string;
+  assetId: string;
   structure: PathStructure[];
   status: 'deployed' | 'cancelled';
-  theme: ArtifactTheme;
-  redirects: Omit<Redirect, 'artifactId'>[];
+  theme: AssetTheme;
+  redirects: Omit<Redirect, 'assetId'>[];
   siteProfile: { name: string, logoUrl?: string, hideSitename?: boolean, hideLogo?: boolean };
   environments: EnvironmentVariable[];
   attemptedOn: string | null;

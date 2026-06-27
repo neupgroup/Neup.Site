@@ -15,7 +15,7 @@ import { usePageTitle } from '@/core/hooks/use-page-title';
 import allPossibleModules from '@/services/site/modules/list.json';
 
 export default function SiteModulesPage() {
-  usePageTitle('Artifact Modules');
+  usePageTitle('Asset Modules');
   const [modules, setModules] = useState<SiteModules>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,11 +83,11 @@ export default function SiteModulesPage() {
   return (
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Artifact Modules</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Asset Modules</h1>
       </header>
       <Card>
         <CardHeader>
-          <CardTitle>Manage Artifact Modules</CardTitle>
+          <CardTitle>Manage Asset Modules</CardTitle>
           <CardDescription>
             Enable or disable modules to add or remove functionality from this site.
           </CardDescription>

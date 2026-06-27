@@ -6,14 +6,14 @@ import { db } from '@/core/lib/db';
 import { logErrorToDatabase } from '@/core/lib/logging';
 import type { CodeFile } from '@/schemas/codebase';
 
-export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'artifactId'>) {
+export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'assetId'>) {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const record = await db.codeFile.create({
-      data: { ...fileData, artifactId, createdAt: new Date() },
+      data: { ...fileData, assetId, createdAt: new Date() },
       select: { id: true },
     });
     return { success: true, id: record.id };
@@ -25,14 +25,14 @@ export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt'
 
 export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number, pageSize?: number }): Promise<{ success: boolean; files?: CodeFile[]; error?: string; totalCount?: number }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const [totalCount, records] = await Promise.all([
-      db.codeFile.count({ where: { artifactId } }),
+      db.codeFile.count({ where: { assetId } }),
       db.codeFile.findMany({
-        where: { artifactId },
+        where: { assetId },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
@@ -41,7 +41,7 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
 
     const files: CodeFile[] = records.map(r => ({
       id: r.id,
-      artifactId: r.artifactId,
+      assetId: r.assetId,
       fileName: r.fileName,
       filePath: r.filePath,
       content: r.content,
@@ -58,11 +58,11 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
 
 export async function deleteCodeFile(id: string) {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const existing = await db.codeFile.findFirst({ where: { id, artifactId } });
+    const existing = await db.codeFile.findFirst({ where: { id, assetId } });
     if (!existing) return { success: false, error: 'File not found or unauthorized.' };
     await db.codeFile.delete({ where: { id } });
     return { success: true };

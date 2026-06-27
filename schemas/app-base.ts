@@ -8,7 +8,7 @@ export interface AppBaseFile {
 
 export interface AppBaseBackup {
   id: string;
-  artifactId: string;
+  assetId: string;
   fileName: string;
   fileType: 'internal' | 'external';
   content: string;

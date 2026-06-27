@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
 import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/services/structure';
-import type { Structure, Deployment } from '@/schemas/artifact';
+import type { Structure, Deployment } from '@/schemas/asset';
 import { getSiteServers } from '@/services/servers';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
@@ -89,18 +89,18 @@ export default function DeployPage() {
     }
     
     const handleForceDeploy = async (type: 'theme' | 'redirects' | 'assets' | 'structure') => {
-        if (!structure?.artifactId) return;
+        if (!structure?.assetId) return;
 
         setIsDeploying(true);
         toast({ title: "Initiating Deployment...", description: `Marking ${type} as pending.` });
 
         try {
             if (type === 'theme') {
-                await markThemeAsPending(structure.artifactId);
+                await markThemeAsPending(structure.assetId);
             } else if (type === 'redirects') {
-                await markRedirectsAsPending(structure.artifactId);
+                await markRedirectsAsPending(structure.assetId);
             } else if (type === 'assets') {
-                await markAssetsAsPending(structure.artifactId);
+                await markAssetsAsPending(structure.assetId);
             }
             
             await handleDeploy();
@@ -167,7 +167,7 @@ export default function DeployPage() {
                          onDeploy={() => handleForceDeploy('redirects')}
                     />
                      <StatusCard 
-                        title="Artifact Assets" 
+                        title="Asset Assets" 
                         description={hasPendingAssets ? "Logo or profile changes pending" : "Up to date"}
                         status={getStatus(hasPendingAssets)}
                         icon={ImageIcon}

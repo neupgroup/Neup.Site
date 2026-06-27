@@ -9,15 +9,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sun, Moon, Loader2, Save, Plus, Trash2, Contrast } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
-import { saveArtifact } from '@/services/editor/artifact';
-import type { ArtifactTheme } from '@/schemas/artifact';
+import { saveAsset } from '@/services/editor/asset';
+import type { AssetTheme } from '@/schemas/asset';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProfile } from '@/core/context/ProfileContext';
 
 const colorLabels = ['Primary', 'Accent', 'Tertiary'];
 
 export default function ThemePage() {
-  const { artifact, setArtifact, loading } = useProfile();
+  const { asset, setAsset, loading } = useProfile();
   const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'black'>('light');
   const [colors, setColors] = useState<string[]>(['#64C5CF']);
   const [radius, setRadius] = useState<'none' | 'low' | 'medium' | 'high'>('medium');
@@ -26,20 +26,20 @@ export default function ThemePage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!loading && artifact?.theme) {
-      setThemeMode(artifact.theme.mode || 'light');
-      if (artifact.theme.colors && artifact.theme.colors.length > 0) {
-        setColors(artifact.theme.colors);
+    if (!loading && asset?.theme) {
+      setThemeMode(asset.theme.mode || 'light');
+      if (asset.theme.colors && asset.theme.colors.length > 0) {
+        setColors(asset.theme.colors);
       }
-      if (artifact.theme.radius) {
-        setRadius(artifact.theme.radius);
+      if (asset.theme.radius) {
+        setRadius(asset.theme.radius);
       }
     } else if (!loading) {
       // Set default if no theme is loaded
       const storedTheme = document.documentElement.classList.contains('dark') ? 'dark' : (document.documentElement.classList.contains('black') ? 'black' : 'light');
       setThemeMode(storedTheme);
     }
-  }, [loading, artifact]);
+  }, [loading, asset]);
 
   const handleThemeModeChange = (newTheme: 'light' | 'dark' | 'black') => {
     setThemeMode(newTheme);
@@ -49,17 +49,17 @@ export default function ThemePage() {
 
   const handleSaveTheme = async () => {
     setIsSaving(true);
-    const newTheme: ArtifactTheme = {
-      ...artifact?.theme,
+    const newTheme: AssetTheme = {
+      ...asset?.theme,
       mode: themeMode,
       colors,
       radius
     };
-    const result = await saveArtifact({ theme: newTheme });
+    const result = await saveAsset({ theme: newTheme });
 
     if (result.success) {
-      if (artifact) {
-        setArtifact({ ...artifact, theme: newTheme });
+      if (asset) {
+        setAsset({ ...asset, theme: newTheme });
       }
       toast({ title: 'Theme Saved', description: 'Your new theme settings have been applied.' });
       // Force a reload to apply the new CSS variables from the server
@@ -91,13 +91,13 @@ export default function ThemePage() {
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header>
         <h1 className="text-3xl font-bold font-headline">Theme & Appearance</h1>
-        <p className="text-muted-foreground">Customize the look and feel of your artifact and dashboard.</p>
+        <p className="text-muted-foreground">Customize the look and feel of your asset and dashboard.</p>
       </header>
 
       <Card>
         <CardHeader>
           <CardTitle>Color Scheme</CardTitle>
-          <CardDescription>Choose the colors for your artifact. The first is primary, the second is accent, etc.</CardDescription>
+          <CardDescription>Choose the colors for your asset. The first is primary, the second is accent, etc.</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (

@@ -8,7 +8,7 @@ import { markStructureAsPending } from './structure';
 
 export interface Path {
   id: string;
-  artifactId: string;
+  assetId: string;
   pageId: string;
   path: string;
   createdAt: string | null;
@@ -19,8 +19,8 @@ export interface Path {
  */
 export async function addPath(pageId: string, path: string): Promise<{ success: boolean; id?: string; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   if (!path.startsWith('/')) {
     return { success: false, error: 'Path must start with a "/"' };
@@ -29,7 +29,7 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
   try {
     // Check if path already exists for this site
     const existing = await db.pagePath.findFirst({
-      where: { artifactId, path },
+      where: { assetId, path },
       select: { id: true },
     });
     if (existing) {
@@ -37,11 +37,11 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
     }
 
     const record = await db.pagePath.create({
-      data: { artifactId, pageId, path, createdAt: new Date() },
+      data: { assetId, pageId, path, createdAt: new Date() },
       select: { id: true },
     });
 
-    await markStructureAsPending(artifactId, [path]);
+    await markStructureAsPending(assetId, [path]);
 
     return { success: true, id: record.id };
   } catch (error: any) {
@@ -59,17 +59,17 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
  */
 export async function getPathsForPage(pageId: string): Promise<{ success: boolean; paths?: Path[]; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const records = await db.pagePath.findMany({
-      where: { artifactId, pageId },
+      where: { assetId, pageId },
       orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     });
     const paths = records.map((record) => ({
       id: record.id,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       pageId: record.pageId,
       path: record.path,
       createdAt: record.createdAt ? record.createdAt.toISOString() : null,
@@ -90,20 +90,20 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
  */
 export async function deletePath(id: string): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const record = await db.pagePath.findUnique({
       where: { id },
-      select: { artifactId: true, path: true },
+      select: { assetId: true, path: true },
     });
-    if (!record || record.artifactId !== artifactId) {
+    if (!record || record.assetId !== assetId) {
       return { success: false, error: 'Path not found or unauthorized.' };
     }
     await db.pagePath.delete({ where: { id } });
 
-    await markStructureAsPending(artifactId, [record.path], true);
+    await markStructureAsPending(assetId, [record.path], true);
 
     return { success: true };
   } catch (error: any) {

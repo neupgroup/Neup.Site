@@ -2,29 +2,29 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { Artifact, ArtifactTheme, ArtifactIcons } from '@/schemas/artifact';
+import { Asset, AssetTheme, AssetIcons } from '@/schemas/asset';
 import { generateThemeFromColor } from '@/core/lib/color-utils';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/core/lib/db';
-import { syncArtifactProfileSubjects } from '@/services/profiles';
+import { syncAssetProfileSubjects } from '@/services/profiles';
 
-export async function getArtifact(): Promise<{ success: boolean, artifact?: Artifact, error?: string }> {
+export async function getAsset(): Promise<{ success: boolean, asset?: Asset, error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: true, artifact: undefined };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: true, asset: undefined };
 
   try {
     const [record, themeRecord, profileEntries] = await Promise.all([
-      db.artifact.findUnique({ where: { id: artifactId } }),
-      db.theme.findUnique({ where: { id: artifactId } }),
+      db.asset.findUnique({ where: { id: assetId } }),
+      db.theme.findUnique({ where: { id: assetId } }),
       db.profile.findMany({
-        where: { artifactId },
+        where: { assetId },
         select: { subject: true, value: true },
       }),
     ]);
 
-    if (!record) return { success: true, artifact: undefined };
+    if (!record) return { success: true, asset: undefined };
 
     const subjectToValues = new Map<string, string[]>();
     const socialProfilesFromDb: { platformName: string; url: string }[] = [];
@@ -46,12 +46,12 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
     const descriptionFromDb = subjectToValues.get('brand.description')?.[0];
 
     const data = record as any;
-    const artifact: Artifact = {
+    const asset: Asset = {
       id: record.id,
       name: record.name,
       url: record.url ?? undefined,
       domains: data.domains,
-      tier: (record.tier as Artifact['tier']) ?? 'free',
+      tier: (record.tier as Asset['tier']) ?? 'free',
       logoUrl: logoUrlFromDb ?? data.logoUrl,
       icons: data.icons || {},
       hideSitename: themeRecord?.hideSitename || false,
@@ -61,26 +61,26 @@ export async function getArtifact(): Promise<{ success: boolean, artifact?: Arti
       contactEmail: contactEmailFromDb.length ? contactEmailFromDb : (data.contactEmail || []),
       contactPhone: contactPhoneFromDb.length ? contactPhoneFromDb : (data.contactPhone || []),
       modules: data.modules || {},
-      theme: (themeRecord?.theme as ArtifactTheme) || {},
+      theme: (themeRecord?.theme as unknown as AssetTheme) || {},
       createdAt: record.createdAt ? record.createdAt.toISOString() : null,
       updatedAt: record.updatedAt ? record.updatedAt.toISOString() : null,
     };
 
-    return { success: true, artifact };
+    return { success: true, asset };
   } catch (error: any) {
-    return { success: false, error: 'Failed to fetch artifact configuration. An error has been logged.' };
+    return { success: false, error: 'Failed to fetch asset configuration. An error has been logged.' };
   }
 }
 
-export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
+export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const [existing, existingTheme] = await Promise.all([
-      db.artifact.findUnique({ where: { id: artifactId } }),
-      db.theme.findUnique({ where: { id: artifactId } }),
+      db.asset.findUnique({ where: { id: assetId } }),
+      db.theme.findUnique({ where: { id: assetId } }),
     ]);
 
     const {
@@ -92,39 +92,39 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
       socialProfiles,
       contactEmail,
       contactPhone,
-      ...artifactDataPatch
+      ...assetDataPatch
     } = data;
 
-    const artifactData: Record<string, any> = { ...artifactDataPatch, updatedAt: new Date() };
+    const assetData: Record<string, any> = { ...assetDataPatch, updatedAt: new Date() };
 
-    if (!existing) artifactData.createdAt = new Date();
+    if (!existing) assetData.createdAt = new Date();
 
     if (data.domains) {
       const existingDomains = (existing as any)?.domains || {};
-      artifactData.domains = {
+      assetData.domains = {
         ...existingDomains,
         production: { ...existingDomains.production, ...data.domains.production },
         development: { ...existingDomains.development, ...data.domains.development },
       };
     }
 
-    if (typeof logoUrl === 'string' && logoUrl.trim()) await markAssetsAsPending(artifactId);
+    if (typeof logoUrl === 'string' && logoUrl.trim()) await markAssetsAsPending(assetId);
 
     if (data.icons) {
-      artifactData.icons = { ...((existing as any)?.icons || {}), ...data.icons };
-      await markAssetsAsPending(artifactId);
+      assetData.icons = { ...((existing as any)?.icons || {}), ...data.icons };
+      await markAssetsAsPending(assetId);
     }
 
     const hideSitenameChanged = typeof nextHideSitename === 'boolean' && nextHideSitename !== existingTheme?.hideSitename;
     const hideLogoChanged = typeof nextHideLogo === 'boolean' && nextHideLogo !== existingTheme?.hideLogo;
 
-    if (data.name !== existing?.name || hideSitenameChanged || hideLogoChanged) await markAssetsAsPending(artifactId);
-    if (socialProfiles) await markAssetsAsPending(artifactId);
+    if (data.name !== existing?.name || hideSitenameChanged || hideLogoChanged) await markAssetsAsPending(assetId);
+    if (socialProfiles) await markAssetsAsPending(assetId);
 
-    await db.artifact.upsert({
-      where: { id: artifactId },
-      create: { id: artifactId, ...artifactData },
-      update: artifactData,
+    await db.asset.upsert({
+      where: { id: assetId },
+      create: { id: assetId, ...assetData },
+      update: assetData,
     });
 
     const themeData: Record<string, any> = { updatedAt: new Date() };
@@ -137,17 +137,17 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
       if (nextTheme.colors && nextTheme.colors.length > 0) {
         themeData.theme.generated = generateThemeFromColor(nextTheme.colors);
       }
-      await markThemeAsPending(artifactId);
+      await markThemeAsPending(assetId);
     }
 
     await db.theme.upsert({
-      where: { id: artifactId },
-      create: { id: artifactId, ...themeData },
+      where: { id: assetId },
+      create: { id: assetId, ...themeData },
       update: themeData,
     });
 
-    const profileSync = await syncArtifactProfileSubjects({
-      artifactId,
+    const profileSync = await syncAssetProfileSubjects({
+      assetId,
       name: typeof data.name === 'string' ? data.name : undefined,
       logoUrl: typeof logoUrl === 'string' ? logoUrl : undefined,
       description: typeof description === 'string' ? description : undefined,
@@ -160,8 +160,8 @@ export async function saveArtifact(data: Partial<Omit<Artifact, 'id'>>) {
     if (!profileSync.success) return { success: false, error: profileSync.error || 'Failed to sync profile subjects.' };
 
     revalidatePath('/', 'layout');
-    return { success: true, id: artifactId };
+    return { success: true, id: assetId };
   } catch (error: any) {
-    return { success: false, error: `Failed to save artifact config for ${artifactId}. An error has been logged.` };
+    return { success: false, error: `Failed to save asset config for ${assetId}. An error has been logged.` };
   }
 }

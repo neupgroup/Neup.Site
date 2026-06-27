@@ -13,18 +13,18 @@ import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 
-export async function createRedirect(data: Omit<Redirect, 'id' | 'artifactId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createRedirect(data: Omit<Redirect, 'id' | 'assetId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();
-  const artifactId = (await cookies()).get('artifactId')?.value;
+  const assetId = (await cookies()).get('assetId')?.value;
 
-  if (!accountId || !artifactId) {
+  if (!accountId || !assetId) {
     return { success: false, error: 'User or site context not found.' };
   }
 
   try {
     const record = await db.redirect.create({
       data: {
-        artifactId,
+        assetId,
         from: data.from,
         to: data.to,
         type: data.type,
@@ -34,7 +34,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'artifactId' | 
       select: { id: true },
     });
 
-    await markRedirectsAsPending(artifactId);
+    await markRedirectsAsPending(assetId);
 
     revalidatePath('/manage/redirects');
     return { success: true, id: record.id };
@@ -45,15 +45,15 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'artifactId' | 
 }
 
 export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }): Promise<{ success: boolean; redirects?: Redirect[]; error?: string; totalCount?: number }> {
-  const artifactId = (await cookies()).get('artifactId')?.value;
-  if (!artifactId) {
-    return { success: false, error: 'Artifact context not found.' };
+  const assetId = (await cookies()).get('assetId')?.value;
+  if (!assetId) {
+    return { success: false, error: 'Asset context not found.' };
   }
 
   try {
-    const totalCount = await db.redirect.count({ where: { artifactId } });
+    const totalCount = await db.redirect.count({ where: { assetId } });
     const records = await db.redirect.findMany({
-      where: { artifactId },
+      where: { assetId },
       orderBy: [{ created_on: 'desc' }, { id: 'asc' }],
       skip: Math.max(0, page - 1) * pageSize,
       take: pageSize,
@@ -61,7 +61,7 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
 
     const redirects = records.map((record) => ({
       id: record.id,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       from: record.from,
       to: record.to,
       type: record.type,
@@ -76,18 +76,18 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
 }
 
 export async function deleteRedirect(id: string): Promise<{ success: boolean; error?: string }> {
-  const artifactId = (await cookies()).get('artifactId')?.value;
-  if (!artifactId) {
-    return { success: false, error: 'Artifact context not found.' };
+  const assetId = (await cookies()).get('assetId')?.value;
+  if (!assetId) {
+    return { success: false, error: 'Asset context not found.' };
   }
 
   try {
-    const result = await db.redirect.deleteMany({ where: { id, artifactId } });
+    const result = await db.redirect.deleteMany({ where: { id, assetId } });
     if (result.count === 0) {
       return { success: false, error: 'Redirect not found.' };
     }
 
-    await markRedirectsAsPending(artifactId);
+    await markRedirectsAsPending(assetId);
 
     revalidatePath('/manage/redirects');
     return { success: true };
@@ -98,19 +98,19 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
 }
 
 export async function getAllRedirects(): Promise<{ success: boolean; redirects?: Redirect[]; error?: string }> {
-  const artifactId = (await cookies()).get('artifactId')?.value;
-  if (!artifactId) {
-    return { success: false, error: 'Artifact context not found.' };
+  const assetId = (await cookies()).get('assetId')?.value;
+  if (!assetId) {
+    return { success: false, error: 'Asset context not found.' };
   }
 
   try {
     const records = await db.redirect.findMany({
-      where: { artifactId },
+      where: { assetId },
       orderBy: [{ created_on: 'desc' }, { id: 'asc' }],
     });
     const redirects = records.map((record) => ({
       id: record.id,
-      artifactId: record.artifactId,
+      assetId: record.assetId,
       from: record.from,
       to: record.to,
       type: record.type,
@@ -125,16 +125,16 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
 }
 
 export async function deployRedirects(): Promise<{ success: boolean; error?: string }> {
-  const artifactId = (await cookies()).get('artifactId')?.value;
-  if (!artifactId) {
-    return { success: false, error: 'Artifact context not found.' };
+  const assetId = (await cookies()).get('assetId')?.value;
+  if (!assetId) {
+    return { success: false, error: 'Asset context not found.' };
   }
 
   let logId: string | undefined;
 
   try {
     const allocation = await db.allocation.findFirst({
-      where: { artifactId },
+      where: { assetId },
       orderBy: [{ allocatedOn: 'desc' }, { id: 'asc' }],
     });
 
@@ -163,7 +163,7 @@ export async function deployRedirects(): Promise<{ success: boolean; error?: str
     }
 
     const username = server.username || 'root';
-    const resolvedAppPath = `/home/${username}/${artifactId}`;
+    const resolvedAppPath = `/home/${username}/${assetId}`;
     const coreDir = `${resolvedAppPath}/base/core`;
 
     const ssh = new NodeSSH();

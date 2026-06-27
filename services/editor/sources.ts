@@ -16,7 +16,7 @@ export interface SourceMethod {
 
 export interface BaseSource {
   id: string;
-  artifactId: string;
+  assetId: string;
   name: string;
   type: SourceType;
   createdAt?: string | null;
@@ -32,7 +32,7 @@ export type Source = ApiSource | DatabaseSource | StaticSource | DatalistSource;
 function toSource(r: any): Source {
   return {
     id: r.id,
-    artifactId: r.artifactId,
+    assetId: r.assetId,
     name: r.name,
     type: r.type as SourceType,
     methods: r.methods || [],
@@ -45,14 +45,14 @@ function toSource(r: any): Source {
   } as Source;
 }
 
-export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'artifactId'>) {
+export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'assetId'>) {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
     const record = await db.dataSource.create({
-      data: { artifactId, name: sourceData.name, type: sourceData.type, methods: sourceData.methods as any, createdAt: new Date() },
+      data: { assetId, name: sourceData.name, type: sourceData.type, methods: sourceData.methods as any, createdAt: new Date() },
       select: { id: true },
     });
     return { success: true, id: record.id };
@@ -63,11 +63,11 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
 
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const records = await db.dataSource.findMany({ where: { artifactId } });
+    const records = await db.dataSource.findMany({ where: { assetId } });
     return { success: true, sources: records.map(toSource) };
   } catch (error: any) {
     return { success: false, error: error.message || 'Failed to fetch sources.' };
@@ -76,11 +76,11 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
 
 export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const record = await db.dataSource.findFirst({ where: { id, artifactId } });
+    const record = await db.dataSource.findFirst({ where: { id, assetId } });
     if (!record) return { success: false, error: 'Source not found.' };
     return { success: true, source: toSource(record) };
   } catch (error: any) {
@@ -88,13 +88,13 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
   }
 }
 
-export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'artifactId'>>) {
+export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'assetId'>>) {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const existing = await db.dataSource.findFirst({ where: { id, artifactId } });
+    const existing = await db.dataSource.findFirst({ where: { id, assetId } });
     if (!existing) return { success: false, error: 'Unauthorized' };
     await db.dataSource.update({ where: { id }, data: sourceData as any });
     return { success: true, id };
@@ -105,11 +105,11 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
 
 export async function deleteSource(id: string) {
   const cookieStore = await cookies();
-  const artifactId = cookieStore.get('artifactId')?.value;
-  if (!artifactId) return { success: false, error: 'Artifact ID not found.' };
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const existing = await db.dataSource.findFirst({ where: { id, artifactId } });
+    const existing = await db.dataSource.findFirst({ where: { id, assetId } });
     if (!existing) return { success: false, error: 'Unauthorized' };
     await db.dataSource.delete({ where: { id } });
     return { success: true };

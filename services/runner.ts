@@ -8,7 +8,7 @@ import { logErrorToDatabase } from '@/core/lib/logging';
 import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
-import { getArtifact } from './editor/artifact';
+import { getAsset } from './editor/asset';
 import type { ServerLog } from '@/schemas/server';
 import { generateReverseProxyBashScript } from './server/management/reverse-proxy-config';
 import { updateAllocationPort } from './allocations';
@@ -110,30 +110,30 @@ export async function runCommand(
             }
         }
 
-        const siteResult = await getArtifact();
-        const artifact = siteResult.success ? siteResult.artifact : null;
+        const siteResult = await getAsset();
+        const asset = siteResult.success ? siteResult.asset : null;
 
         const resolvedAppPath =
             server.appPath
-                ?.replace(/\{\{\s*universal\.(?:site_id|artifact_id)\s*\}\}/g, artifact?.id || '') ||
-            (artifact?.id ? `/var/www/${artifact.id}` : `/var/www`);
+                ?.replace(/\{\{\s*universal\.(?:site_id|asset_id)\s*\}\}/g, asset?.id || '') ||
+            (asset?.id ? `/var/www/${asset.id}` : `/var/www`);
 
-        const productionProxies = artifact?.domains?.production?.proxies || [];
-        const productionIgnored = artifact?.domains?.production?.ignoredPaths || [];
+        const productionProxies = asset?.domains?.production?.proxies || [];
+        const productionIgnored = asset?.domains?.production?.ignoredPaths || [];
 
         const appServerVariables = {
             'universal.server_name': server.name,
             'universal.server_publicIp': server.publicIp,
             'universal.server_basePath': server.basePath || `/home/${server.username || 'root'}`,
             'universal.server_appPath': resolvedAppPath,
-            'universal.artifactId': artifact?.id || '',
-            'universal.artifact_id': artifact?.id || '',
-            'universal.artifact_name': artifact?.name || '',
+            'universal.assetId': asset?.id || '',
+            'universal.asset_id': asset?.id || '',
+            'universal.asset_name': asset?.name || '',
             // Backwards-compatible aliases for older server command templates.
-            'universal.site_id': artifact?.id || '',
-            'universal.site_name': artifact?.name || '',
-            'universal.productionDomain': artifact?.domains?.production?.url || '',
-            'universal.developmentDomain': artifact?.domains?.development?.url || '',
+            'universal.site_id': asset?.id || '',
+            'universal.site_name': asset?.name || '',
+            'universal.productionDomain': asset?.domains?.production?.url || '',
+            'universal.developmentDomain': asset?.domains?.development?.url || '',
             'universal.account_id': accountId || '',
             'universal.account_githubToken': githubAccessToken,
             'universal.proxy_datas': JSON.stringify(productionProxies),
@@ -333,9 +333,9 @@ echo ""
             finalStatus = result.code === 0 ? 'completed' : 'failed';
             if (result.code !== 0) {
                 finalOutput += `\n\n--- COMMAND FAILED ---\nExited with code: ${result.code}`;
-            } else if (capturedPort && site?.id) {
+            } else if (capturedPort && asset?.id) {
                 // Update allocation with captured port
-                await updateAllocationPort(site.id, serverId, capturedPort);
+                await updateAllocationPort(asset.id, serverId, capturedPort);
                 finalOutput += `\n\n--- PORT UPDATED ---\nAllocated port ${capturedPort} saved to site configuration.`;
             }
 

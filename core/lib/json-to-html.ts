@@ -1,4 +1,4 @@
-import type { ArtifactTheme, GeneratedTheme } from '@/schemas/artifact';
+import type { AssetTheme, GeneratedTheme } from '@/schemas/asset';
 import type { CanvasElementData } from '@/schemas/canvas';
 
 function propertiesToStyleString(properties: Record<string, any>): string {
@@ -95,7 +95,7 @@ function renderElementToHtml(element: CanvasElementData): string {
     }
 }
 
-const generateThemeStyles = (theme: GeneratedTheme, mode: ArtifactTheme['mode']) => {
+const generateThemeStyles = (theme: GeneratedTheme, mode: AssetTheme['mode']) => {
     const selectedTheme = mode === 'dark' ? theme.dark : mode === 'black' ? theme.black : theme.light;
     let styles = ':root {\n';
     for (const [key, value] of Object.entries(selectedTheme)) {
@@ -119,7 +119,7 @@ const generateThemeStyles = (theme: GeneratedTheme, mode: ArtifactTheme['mode'])
 };
 
 
-export function convertJsonToHtml(elements: CanvasElementData[], theme?: ArtifactTheme): string {
+export function convertJsonToHtml(elements: CanvasElementData[], theme?: AssetTheme): string {
   const bodyContent = elements.map(renderElementToHtml).join('');
   
   const themeStyles = theme?.generated ? generateThemeStyles(theme.generated, theme.mode) : `

@@ -26,7 +26,7 @@ import { AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
-  artifactId: z.string().min(1, 'Artifact ID is required'),
+  assetId: z.string().min(1, 'Asset ID is required'),
   serverId: z.string().min(1, 'Server ID is required'),
   port: z.coerce.number().min(1024, 'Port must be 1024 or greater.'),
   allocatedStorage: z.coerce.number().min(1, 'Storage must be at least 1MB.'),
@@ -46,7 +46,7 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      artifactId: '',
+      assetId: '',
       serverId: '',
       port: 1024,
       allocatedStorage: 512,
@@ -122,7 +122,7 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
           </CardHeader>
           <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="artifactId" render={({ field }) => ( <FormItem><FormLabel>Artifact ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={form.control} name="assetId" render={({ field }) => ( <FormItem><FormLabel>Asset ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
                   <FormField control={form.control} name="serverId" render={({ field }) => ( <FormItem><FormLabel>Server ID</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">

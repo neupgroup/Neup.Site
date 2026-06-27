@@ -8,7 +8,7 @@ import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { logErrorToDatabase } from '@/core/lib/logging';
-import { getArtifact } from './editor/artifact';
+import { getAsset } from './editor/asset';
 
 export interface PublicFile {
   name: string;
@@ -18,10 +18,10 @@ export interface PublicFile {
   modified?: Date;
 }
 
-async function getRemoteServerConnection(artifactId: string) {
+async function getRemoteServerConnection(assetId: string) {
     const serverResult = await getSiteServers();
     if (!serverResult.success || !serverResult.servers || serverResult.servers.length === 0) {
-        throw new Error('No server is allocated to this artifact.');
+        throw new Error('No server is allocated to this asset.');
     }
     const serverId = serverResult.servers[0].id;
     const { server, error } = await getPrivateServerDetails(serverId);
@@ -29,14 +29,14 @@ async function getRemoteServerConnection(artifactId: string) {
         throw new Error(`Failed to get server credentials: ${error}`);
     }
 
-    const { artifact } = await getArtifact();
-    if (!artifact) {
-        throw new Error('Could not resolve artifact context.');
+    const { asset } = await getAsset();
+    if (!asset) {
+        throw new Error('Could not resolve asset context.');
     }
 
     const appPath =
-        server.appPath?.replace(/\{\{\s*universal\.(?:site_id|artifact_id)\s*\}\}/g, artifact.id) ||
-        `/var/www/${artifact.id}`;
+        server.appPath?.replace(/\{\{\s*universal\.(?:site_id|asset_id)\s*\}\}/g, asset.id) ||
+        `/var/www/${asset.id}`;
     const publicPath = `${appPath}/public`;
 
     const ssh = new NodeSSH();
@@ -55,10 +55,10 @@ async function getRemoteServerConnection(artifactId: string) {
  */
 export async function getPublicFiles(directoryPath: string = '/'): Promise<{ success: boolean; files?: PublicFile[]; error?: string }> {
     let ssh: NodeSSH | undefined;
-    const artifactId = 'current-site'; // Placeholder, as getRemoteServerConnection will use the cookie
+    const assetId = 'current-site'; // Placeholder, as getRemoteServerConnection will use the cookie
 
     try {
-        const connection = await getRemoteServerConnection(artifactId);
+        const connection = await getRemoteServerConnection(assetId);
         ssh = connection.ssh;
         const remoteBaseDir = connection.publicPath;
         
@@ -110,10 +110,10 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
  */
 export async function deletePublicFile(relativePath: string): Promise<{ success: boolean; error?: string }> {
      let ssh: NodeSSH | undefined;
-     const artifactId = 'current-site'; // Placeholder
+     const assetId = 'current-site'; // Placeholder
     
     try {
-        const { ssh: sshConnection, publicPath: remoteBaseDir } = await getRemoteServerConnection(artifactId);
+        const { ssh: sshConnection, publicPath: remoteBaseDir } = await getRemoteServerConnection(assetId);
         ssh = sshConnection;
 
         const remoteFullPath = path.posix.join(remoteBaseDir, relativePath);
