@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import type { AssetTheme } from '@/schemas/asset';
-import { generateThemeFromColor } from '@/core/lib/color-utils';
+import { generateThemeFromColor } from '@/core/helpers/color';
 
 /*
 ::neup.documentation::theme-service

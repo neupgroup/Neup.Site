@@ -14,8 +14,8 @@ import {
   Quote,
   Image as ImageIcon,
 } from 'lucide-react'
-import { cn } from '@/core/lib/utils'
-import { Button } from './button'
+import { cn } from '@/core/utils'
+import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
 import { Input } from './input'
 

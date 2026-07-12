@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { Team } from '@/schemas/team';

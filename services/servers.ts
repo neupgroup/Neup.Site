@@ -5,7 +5,7 @@
 import { Server, ServerAllocation } from '@/schemas/server';
 import { cookies } from 'next/headers';
 import { logErrorToDatabase } from '@/core/lib/logging';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 
 /**
  * Creates a new server.

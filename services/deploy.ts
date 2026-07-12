@@ -2,7 +2,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { createServerLog } from '@/services/server-logs';
 
 export async function deployCodebaseFromStorage(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {

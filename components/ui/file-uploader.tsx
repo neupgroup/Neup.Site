@@ -5,8 +5,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useToast } from '@/core/hooks/use-toast';
 import { UploadCloud, Loader2, CheckCircle, AlertCircle, File as FileIcon } from 'lucide-react';
-import { cn } from '@/core/lib/utils';
-import { Button } from './button';
+import { cn } from '@/core/utils';
+import { Button } from '@/components/ui/button';
 import { useProfile } from '@/core/context/ProfileContext';
 import Image from 'next/image';
 

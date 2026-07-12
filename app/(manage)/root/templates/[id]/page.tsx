@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
 export default function ViewTemplatePage({ params }: { params: Promise<{ id: string }> }) {

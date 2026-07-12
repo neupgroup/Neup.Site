@@ -11,7 +11,7 @@ import { getServerLogs } from '@/services/server-logs';
 import type { ServerLog } from '@/schemas/server';
 import { formatDistanceToNow } from 'date-fns';
 import { logErrorToDatabase } from '@/core/lib/logging';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const ServerLogs = ({ serverId }: { serverId: string }) => {

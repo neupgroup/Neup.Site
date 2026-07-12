@@ -1,6 +1,6 @@
 'use server';
 
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { cookies } from 'next/headers';
 import { normalizeUrl } from '@/core/lib/url-utils';
 

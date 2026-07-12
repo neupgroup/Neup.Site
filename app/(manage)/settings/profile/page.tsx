@@ -18,7 +18,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Save, Loader2, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
 import { useProfile } from '@/core/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 import { useSearchParams } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';

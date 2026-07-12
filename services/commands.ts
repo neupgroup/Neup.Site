@@ -2,7 +2,7 @@
 
 'use server';
 
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/schemas/command';
 import { logErrorToDatabase } from '@/core/lib/logging';

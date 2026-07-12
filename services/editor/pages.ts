@@ -5,7 +5,7 @@ import { logErrorToDatabase } from '@/core/lib/logging';
 import { convertJsonToJsx } from '@/core/lib/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/schemas/asset';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { getPathsForPage } from '@/services/paths';
 import { markStructureAsPending } from '@/services/structure';
 

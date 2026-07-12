@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import type { Structure, PathStructure, Deployment, Asset } from '@/schemas/asset';
 import type { EnvironmentVariable } from '@/schemas/environment';
 import { logErrorToDatabase } from '@/core/lib/logging';

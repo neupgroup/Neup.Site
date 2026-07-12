@@ -28,7 +28,7 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 
 export default function AllocationDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;

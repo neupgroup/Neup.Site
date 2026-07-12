@@ -3,10 +3,10 @@
 
 import { cookies } from 'next/headers';
 import { Asset, AssetTheme, AssetIcons } from '@/schemas/asset';
-import { generateThemeFromColor } from '@/core/lib/color-utils';
+import { generateThemeFromColor } from '@/core/helpers/color';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { syncAssetProfileSubjects } from '@/services/profiles';
 
 /*

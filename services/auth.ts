@@ -2,7 +2,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { createDefaultAssetTheme } from '@/services/themes';
 
 export async function setAssetIdCookie(assetId: string) {

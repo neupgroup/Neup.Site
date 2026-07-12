@@ -1,7 +1,7 @@
 'use server';
 
 import crypto from 'crypto';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from './accounts';
 import { normalizeUrl } from '@/core/lib/url-utils';
 import { createDefaultAssetTheme } from '@/services/themes';

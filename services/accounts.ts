@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import { logErrorToDatabase } from '@/core/lib/logging';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';

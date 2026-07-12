@@ -2,7 +2,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import type { Datalist } from '@/schemas/datalist';
 
 /**

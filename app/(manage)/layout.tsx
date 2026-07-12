@@ -4,7 +4,7 @@
 import { ProfileProvider, useProfile } from '@/core/context/ProfileContext';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Dashboard } from '@/components/dashboard';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 import type { Asset } from '@/schemas/asset';
 import { useEffect } from 'react';
 import { initializeUserAccount } from '@/services/auth/initialize';

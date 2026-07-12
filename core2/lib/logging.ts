@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 import type { LogErrorParams } from '@/schemas/logging';
 
 export async function logErrorToDatabase(params: LogErrorParams): Promise<{ success: boolean, error?: string }> {

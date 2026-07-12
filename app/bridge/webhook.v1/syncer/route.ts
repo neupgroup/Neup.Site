@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 
 const SYNCER_KEY = process.env.SYNCER_KEY;
 

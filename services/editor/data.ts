@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers';
 import { PageDataSourceBinding } from '@/schemas/data';
-import { db } from '@/core/lib/db';
+import { prisma as db } from '@/core/database/prisma';
 
 export async function setPageDataSource(pageId: string, sourceId: string, methodName: string): Promise<{ success: boolean; id?: string; error?: string }> {
   const cookieStore = await cookies();
