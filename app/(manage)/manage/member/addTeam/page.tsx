@@ -30,7 +30,6 @@ Dedicated page for creating a team from `/manage/member`.
 const formSchema = z.object({
   name: z.string().min(1, 'Team name is required'),
   description: z.string().optional(),
-  order: z.string().regex(/^\d*$/, 'Order must be a whole number').optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -44,16 +43,13 @@ export default function AddTeamPage() {
     defaultValues: {
       name: '',
       description: '',
-      order: '',
     },
   });
 
   const onSubmit = async (values: FormValues) => {
-    const orderValue = values.order?.trim();
     const result = await createTeam({
       name: values.name,
       description: values.description?.trim() || undefined,
-      order: orderValue ? Number(orderValue) : undefined,
     });
 
     if (!result.success) {
@@ -85,7 +81,7 @@ export default function AddTeamPage() {
             <CardContent className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Team Name</FormLabel>
+                  <FormLabel>Team Title</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -94,13 +90,6 @@ export default function AddTeamPage() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl><Textarea {...field} value={field.value ?? ''} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="order" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Order</FormLabel>
-                  <FormControl><Input {...field} inputMode="numeric" placeholder="Optional display order" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

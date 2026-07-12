@@ -3,6 +3,7 @@
 
 import { db } from '@/core/lib/db';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import type { Member } from '@/schemas/member';
 import { logErrorToDatabase } from '@/core/lib/logging';
 
@@ -20,14 +21,37 @@ that route while still keeping team detail pages current.
 ::end
 */
 
+async function getMemberAssetId(): Promise<string> {
+  const assetId = (await cookies()).get('assetId')?.value;
+  if (!assetId) {
+    throw new Error('Asset ID not found.');
+  }
+  return assetId;
+}
+
 export async function createMember(data: Omit<Member, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
+    const assetId = await getMemberAssetId();
+    if (data.teamId) {
+      const team = await db.team.findFirst({
+        where: {
+          id: data.teamId,
+          assetId,
+        },
+        select: { id: true },
+      });
+      if (!team) {
+        return { success: false, error: 'Team not found for this asset.' };
+      }
+    }
     const lastMember = await db.member.findFirst({
+      where: { assetId },
       orderBy: [{ order: 'desc' }, { id: 'desc' }],
       select: { order: true },
     });
     const record = await db.member.create({
       data: {
+        assetId,
         name: data.name,
         email: data.email,
         role: data.role,
@@ -49,10 +73,13 @@ export async function createMember(data: Omit<Member, 'id'>): Promise<{ success:
 
 export async function getMembers(): Promise<{ success: boolean; members?: Member[]; error?: string }> {
   try {
+    const assetId = await getMemberAssetId();
     const records = await db.member.findMany({
+      where: { assetId },
       orderBy: [{ order: 'asc' }, { name: 'asc' }, { id: 'asc' }],
       select: {
         id: true,
+        assetId: true,
         name: true,
         email: true,
         role: true,
@@ -65,6 +92,7 @@ export async function getMembers(): Promise<{ success: boolean; members?: Member
 
     const members = records.map((record) => ({
       id: record.id,
+      assetId: record.assetId,
       name: record.name,
       email: record.email,
       role: record.role,
@@ -82,10 +110,15 @@ export async function getMembers(): Promise<{ success: boolean; members?: Member
 
 export async function getMember(id: string): Promise<{ success: boolean; member?: Member; error?: string }> {
   try {
-    const record = await db.member.findUnique({
-      where: { id },
+    const assetId = await getMemberAssetId();
+    const record = await db.member.findFirst({
+      where: {
+        id,
+        assetId,
+      },
       select: {
         id: true,
+        assetId: true,
         name: true,
         email: true,
         role: true,
@@ -101,6 +134,7 @@ export async function getMember(id: string): Promise<{ success: boolean; member?
 
     const member: Member = {
       id: record.id,
+      assetId: record.assetId,
       name: record.name,
       email: record.email,
       role: record.role,
@@ -118,9 +152,26 @@ export async function getMember(id: string): Promise<{ success: boolean; member?
 
 export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    await db.member.update({
-      where: { id },
+    const assetId = await getMemberAssetId();
+    if (data.teamId) {
+      const team = await db.team.findFirst({
+        where: {
+          id: data.teamId,
+          assetId,
+        },
+        select: { id: true },
+      });
+      if (!team) {
+        return { success: false, error: 'Team not found for this asset.' };
+      }
+    }
+    const result = await db.member.updateMany({
+      where: {
+        id,
+        assetId,
+      },
       data: {
+        assetId,
         ...(typeof data.name === 'string' ? { name: data.name } : {}),
         ...(typeof data.email === 'string' ? { email: data.email } : {}),
         ...(typeof data.role === 'string' ? { role: data.role } : {}),
@@ -130,6 +181,9 @@ export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>
         ...(data.permissions !== undefined ? { permissions: (data.permissions as any) ?? null } : {}),
       },
     });
+    if (result.count === 0) {
+      return { success: false, error: 'Member not found.' };
+    }
     revalidatePath('/manage/member');
     revalidatePath('/manage/team');
     return { success: true };
@@ -141,7 +195,16 @@ export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>
 
 export async function deleteMember(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    await db.member.delete({ where: { id } });
+    const assetId = await getMemberAssetId();
+    const result = await db.member.deleteMany({
+      where: {
+        id,
+        assetId,
+      },
+    });
+    if (result.count === 0) {
+      return { success: false, error: 'Member not found.' };
+    }
     revalidatePath('/manage/member');
     revalidatePath('/manage/team');
     return { success: true };
@@ -153,13 +216,29 @@ export async function deleteMember(id: string): Promise<{ success: boolean; erro
 
 export async function saveMemberOrder(memberIds: string[]): Promise<{ success: boolean; error?: string }> {
   try {
+    const assetId = await getMemberAssetId();
     const uniqueMemberIds = Array.from(new Set(memberIds.filter(Boolean)));
+
+    const existingMembers = await db.member.findMany({
+      where: {
+        id: { in: uniqueMemberIds },
+        assetId,
+      },
+      select: { id: true },
+    });
+
+    if (existingMembers.length !== uniqueMemberIds.length) {
+      return { success: false, error: 'One or more members could not be found for this asset.' };
+    }
 
     await db.$transaction(
       uniqueMemberIds.map((memberId, index) =>
-        db.member.update({
-          where: { id: memberId },
-          data: { order: index + 1 },
+        db.member.updateMany({
+          where: {
+            id: memberId,
+            assetId,
+          },
+          data: { assetId, order: index + 1 },
         }),
       ),
     );

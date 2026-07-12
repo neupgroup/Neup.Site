@@ -3,6 +3,7 @@
 
 import { db } from '@/core/lib/db';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import type { Team } from '@/schemas/team';
 import { logErrorToDatabase } from '@/core/lib/logging';
 
@@ -29,10 +30,20 @@ interface TeamBoardOrderInput {
   groups: TeamBoardGroupOrder[];
 }
 
+async function getTeamAssetId(): Promise<string> {
+  const assetId = (await cookies()).get('assetId')?.value;
+  if (!assetId) {
+    throw new Error('Asset ID not found.');
+  }
+  return assetId;
+}
+
 export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
+    const assetId = await getTeamAssetId();
     const record = await db.team.create({
       data: {
+        assetId,
         name: data.name,
         description: data.description ?? null,
         order: data.order ?? null,
@@ -50,13 +61,16 @@ export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boo
 
 export async function getTeams(): Promise<{ success: boolean; teams?: Team[]; error?: string }> {
   try {
+    const assetId = await getTeamAssetId();
     const records = await db.team.findMany({
+      where: { assetId },
       orderBy: [{ order: 'asc' }, { id: 'asc' }],
-      select: { id: true, name: true, description: true, order: true },
+      select: { id: true, assetId: true, name: true, description: true, order: true },
     });
 
     const teams = records.map((record) => ({
       id: record.id,
+      assetId: record.assetId,
       name: record.name,
       description: record.description ?? undefined,
       order: record.order ?? undefined,
@@ -70,9 +84,13 @@ export async function getTeams(): Promise<{ success: boolean; teams?: Team[]; er
 
 export async function getTeam(id: string): Promise<{ success: boolean; team?: Team; error?: string }> {
     try {
-        const record = await db.team.findUnique({
-          where: { id },
-          select: { id: true, name: true, description: true, order: true },
+        const assetId = await getTeamAssetId();
+        const record = await db.team.findFirst({
+          where: {
+            id,
+            assetId,
+          },
+          select: { id: true, assetId: true, name: true, description: true, order: true },
         });
         if (!record) {
             return { success: false, error: 'Team not found.' };
@@ -80,6 +98,7 @@ export async function getTeam(id: string): Promise<{ success: boolean; team?: Te
 
         const team: Team = {
             id: record.id,
+            assetId: record.assetId,
             name: record.name,
             description: record.description ?? undefined,
             order: record.order ?? undefined,
@@ -93,14 +112,22 @@ export async function getTeam(id: string): Promise<{ success: boolean; team?: Te
 
 export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    await db.team.update({
-      where: { id },
+    const assetId = await getTeamAssetId();
+    const result = await db.team.updateMany({
+      where: {
+        id,
+        assetId,
+      },
       data: {
+        assetId,
         ...(typeof data.name === 'string' ? { name: data.name } : {}),
         ...(data.description !== undefined ? { description: data.description ?? null } : {}),
         ...(data.order !== undefined ? { order: data.order ?? null } : {}),
       },
     });
+    if (result.count === 0) {
+      return { success: false, error: 'Team not found.' };
+    }
     revalidatePath('/manage/member');
     revalidatePath('/manage/team');
     revalidatePath(`/manage/team/${id}`);
@@ -113,7 +140,16 @@ export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): P
 
 export async function deleteTeam(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    await db.team.delete({ where: { id } });
+    const assetId = await getTeamAssetId();
+    const result = await db.team.deleteMany({
+      where: {
+        id,
+        assetId,
+      },
+    });
+    if (result.count === 0) {
+      return { success: false, error: 'Team not found.' };
+    }
     revalidatePath('/manage/member');
     revalidatePath('/manage/team');
     return { success: true };
@@ -125,6 +161,7 @@ export async function deleteTeam(id: string): Promise<{ success: boolean; error?
 
 export async function saveTeamBoardOrder(input: TeamBoardOrderInput): Promise<{ success: boolean; error?: string }> {
   try {
+    const assetId = await getTeamAssetId();
     const teamIds = Array.from(new Set(input.teamIds.filter(Boolean)));
     const memberAssignments = input.groups.flatMap((group) =>
       group.memberIds.map((memberId) => ({
@@ -147,17 +184,45 @@ export async function saveTeamBoardOrder(input: TeamBoardOrderInput): Promise<{ 
       return { success: false, error: 'A member can only be placed once on the team board.' };
     }
 
+    const [existingTeams, existingMembers] = await Promise.all([
+      db.team.findMany({
+        where: {
+          id: { in: teamIds },
+          assetId,
+        },
+        select: { id: true },
+      }),
+      db.member.findMany({
+        where: {
+          id: { in: memberAssignments.map((assignment) => assignment.memberId) },
+          assetId,
+        },
+        select: { id: true },
+      }),
+    ]);
+
+    if (existingTeams.length !== teamIds.length || existingMembers.length !== memberAssignments.length) {
+      return { success: false, error: 'One or more teams or members could not be found for this asset.' };
+    }
+
     await db.$transaction([
       ...teamIds.map((teamId, index) =>
-        db.team.update({
-          where: { id: teamId },
-          data: { order: index + 1 },
+        db.team.updateMany({
+          where: {
+            id: teamId,
+            assetId,
+          },
+          data: { assetId, order: index + 1 },
         }),
       ),
       ...memberAssignments.map((assignment, index) =>
-        db.member.update({
-          where: { id: assignment.memberId },
+        db.member.updateMany({
+          where: {
+            id: assignment.memberId,
+            assetId,
+          },
           data: {
+            assetId,
             order: index + 1,
             teamId: assignment.teamId,
           },

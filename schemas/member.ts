@@ -12,6 +12,7 @@ Type contract for a member record and its assigned team identifier.
 
 export interface Member {
   id: string;
+  assetId?: string;
   name: string;
   email: string;
   role: string;

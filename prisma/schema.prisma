@@ -65,6 +65,8 @@ model Asset {
   deployments    Deployment[]
   appBaseBackups AppBaseBackup[]
   assetModules  AssetModule[]
+  teams          Team[]
+  members        Member[]
 
   @@index([ownerAccountId])
   @@map("assets")
@@ -387,16 +389,20 @@ model ApiToken {
 
 model Team {
   id          String   @id @default(cuid())
+  assetId     String   @map("asset_id")
   name        String
   description String?
   order       Int?
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
   members     Member[]
 
+  @@index([assetId, order])
   @@map("teams")
 }
 
 model Member {
   id          String   @id @default(cuid())
+  assetId     String   @map("asset_id")
   name        String
   email       String
   role        String
@@ -404,8 +410,10 @@ model Member {
   order       Int?
   teamId      String?  @map("team_id")
   permissions Json?
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
   team        Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
 
+  @@index([assetId, teamId, order])
   @@index([teamId, order])
   @@map("members")
 }
