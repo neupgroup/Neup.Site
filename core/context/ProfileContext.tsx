@@ -2,22 +2,37 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { getAsset } from '@/services/editor/asset';
-import type { Asset } from '@/schemas/asset';
-import { validateSession, saveSessionData, getCookie } from '@/core/lib/session-manager';
+import { validateSession, saveSessionData, getCookie } from '@/core/helpers/session-manager';
 
 const SESSION_STORAGE_KEY_ARTIFACT = 'assetProfileData';
 
+export type CoreAssetProfile = {
+  id?: string;
+  name?: string;
+  theme?: any;
+  domains?: any;
+  hideSitename?: boolean;
+  description?: string;
+  socialProfiles?: any[];
+  contactEmail?: any[];
+  contactPhone?: any[];
+  icons?: any;
+  logoUrl?: string;
+  [key: string]: any;
+};
+
+type LoadAssetProfile = () => Promise<{ success: boolean; asset?: CoreAssetProfile | null; error?: string }>;
+
 interface ProfileContextType {
-  asset: Asset | null;
-  setAsset: Dispatch<SetStateAction<Asset | null>>;
+  asset: CoreAssetProfile | null;
+  setAsset: Dispatch<SetStateAction<CoreAssetProfile | null>>;
   loading: boolean;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
-export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [asset, setAsset] = useState<Asset | null>(null);
+export function ProfileProvider({ children, loadAsset }: { children: ReactNode; loadAsset?: LoadAssetProfile }) {
+  const [asset, setAsset] = useState<CoreAssetProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +52,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
           // Automatically fetch fresh data instead of showing banner
           console.log('Fetching fresh data due to invalid session...');
-          const { success, asset: dbAsset } = await getAsset();
+          const { success, asset: dbAsset } = loadAsset
+            ? await loadAsset()
+            : { success: true, asset: undefined };
           if (success && dbAsset) {
             setAsset(dbAsset);
 
@@ -67,7 +84,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           setLoading(false);
         } else {
           // Fetch from server
-          const { success, asset: dbAsset } = await getAsset();
+          const { success, asset: dbAsset } = loadAsset
+            ? await loadAsset()
+            : { success: true, asset: undefined };
           if (success && dbAsset) {
             setAsset(dbAsset);
 
@@ -91,7 +110,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     }
 
     initializeProfile();
-  }, []);
+  }, [loadAsset]);
 
   // Update sessionStorage when asset changes
   useEffect(() => {

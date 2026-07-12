@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { generatePageMetadata } from '@/core/lib/metadata';
+import { generatePageMetadata } from '@/core/helpers/metadata';
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
 import { MemberCards } from './member-cards';

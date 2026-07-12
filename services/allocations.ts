@@ -4,7 +4,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import type { Allocation } from '@/schemas/allocation';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 
 export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedOn' | 'status'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {

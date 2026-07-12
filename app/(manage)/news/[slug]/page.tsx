@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
 import { use } from 'react';
-import { generatePageMetadata } from '@/core/lib/metadata';
+import { generatePageMetadata } from '@/core/helpers/metadata';
 
 export async function generateMetadata({ params }: { params: { slug: string }}) {
     const { article } = await getNewsArticleById(params.slug);

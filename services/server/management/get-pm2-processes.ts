@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 
 export interface ProcessManagerInfo {
   name: string;

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { getServer } from '@/services/servers';
 import type { Server } from '@/schemas/server';
 
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';

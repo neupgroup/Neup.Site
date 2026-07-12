@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, Package, Loader2, ArrowRight, CheckCircle, Plus } from 'lucide-react';
-import { getCookie } from '@/core/lib/session-manager';
+import { getCookie } from '@/core/helpers/session-manager';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
 function AssetList() {

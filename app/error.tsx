@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';

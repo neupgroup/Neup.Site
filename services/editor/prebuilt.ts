@@ -5,7 +5,7 @@ import { getPage } from '@/services/editor/pages';
 import { getTemplates } from '@/services/editor/templates';
 import { getSections } from '@/services/editor/sections';
 import type { CanvasElementData } from '@/schemas/canvas';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 
 export interface LibraryItem {
     id: string;

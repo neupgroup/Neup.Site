@@ -3,7 +3,7 @@
 import crypto from 'crypto';
 import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from './accounts';
-import { normalizeUrl } from '@/core/lib/url-utils';
+import { normalizeUrl } from '@/core/helpers/url';
 import { createDefaultAssetTheme } from '@/services/themes';
 
 export interface AssetSummary {

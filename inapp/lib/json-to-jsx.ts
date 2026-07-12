@@ -1,5 +1,5 @@
 
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 import type { CanvasElementData } from '@/schemas/canvas';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {

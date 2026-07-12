@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 import type { CodeFile } from '@/schemas/codebase';
 
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'assetId'>) {

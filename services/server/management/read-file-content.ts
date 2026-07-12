@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 
 export async function readFileContent(serverId: string, filePath: string): Promise<{ success: boolean; content?: string | null; error?: string }> {
   const ssh = new NodeSSH();

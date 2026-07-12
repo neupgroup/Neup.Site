@@ -5,7 +5,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { Member } from '@/schemas/member';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 
 /*
 ::neup.documentation::member-service

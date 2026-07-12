@@ -4,7 +4,7 @@
 
 import { Server, ServerAllocation } from '@/schemas/server';
 import { cookies } from 'next/headers';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 import { prisma as db } from '@/core/database/prisma';
 
 /**

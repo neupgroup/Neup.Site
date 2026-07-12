@@ -72,7 +72,7 @@ import { ChevronRight } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getCookie } from '@/core/lib/session-manager';
+import { getCookie } from '@/core/helpers/session-manager';
 
 function NavLink({ href, children, currentPath, onClick }: { href: string; children: React.ReactNode; currentPath: string, onClick?: () => void }) {
   const isActive = href === '/' ? currentPath === href : currentPath.startsWith(href);

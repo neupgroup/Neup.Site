@@ -14,7 +14,7 @@ import { AlertCircle, Save, Loader2, Plus, Trash2, ArrowLeft } from 'lucide-reac
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 
 export default function PrebuiltEditorPage() {
     const searchParams = useSearchParams();

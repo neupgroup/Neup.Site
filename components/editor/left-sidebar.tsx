@@ -11,7 +11,7 @@ import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box,
 import type { CanvasElementData } from '@/schemas/canvas';
 import type { Template } from '@/schemas/template';
 import { cn } from '@/core/lib/utils';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 import Link from 'next/link';
 import { getTemplates } from '@/services/editor/templates';
 import { Skeleton } from '@/components/ui/skeleton';

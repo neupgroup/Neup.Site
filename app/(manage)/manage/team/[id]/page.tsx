@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import Link from 'next/link';
-import { generatePageMetadata } from '@/core/lib/metadata';
+import { generatePageMetadata } from '@/core/helpers/metadata';
 import { notFound } from 'next/navigation';
 
 /*

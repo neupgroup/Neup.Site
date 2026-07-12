@@ -2,7 +2,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/core/lib/logging';
+import { logErrorToDatabase } from '@/core/helpers/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import { ApiToken } from '@/schemas/token';

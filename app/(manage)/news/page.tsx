@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, Plus, Newspaper } from 'lucide-react';
-import { generatePageMetadata } from '@/core/lib/metadata';
+import { generatePageMetadata } from '@/core/helpers/metadata';
 
 export async function generateMetadata() {
     return await generatePageMetadata('News Articles');
