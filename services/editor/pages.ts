@@ -2,7 +2,7 @@
 'use server';
 
 import { logErrorToDatabase } from '@/core/helpers/logger';
-import { convertJsonToJsx } from '@/inapp/lib/json-to-jsx';
+import { convertJsonToJsx } from '@/inapp/helpers/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/schemas/asset';
 import { prisma as db } from '@/core/database/prisma';

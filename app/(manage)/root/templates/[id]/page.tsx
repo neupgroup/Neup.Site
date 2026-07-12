@@ -4,7 +4,8 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { getTemplate, deleteTemplate, type Template } from '@/services/editor/templates';
+import { getTemplate, deleteTemplate } from '@/services/editor/templates';
+import { Template } from '@/schemas/template';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

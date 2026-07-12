@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, DragEvent, useCallback, useEffect } from 'react';
-import type { CanvasElementData, Template } from '@/core/lib/schemas';
+import type { CanvasElementData } from '@/schemas/canvas';
 
 interface DragAndDropProps {
   elements: CanvasElementData[];

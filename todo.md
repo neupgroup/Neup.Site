@@ -15,3 +15,5 @@
 - [ ] Add Neup documentation for `schemas/logging.ts` or remove it after confirming `LogErrorParams` is fully owned by `core/helpers/logger.ts`.
 - [ ] Add Neup documentation blocks for profile URL normalization and profile sync surfaces reviewed during the `normalizeUrl` move, including `services/profiles.ts` and `app/(manage)/settings/profile/page.tsx`.
 - [ ] Add Neup documentation blocks for metadata call sites reviewed during the metadata helper move, including `app/(manage)/page.tsx` and `core2/lib/metadata.ts`.
+- [ ] Add Neup documentation coverage for `tsconfig.json` path aliases and compiler options.
+- [ ] Add a Neup documentation block for `templates/footer.ts`.

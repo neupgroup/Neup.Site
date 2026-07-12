@@ -2,7 +2,8 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAllocation, deleteAllocation, type Allocation } from '@/services/allocations';
+import { getAllocation, deleteAllocation } from '@/services/allocations';
+import { Allocation } from '@/schemas/allocation';
 import {
   Card,
   CardContent,

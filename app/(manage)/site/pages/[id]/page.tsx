@@ -3,9 +3,9 @@
 
 import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPage, savePage, deletePage, type Page } from '@/services/editor/pages';
+import { getPage, savePage, deletePage } from '@/services/editor/pages';
 import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/services/paths';
-import { convertJsonToHtml } from '@/core/lib/json-to-html';
+import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
