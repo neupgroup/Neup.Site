@@ -3,14 +3,15 @@
 - [ ] Add Neup documentation coverage for the package scripts and dependency contract in `package.json`.
 - [ ] Review and upgrade Neup documentation coverage for remaining manage team routes after the `/manage/member` split.
 - [ ] Resolve current `npm run typecheck` failures from the latest type-only check in generated Next validators, appbase/codebase/templates/tokens/datalists/site pages, editor elements, schemas/canvas, and shared services.
-- [ ] Add Neup documentation blocks for the shared app shell files reviewed during the `/manage/team` fix, including `app/layout.tsx`, `app/not-found.tsx`, `core/context/ProfileContext.tsx`, `components/ui/sidebar.tsx`, `components/ui/toaster.tsx`, `components/ui/avatar.tsx`, and `components/ui/table.tsx`.
+- [ ] Add Neup documentation blocks for the shared app shell files reviewed during the `/manage/team` fix, including `app/layout.tsx`, `app/not-found.tsx`, `inapp/context/profilecontext.tsx`, `components/ui/sidebar.tsx`, `components/ui/toaster.tsx`, `components/ui/avatar.tsx`, and `components/ui/table.tsx`.
 - [ ] Add Neup documentation blocks for font and app-rendering surfaces reviewed during the Outfit font update, including `app/globals.css`, `tailwind.config.ts`, `app/(public)/[...slug]/page.tsx`, and `core/lib/json-to-html.ts`.
 - [ ] Add Neup documentation blocks for existing asset creation and color helper files reviewed during the default theme update, including `services/assets.ts`, `services/auth.ts`, and `core/helpers/color.ts`.
+- [ ] Add or upgrade Neup documentation blocks for legacy in-app session helper surfaces reviewed during the helper move, including `inapp/lib/auth-helpers.ts` and `inapp/lib/session-manager.ts`.
 - [ ] Investigate and fix the remaining baseline `npm run typecheck` errors across app routes, services, and schema typings after the Prisma client/runtime issue is resolved.
 - [ ] Add a Neup documentation block for the editor left sidebar in `components/editor/left-sidebar.tsx`.
 - [ ] Fix stale `CanvasElementData` imports that reference missing `@/core/lib/schemas` instead of the live canvas schema export.
 - [ ] Add Neup documentation blocks for `templates/header.ts` and the shared `schemas/canvas.ts` canvas element contract.
-- [ ] Add or upgrade Neup documentation blocks for the core auth/session surfaces reviewed during the logger boundary fix, including `core/auth/cookies.ts`, `core/auth/storage.ts`, `core/context/ProfileContext.tsx`, `core/hooks/use-log-activity.ts`, `core/hooks/use-toast.ts`, `core/providers/session.tsx`, and `app/(manage)/layout.tsx`.
+- [ ] Add or upgrade Neup documentation blocks for the core auth/session surfaces reviewed during the logger boundary fix, including `core/auth/cookies.ts`, `core/auth/storage.ts`, `inapp/context/profilecontext.tsx`, `core/hooks/use-log-activity.ts`, `core/hooks/use-toast.ts`, `core/providers/session.tsx`, and `app/(manage)/layout.tsx`.
 - [ ] Add Neup documentation blocks for the core navigation helpers reviewed during the core boundary fix, including `core/helpers/link.ts` and `core/helpers/navigation.ts`.
 - [ ] Add Neup documentation for `schemas/logging.ts` or remove it after confirming `LogErrorParams` is fully owned by `core/helpers/logger.ts`.
 - [ ] Add Neup documentation blocks for profile URL normalization and profile sync surfaces reviewed during the `normalizeUrl` move, including `services/profiles.ts` and `app/(manage)/settings/profile/page.tsx`.

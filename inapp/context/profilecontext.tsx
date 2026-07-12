@@ -2,7 +2,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { validateSession, saveSessionData, getCookie } from '@/core/helpers/session-manager';
+import { validateSession, saveSessionData, getCookie } from '@/inapp/helpers/session-manager';
 
 const SESSION_STORAGE_KEY_ARTIFACT = 'assetProfileData';
 

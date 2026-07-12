@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/core/hooks/use-toast';
 import { Save, Loader2, Plus, Trash2 } from 'lucide-react';
-import { useProfile } from '@/core/context/ProfileContext';
+import { useProfile } from '@/inapp/context/profilecontext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 

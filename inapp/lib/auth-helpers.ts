@@ -3,7 +3,7 @@
  * Use these functions for logout and session management
  */
 
-import { clearSession, updateLastFetch } from './session-manager';
+import { clearSession, updateLastFetch } from '@/inapp/helpers/session-manager';
 
 /**
  * Logout function

@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/core/hooks/use-toast';
 import { Save, Loader2, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
-import { useProfile } from '@/core/context/ProfileContext';
+import { useProfile } from '@/inapp/context/profilecontext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/core/utils';
 import { useSearchParams } from 'next/navigation';

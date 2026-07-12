@@ -15,7 +15,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { cn } from '@/core/utils';
 import { deletePublicFile, type PublicFile, getPublicFiles } from '@/services/uploads';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { useProfile } from '@/core/context/ProfileContext';
+import { useProfile } from '@/inapp/context/profilecontext';
 
 
 interface UploadingFile {

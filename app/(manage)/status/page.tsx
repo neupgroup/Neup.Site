@@ -16,7 +16,7 @@ import type { ServerAllocation } from '@/schemas/server';
 import type { Asset, Structure } from '@/schemas/asset';
 import { getPm2Processes } from '@/services/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/services/server/management/check-build';
-import { useProfile } from '@/core/context/ProfileContext';
+import { useProfile } from '@/inapp/context/profilecontext';
 import { getStructure, createDeployment } from '@/services/structure';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 

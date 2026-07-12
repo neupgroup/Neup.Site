@@ -12,7 +12,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { saveAsset } from '@/services/editor/asset';
 import type { AssetTheme } from '@/schemas/asset';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useProfile } from '@/core/context/ProfileContext';
+import { useProfile } from '@/inapp/context/profilecontext';
 
 const colorLabels = ['Primary', 'Accent', 'Tertiary'];
 
