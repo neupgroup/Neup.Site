@@ -7,7 +7,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { UploadCloud, Loader2, CheckCircle, AlertCircle, File as FileIcon } from 'lucide-react';
 import { cn } from '@/core/utils';
 import { Button } from '@/components/ui/button';
-import { useProfile } from '@/inapp/context/profilecontext';
+import { useProfile } from '@/inapp/context/ProfileContext';
 import Image from 'next/image';
 
 interface FileUploaderProps {

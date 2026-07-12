@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { GripVertical } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/core/utils';
@@ -59,6 +60,7 @@ interface MemberCardsProps {
 }
 
 export function MemberCards({ initialMembers }: MemberCardsProps) {
+  const router = useRouter();
   const [members, setMembers] = useState(initialMembers);
   const [previewMembers, setPreviewMembers] = useState<Member[] | null>(null);
   const [draggedMemberId, setDraggedMemberId] = useState<string | null>(null);
@@ -67,6 +69,7 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const settleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suppressClickRef = useRef(false);
 
   const renderedMembers = previewMembers ?? members;
 
@@ -93,6 +96,12 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
     }
   };
 
+  const clearClickSuppression = () => {
+    setTimeout(() => {
+      suppressClickRef.current = false;
+    }, 0);
+  };
+
   return (
     <div className="grid gap-4">
       {renderedMembers.map((member) => {
@@ -106,8 +115,26 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
         <article
           key={member.id}
           draggable
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            if (suppressClickRef.current) {
+              return;
+            }
+
+            router.push(`/manage/members/${member.id}`);
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') {
+              return;
+            }
+
+            event.preventDefault();
+            router.push(`/manage/members/${member.id}`);
+          }}
           onDragStart={(event) => {
             clearSettleTimeout();
+            suppressClickRef.current = true;
             setDraggedMemberId(member.id);
             setPreviewMembers(members);
             setSettlingMemberIds(new Set());
@@ -140,6 +167,7 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
             setDropTargetId(null);
             setSettlingMemberIds(movedMemberIds);
             clearSettleTimeout();
+            clearClickSuppression();
             settleTimeoutRef.current = setTimeout(() => {
               setSettlingMemberIds(new Set());
               settleTimeoutRef.current = null;
@@ -150,9 +178,10 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
             setDraggedMemberId(null);
             setDropTargetId(null);
             setPreviewMembers(null);
+            clearClickSuppression();
           }}
           className={cn(
-            'grid cursor-grab gap-4 rounded-lg border bg-background px-5 py-4 transition-[transform,opacity,border-color,background-color] duration-200 active:cursor-grabbing md:grid-cols-[auto_1fr_auto] md:items-center',
+            'grid cursor-pointer gap-4 rounded-lg border bg-background px-5 py-4 transition-[transform,opacity,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing md:grid-cols-[auto_1fr_auto] md:items-center',
             dropTargetId === member.id ? 'border-primary bg-primary/5' : '',
             isDragged ? 'opacity-40' : '',
             isPreviewShifted || isSettling ? 'opacity-45' : '',

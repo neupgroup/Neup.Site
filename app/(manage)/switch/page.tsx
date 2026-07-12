@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
 import { setAssetIdCookie } from '@/services/auth';
 import { useToast } from '@/core/hooks/use-toast';
-import { useProfile } from '@/inapp/context/profilecontext';
+import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

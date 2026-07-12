@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ProfileProvider, useProfile } from '@/inapp/context/profilecontext';
+import { ProfileProvider, useProfile } from '@/inapp/context/ProfileContext';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { Dashboard } from '@/components/dashboard';
 import { useEffect } from 'react';

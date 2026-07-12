@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { FileUploader } from '@/components/ui/file-uploader';
-import { useProfile } from '@/inapp/context/profilecontext';
+import { useProfile } from '@/inapp/context/ProfileContext';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset, AssetIcons } from '@/services/asset/type';
 import { useToast } from '@/core/hooks/use-toast';

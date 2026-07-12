@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useProfile } from '@/core/context/ProfileContext';
+import { useProfile } from '@/inapp/context/ProfileContext';
 
 /**
  * Custom hook to set page title with asset name

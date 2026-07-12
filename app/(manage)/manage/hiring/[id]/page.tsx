@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/core/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { useProfile } from '@/inapp/context/profilecontext';
+import { useProfile } from '@/inapp/context/ProfileContext';
 import { Checkbox } from '@/components/ui/checkbox';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 

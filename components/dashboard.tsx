@@ -63,7 +63,7 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/core/utils';
-import { useProfile } from '@/inapp/context/profilecontext';
+import { useProfile } from '@/inapp/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Asset, AssetTheme } from '@/services/asset/type';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';

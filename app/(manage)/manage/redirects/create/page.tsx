@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 import { useToast } from '@/core/hooks/use-toast';
 import { createRedirect } from '@/services/redirects';
-import { useProfile } from '@/inapp/context/profilecontext';
+import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
