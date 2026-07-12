@@ -18,6 +18,20 @@ import { z } from 'zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
+/*
+::neup.documentation::manage-team-edit-page
+
+::public
+
+Edit page for an existing team record.
+
+It returns the user to the `/manage/member` landing page when the team cannot
+be loaded or after the team is deleted.
+
+::public end
+::end
+*/
+
 const formSchema = z.object({
     name: z.string().min(1, 'Team name is required'),
     description: z.string().optional(),
@@ -40,7 +54,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
         getTeam(id).then(({ team, error }) => {
             if (error || !team) {
                 toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch team data.'});
-                router.push('/manage/team');
+                router.push('/manage/member');
             } else {
                 form.reset({
                     name: team.name,
@@ -66,7 +80,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
         const result = await deleteTeam(id);
         if (result.success) {
             toast({ title: 'Team Deleted'});
-            router.push('/manage/team');
+            router.push('/manage/member');
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }

@@ -401,9 +401,12 @@ model Member {
   email       String
   role        String
   imageUrl    String?
+  order       Int?
+  teamId      String?  @map("team_id")
   permissions Json?
-  teams       Team[]
+  team        Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
 
+  @@index([teamId, order])
   @@map("members")
 }
 

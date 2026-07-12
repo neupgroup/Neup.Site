@@ -1,0 +1,7 @@
+- [ ] Update `README.md` from the default Firebase Studio starter copy to the current Neup.Sites project overview, setup, structure, and documentation index.
+- [ ] Add Neup documentation for the current schema contract in `prisma/schema.prisma`.
+- [ ] Add Neup documentation coverage for the package scripts and dependency contract in `package.json`.
+- [ ] Review and upgrade Neup documentation coverage for remaining manage team routes after the `/manage/member` split.
+- [ ] Resolve current `npm run typecheck` failures in generated Next validators, appbase/codebase/templates/tokens/datalists/site pages, editor elements, schemas/canvas, and shared services.
+- [ ] Add Neup documentation blocks for the shared app shell files reviewed during the `/manage/team` fix, including `app/layout.tsx`, `app/not-found.tsx`, `core/context/ProfileContext.tsx`, `components/ui/sidebar.tsx`, `components/ui/toaster.tsx`, `components/ui/avatar.tsx`, and `components/ui/table.tsx`.
+- [ ] Investigate and fix the remaining baseline `npm run typecheck` errors across app routes, services, and schema typings after the Prisma client/runtime issue is resolved.

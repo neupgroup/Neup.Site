@@ -1,3 +1,12 @@
+/**
+ * ::neup.documentation::prisma-db-client
+ *
+ * Creates the shared Prisma client used by server-side services. In
+ * development, the client is cached on `globalThis` to avoid reconnecting
+ * during module reloads.
+ *
+ * ::end
+ */
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 

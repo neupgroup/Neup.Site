@@ -9,6 +9,20 @@ import { revalidatePath } from 'next/cache';
 import { db } from '@/core/lib/db';
 import { syncAssetProfileSubjects } from '@/services/profiles';
 
+/*
+::neup.documentation::asset-service
+
+::public
+
+Server-side asset configuration service.
+
+Client callers such as the profile context must receive plain JSON-serializable
+objects, so database JSON fields are normalized before being returned.
+
+::public end
+::end
+*/
+
 export async function getAsset(): Promise<{ success: boolean, asset?: Asset, error?: string }> {
   const cookieStore = await cookies();
   const assetId = cookieStore.get('assetId')?.value;
@@ -66,7 +80,9 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
       updatedAt: record.updatedAt ? record.updatedAt.toISOString() : null,
     };
 
-    return { success: true, asset };
+    const serializedAsset = JSON.parse(JSON.stringify(asset)) as Asset;
+
+    return { success: true, asset: serializedAsset };
   } catch (error: any) {
     return { success: false, error: 'Failed to fetch asset configuration. An error has been logged.' };
   }

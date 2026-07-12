@@ -1,6 +1,20 @@
 
 'use client';
 
+/*
+::neup.documentation::dashboard-shell
+
+::public
+
+Main dashboard shell and navigation for authenticated management routes.
+
+The manage navigation links to `/manage/member` for team and member
+management.
+
+::public end
+::end
+*/
+
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -89,8 +103,7 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Manage
         </div>
-        <NavLink href="/manage/members" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></NavLink>
-        <NavLink href="/manage/team" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Teams</span></NavLink>
+        <NavLink href="/manage/member" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></NavLink>
         <NavLink href="/manage/hiring" currentPath={currentPath} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></NavLink>
         <NavLink href="/manage/billing" currentPath={currentPath} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
         <NavLink href="/manage/permissions" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
@@ -207,7 +220,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
   );
 }
 
-export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: AssetTheme }) {
+export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: Partial<AssetTheme> }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);

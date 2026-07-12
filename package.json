@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start --port 7483",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@genkit-ai/ai": "^1.0.0",

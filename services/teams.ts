@@ -6,6 +6,29 @@ import { revalidatePath } from 'next/cache';
 import type { Team } from '@/schemas/team';
 import { logErrorToDatabase } from '@/core/lib/logging';
 
+/*
+::neup.documentation::team-service
+
+::public
+
+Service functions for team CRUD used by the management routes.
+
+These functions refresh `/manage/member` and team detail pages after changes.
+
+::public end
+::end
+*/
+
+interface TeamBoardGroupOrder {
+  teamId: string | null;
+  memberIds: string[];
+}
+
+interface TeamBoardOrderInput {
+  teamIds: string[];
+  groups: TeamBoardGroupOrder[];
+}
+
 export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const record = await db.team.create({
@@ -16,6 +39,7 @@ export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boo
       },
       select: { id: true },
     });
+    revalidatePath('/manage/member');
     revalidatePath('/manage/team');
     return { success: true, id: record.id };
   } catch (e: any) {
@@ -77,6 +101,7 @@ export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): P
         ...(data.order !== undefined ? { order: data.order ?? null } : {}),
       },
     });
+    revalidatePath('/manage/member');
     revalidatePath('/manage/team');
     revalidatePath(`/manage/team/${id}`);
     return { success: true };
@@ -89,10 +114,66 @@ export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): P
 export async function deleteTeam(id: string): Promise<{ success: boolean; error?: string }> {
   try {
     await db.team.delete({ where: { id } });
+    revalidatePath('/manage/member');
     revalidatePath('/manage/team');
     return { success: true };
   } catch (e: any) {
     await logErrorToDatabase({ message: `Failed to delete team ${id}: ${e.message}`, stack: e.stack, source: 'deleteTeam' });
     return { success: false, error: 'Failed to delete team.' };
+  }
+}
+
+export async function saveTeamBoardOrder(input: TeamBoardOrderInput): Promise<{ success: boolean; error?: string }> {
+  try {
+    const teamIds = Array.from(new Set(input.teamIds.filter(Boolean)));
+    const memberAssignments = input.groups.flatMap((group) =>
+      group.memberIds.map((memberId) => ({
+        memberId,
+        teamId: group.teamId,
+      })),
+    );
+
+    const memberIds = new Set<string>();
+    const duplicateMemberId = memberAssignments.find((assignment) => {
+      if (memberIds.has(assignment.memberId)) {
+        return true;
+      }
+
+      memberIds.add(assignment.memberId);
+      return false;
+    });
+
+    if (duplicateMemberId) {
+      return { success: false, error: 'A member can only be placed once on the team board.' };
+    }
+
+    await db.$transaction([
+      ...teamIds.map((teamId, index) =>
+        db.team.update({
+          where: { id: teamId },
+          data: { order: index + 1 },
+        }),
+      ),
+      ...memberAssignments.map((assignment, index) =>
+        db.member.update({
+          where: { id: assignment.memberId },
+          data: {
+            order: index + 1,
+            teamId: assignment.teamId,
+          },
+        }),
+      ),
+    ]);
+
+    revalidatePath('/manage/member');
+    revalidatePath('/manage/team');
+    for (const teamId of teamIds) {
+      revalidatePath(`/manage/team/${teamId}`);
+    }
+
+    return { success: true };
+  } catch (e: any) {
+    await logErrorToDatabase({ message: `Failed to save team board order: ${e.message}`, stack: e.stack, source: 'saveTeamBoardOrder' });
+    return { success: false, error: 'Failed to save team board order.' };
   }
 }

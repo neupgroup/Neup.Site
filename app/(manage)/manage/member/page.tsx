@@ -1,0 +1,87 @@
+import Link from 'next/link';
+import { Plus, Users } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { generatePageMetadata } from '@/core/lib/metadata';
+import { getMembers } from '@/services/members';
+import { getTeams } from '@/services/teams';
+import { MemberCards } from './member-cards';
+
+/*
+::neup.documentation::manage-member-page
+
+::public
+
+Landing page for member management with direct member cards and action buttons.
+
+::public end
+::end
+*/
+
+export async function generateMetadata() {
+  return await generatePageMetadata('Members');
+}
+
+export default async function ManageMemberPage() {
+  const [{ teams, error: teamsError }, { members, error: membersError }] = await Promise.all([
+    getTeams(),
+    getMembers(),
+  ]);
+
+  const error = teamsError ?? membersError;
+
+  return (
+    <div className="w-full space-y-8">
+      <header className="space-y-2">
+        <div>
+          <h1 className="font-headline text-2xl font-semibold tracking-tight">Members</h1>
+          <p className="text-sm text-muted-foreground">Add teams and members from their own dedicated pages.</p>
+        </div>
+      </header>
+
+      {error ? (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      {!members?.length ? (
+        <div className="grid gap-4">
+          <Link
+            href="/manage/member/addMember"
+            className="grid gap-4 rounded-lg border border-dashed bg-background px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Plus className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <div>
+              <div className="font-medium">Add Member</div>
+              <div className="text-sm text-muted-foreground">Create the first member for this team surface.</div>
+            </div>
+          </Link>
+          <div className="rounded-lg border-2 border-dashed p-12 text-center text-muted-foreground">
+            <Users className="mx-auto mb-4 h-12 w-12" />
+            <p>No members found.</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          <Link
+            href="/manage/member/addMember"
+            className="grid gap-4 rounded-lg border border-dashed bg-background px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Plus className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <div>
+              <div className="font-medium">Add Member</div>
+              <div className="text-sm text-muted-foreground">Create another member from the dedicated add form.</div>
+            </div>
+          </Link>
+          <MemberCards initialMembers={members} />
+        </div>
+      )}
+    </div>
+  );
+}
