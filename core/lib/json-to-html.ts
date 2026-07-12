@@ -139,9 +139,9 @@ export function convertJsonToHtml(elements: CanvasElementData[], theme?: AssetTh
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Preview</title>
-        <link href="https://rsms.me/inter/inter.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <style>
-          body { font-family: 'Inter', sans-serif; margin: 0; background-color: hsl(var(--background)); color: hsl(var(--foreground)); }
+          body { font-family: 'Outfit', sans-serif; margin: 0; background-color: hsl(var(--background)); color: hsl(var(--foreground)); }
           * { box-sizing: border-box; }
           button { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
           ${themeStyles}

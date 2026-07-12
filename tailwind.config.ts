@@ -13,8 +13,8 @@ const config = {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Raleway', 'sans-serif'],
-        headline: ['Raleway', 'sans-serif'],
+        body: ['Outfit', 'sans-serif'],
+        headline: ['Outfit', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
