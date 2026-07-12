@@ -94,7 +94,7 @@ export default function AddMemberPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="outline" asChild>
+        <Button variant="tertiary" asChild>
           <Link href="/manage/member">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
@@ -162,7 +162,7 @@ export default function AddMemberPage() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <Button asChild type="button" variant="outline" className="w-full sm:w-auto">
+                          <Button asChild type="button" variant="tertiary" className="w-full sm:w-auto">
                             <Link href="/manage/member/addTeam" target="_blank" rel="noreferrer">
                               Add a new team as well
                             </Link>
@@ -171,7 +171,7 @@ export default function AddMemberPage() {
                       ) : (
                         <div className="space-y-3">
                           <p className="text-sm text-muted-foreground">Create a team first before adding a member.</p>
-                          <Button asChild type="button" variant="outline" className="w-full sm:w-auto">
+                          <Button asChild type="button" variant="tertiary" className="w-full sm:w-auto">
                             <Link href="/manage/member/addTeam" target="_blank" rel="noreferrer">
                               Add a new team as well
                             </Link>
@@ -185,7 +185,7 @@ export default function AddMemberPage() {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting || loadingTeams || !teams.length}>
+              <Button variant="primary" type="submit" disabled={form.formState.isSubmitting || loadingTeams || !teams.length}>
                 {form.formState.isSubmitting ? <Loader2 className="mr-2 animate-spin" /> : <Save className="mr-2" />}
                 Add Member
               </Button>

@@ -67,7 +67,7 @@ export default function CoderPage({ params }: { params: Promise<{ id: string }> 
 
   return (
     <div className="w-full max-w-4xl">
-        <Button asChild variant="ghost" className="mb-4">
+        <Button asChild variant="plain" className="mb-4">
             <Link href={`/site/pages/${id}/edit`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Edit Options
@@ -89,7 +89,7 @@ export default function CoderPage({ params }: { params: Promise<{ id: string }> 
                 />
             </CardContent>
             <CardFooter>
-                <Button onClick={handleSave} disabled={isSaving}>
+                <Button variant="primary" onClick={handleSave} disabled={isSaving}>
                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Save Code
                 </Button>

@@ -28,7 +28,7 @@ const BackgroundProperties: FC<BackgroundPropertiesProps> = ({ element, onUpdate
                             onChange={(e) => onUpdate('backgroundColor', e.target.value)} 
                             placeholder="#ffffff" 
                         />
-                        <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
+                        <Button variant="tertiary" size="icon" onClick={() => colorInputRef.current?.click()}>
                             🎨
                             <input
                                 ref={colorInputRef}

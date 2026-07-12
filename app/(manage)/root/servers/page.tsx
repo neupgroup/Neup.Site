@@ -42,7 +42,7 @@ export default function ServersPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Your Servers</h1>
             <p className="text-muted-foreground">A list of servers you have created to deploy sites.</p>
         </div>
-        <Button asChild>
+        <Button variant="primary" asChild>
           <Link href="/root/servers/create">
             <Plus className="mr-2 h-4 w-4" /> Create Server
           </Link>
@@ -84,7 +84,7 @@ export default function ServersPage() {
                              <div className="flex items-center gap-2">
                                 {server.provider && <Badge variant="secondary">{server.provider}</Badge>}
                                 {server.platform && <Badge variant="outline" className="capitalize">{server.platform}</Badge>}
-                                <Button asChild variant="ghost" size="icon">
+                                <Button asChild variant="plain" size="icon">
                                     <Link href={`/root/servers/${server.id}`}>
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>

@@ -16,7 +16,7 @@ const CodeBlock = ({ children }: { children: React.ReactNode }) => (
 export default function TemplatesGuidePage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-       <Button asChild variant="ghost" className="pl-0">
+       <Button asChild variant="plain" className="pl-0">
           <Link href="/root/templates">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Templates

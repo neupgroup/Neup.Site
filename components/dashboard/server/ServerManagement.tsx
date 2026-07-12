@@ -68,7 +68,7 @@ const ServerManagement = ({ serverId }: { serverId: string }) => {
                 </div>
             </CardContent>
             <CardFooter>
-                 <Button onClick={handleRunCustomCommand} disabled={isPending}>
+                 <Button variant="primary" onClick={handleRunCustomCommand} disabled={isPending}>
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Execute Command
                 </Button>

@@ -68,7 +68,7 @@ const DataBindingProperties: FC<DataBindingPropertiesProps> = ({ element, onData
                                 onChange={(e) => handleBindingChange(prop, e.target.value)}
                                 placeholder="e.g., item.title"
                             />
-                             <Button variant="outline" size="icon" onClick={() => removeBinding(prop)} disabled={!bindings[prop]}>
+                             <Button variant="tertiary" size="icon" onClick={() => removeBinding(prop)} disabled={!bindings[prop]}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </div>

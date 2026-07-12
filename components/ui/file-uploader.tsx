@@ -118,7 +118,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
             {status === 'error' && <AlertCircle className="h-4 w-4 text-destructive" />}
             <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(2)} KB</span>
           </div>
-          <Button onClick={handleUpload} disabled={status === 'uploading'} size="sm">
+          <Button variant="primary" onClick={handleUpload} disabled={status === 'uploading'} size="sm">
             {status === 'uploading' ? `Uploading...` : 'Upload'}
           </Button>
         </div>

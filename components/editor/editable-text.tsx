@@ -72,7 +72,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                     {onTagChange && currentTag && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button type="button" variant="ghost" className="h-7 w-auto px-2 text-xs font-bold">
+                                <Button type="button" variant="plain" className="h-7 w-auto px-2 text-xs font-bold">
                                     {currentTag.toUpperCase()}
                                     <ChevronDown className="h-4 w-4 ml-1" />
                                 </Button>
@@ -86,18 +86,18 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('bold')}>
+                    <Button type="button" size="icon" variant="plain" className="h-7 w-7" onClick={() => execCommand('bold')}>
                         <Bold className="h-4 w-4" />
                     </Button>
-                    <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('italic')}>
+                    <Button type="button" size="icon" variant="plain" className="h-7 w-7" onClick={() => execCommand('italic')}>
                         <Italic className="h-4 w-4" />
                     </Button>
-                    <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => execCommand('strikeThrough')}>
+                    <Button type="button" size="icon" variant="plain" className="h-7 w-7" onClick={() => execCommand('strikeThrough')}>
                         <Strikethrough className="h-4 w-4" />
                     </Button>
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button type="button" size="icon" variant="ghost" className="h-7 w-7">
+                            <Button type="button" size="icon" variant="plain" className="h-7 w-7">
                                 <LinkIcon className="h-4 w-4" />
                             </Button>
                         </PopoverTrigger>

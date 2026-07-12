@@ -59,7 +59,7 @@ const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourc
                         />
                     </div>
                 ))}
-                    <Button size="sm" onClick={handleTest} className="mt-2">
+                    <Button variant="primary" size="sm" onClick={handleTest} className="mt-2">
                     <Play className="mr-2" /> Run Test
                 </Button>
             </div>
@@ -147,7 +147,7 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
                         {method.methodName}
                     </CardTitle>
                     {!isEditing && (
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleTester}>
+                        <Button variant="plain" size="icon" className="h-7 w-7" onClick={toggleTester}>
                             <Play className="h-4 w-4" />
                         </Button>
                     )}
@@ -231,7 +231,7 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                             Save
                         </Button>
-                         <Button type="button" variant="ghost" size="sm" onClick={cancelEditing}>
+                         <Button type="button" variant="plain" size="sm" onClick={cancelEditing}>
                              <X className="mr-2" /> Cancel
                         </Button>
                          <Button type="button" variant="destructive" size="sm" onClick={handleRemove}>
@@ -240,11 +240,11 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
                     </>
                 ) : (
                     <>
-                        <Button type="button" variant="outline" size="sm" onClick={startEditing}>
+                        <Button type="button" variant="tertiary" size="sm" onClick={startEditing}>
                             <Edit className="mr-2" /> Edit
                         </Button>
                         {testResult && (
-                            <Button type="button" variant="outline" size="sm" onClick={handleClearTest}>
+                            <Button type="button" variant="tertiary" size="sm" onClick={handleClearTest}>
                                 <Eraser className="mr-2"/> Clear
                             </Button>
                         )}
@@ -292,7 +292,7 @@ const AddNewMethodCard = ({ onAdd, existingMethodNames }: { onAdd: (name: string
                             onChange={(e) => setNewMethodName(e.target.value)}
                             placeholder="e.g., getUserProfile"
                         />
-                        <Button type="button" onClick={handleAddClick} disabled={!newMethodName}>
+                        <Button variant="primary" type="button" onClick={handleAddClick} disabled={!newMethodName}>
                             <Plus className="mr-2"/> Add Method
                         </Button>
                     </div>
@@ -408,7 +408,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
             <div>
                 <p className="text-muted-foreground">Editing methods for: <span className="font-semibold">{source?.name}</span></p>
             </div>
-            <Button variant="ghost" asChild>
+            <Button variant="plain" asChild>
                 <Link href={`/site/sources/${id}/edit`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Settings

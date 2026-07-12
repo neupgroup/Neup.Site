@@ -37,7 +37,7 @@ export function AddDomainDialog({ onAdd }: AddDomainDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button type="button" variant="outline">
+                <Button type="button" variant="tertiary">
                     <Plus className="mr-2" /> Add Domain
                 </Button>
             </DialogTrigger>
@@ -69,10 +69,10 @@ export function AddDomainDialog({ onAdd }: AddDomainDialogProps) {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    <Button type="button" variant="tertiary" onClick={() => setOpen(false)}>
                         Cancel
                     </Button>
-                    <Button type="button" onClick={handleAdd}>
+                    <Button variant="primary" type="button" onClick={handleAdd}>
                         Add Domain
                     </Button>
                 </DialogFooter>

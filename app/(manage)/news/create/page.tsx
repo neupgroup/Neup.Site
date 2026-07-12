@@ -58,7 +58,7 @@ export default function CreateNewsArticlePage() {
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
+            <Button variant="plain" size="icon" asChild>
                 <Link href="/news">
                 <ArrowLeft />
                 </Link>
@@ -76,7 +76,7 @@ export default function CreateNewsArticlePage() {
                 )} />
             </CardContent>
             <CardFooter>
-                <Button type="submit" disabled={isSaving} className="w-full">
+                <Button variant="primary" type="submit" disabled={isSaving} className="w-full">
                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 {isSaving ? 'Saving...' : 'Save and Continue'}
                 </Button>

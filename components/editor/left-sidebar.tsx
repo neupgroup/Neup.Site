@@ -149,19 +149,19 @@ const LayerItem: FC<{
 
           {isSelected && (
             <div className="flex items-center gap-0">
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onSelectParent(); }} disabled={!hasParent} title="Select Parent">
+              <Button variant="plain" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onSelectParent(); }} disabled={!hasParent} title="Select Parent">
                 <CornerUpLeft className="h-3 w-3" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onMoveElement('up'); }} title="Move Up">
+              <Button variant="plain" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onMoveElement('up'); }} title="Move Up">
                 <ArrowUp className="h-3 w-3" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onMoveElement('down'); }} title="Move Down">
+              <Button variant="plain" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onMoveElement('down'); }} title="Move Down">
                 <ArrowDown className="h-3 w-3" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onCloneElement(); }} title="Clone Element">
+              <Button variant="plain" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onCloneElement(); }} title="Clone Element">
                 <Copy className="h-3 w-3" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onDeleteElement(); }} title="Delete Element">
+              <Button variant="plain" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onDeleteElement(); }} title="Delete Element">
                 <Trash2 className="h-3 w-3 text-destructive" />
               </Button>
             </div>
@@ -330,7 +330,7 @@ const PagesList = ({ onPageChangeStart }: { onPageChangeStart?: () => void }) =>
       {pages.map(page => (
         <Button
           key={page.id}
-          variant={page.id === currentPageId ? "secondary" : "ghost"}
+          variant={page.id === currentPageId ? "secondary" : "plain"}
           className={cn("w-full justify-start", page.id === currentPageId && "bg-secondary")}
           onClick={() => {
             if (page.id === currentPageId) return;
@@ -345,7 +345,7 @@ const PagesList = ({ onPageChangeStart }: { onPageChangeStart?: () => void }) =>
           <span className="truncate">{page.name || 'Untitled Page'}</span>
         </Button>
       ))}
-      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={handleCreatePage}>
+      <Button variant="tertiary" size="sm" className="mt-4 w-full" onClick={handleCreatePage}>
         <Plus className="mr-2 h-4 w-4" /> Add New Page
       </Button>
     </div>

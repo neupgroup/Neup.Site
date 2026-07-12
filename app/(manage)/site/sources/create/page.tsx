@@ -59,7 +59,7 @@ export default function CreateSourcePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="ghost" asChild>
+        <Button variant="plain" asChild>
             <Link href="/site/sources">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Sources
@@ -92,7 +92,7 @@ export default function CreateSourcePage() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleCreateSource} disabled={isSaving}>
+          <Button variant="primary" onClick={handleCreateSource} disabled={isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             {isSaving ? 'Saving...' : 'Save and Continue'}
           </Button>

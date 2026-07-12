@@ -90,7 +90,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
          <>
             <div className="w-full max-w-2xl">
                 <div className="mb-4">
-                    <Button variant="outline" asChild>
+                    <Button variant="tertiary" asChild>
                         <Link href={`/manage/team/${id}`}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Team
@@ -122,7 +122,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
                              <Button type="button" variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
                                 <Trash2 className="mr-2"/> Delete Team
                             </Button>
-                            <Button type="submit" disabled={form.formState.isSubmitting}>
+                            <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
                                 {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2"/>}
                                 Save Changes
                             </Button>

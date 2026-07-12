@@ -99,7 +99,7 @@ export default function PagesPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Pages</h1>
-        <Button asChild>
+        <Button variant="primary" asChild>
           <Link href="/site/pages/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Page
           </Link>
@@ -136,7 +136,7 @@ export default function PagesPage() {
                       </div>
                   </div>
                    <div className="flex items-center gap-2 flex-shrink-0 self-start sm:self-center">
-                      <Button asChild variant="outline" size="sm">
+                      <Button asChild variant="tertiary" size="sm">
                           <Link href={`/site/pages/${page.id}`}>
                               <Pencil className="mr-2 h-4 w-4" />
                               Manage

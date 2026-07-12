@@ -65,7 +65,7 @@ const TypographyProperties: FC<TypographyPropertiesProps> = ({ element, onUpdate
                             onChange={(e) => onUpdate('color', e.target.value)} 
                             placeholder="#000000" 
                         />
-                        <Button variant="outline" size="icon" onClick={() => colorInputRef.current?.click()}>
+                        <Button variant="tertiary" size="icon" onClick={() => colorInputRef.current?.click()}>
                             🎨
                             <input
                                 ref={colorInputRef}

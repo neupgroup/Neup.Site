@@ -41,13 +41,13 @@ export default async function TeamsPage() {
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    <Button asChild variant="outline">
+                    <Button asChild variant="tertiary">
                         <Link href="/manage/member/addTeam">
                             <Users className="mr-2 h-4 w-4" />
                             Create Group
                         </Link>
                     </Button>
-                    <Button asChild>
+                    <Button variant="primary" asChild>
                         <Link href="/manage/member/addMember">
                             <UserPlus className="mr-2 h-4 w-4" />
                             Add Member

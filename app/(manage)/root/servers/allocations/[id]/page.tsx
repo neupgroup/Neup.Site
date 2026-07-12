@@ -100,7 +100,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error || 'Allocation not found.'}</AlertDescription>
          <div className="mt-4">
-            <Button asChild variant="outline">
+            <Button asChild variant="tertiary">
               <Link href="/root/servers/allocations">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Allocations
               </Link>
@@ -113,7 +113,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
         <div className="mb-4">
-            <Button variant="ghost" asChild>
+            <Button variant="plain" asChild>
                 <Link href="/root/servers/allocations">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Allocations

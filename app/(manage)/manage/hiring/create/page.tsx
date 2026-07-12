@@ -82,7 +82,7 @@ export default function CreateJobPostingPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="outline" asChild>
+        <Button variant="tertiary" asChild>
           <Link href="/manage/hiring">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Hiring
@@ -175,7 +175,7 @@ export default function CreateJobPostingPage() {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isSaving}>
+              <Button variant="primary" type="submit" disabled={isSaving}>
                 {isSaving ? (
                   <Loader2 className="animate-spin mr-2" />
                 ) : (

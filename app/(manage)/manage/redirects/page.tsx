@@ -100,11 +100,11 @@ export default function RedirectsPage() {
             <p className="text-muted-foreground">Create and manage URL redirects for your site.</p>
         </div>
         <div className="flex gap-2">
-            <Button variant="outline" onClick={handleUpdateOnServer} disabled={isDeploying}>
+            <Button variant="tertiary" onClick={handleUpdateOnServer} disabled={isDeploying}>
                 <UploadCloud className="mr-2 h-4 w-4" />
                 {isDeploying ? 'Updating...' : 'Update on Server'}
             </Button>
-            <Button asChild>
+            <Button variant="primary" asChild>
                 <Link href="/manage/redirects/create">
                     <Plus className="mr-2 h-4 w-4" /> Create Redirect
                 </Link>
@@ -131,7 +131,7 @@ export default function RedirectsPage() {
                     </div>
                     <div className="flex items-center gap-4 self-end sm:self-center">
                         <Badge variant={redirect.type === 'permanent' ? 'default' : 'secondary'}>{redirect.type === 'permanent' ? '301' : '302'}</Badge>
-                         <Button variant="ghost" size="icon" onClick={() => handleDelete(redirect.id)}>
+                         <Button variant="plain" size="icon" onClick={() => handleDelete(redirect.id)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                     </div>
@@ -147,7 +147,7 @@ export default function RedirectsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button
-                        variant="outline"
+                        variant="tertiary"
                         size="sm"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1 || isPending}
@@ -156,7 +156,7 @@ export default function RedirectsPage() {
                         Previous
                     </Button>
                     <Button
-                        variant="outline"
+                        variant="tertiary"
                         size="sm"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages || isPending}

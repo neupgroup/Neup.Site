@@ -51,7 +51,7 @@ export default function CreateFromTextPage() {
                     className="bg-muted/50"
                  />
             </div>
-            <Button className="w-full" onClick={handleGenerate} disabled={isCreating}>
+            <Button variant="primary" className="w-full" onClick={handleGenerate} disabled={isCreating}>
                 <Wand2 className="mr-2 h-4 w-4" />
                 {isCreating ? 'Generating...' : 'Generate Page'}
             </Button>

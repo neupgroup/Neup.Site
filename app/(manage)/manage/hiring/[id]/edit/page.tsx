@@ -101,13 +101,13 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
                                     </FormItem>
                                 )} />
                             ))}
-                            <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' })}><Plus className="mr-2 h-4 w-4" /> Add Qualification</Button>
+                            <Button type="button" variant="tertiary" className="w-full" onClick={() => append({ value: '' })}><Plus className="mr-2 h-4 w-4" /> Add Qualification</Button>
                         </div>
                     </div>
                 </CardContent>
                 <div className="flex justify-end gap-2 p-6 pt-0">
-                    <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button type="button" variant="plain" onClick={onCancel}>Cancel</Button>
+                    <Button variant="primary" type="submit" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save Changes
                     </Button>
@@ -176,7 +176,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   if (error || !posting) {
     return (
       <div className="w-full max-w-4xl mx-auto space-y-4">
-        <Button variant="ghost" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <Button variant="plain" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
         <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'Job posting not found'}</AlertDescription></Alert>
       </div>
     );
@@ -185,7 +185,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   return (
     <div className="w-full max-w-4xl space-y-6">
       <div className="mb-4">
-        <Button variant="ghost" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <Button variant="plain" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
       </div>
 
       <div className="space-y-6">
@@ -204,7 +204,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
                                <Badge variant={posting.status === 'Open' ? 'default' : 'secondary'}>{posting.status}</Badge>
                             </CardDescription>
                         </div>
-                        <Button variant="outline" onClick={() => setIsEditing(true)}>
+                        <Button variant="tertiary" onClick={() => setIsEditing(true)}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                         </Button>
                     </div>
@@ -227,7 +227,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="outline" size="sm"><Link href={`/manage/hiring/${params.id}/applicants`}>View All</Link></Button></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="tertiary" size="sm"><Link href={`/manage/hiring/${params.id}/applicants`}>View All</Link></Button></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

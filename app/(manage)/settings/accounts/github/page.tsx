@@ -39,7 +39,7 @@ export default function LinkGitHubPage() {
         <CardContent>
           <div className="text-center p-12">
             <Github className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <Button asChild>
+            <Button variant="primary" asChild>
               <Link href="/bridge/api/v1/github/start">
                 <Github className="mr-2 h-4 w-4" /> Connect with GitHub
               </Link>

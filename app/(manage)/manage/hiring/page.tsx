@@ -52,7 +52,7 @@ export default function HiringDashboardPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Hiring</h1>
-        <Button asChild>
+        <Button variant="primary" asChild>
           <Link href="/manage/hiring/create">
             <Plus className="mr-2 h-4 w-4" /> Create Job Posting
           </Link>
@@ -102,7 +102,7 @@ export default function HiringDashboardPage() {
                     <TableCell><Badge variant={posting.status === 'Open' ? 'default' : 'secondary'}>{posting.status}</Badge></TableCell>
                     <TableCell>{posting.createdAt ? format(new Date(posting.createdAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="icon">
+                      <Button asChild variant="plain" size="icon">
                         <Link href={`/manage/hiring/${posting.id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </Link>

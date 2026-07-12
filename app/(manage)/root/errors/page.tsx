@@ -104,7 +104,7 @@ const ErrorsPage = () => {
                         </div>
                         <div className="flex items-center gap-4 self-end sm:self-center">
                             <Badge variant="outline" className="font-mono">{error.source || 'N/A'}</Badge>
-                            <Button asChild variant="ghost" size="icon">
+                            <Button asChild variant="plain" size="icon">
                                 <Link href={`/root/errors/${error.id}`}>
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
@@ -121,7 +121,7 @@ const ErrorsPage = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button
-                        variant="outline"
+                        variant="tertiary"
                         size="sm"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1}
@@ -130,7 +130,7 @@ const ErrorsPage = () => {
                         Previous
                     </Button>
                     <Button
-                        variant="outline"
+                        variant="tertiary"
                         size="sm"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages}

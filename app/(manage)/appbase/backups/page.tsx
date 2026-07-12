@@ -65,7 +65,7 @@ export default function BackupsPage() {
           <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Backups</h1>
           <p className="text-muted-foreground">View and restore backups of your base configuration files.</p>
         </div>
-        <Button asChild variant="outline">
+        <Button asChild variant="tertiary">
           <Link href="/site/appbase">
             Back to App Base
           </Link>

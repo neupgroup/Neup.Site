@@ -77,7 +77,7 @@ export default function CreateEnvironmentVariablePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="ghost" asChild>
+        <Button variant="plain" asChild>
           <Link href="/site/environment">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Environments
@@ -124,7 +124,7 @@ export default function CreateEnvironmentVariablePage() {
             </div>
             </CardContent>
             <CardFooter>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? <Loader2 className="mr-2 animate-spin" /> : <Plus className="mr-2" />}
                     Add Variable
                 </Button>

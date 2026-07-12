@@ -130,7 +130,7 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
       <form onSubmit={methods.handleSubmit(handleUpdateSource)} className="w-full max-w-2xl space-y-6">
           <div className="flex justify-between items-center">
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Edit Data Source</h1>
-            <Button variant="ghost" asChild>
+            <Button variant="plain" asChild>
                 <Link href={`/site/sources/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Source
@@ -176,7 +176,7 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
         </Card>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             {isSubmitting ? 'Saving...' : 'Save and Continue'}
           </Button>

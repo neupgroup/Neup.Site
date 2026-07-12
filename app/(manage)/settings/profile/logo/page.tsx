@@ -53,7 +53,7 @@ export default function LogoUploadPage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
-        <Button variant="outline" asChild>
+        <Button variant="tertiary" asChild>
             <Link href="/settings/profile">
                 <ArrowLeft className="mr-2" /> Back to Profile
             </Link>

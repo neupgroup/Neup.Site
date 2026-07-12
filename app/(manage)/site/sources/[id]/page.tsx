@@ -111,7 +111,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
   return (
     <div className="w-full max-w-4xl space-y-6">
         <div className="mb-4">
-            <Button variant="ghost" asChild>
+            <Button variant="plain" asChild>
                 <Link href="/site/sources">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Sources
@@ -127,7 +127,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge variant="outline">{source.type}</Badge>
-                         <Button asChild variant="outline" size="sm">
+                         <Button asChild variant="tertiary" size="sm">
                             <Link href={`/site/sources/${id}/edit`}>
                                 <Pencil className="mr-2 h-4 w-4"/> Edit
                             </Link>

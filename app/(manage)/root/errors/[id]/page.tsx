@@ -53,7 +53,7 @@ export default function ErrorDetailPage({ params }: { params: { id: string } }) 
   if (error || !log) {
     return (
         <div className="w-full max-w-4xl mx-auto space-y-4">
-             <Button asChild variant="ghost" className="mb-4">
+             <Button asChild variant="plain" className="mb-4">
                 <Link href="/root/errors">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Errors
@@ -70,7 +70,7 @@ export default function ErrorDetailPage({ params }: { params: { id: string } }) 
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4">
-        <Button asChild variant="ghost">
+        <Button asChild variant="plain">
             <Link href="/root/errors">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Errors

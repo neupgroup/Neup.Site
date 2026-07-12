@@ -96,10 +96,10 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
                 </CardHeader>
                 <CardContent className="space-y-6">
                      <div className="space-y-4">
-                        {!showSalaryField && <Button type="button" variant="outline" size="sm" onClick={() => setShowSalaryField(true)}><DollarSign className="mr-2"/>Add Salary</Button>}
+                        {!showSalaryField && <Button type="button" variant="tertiary" size="sm" onClick={() => setShowSalaryField(true)}><DollarSign className="mr-2"/>Add Salary</Button>}
                         {showSalaryField && <FormField control={form.control} name="salary" render={({ field }) => (<FormItem><FormLabel>Salary</FormLabel><FormControl><Input {...field} placeholder="e.g., Competitive, NRs. 50,000/month" /></FormControl><FormMessage /></FormItem>)} />}
 
-                        {!showOpeningsField && <Button type="button" variant="outline" size="sm" onClick={() => setShowOpeningsField(true)}><UserPlus className="mr-2"/>Add Number of Openings</Button>}
+                        {!showOpeningsField && <Button type="button" variant="tertiary" size="sm" onClick={() => setShowOpeningsField(true)}><UserPlus className="mr-2"/>Add Number of Openings</Button>}
                         {showOpeningsField && <FormField control={form.control} name="openings" render={({ field }) => (<FormItem><FormLabel>Number of Openings</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} /></FormControl><FormMessage /></FormItem>)} />}
                     </div>
 
@@ -119,13 +119,13 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
                                     </FormItem>
                                 )} />
                             ))}
-                            <Button type="button" variant="outline" className="w-full" onClick={() => append({ value: '' })}><Plus className="mr-2 h-4 w-4" /> Add Qualification</Button>
+                            <Button type="button" variant="tertiary" className="w-full" onClick={() => append({ value: '' })}><Plus className="mr-2 h-4 w-4" /> Add Qualification</Button>
                         </div>
                     </div>
                 </CardContent>
                 <div className="flex justify-end gap-2 p-6 pt-0">
-                    <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button type="button" variant="plain" onClick={onCancel}>Cancel</Button>
+                    <Button variant="primary" type="submit" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save Changes
                     </Button>
@@ -227,8 +227,8 @@ function EditPostingForm({ posting, onCancel, onSave }: { posting: JobPosting, o
 
                 </CardContent>
                 <div className="flex justify-end gap-2 px-6 pb-6">
-                    <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
-                    <Button type="submit" disabled={isSubmitting}>
+                    <Button type="button" variant="plain" onClick={onCancel}>Cancel</Button>
+                    <Button variant="primary" type="submit" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save Posting
                     </Button>
@@ -312,7 +312,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   if (error || !posting) {
     return (
       <div className="w-full max-w-2xl mx-auto space-y-4">
-        <Button variant="outline" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <Button variant="tertiary" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
         <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'Job posting not found'}</AlertDescription></Alert>
       </div>
     );
@@ -321,7 +321,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <Button variant="outline" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <Button variant="tertiary" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
       </div>
 
       <div className="space-y-6">
@@ -341,7 +341,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
                                {posting.openings && <Badge variant="outline">{posting.openings} opening(s)</Badge>}
                             </CardDescription>
                         </div>
-                        <Button variant="outline" onClick={() => setIsEditingDetails(true)}>
+                        <Button variant="tertiary" onClick={() => setIsEditingDetails(true)}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                         </Button>
                     </div>
@@ -370,7 +370,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <CardTitle>Posting & Visibility</CardTitle>
-                         <Button variant="outline" size="sm" onClick={() => setIsEditingPosting(true)}>
+                         <Button variant="tertiary" size="sm" onClick={() => setIsEditingPosting(true)}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                         </Button>
                     </div>
@@ -391,7 +391,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="outline" size="sm"><Link href={`/manage/hiring/${params.id}/applicants`}>View All</Link></Button></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<Button asChild variant="tertiary" size="sm"><Link href={`/manage/hiring/${params.id}/applicants`}>View All</Link></Button></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

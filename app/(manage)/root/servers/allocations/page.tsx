@@ -55,7 +55,7 @@ export default function AllocationsPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Server Allocations</h1>
             <p className="text-muted-foreground">Manage which sites are deployed to which servers.</p>
         </div>
-        <Button asChild>
+        <Button variant="primary" asChild>
           <Link href="/root/servers/allocations/create">
             <Plus className="mr-2 h-4 w-4" /> Create Allocation
           </Link>
@@ -103,7 +103,7 @@ export default function AllocationsPage() {
                     </TableCell>
                     <TableCell>{alloc.allocatedOn ? new Date(alloc.allocatedOn).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                         <Button asChild variant="ghost" size="icon">
+                         <Button asChild variant="plain" size="icon">
                             <Link href={`/root/servers/allocations/${alloc.id}`}>
                                 <ArrowRight className="h-4 w-4" />
                             </Link>

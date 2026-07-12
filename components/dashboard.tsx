@@ -211,7 +211,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
           </Link>
         </div>
         <div className="md:hidden">
-          <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
+          <Button variant="plain" size="icon" onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>

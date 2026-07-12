@@ -66,7 +66,7 @@ export default function ViewSectionPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <Button asChild variant="ghost" className="pl-0">
+       <Button asChild variant="plain" className="pl-0">
           <Link href="/site/sections">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Sections

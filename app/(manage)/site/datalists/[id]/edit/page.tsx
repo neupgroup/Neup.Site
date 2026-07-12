@@ -108,7 +108,7 @@ export default function EditDatalistPage({ params }: { params: Promise<{ id: str
   return (
     <Form {...form}>
       <div className="flex justify-start mb-4">
-        <Button variant="ghost" asChild>
+        <Button variant="plain" asChild>
             <Link href={`/site/datalists/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Datalist
@@ -150,7 +150,7 @@ export default function EditDatalistPage({ params }: { params: Promise<{ id: str
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

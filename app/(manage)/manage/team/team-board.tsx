@@ -241,7 +241,7 @@ export function TeamBoard({ teams, members }: TeamBoardProps) {
                 {group.description ? <p className="text-sm text-muted-foreground">{group.description}</p> : null}
               </div>
               {group.teamId ? (
-                <Button asChild variant="ghost" size="icon">
+                <Button asChild variant="plain" size="icon">
                   <Link href={`/manage/team/${group.teamId}/edit`} aria-label={`Edit ${group.name}`}>
                     <Pencil className="h-4 w-4" />
                   </Link>

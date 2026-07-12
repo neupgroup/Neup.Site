@@ -166,7 +166,7 @@ export default function ViewPage({ params }: { params: { id: string } }) {
             <CardDescription>Page ID: {id}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Button asChild variant="outline">
+            <Button asChild variant="tertiary">
               <Link href="/site/pages">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Pages
@@ -192,7 +192,7 @@ export default function ViewPage({ params }: { params: { id: string } }) {
                     {paths.map(path => (
                         <div key={path.id} className="flex items-center justify-between text-sm p-2 bg-muted rounded-md">
                             <span className="font-mono">{path.path}</span>
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeletePath(path.id)}>
+                            <Button variant="plain" size="icon" className="h-7 w-7" onClick={() => handleDeletePath(path.id)}>
                                 <X className="h-4 w-4"/>
                             </Button>
                         </div>
@@ -206,7 +206,7 @@ export default function ViewPage({ params }: { params: { id: string } }) {
                         onChange={(e) => setNewPathValue(e.target.value)}
                         className="h-9"
                     />
-                    <Button type="submit" size="sm">Add Path</Button>
+                    <Button variant="primary" type="submit" size="sm">Add Path</Button>
                 </form>
             </div>
             
@@ -215,7 +215,7 @@ export default function ViewPage({ params }: { params: { id: string } }) {
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete Page
                 </Button>
-                <Button onClick={handleSaveSettings} disabled={isSaving}>
+                <Button variant="primary" onClick={handleSaveSettings} disabled={isSaving}>
                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     Save Settings
                 </Button>

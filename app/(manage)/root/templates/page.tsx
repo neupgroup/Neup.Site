@@ -74,12 +74,12 @@ export default function TemplatesPage() {
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Templates</h1>
         <div className="flex items-center gap-2">
-            <Button asChild variant="outline">
+            <Button asChild variant="tertiary">
               <Link href="/root/templates/guide">
                 <BookOpen className="mr-2 h-4 w-4" /> View Guide
               </Link>
             </Button>
-            <Button asChild>
+            <Button variant="primary" asChild>
               <Link href="/root/templates/create">
                 <Plus className="mr-2 h-4 w-4" /> Create New Template
               </Link>

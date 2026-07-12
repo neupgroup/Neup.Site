@@ -33,7 +33,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error || 'Article not found.'}</AlertDescription>
           <div className="mt-4">
-            <Button asChild variant="outline">
+            <Button asChild variant="tertiary">
               <Link href="/news">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to News
               </Link>
@@ -47,7 +47,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="mb-4">
-        <Button variant="ghost" asChild>
+        <Button variant="plain" asChild>
           <Link href="/news">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to News
@@ -70,7 +70,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-           <Button asChild variant="outline">
+           <Button asChild variant="tertiary">
             <Link href={`/news/${article.id}/edit`}>
               <Settings className="mr-2 h-4 w-4" /> Settings
             </Link>

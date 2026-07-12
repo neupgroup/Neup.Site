@@ -119,7 +119,7 @@ function AssetList() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleCreateAsset} disabled={isCreating}>
+                    <Button variant="primary" onClick={handleCreateAsset} disabled={isCreating}>
                         {isCreating ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
@@ -162,7 +162,7 @@ function AssetList() {
                                         <p className="text-sm text-muted-foreground font-mono">{asset.id}</p>
                                     </div>
                                 </div>
-                                <Button onClick={() => handleSelectAsset(asset.id)} size="sm" disabled={isSwitching === asset.id}>
+                                <Button variant="primary" onClick={() => handleSelectAsset(asset.id)} size="sm" disabled={isSwitching === asset.id}>
                                      {isSwitching === asset.id ? (
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     ) : (

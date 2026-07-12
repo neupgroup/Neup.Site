@@ -12,7 +12,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   return (
     <div className="w-full">
         <div className="mb-4">
-            <Button variant="outline" asChild>
+            <Button variant="tertiary" asChild>
                 <Link href={`/article/${id}`}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Article

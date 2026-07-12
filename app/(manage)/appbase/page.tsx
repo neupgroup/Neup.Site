@@ -167,12 +167,12 @@ export default function AppBasePage() {
           <p className="text-muted-foreground">Manage JSON configuration files in your application's base directories.</p>
         </div>
         <div className="flex gap-2">
-           <Button asChild variant="outline">
+           <Button asChild variant="tertiary">
               <Link href="/site/appbase/backups">
                   <RotateCcw className="mr-2 h-4 w-4" /> View Backups
               </Link>
             </Button>
-            <Button asChild>
+            <Button variant="primary" asChild>
                 <Link href="/site/appbase/create">
                     <Plus className="mr-2 h-4 w-4" /> Create File
                 </Link>
@@ -202,7 +202,7 @@ export default function AppBasePage() {
                         </Badge>
                     </div>
                     <div className="flex items-center gap-2 self-end sm:self-center">
-                        <Button variant="outline" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
+                        <Button variant="tertiary" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
                             {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
                         </Button>
                         <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
@@ -229,8 +229,8 @@ export default function AppBasePage() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingFile(null)}>Cancel</Button>
-            <Button onClick={handleSaveContent} disabled={isSaving || isEditorLoading}>
+            <Button variant="tertiary" onClick={() => setEditingFile(null)}>Cancel</Button>
+            <Button variant="primary" onClick={handleSaveContent} disabled={isSaving || isEditorLoading}>
                 {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>} Save
             </Button>
           </DialogFooter>

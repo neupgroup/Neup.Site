@@ -154,7 +154,7 @@ const PageDataSourceSection: FC<PageDataSourceProps> = ({ pageId: initialPageId,
                             </Select>
                         </div>
                     )}
-                     <Button className="w-full" onClick={handleSave} disabled={isSaving || loading || !selectedSourceId || !selectedMethodName}>
+                     <Button variant="primary" className="w-full" onClick={handleSave} disabled={isSaving || loading || !selectedSourceId || !selectedMethodName}>
                         {isSaving ? 'Saving...' : 'Link Data to Page'}
                     </Button>
                     {sources.length === 0 && (
@@ -299,7 +299,7 @@ const GlobalSettings: FC<GlobalSettingsProps> = ({ elements, onUpdateAllElements
                                 rows={20}
                                 className="font-mono text-xs"
                             />
-                            <Button onClick={handleJsonUpdate} className="w-full">
+                            <Button variant="primary" onClick={handleJsonUpdate} className="w-full">
                                 <RefreshCw className="mr-2 h-4 w-4" />
                                 Update Canvas
                             </Button>

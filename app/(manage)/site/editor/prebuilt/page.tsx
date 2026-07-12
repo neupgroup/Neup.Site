@@ -111,7 +111,7 @@ export default function PrebuiltEditorPage() {
     return (
         <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
             <div className="flex flex-col gap-4">
-                <Button asChild variant="ghost" className="mb-4 self-start">
+                <Button asChild variant="plain" className="mb-4 self-start">
                     <Link href={`/site/pages/${id}/edit`}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Edit Options
@@ -130,7 +130,7 @@ export default function PrebuiltEditorPage() {
                                         <p className="font-medium truncate">{item.name}</p>
                                         <p className="text-xs text-muted-foreground truncate">{item.description}</p>
                                     </div>
-                                    <Button size="sm" variant="outline" onClick={() => addSection(item)}>
+                                    <Button size="sm" variant="tertiary" onClick={() => addSection(item)}>
                                         <Plus className="h-4 w-4 mr-2" /> Add
                                     </Button>
                                 </div>
@@ -149,7 +149,7 @@ export default function PrebuiltEditorPage() {
                             {pageElements.map((element, index) => (
                                 <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-muted/50">
                                     <span className="font-mono text-sm">{element.id} ({element.type})</span>
-                                    <Button variant="ghost" size="icon" onClick={() => removeSection(index)}>
+                                    <Button variant="plain" size="icon" onClick={() => removeSection(index)}>
                                         <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
                                 </div>
@@ -163,7 +163,7 @@ export default function PrebuiltEditorPage() {
                     </CardContent>
                 </Card>
                 <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
-                    <Button onClick={handleSave} disabled={isSaving}>
+                    <Button variant="primary" onClick={handleSave} disabled={isSaving}>
                         {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                         Save Page
                     </Button>

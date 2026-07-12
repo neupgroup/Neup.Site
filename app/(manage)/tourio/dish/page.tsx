@@ -13,7 +13,7 @@ export default function DishListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Tourio Dishes</h1>
-        <Button asChild>
+        <Button variant="primary" asChild>
             <Link href="/tourio/dish/create">
                 <Plus className="mr-2 h-4 w-4" /> Create Dish
             </Link>

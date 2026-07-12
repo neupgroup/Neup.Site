@@ -143,7 +143,7 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
         </Card>
 
         <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
-             <Button onClick={handleSave} disabled={isSaving}>
+             <Button variant="primary" onClick={handleSave} disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save All Content
             </Button>

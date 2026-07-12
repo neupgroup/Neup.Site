@@ -55,7 +55,7 @@ export default function CreateAppBaseFilePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="ghost" asChild>
+        <Button variant="plain" asChild>
           <Link href="/site/appbase">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to App Base
@@ -98,7 +98,7 @@ export default function CreateAppBaseFilePage() {
               )} />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 Create File
               </Button>

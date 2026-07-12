@@ -68,7 +68,7 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <Button asChild variant="ghost" className="pl-0">
+       <Button asChild variant="plain" className="pl-0">
           <Link href="/site/datalists">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Datalists

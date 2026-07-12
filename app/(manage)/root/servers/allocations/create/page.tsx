@@ -61,7 +61,7 @@ export default function CreateAllocationPage() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateAllocation)} className="w-full max-w-2xl space-y-6">
         <div className="mb-4">
-          <Button variant="ghost" asChild>
+          <Button variant="plain" asChild>
               <Link href="/root/servers/allocations">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Allocations
@@ -84,7 +84,7 @@ export default function CreateAllocationPage() {
               </div>
           </CardContent>
           <CardFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   {form.formState.isSubmitting ? 'Creating...' : 'Create Allocation'}
               </Button>

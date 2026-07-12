@@ -60,7 +60,7 @@ export default function CreateRedirectPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="ghost" asChild>
+        <Button variant="plain" asChild>
           <Link href="/manage/redirects">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Redirects
@@ -115,7 +115,7 @@ export default function CreateRedirectPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button variant="primary" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="mr-2 animate-spin" /> : <Save className="mr-2" />}
                 Save Redirect
               </Button>

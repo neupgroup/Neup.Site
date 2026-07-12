@@ -193,7 +193,7 @@ export default function DeployPage() {
             <div className="mt-8">
                 {hasServer ? (
                     hasAnyPendingChanges ? (
-                        <Button onClick={handleDeploy} disabled={isDeploying || loading}>
+                        <Button variant="primary" onClick={handleDeploy} disabled={isDeploying || loading}>
                             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2 h-4 w-4" />}
                             {isDeploying ? 'Deploying...' : 'Deploy All Changes'}
                         </Button>

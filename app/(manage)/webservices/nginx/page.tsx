@@ -72,7 +72,7 @@ export default function NginxPage() {
                                 Create a new Nginx configuration file for your domain with SSL support,
                                 proxy settings, and optimized caching rules.
                             </p>
-                            <Button
+                            <Button variant="primary"
                                 onClick={handleCreate}
                                 disabled={isCreating}
                                 className="w-full"
@@ -155,7 +155,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="outline" className="w-full">
+                            <Button variant="tertiary" className="w-full">
                                 <FileText className="mr-2 h-4 w-4" />
                                 View Default
                             </Button>
@@ -176,7 +176,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="outline" className="w-full">
+                            <Button variant="tertiary" className="w-full">
                                 <Settings className="mr-2 h-4 w-4" />
                                 Configure
                             </Button>
@@ -197,7 +197,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="outline" className="w-full">
+                            <Button variant="tertiary" className="w-full">
                                 <Globe className="mr-2 h-4 w-4" />
                                 Manage Hosts
                             </Button>
@@ -218,7 +218,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="outline" className="w-full">
+                            <Button variant="tertiary" className="w-full">
                                 <Shield className="mr-2 h-4 w-4" />
                                 SSL Settings
                             </Button>
@@ -239,7 +239,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="outline" className="w-full">
+                            <Button variant="tertiary" className="w-full">
                                 <Settings className="mr-2 h-4 w-4" />
                                 Optimize
                             </Button>
@@ -260,7 +260,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="outline" className="w-full">
+                            <Button variant="tertiary" className="w-full">
                                 <FileText className="mr-2 h-4 w-4" />
                                 View Logs
                             </Button>

@@ -11,7 +11,7 @@ export default function CategoryListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Categories</h1>
-        <Button asChild>
+        <Button variant="primary" asChild>
             <Link href="/estate/category/create">
                 <Plus className="mr-2 h-4 w-4" /> Create Category
             </Link>

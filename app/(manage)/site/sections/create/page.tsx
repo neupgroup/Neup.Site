@@ -62,7 +62,7 @@ export default function CreateSectionPage() {
   return (
     <Form {...form}>
         <div className="flex justify-start mb-4">
-            <Button variant="ghost" asChild>
+            <Button variant="plain" asChild>
                 <Link href="/site/sections">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Sections
@@ -119,7 +119,7 @@ export default function CreateSectionPage() {
                     />
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                  <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     {form.formState.isSubmitting ? 'Saving...' : 'Save Section'}
                   </Button>

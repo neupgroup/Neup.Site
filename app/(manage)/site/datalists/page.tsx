@@ -37,7 +37,7 @@ export default function DatalistsPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Datalists</h1>
-        <Button asChild>
+        <Button variant="primary" asChild>
           <Link href="/site/datalists/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Datalist
           </Link>
@@ -80,7 +80,7 @@ export default function DatalistsPage() {
                     <TableCell className="font-medium">{datalist.name}</TableCell>
                     <TableCell>{datalist.createdAt ? new Date(datalist.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="icon">
+                      <Button asChild variant="plain" size="icon">
                         <Link href={`/site/datalists/${datalist.id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </Link>

@@ -29,15 +29,15 @@ const EditorHeader: FC<EditorHeaderProps> = ({ onUndo, onRedo, canUndo, canRedo,
         <span className="text-sm text-muted-foreground">Editor</span>
       </div>
        <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
+        <Button variant="plain" size="icon" onClick={onUndo} disabled={!canUndo} aria-label="Undo">
           <Undo className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={onRedo} disabled={!canRedo} aria-label="Redo">
+        <Button variant="plain" size="icon" onClick={onRedo} disabled={!canRedo} aria-label="Redo">
           <Redo className="h-4 w-4" />
         </Button>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={onPreview} disabled={isPreviewing || isSaving}>
+        <Button variant="tertiary" size="sm" onClick={onPreview} disabled={isPreviewing || isSaving}>
           {isPreviewing ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (

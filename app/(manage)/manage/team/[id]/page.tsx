@@ -43,7 +43,7 @@ export default async function ViewTeamPage({ params }: { params: { id: string } 
     return (
         <div className="w-full max-w-2xl">
             <div className="mb-4">
-                <Button variant="outline" asChild>
+                <Button variant="tertiary" asChild>
                     <Link href="/manage/member">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Members

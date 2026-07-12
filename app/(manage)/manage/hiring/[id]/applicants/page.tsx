@@ -52,7 +52,7 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="w-full">
         <div className="mb-4">
-            <Button variant="outline" asChild>
+            <Button variant="tertiary" asChild>
             <Link href={`/manage/hiring/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Job Posting
@@ -64,7 +64,7 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Applicants</h1>
             <p className="text-muted-foreground">Review candidates for this job posting.</p>
         </div>
-        <Button asChild>
+        <Button variant="primary" asChild>
           <Link href={`/manage/hiring/${id}/applicants/add`}>
             <Plus className="mr-2 h-4 w-4" /> Add Applicant
           </Link>
@@ -112,7 +112,7 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
                     <TableCell><Badge variant="secondary">{applicant.status}</Badge></TableCell>
                     <TableCell>{applicant.appliedAt ? format(new Date(applicant.appliedAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="icon">
+                      <Button asChild variant="plain" size="icon">
                         <Link href={`/manage/hiring/${id}/applicants/${applicant.id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </Link>

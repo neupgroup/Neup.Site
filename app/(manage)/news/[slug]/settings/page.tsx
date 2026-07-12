@@ -130,7 +130,7 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
+            <Button variant="plain" size="icon" asChild>
               <Link href={`/news/${slug}/edit`}>
                 <ArrowLeft />
               </Link>
@@ -158,7 +158,7 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
             )} />
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={isSaving}>
+            <Button variant="primary" type="submit" disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               {isSaving ? 'Saving...' : 'Save Settings'}
             </Button>

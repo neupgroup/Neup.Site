@@ -62,7 +62,7 @@ export function RichTextEditor({
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('bold')}
           >
             <Bold className="h-4 w-4" />
@@ -70,7 +70,7 @@ export function RichTextEditor({
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('italic')}
           >
             <Italic className="h-4 w-4" />
@@ -78,7 +78,7 @@ export function RichTextEditor({
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('strikeThrough')}
           >
             <Strikethrough className="h-4 w-4" />
@@ -86,7 +86,7 @@ export function RichTextEditor({
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('formatBlock', '<h2>')}
           >
             <Heading2 className="h-4 w-4" />
@@ -94,7 +94,7 @@ export function RichTextEditor({
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('formatBlock', '<h3>')}
           >
             <Heading3 className="h-4 w-4" />
@@ -102,7 +102,7 @@ export function RichTextEditor({
            <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('formatBlock', '<blockquote>')}
           >
             <Quote className="h-4 w-4" />
@@ -110,7 +110,7 @@ export function RichTextEditor({
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('insertUnorderedList')}
           >
             <List className="h-4 w-4" />
@@ -118,14 +118,14 @@ export function RichTextEditor({
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="plain"
             onClick={() => execCommand('insertOrderedList')}
           >
             <ListOrdered className="h-4 w-4" />
           </Button>
           <Popover>
             <PopoverTrigger asChild>
-                <Button type="button" size="icon" variant="ghost">
+                <Button type="button" size="icon" variant="plain">
                     <LinkIcon className="h-4 w-4" />
                 </Button>
             </PopoverTrigger>
@@ -155,7 +155,7 @@ export function RichTextEditor({
           </Popover>
            <Popover>
             <PopoverTrigger asChild>
-                <Button type="button" size="icon" variant="ghost">
+                <Button type="button" size="icon" variant="plain">
                     <ImageIcon className="h-4 w-4" />
                 </Button>
             </PopoverTrigger>

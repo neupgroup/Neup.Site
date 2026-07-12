@@ -158,7 +158,7 @@ export default function ProfilePage() {
                                 <CardTitle>Asset Information</CardTitle>
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
-                            <Button asChild variant="outline">
+                            <Button asChild variant="tertiary">
                                 <Link href="/settings/profile/logo">
                                     <ImageIcon className="mr-2" /> Manage Logos
                                 </Link>
@@ -220,7 +220,7 @@ export default function ProfilePage() {
                                 <Button type="button" variant="destructive" size="icon" onClick={() => removeSocial(index)}><Trash2 /></Button>
                             </div>
                         ))}
-                        {socialFields.length < 9 && <Button type="button" variant="outline" onClick={() => appendSocial({ platformName: '', url: '' })}><Plus className="mr-2" /> Add Social Profile</Button>}
+                        {socialFields.length < 9 && <Button type="button" variant="tertiary" onClick={() => appendSocial({ platformName: '', url: '' })}><Plus className="mr-2" /> Add Social Profile</Button>}
                     </CardContent>
                 </Card>
 
@@ -240,7 +240,7 @@ export default function ProfilePage() {
                                     <Button type="button" variant="destructive" size="icon" onClick={() => removeEmail(index)}><Trash2 /></Button>
                                 </div>
                             ))}
-                            {emailFields.length < 9 && <Button type="button" variant="outline" size="sm" onClick={() => appendEmail({ value: '' })}><Plus className="mr-2" /> Add Email</Button>}
+                            {emailFields.length < 9 && <Button type="button" variant="tertiary" size="sm" onClick={() => appendEmail({ value: '' })}><Plus className="mr-2" /> Add Email</Button>}
                         </div>
                         <div className="space-y-2">
                             <Label>Contact Phone Numbers</Label>
@@ -252,12 +252,12 @@ export default function ProfilePage() {
                                     <Button type="button" variant="destructive" size="icon" onClick={() => removePhone(index)}><Trash2 /></Button>
                                 </div>
                             ))}
-                            {phoneFields.length < 9 && <Button type="button" variant="outline" size="sm" onClick={() => appendPhone({ value: '' })}><Plus className="mr-2" /> Add Phone</Button>}
+                            {phoneFields.length < 9 && <Button type="button" variant="tertiary" size="sm" onClick={() => appendPhone({ value: '' })}><Plus className="mr-2" /> Add Phone</Button>}
                         </div>
                     </CardContent>
                 </Card>
                 <CardFooter>
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
+                    <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
                         {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save All Changes
                     </Button>
