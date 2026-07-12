@@ -9,7 +9,7 @@ import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
 import { getAsset } from './editor/asset';
-import type { ServerLog } from '@/schemas/server';
+import type { ServerLog } from '@/services/server/type';
 import { generateReverseProxyBashScript } from './server/management/reverse-proxy-config';
 import { updateAllocationPort } from './allocations';
 

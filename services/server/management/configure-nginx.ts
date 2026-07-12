@@ -2,7 +2,7 @@
 "use server";
 
 import { getAsset } from "@/services/editor/asset";
-import type { DomainSetting } from '@/schemas/asset';
+import type { DomainSetting } from '@/services/asset/type';
 
 interface NginxConfigParams {
     urls: string[];

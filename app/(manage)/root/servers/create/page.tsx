@@ -20,7 +20,7 @@ import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
 import { createServer } from '@/services/servers';
 import Link from 'next/link';
-import { Server } from '@/schemas/server';
+import { Server } from '@/services/server/type';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 

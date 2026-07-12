@@ -13,7 +13,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
 import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/services/codebase';
 import { deployCodebaseFromStorage } from '@/services/deploy';
-import type { CodeFile } from '@/schemas/codebase';
+import type { CodeFile } from '@/services/codebase/type';
 import { useToast } from '@/core/hooks/use-toast';
 import { format } from 'date-fns';
 import { usePageTitle } from '@/core/hooks/use-page-title';

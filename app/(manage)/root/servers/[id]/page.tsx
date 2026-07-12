@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 
 import { getServer } from '@/services/servers';
-import type { Server } from '@/schemas/server';
+import type { Server } from '@/services/server/type';
 
 import { logErrorToDatabase } from '@/core/helpers/logger';
 

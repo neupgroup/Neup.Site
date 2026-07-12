@@ -6,7 +6,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
-import type { EnvironmentVariable } from '@/schemas/environment';
+import type { EnvironmentVariable } from '@/services/environment/type';
 import { cookies } from 'next/headers';
 import { markEnvironmentsAsPending } from './structure';
 

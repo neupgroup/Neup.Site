@@ -3,7 +3,7 @@
 
 import React, { FC, useEffect, useState } from 'react';
 import { cn } from '@/core/lib/utils';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 
 interface HighlightBoxProps {
   hoveredElementId: string | null;

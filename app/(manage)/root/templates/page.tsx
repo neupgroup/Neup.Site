@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTemplates, deleteTemplate } from '@/services/editor/templates';
-import { Template } from '@/schemas/template';
+import { Template } from '@/services/template/type';
 import { Button } from '@/components/ui/button';
 import {
   Card,

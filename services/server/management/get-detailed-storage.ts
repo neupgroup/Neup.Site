@@ -4,7 +4,7 @@
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/core/helpers/logger';
-import type { ServerAllocationStorage } from '@/schemas/server';
+import type { ServerAllocationStorage } from '@/services/server/type';
 
 function parseDuOutput(output: string): { value: number; unit: string } {
     const match = output.match(/^([\d,.]+)([GMK]?)/);

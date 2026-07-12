@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
 import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/services/structure';
-import type { Structure, Deployment } from '@/schemas/asset';
+import type { Structure, Deployment } from '@/services/asset/type';
 import { getSiteServers } from '@/services/servers';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';

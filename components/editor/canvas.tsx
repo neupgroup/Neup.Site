@@ -3,7 +3,7 @@
 
 import React, { type FC, useRef, DragEvent, Fragment } from 'react';
 import { cn } from '@/core/utils';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 
 import { useElementResizing } from '@/core/hooks/useElementResizing';
 

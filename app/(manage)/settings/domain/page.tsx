@@ -7,7 +7,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { saveAsset } from '@/services/editor/asset';
-import type { Asset } from '@/schemas/asset';
+import type { Asset } from '@/services/asset/type';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

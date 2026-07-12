@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSiteServers } from '@/services/servers';
-import type { Server } from '@/schemas/server';
+import type { Server } from '@/services/server/type';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket, Globe } from 'lucide-react';
@@ -12,8 +12,8 @@ import { runCommand } from '@/services/runner';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
-import type { ServerAllocation } from '@/schemas/server';
-import type { Asset, Structure } from '@/schemas/asset';
+import type { ServerAllocation } from '@/services/server/type';
+import type { Asset, Structure } from '@/services/asset/type';
 import { getPm2Processes } from '@/services/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/services/server/management/check-build';
 import { useProfile } from '@/inapp/context/profilecontext';

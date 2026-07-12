@@ -5,7 +5,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getDatalist, deleteDatalist } from '@/services/datalists';
-import { Datalist } from '@/schemas/datalist';
+import { Datalist } from '@/services/datalist/type';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/core/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
-import type { Server } from '@/schemas/server';
+import type { Server } from '@/services/server/type';
 import { runCommand } from '@/services/runner';
 import { getUptime } from '@/services/server/management/get-uptime';
 import { Skeleton } from '@/components/ui/skeleton';

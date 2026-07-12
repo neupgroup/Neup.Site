@@ -6,7 +6,7 @@ import { GripVertical } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/core/utils';
 import { useToast } from '@/core/hooks/use-toast';
-import type { Member } from '@/schemas/member';
+import type { Member } from '@/services/member/type';
 import { saveMemberOrder } from '@/services/members';
 
 /*

@@ -1,5 +1,5 @@
-import type { AssetTheme, GeneratedTheme } from '@/schemas/asset';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { AssetTheme, GeneratedTheme } from '@/services/asset/type';
+import type { CanvasElementData } from '@/services/canvas/type';
 
 function propertiesToStyleString(properties: Record<string, any>): string {
     const style: React.CSSProperties = {};

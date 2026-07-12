@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/core/hooks/use-toast';
 import { usePageTitle } from '@/core/hooks/use-page-title';
-import type { Team } from '@/schemas/team';
+import type { Team } from '@/services/team/type';
 import { createMember } from '@/services/members';
 import { getTeams } from '@/services/teams';
 

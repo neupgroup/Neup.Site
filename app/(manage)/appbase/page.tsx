@@ -28,7 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import type { AppBaseFile } from '@/schemas/app-base';
+import type { AppBaseFile } from '@/services/app-base/type';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
 

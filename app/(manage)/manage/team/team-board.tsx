@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/core/utils';
 import { useToast } from '@/core/hooks/use-toast';
-import type { Member } from '@/schemas/member';
-import type { Team } from '@/schemas/team';
+import type { Member } from '@/services/member/type';
+import type { Team } from '@/services/team/type';
 import { saveTeamBoardOrder } from '@/services/teams';
 
 /*

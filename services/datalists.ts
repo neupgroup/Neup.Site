@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
-import type { Datalist } from '@/schemas/datalist';
+import type { Datalist } from '@/services/datalist/type';
 
 /**
  * Creates a new datalist.

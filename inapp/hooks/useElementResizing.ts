@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, MouseEvent } from 'react';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 
 interface ResizingState {
     elementId: string;

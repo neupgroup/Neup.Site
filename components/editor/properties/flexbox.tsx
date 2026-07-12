@@ -2,7 +2,7 @@
 import React, { FC } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface FlexboxPropertiesProps {

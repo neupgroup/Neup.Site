@@ -1,9 +1,9 @@
 
 
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 import type { Path } from '@/services/paths';
-import type { Redirect } from '@/schemas/redirect';
-import type { EnvironmentVariable } from '@/schemas/environment';
+import type { Redirect } from '@/services/redirect/type';
+import type { EnvironmentVariable } from '@/services/environment/type';
 
 export interface GeneratedTheme {
   light: Record<string, string>;

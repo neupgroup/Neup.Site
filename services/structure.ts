@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
-import type { Structure, PathStructure, Deployment, Asset } from '@/schemas/asset';
-import type { EnvironmentVariable } from '@/schemas/environment';
+import type { Structure, PathStructure, Deployment, Asset } from '@/services/asset/type';
+import type { EnvironmentVariable } from '@/services/environment/type';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import { getPages } from './editor/pages';
 import { getAsset } from './editor/asset';

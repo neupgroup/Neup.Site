@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { KeyRound, Plus, Trash2, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
 import { createToken, getTokens, revokeToken } from '@/services/tokens';
-import { ApiToken } from '@/schemas/token';
+import { ApiToken } from '@/services/token/type';
 import { format } from 'date-fns';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 

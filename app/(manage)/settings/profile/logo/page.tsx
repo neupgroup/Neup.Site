@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { useProfile } from '@/inapp/context/profilecontext';
 import { saveAsset } from '@/services/editor/asset';
-import type { Asset, AssetIcons } from '@/schemas/asset';
+import type { Asset, AssetIcons } from '@/services/asset/type';
 import { useToast } from '@/core/hooks/use-toast';
 
 export default function LogoUploadPage() {

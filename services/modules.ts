@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { cookies } from 'next/headers';
-import type { Asset } from '@/schemas/asset';
+import type { Asset } from '@/services/asset/type';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 
 export interface AssetModule {

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import type { AssetTheme } from '@/schemas/asset';
+import type { AssetTheme } from '@/services/asset/type';
 import { generateThemeFromColor } from '@/core/helpers/color';
 
 /*

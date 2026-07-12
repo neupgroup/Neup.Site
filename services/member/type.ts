@@ -1,6 +1,6 @@
 
 /*
-::neup.documentation::member-schema
+::neup.documentation::service-member-type
 
 ::public
 

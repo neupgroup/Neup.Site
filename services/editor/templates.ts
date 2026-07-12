@@ -1,7 +1,7 @@
 
 'use server';
 
-import { Template } from '@/schemas/template';
+import { Template } from '@/services/template/type';
 import { prisma as db } from '@/core/database/prisma';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 

@@ -1,5 +1,5 @@
 
-import type { CanvasElementData } from './canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 
 export interface Template {
   id: string;

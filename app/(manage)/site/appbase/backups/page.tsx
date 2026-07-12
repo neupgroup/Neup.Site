@@ -11,7 +11,7 @@ import { AlertCircle, RotateCcw, HardDrive } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/core/hooks/use-toast';
 import { getAppBaseBackups, restoreAppBaseBackup } from '@/services/app-base';
-import { type AppBaseBackup } from '@/schemas/app-base';
+import { type AppBaseBackup } from '@/services/app-base/type';
 import { getSiteServers } from '@/services/servers';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';

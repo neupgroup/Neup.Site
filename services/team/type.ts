@@ -1,6 +1,6 @@
 
 /*
-::neup.documentation::team-schema
+::neup.documentation::service-team-type
 
 ::public
 

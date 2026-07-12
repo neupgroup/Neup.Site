@@ -1,6 +1,6 @@
 
 import React, { FC } from 'react';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PropertyInput from './property-input';
 

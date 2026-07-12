@@ -8,7 +8,7 @@ import { getAccountId } from './accounts';
 import { NodeSSH } from 'node-ssh';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import { prisma as db } from '@/core/database/prisma';
-import type { AppBaseBackup, AppBaseFile } from '@/schemas/app-base';
+import type { AppBaseBackup, AppBaseFile } from '@/services/app-base/type';
 import { cookies } from 'next/headers';
 import { markAppBaseAsPending } from './structure';
 

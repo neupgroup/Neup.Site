@@ -4,7 +4,7 @@
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import { convertJsonToJsx } from '@/inapp/helpers/json-to-jsx';
 import { cookies } from 'next/headers';
-import { Page } from '@/schemas/asset';
+import { Page } from '@/services/asset/type';
 import { prisma as db } from '@/core/database/prisma';
 import { getPathsForPage } from '@/services/paths';
 import { markStructureAsPending } from '@/services/structure';

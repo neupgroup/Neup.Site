@@ -4,7 +4,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 import { NextResponse } from 'next/server';
 import { cookies, headers } from 'next/headers';
-import type { Redirect } from '@/schemas/redirect';
+import type { Redirect } from '@/services/redirect/type';
 
 async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
   const cookieStore = await cookies();

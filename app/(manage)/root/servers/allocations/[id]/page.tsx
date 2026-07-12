@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllocation, deleteAllocation } from '@/services/allocations';
-import { Allocation } from '@/schemas/allocation';
+import { Allocation } from '@/services/server/allocation/type';
 import {
   Card,
   CardContent,

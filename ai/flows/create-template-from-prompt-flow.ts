@@ -8,7 +8,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { CanvasElementDataSchema, type CanvasElementData } from '@/schemas/canvas';
+import { CanvasElementDataSchema, type CanvasElementData } from '@/services/canvas/type';
 
 const TemplateFromPromptOutputSchema = z.object({
   elements: z.array(CanvasElementDataSchema).describe("An array of canvas elements that make up the component."),

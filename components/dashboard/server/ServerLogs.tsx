@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } from 'lucide-react';
 import { getServerLogs } from '@/services/server-logs';
-import type { ServerLog } from '@/schemas/server';
+import type { ServerLog } from '@/services/server/type';
 import { formatDistanceToNow } from 'date-fns';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import { cn } from '@/core/utils';

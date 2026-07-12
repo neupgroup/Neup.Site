@@ -2,7 +2,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { Asset, AssetTheme, AssetIcons } from '@/schemas/asset';
+import { Asset, AssetTheme, AssetIcons } from '@/services/asset/type';
 import { generateThemeFromColor } from '@/core/helpers/color';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';

@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from './accounts';
-import type { Asset } from '@/schemas/asset';
+import type { Asset } from '@/services/asset/type';
 
 /**
  * Fetches all assets owned by the current account ID.

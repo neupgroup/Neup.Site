@@ -3,7 +3,7 @@
 
 import React, { FC, useEffect, useState, useCallback, Fragment } from 'react';
 import { Settings, Database, ArrowUp, ArrowDown, Copy, Trash2, CornerUpLeft } from 'lucide-react';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 import { elementDefinitions } from '@/components/elements';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

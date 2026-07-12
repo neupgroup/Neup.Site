@@ -2,7 +2,7 @@
 'use client';
 import { FC, useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';

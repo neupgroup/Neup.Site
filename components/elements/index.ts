@@ -1,4 +1,4 @@
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 import { button } from './button';
 import { container } from './container';
 import { div } from './div';

@@ -65,7 +65,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/core/utils';
 import { useProfile } from '@/inapp/context/profilecontext';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Asset, AssetTheme } from '@/schemas/asset';
+import type { Asset, AssetTheme } from '@/services/asset/type';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';

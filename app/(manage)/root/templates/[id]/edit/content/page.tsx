@@ -3,7 +3,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { getTemplate, saveTemplate } from '@/services/editor/templates';
-import { Template } from '@/schemas/template';
+import { Template } from '@/services/template/type';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';

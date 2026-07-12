@@ -5,7 +5,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
-import { ApiToken } from '@/schemas/token';
+import { ApiToken } from '@/services/token/type';
 
 export async function createToken(name: string, tokenHash: string, tokenPrefix: string): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();

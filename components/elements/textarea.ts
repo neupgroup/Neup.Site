@@ -1,4 +1,4 @@
-import type { CanvasElementData } from "@/schemas/canvas";
+import type { CanvasElementData } from "@/services/canvas/type";
 
 export const textarea: CanvasElementData = {
     id: '',

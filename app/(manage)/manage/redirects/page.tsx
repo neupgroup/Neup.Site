@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redirects';
-import type { Redirect } from '@/schemas/redirect';
+import type { Redirect } from '@/services/redirect/type';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { getAsset } from '@/services/editor/asset';
 import { cn } from '@/core/utils';
-import type { Asset } from '@/schemas/asset';
+import type { Asset } from '@/services/asset/type';
 
 
 export const metadata: Metadata = {

@@ -3,7 +3,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
-import type { ServerLog } from '@/schemas/server';
+import type { ServerLog } from '@/services/server/type';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 
 /**

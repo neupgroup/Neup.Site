@@ -10,7 +10,7 @@ import Canvas from '@/components/editor/canvas';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import { savePage, createPage } from '@/services/editor/pages';
 import { useToast } from '@/core/hooks/use-toast';
-import type { CanvasElementData } from '@/schemas/canvas';
+import type { CanvasElementData } from '@/services/canvas/type';
 import { elementDefinitions } from '@/components/elements';
 import HighlightBox from './HighlightBox'; // Import HighlightBox
 import { cn } from '@/core/lib/utils';

@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Sun, Moon, Loader2, Save, Plus, Trash2, Contrast } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
 import { saveAsset } from '@/services/editor/asset';
-import type { AssetTheme } from '@/schemas/asset';
+import type { AssetTheme } from '@/services/asset/type';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useProfile } from '@/inapp/context/profilecontext';
 
