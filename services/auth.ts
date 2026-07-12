@@ -3,6 +3,7 @@
 
 import { cookies } from 'next/headers'
 import { db } from '@/core/lib/db';
+import { createDefaultAssetTheme } from '@/services/themes';
 
 export async function setAssetIdCookie(assetId: string) {
   if (!assetId) {
@@ -12,16 +13,29 @@ export async function setAssetIdCookie(assetId: string) {
   try {
     const existing = await db.asset.findUnique({ where: { id: assetId }, select: { id: true } });
     if (!existing) {
-      await db.asset.create({
-        data: {
-          id: assetId,
-          name: assetId,
-          status: 'active',
-          type: 'corporate portfolio',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      });
+      const now = new Date();
+      const defaultTheme = createDefaultAssetTheme();
+
+      await db.$transaction([
+        db.asset.create({
+          data: {
+            id: assetId,
+            name: assetId,
+            status: 'active',
+            type: 'corporate portfolio',
+            createdAt: now,
+            updatedAt: now,
+          },
+        }),
+        db.theme.create({
+          data: {
+            id: assetId,
+            theme: defaultTheme as any,
+            createdAt: now,
+            updatedAt: now,
+          },
+        }),
+      ]);
     }
 
     // Set the cookie after ensuring the asset document exists

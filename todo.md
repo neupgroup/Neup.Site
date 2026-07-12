@@ -5,4 +5,5 @@
 - [ ] Resolve current `npm run typecheck` failures in generated Next validators, appbase/codebase/templates/tokens/datalists/site pages, editor elements, schemas/canvas, and shared services.
 - [ ] Add Neup documentation blocks for the shared app shell files reviewed during the `/manage/team` fix, including `app/layout.tsx`, `app/not-found.tsx`, `core/context/ProfileContext.tsx`, `components/ui/sidebar.tsx`, `components/ui/toaster.tsx`, `components/ui/avatar.tsx`, and `components/ui/table.tsx`.
 - [ ] Add Neup documentation blocks for font and app-rendering surfaces reviewed during the Outfit font update, including `app/globals.css`, `tailwind.config.ts`, `app/(public)/[...slug]/page.tsx`, and `core/lib/json-to-html.ts`.
+- [ ] Add Neup documentation blocks for existing asset creation and color utility files reviewed during the default theme update, including `services/assets.ts`, `services/auth.ts`, and `core/lib/color-utils.ts`.
 - [ ] Investigate and fix the remaining baseline `npm run typecheck` errors across app routes, services, and schema typings after the Prisma client/runtime issue is resolved.

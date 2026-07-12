@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { db } from '@/core/lib/db';
 import { getAccountId } from './accounts';
 import { normalizeUrl } from '@/core/lib/url-utils';
+import { createDefaultAssetTheme } from '@/services/themes';
 
 export interface AssetSummary {
   id: string;
@@ -79,6 +80,8 @@ export async function createAssetForAccount(input: {
     id: assetId,
     name,
   };
+  const now = new Date();
+  const defaultTheme = createDefaultAssetTheme();
 
   try {
     await db.$transaction([
@@ -88,6 +91,14 @@ export async function createAssetForAccount(input: {
         update: {},
       }),
       db.asset.create({ data: assetData }),
+      db.theme.create({
+        data: {
+          id: assetId,
+          theme: defaultTheme as any,
+          createdAt: now,
+          updatedAt: now,
+        },
+      }),
       db.profile.createMany({
         data: [
           ...(input.logoUrl?.trim()
