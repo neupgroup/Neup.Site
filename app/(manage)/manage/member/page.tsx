@@ -50,7 +50,7 @@ export default async function ManageMemberPage() {
         <div className="grid gap-4">
           <Link
             href="/manage/member/addMember"
-            className="grid gap-4 rounded-lg border border-dashed bg-background px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
+            className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <Plus className="h-5 w-5 text-muted-foreground" />
@@ -69,7 +69,7 @@ export default async function ManageMemberPage() {
         <div className="grid gap-4">
           <Link
             href="/manage/member/addMember"
-            className="grid gap-4 rounded-lg border border-dashed bg-background px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
+            className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <Plus className="h-5 w-5 text-muted-foreground" />

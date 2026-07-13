@@ -181,7 +181,7 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
               clearClickSuppression();
             }}
             className={cn(
-              'grid cursor-pointer gap-4 rounded-lg border bg-background px-5 py-4 transition-[transform,opacity,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing md:grid-cols-[auto_1fr_auto] md:items-center',
+              'grid cursor-pointer gap-4 rounded-lg border bg-card px-5 py-4 transition-[transform,opacity,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing md:grid-cols-[auto_1fr_auto] md:items-center',
               dropTargetId === member.id ? 'border-primary bg-primary/5' : '',
               isDragged ? 'opacity-40' : '',
               isPreviewShifted || isSettling ? 'opacity-45' : '',
