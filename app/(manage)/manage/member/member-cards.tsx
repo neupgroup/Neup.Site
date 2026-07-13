@@ -99,7 +99,7 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
   const clearClickSuppression = () => {
     setTimeout(() => {
       suppressClickRef.current = false;
-    }, 0);
+    }, 150);
   };
 
   return (
@@ -112,93 +112,93 @@ export function MemberCards({ initialMembers }: MemberCardsProps) {
         const isSettling = settlingMemberIds.has(member.id);
 
         return (
-        <article
-          key={member.id}
-          draggable
-          role="button"
-          tabIndex={0}
-          onClick={() => {
-            if (suppressClickRef.current) {
-              return;
-            }
+          <article
+            key={member.id}
+            draggable
+            role="button"
+            tabIndex={0}
+            onClick={() => {
+              if (suppressClickRef.current) {
+                return;
+              }
 
-            router.push(`/manage/members/${member.id}`);
-          }}
-          onKeyDown={(event) => {
-            if (event.key !== 'Enter' && event.key !== ' ') {
-              return;
-            }
+              router.push(`/manage/members/${member.id}`);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') {
+                return;
+              }
 
-            event.preventDefault();
-            router.push(`/manage/members/${member.id}`);
-          }}
-          onDragStart={(event) => {
-            clearSettleTimeout();
-            suppressClickRef.current = true;
-            setDraggedMemberId(member.id);
-            setPreviewMembers(members);
-            setSettlingMemberIds(new Set());
-            event.dataTransfer.effectAllowed = 'move';
-          }}
-          onDragOver={(event) => {
-            event.preventDefault();
-            if (!draggedMemberId || draggedMemberId === member.id) {
-              return;
-            }
-
-            setDropTargetId(member.id);
-            setPreviewMembers(moveMember(members, draggedMemberId, member.id));
-          }}
-          onDragLeave={() => setDropTargetId((current) => (current === member.id ? null : current))}
-          onDrop={(event) => {
-            event.preventDefault();
-
-            if (!draggedMemberId) {
-              return;
-            }
-
-            const previousMembers = members;
-            const nextMembers = previewMembers ?? moveMember(members, draggedMemberId, member.id);
-            const movedMemberIds = getMovedMemberIds(previousMembers, nextMembers);
-
-            setMembers(nextMembers);
-            setPreviewMembers(null);
-            setDraggedMemberId(null);
-            setDropTargetId(null);
-            setSettlingMemberIds(movedMemberIds);
-            clearSettleTimeout();
-            clearClickSuppression();
-            settleTimeoutRef.current = setTimeout(() => {
+              event.preventDefault();
+              router.push(`/manage/members/${member.id}`);
+            }}
+            onDragStart={(event) => {
+              clearSettleTimeout();
+              suppressClickRef.current = true;
+              setDraggedMemberId(member.id);
+              setPreviewMembers(members);
               setSettlingMemberIds(new Set());
-              settleTimeoutRef.current = null;
-            }, 220);
-            persistOrder(nextMembers, previousMembers);
-          }}
-          onDragEnd={() => {
-            setDraggedMemberId(null);
-            setDropTargetId(null);
-            setPreviewMembers(null);
-            clearClickSuppression();
-          }}
-          className={cn(
-            'grid cursor-pointer gap-4 rounded-lg border bg-background px-5 py-4 transition-[transform,opacity,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing md:grid-cols-[auto_1fr_auto] md:items-center',
-            dropTargetId === member.id ? 'border-primary bg-primary/5' : '',
-            isDragged ? 'opacity-40' : '',
-            isPreviewShifted || isSettling ? 'opacity-45' : '',
-            isPending ? 'opacity-70' : '',
-          )}
-        >
-          <Avatar className="h-12 w-12">
-            {member.imageUrl ? <AvatarImage src={member.imageUrl} alt={member.name} /> : null}
-            <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
-          </Avatar>
-          <div className="min-w-0">
-            <div className="font-medium">{member.name}</div>
-            <div className="text-sm text-muted-foreground">{member.role}</div>
-            <div className="text-sm text-muted-foreground">{member.email}</div>
-          </div>
-          <GripVertical className="justify-self-end h-4 w-4 text-muted-foreground" />
-        </article>
+              event.dataTransfer.effectAllowed = 'move';
+            }}
+            onDragOver={(event) => {
+              event.preventDefault();
+              if (!draggedMemberId || draggedMemberId === member.id) {
+                return;
+              }
+
+              setDropTargetId(member.id);
+              setPreviewMembers(moveMember(members, draggedMemberId, member.id));
+            }}
+            onDragLeave={() => setDropTargetId((current) => (current === member.id ? null : current))}
+            onDrop={(event) => {
+              event.preventDefault();
+
+              if (!draggedMemberId) {
+                return;
+              }
+
+              const previousMembers = members;
+              const nextMembers = previewMembers ?? moveMember(members, draggedMemberId, member.id);
+              const movedMemberIds = getMovedMemberIds(previousMembers, nextMembers);
+
+              setMembers(nextMembers);
+              setPreviewMembers(null);
+              setDraggedMemberId(null);
+              setDropTargetId(null);
+              setSettlingMemberIds(movedMemberIds);
+              clearSettleTimeout();
+              clearClickSuppression();
+              settleTimeoutRef.current = setTimeout(() => {
+                setSettlingMemberIds(new Set());
+                settleTimeoutRef.current = null;
+              }, 220);
+              persistOrder(nextMembers, previousMembers);
+            }}
+            onDragEnd={() => {
+              setDraggedMemberId(null);
+              setDropTargetId(null);
+              setPreviewMembers(null);
+              clearClickSuppression();
+            }}
+            className={cn(
+              'grid cursor-pointer gap-4 rounded-lg border bg-background px-5 py-4 transition-[transform,opacity,border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing md:grid-cols-[auto_1fr_auto] md:items-center',
+              dropTargetId === member.id ? 'border-primary bg-primary/5' : '',
+              isDragged ? 'opacity-40' : '',
+              isPreviewShifted || isSettling ? 'opacity-45' : '',
+              isPending ? 'opacity-70' : '',
+            )}
+          >
+            <Avatar className="h-12 w-12">
+              {member.imageUrl ? <AvatarImage src={member.imageUrl} alt={member.name} /> : null}
+              <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <div className="font-medium">{member.name}</div>
+              <div className="text-sm text-muted-foreground">{member.role}</div>
+              <div className="text-sm text-muted-foreground">{member.email}</div>
+            </div>
+            <GripVertical className="justify-self-end h-4 w-4 text-muted-foreground" />
+          </article>
         );
       })}
     </div>

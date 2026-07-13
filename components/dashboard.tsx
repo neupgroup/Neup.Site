@@ -81,8 +81,8 @@ function NavLink({ href, children, currentPath, onClick }: { href: string; child
       href={href}
       onClick={onClick}
       className={cn(
-        'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-        isActive && 'bg-sidebar-accent text-sidebar-accent-foreground'
+        'flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
+        isActive && 'bg-primary/25 text-primary hover:bg-primary/30 active:bg-primary/40'
       )}
     >
       {children}
@@ -189,7 +189,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
   const hideSitename = asset?.hideSitename;
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow">
+    <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow-lg">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
           <Link href="/" className="flex items-center gap-4">
@@ -251,7 +251,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
 
       {/* Mobile Menu */}
       <div className={cn(
-        "fixed top-16 left-0 right-0 bottom-0 z-30 bg-background/95 backdrop-blur-sm transition-all duration-300 ease-in-out md:hidden",
+        "fixed top-16 left-0 right-0 bottom-0 z-30 bg-background transition-all duration-300 ease-in-out md:hidden",
         isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
       )}>
         <ScrollArea className="h-full">
@@ -263,7 +263,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
 
       <div className="mx-auto grid w-full max-w-[1440px] lg:grid-cols-[280px_1fr]">
         {/* Sidebar */}
-        <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-card lg:sticky lg:top-16 lg:flex">
+        <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-background lg:sticky lg:top-16 lg:flex">
           <div className="flex flex-1 flex-col overflow-y-auto p-4 custom-scrollbar">
             <MainNavContent currentPath={pathname} isAuthenticated={isAuthenticated} />
           </div>
