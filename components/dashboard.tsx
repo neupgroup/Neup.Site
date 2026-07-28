@@ -60,6 +60,7 @@ import {
   FolderKanban,
   FileLock,
   Replace,
+  RefreshCw,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/core/utils';
@@ -111,6 +112,7 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
         <NavLink href="/manage/contacts" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>
         <NavLink href="/manage/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
         <NavLink href="/manage/products" currentPath={currentPath} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></NavLink>
+        <NavLink href="/manage/syncer" currentPath={currentPath} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></NavLink>
         <NavLink href="/manage/articles" currentPath={currentPath} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></NavLink>
         <NavLink href="/manage/referrals" currentPath={currentPath} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></NavLink>
       </div>
