@@ -12,7 +12,8 @@ import { MemberCards } from './member-cards';
 
 ::public
 
-Landing page for member management with direct member cards and action buttons.
+Landing page for member management with team-grouped member cards and action
+buttons.
 
 ::public end
 ::end
@@ -46,7 +47,7 @@ export default async function ManageMemberPage() {
         </Alert>
       ) : null}
 
-      {!members?.length ? (
+      {!members?.length && !teams?.length ? (
         <div className="grid gap-4">
           <Link
             href="/manage/member/addMember"
@@ -62,7 +63,8 @@ export default async function ManageMemberPage() {
           </Link>
           <div className="rounded-lg border-2 border-dashed p-12 text-center text-muted-foreground">
             <Users className="mx-auto mb-4 h-12 w-12" />
-            <p>No members found.</p>
+            <p className="font-medium text-foreground">No employees found.</p>
+            <p className="mt-1 text-sm">Create the first member to show employees here.</p>
           </div>
         </div>
       ) : (
@@ -79,7 +81,7 @@ export default async function ManageMemberPage() {
               <div className="text-sm text-muted-foreground">Create another member from the dedicated add form.</div>
             </div>
           </Link>
-          <MemberCards initialMembers={members} />
+          <MemberCards initialTeams={teams ?? []} initialMembers={members ?? []} />
         </div>
       )}
     </div>
