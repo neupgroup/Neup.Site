@@ -1,6 +1,6 @@
 
 import React, { type FC } from 'react';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 import { LayoutTemplate } from 'lucide-react';
 
 const DropIndicator: FC<{className?: string}> = ({className}) => (

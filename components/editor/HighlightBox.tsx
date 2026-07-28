@@ -2,7 +2,7 @@
 'use client';
 
 import React, { FC, useEffect, useState } from 'react';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 import type { CanvasElementData } from '@/services/canvas/type';
 
 interface HighlightBoxProps {

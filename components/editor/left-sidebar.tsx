@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box, Container, FormInput, File, Layers, Component, Heading1, Video, List, Pilcrow, MessageSquare, Square, CaseSensitive, Code, Search, ArrowUp, ArrowDown, Copy, Trash2, CornerUpLeft } from 'lucide-react';
 import type { CanvasElementData } from '@/services/canvas/type';
 import type { Template } from '@/services/template/type';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 import { logErrorToDatabase } from '@/core/helpers/logger';
 import Link from 'next/link';
 import { getTemplates } from '@/services/editor/templates';

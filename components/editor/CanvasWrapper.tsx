@@ -1,7 +1,7 @@
 'use client';
 
 import React, { type FC, DragEvent } from 'react';
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 
 interface CanvasWrapperProps {
   id: string;

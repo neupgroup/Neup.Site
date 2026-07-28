@@ -13,7 +13,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import type { CanvasElementData } from '@/services/canvas/type';
 import { elementDefinitions } from '@/components/elements';
 import HighlightBox from './HighlightBox'; // Import HighlightBox
-import { cn } from '@/core/lib/utils';
+import { cn } from '@/core/utils';
 
 interface EditorProps {
     initialElements: CanvasElementData[];
