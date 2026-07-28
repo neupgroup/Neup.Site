@@ -1,19 +1,35 @@
 
 'use client';
 
+/*
+::neup.documentation::core-use-page-title-hook
+::title Page Title Hook
+
+Sets the browser document title from generic title parts.
+
+::public
+
+Use `usePageTitle()` in client components that need to synchronize `document.title`.
+
+::public end
+
+::private
+
+This hook intentionally accepts title parts from the caller instead of reading profile or asset context from core.
+
+::private end
+
+::end
+*/
+
 import { useEffect } from 'react';
-import { useProfile } from '@/inapp/context/ProfileContext';
+import { formatAppTitle } from '@/core/metadata';
 
 /**
- * Custom hook to set page title with asset name
- * @param pageTitle - The title of the current page (e.g., "Home", "Status", "Settings")
- * @param assetNameOverride - Optional override for the asset name
+ * Custom hook to set page title with optional caller-owned context.
  */
-export function usePageTitle(pageTitle: string, assetNameOverride?: string) {
-    const { asset } = useProfile();
-
+export function usePageTitle(pageTitle: string, contextTitle?: string) {
     useEffect(() => {
-        const assetName = assetNameOverride || asset?.name || 'Asset';
-        document.title = `${pageTitle}, ${assetName}`;
-    }, [pageTitle, asset?.name, assetNameOverride]);
+        document.title = formatAppTitle(pageTitle, contextTitle);
+    }, [pageTitle, contextTitle]);
 }
