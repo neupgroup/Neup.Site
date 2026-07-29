@@ -61,6 +61,7 @@ import {
   FileLock,
   Replace,
   RefreshCw,
+  ExternalLink,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/core/utils';
@@ -75,23 +76,51 @@ import { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getCookie } from '@/inapp/helpers/session-manager';
 
+const navLinkClassName = (isActive: boolean) => cn(
+  'flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
+  isActive && 'bg-primary/25 text-primary hover:bg-primary/30 active:bg-primary/40'
+);
+
 function NavLink({ href, children, currentPath, onClick }: { href: string; children: React.ReactNode; currentPath: string, onClick?: () => void }) {
   const isActive = href === '/' ? currentPath === href : currentPath.startsWith(href);
   return (
     <Link
       href={href}
       onClick={onClick}
-      className={cn(
-        'flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
-        isActive && 'bg-primary/25 text-primary hover:bg-primary/30 active:bg-primary/40'
-      )}
+      className={navLinkClassName(isActive)}
     >
       {children}
     </Link>
   );
 }
 
-function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { currentPath: string, isAuthenticated: boolean, onLinkClick?: () => void }) {
+function buildAnalyticsUrl(propertyId: string | null, currentUrl: string) {
+  const params = new URLSearchParams({
+    property: propertyId ?? '',
+    'backTo.app': 'site',
+    'backTo.url': currentUrl,
+  });
+
+  return `https://neupgroup.com/analytics?${params.toString()}`;
+}
+
+function ExternalAnalyticsNavLink({ propertyId, currentUrl, children, onClick }: { propertyId: string | null; currentUrl: string; children: React.ReactNode; onClick?: () => void }) {
+  return (
+    <a
+      href={buildAnalyticsUrl(propertyId, currentUrl)}
+      onClick={(event) => {
+        event.preventDefault();
+        onClick?.();
+        window.location.assign(buildAnalyticsUrl(propertyId ?? getCookie('assetId'), window.location.href));
+      }}
+      className={navLinkClassName(false)}
+    >
+      {children}
+    </a>
+  );
+}
+
+function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, onLinkClick }: { currentPath: string, currentUrl: string, isAuthenticated: boolean, propertyId: string | null, onLinkClick?: () => void }) {
   return (
     <nav className="flex flex-col gap-2">
       <NavLink href="/" currentPath={currentPath} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
@@ -110,7 +139,7 @@ function MainNavContent({ currentPath, isAuthenticated, onLinkClick }: { current
         <NavLink href="/manage/permissions" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
         <NavLink href="/manage/redirects" currentPath={currentPath} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></NavLink>
         <NavLink href="/manage/contacts" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>
-        <NavLink href="/manage/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
+        <ExternalAnalyticsNavLink propertyId={propertyId} currentUrl={currentUrl} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span><ExternalLink className="h-3.5 w-3.5" aria-label="Opens external page" /></ExternalAnalyticsNavLink>
         <NavLink href="/manage/products" currentPath={currentPath} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></NavLink>
         <NavLink href="/manage/syncer" currentPath={currentPath} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></NavLink>
         <NavLink href="/manage/articles" currentPath={currentPath} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></NavLink>
@@ -226,10 +255,14 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [propertyId, setPropertyId] = useState<string | null>(null);
+  const [currentUrl, setCurrentUrl] = useState('');
 
   useEffect(() => {
     // This component is client-side, so we can check for the cookie here.
     const assetId = getCookie('assetId');
+    setPropertyId(assetId);
+    setCurrentUrl(window.location.href);
     setIsAuthenticated(!!assetId);
   }, [pathname]); // Re-check on every navigation
 
@@ -258,7 +291,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
       )}>
         <ScrollArea className="h-full">
           <div className="p-4">
-            <MainNavContent currentPath={pathname} isAuthenticated={isAuthenticated} onLinkClick={closeMobileMenu} />
+            <MainNavContent currentPath={pathname} currentUrl={currentUrl} isAuthenticated={isAuthenticated} propertyId={propertyId} onLinkClick={closeMobileMenu} />
           </div>
         </ScrollArea>
       </div>
@@ -267,7 +300,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
         {/* Sidebar */}
         <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-background lg:sticky lg:top-16 lg:flex">
           <div className="flex flex-1 flex-col overflow-y-auto p-4 custom-scrollbar">
-            <MainNavContent currentPath={pathname} isAuthenticated={isAuthenticated} />
+            <MainNavContent currentPath={pathname} currentUrl={currentUrl} isAuthenticated={isAuthenticated} propertyId={propertyId} />
           </div>
         </aside>
 
