@@ -70,7 +70,7 @@ model Asset {
   members        Member[]
 
   @@index([ownerAccountId])
-  @@map("assets")
+  @@map("projects")
 }
 
 model Profile {
