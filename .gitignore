@@ -46,4 +46,6 @@ firestore-debug.log
 
 # Neup standard system.
 core
+neup.core
 logica
+neup.logica
