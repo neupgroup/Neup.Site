@@ -4,7 +4,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { cookies } from 'next/headers';
 import type { Asset } from '@/services/asset/type';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 
 export interface AssetModule {
   active: boolean;

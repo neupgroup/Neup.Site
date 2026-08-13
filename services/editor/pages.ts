@@ -1,7 +1,7 @@
 
 'use server';
 
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 import { convertJsonToJsx } from '@/inapp/helpers/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/services/asset/type';

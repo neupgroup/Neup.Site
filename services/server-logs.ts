@@ -4,7 +4,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import type { ServerLog } from '@/services/server/type';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 
 /**
  * Creates a new server log entry.

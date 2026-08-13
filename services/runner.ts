@@ -4,7 +4,7 @@ import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { getPrivateServerDetails, updateServer } from '@/services/servers'; // Make sure updateServer is imported
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';

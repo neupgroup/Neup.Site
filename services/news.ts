@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 
 export interface NewsArticle {
     id: string;

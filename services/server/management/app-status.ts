@@ -3,7 +3,7 @@
 import { resolveAppPath } from './server-paths';
 import { readFileContent } from './read-file-content';
 import { saveFileContent } from './save-file-content';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 
 export interface DeploymentStepStatus {
     status: 'pending' | 'success' | 'failure' | 'loading' | 'warning' | 'built' | 'notBuilt' | 'building';

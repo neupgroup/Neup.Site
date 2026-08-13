@@ -5,7 +5,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { Team } from '@/services/team/type';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 
 /*
 ::neup.documentation::team-service

@@ -5,7 +5,7 @@ import { getPage } from '@/services/editor/pages';
 import { getTemplates } from '@/services/editor/templates';
 import { getSections } from '@/services/editor/sections';
 import type { CanvasElementData } from '@/services/canvas/type';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 
 export interface LibraryItem {
     id: string;

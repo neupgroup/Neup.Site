@@ -2,7 +2,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { cookies } from 'next/headers';
-import { normalizeUrl } from '@/core/helpers/url';
+import { normalizeUrl } from '@/core/helpers/link/url';
 
 type ProfileEntryInput = {
   subject: string;

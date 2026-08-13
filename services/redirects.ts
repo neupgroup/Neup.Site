@@ -3,7 +3,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import type { Redirect } from '@/services/redirect/type';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 import { getAccountId } from '@/services/accounts';
 import { cookies } from 'next/headers';
 import { markRedirectsAsPending } from './structure';

@@ -7,7 +7,7 @@ import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 import { savePage, createPage } from '@/services/editor/pages';
 import { useToast } from '@/core/hooks/use-toast';
 import type { CanvasElementData } from '@/services/canvas/type';

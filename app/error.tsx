@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase, logInfo } from '@/logica.logger';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
@@ -24,9 +24,16 @@ export default function GlobalError({
                 stack: error.stack,
                 source: 'global-error-boundary',
             });
-            console.log("Error logged to Firestore via server action.");
+            await logInfo({
+                message: 'Global error boundary reported an application error.',
+                source: 'global-error-boundary',
+                data: {
+                    digest: error.digest,
+                    name: error.name,
+                },
+            });
         } catch (loggingError) {
-            console.error("Failed to log error using server action:", loggingError);
+            console.error("Failed to log error using Logica logger:", loggingError);
         }
     };
     

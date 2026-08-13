@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/core/helpers/logger';
+import { logErrorToDatabase } from '@/logica.logger';
 
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 
