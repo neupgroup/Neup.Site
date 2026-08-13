@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export interface JobPosting {
   id: string;
@@ -40,7 +40,7 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
     revalidatePath('/manage/hiring');
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
+    await logger.error({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
     return { success: false, error: 'Failed to create job posting.' };
   }
 }
@@ -61,7 +61,7 @@ export async function getJobPostings(): Promise<{ success: boolean; postings?: J
     })) as JobPosting[];
     return { success: true, postings };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get job postings: ${e.message}`, stack: e.stack, source: 'getJobPostings' });
+    await logger.error({ message: `Failed to get job postings: ${e.message}`, stack: e.stack, source: 'getJobPostings' });
     return { success: false, error: 'Failed to fetch job postings.' };
   }
 }
@@ -89,7 +89,7 @@ export async function getJobPostingById(id: string): Promise<{ success: boolean;
         return { success: true, posting };
 
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to get job posting ${id}: ${e.message}`, stack: e.stack, source: 'getJobPostingById' });
+        await logger.error({ message: `Failed to get job posting ${id}: ${e.message}`, stack: e.stack, source: 'getJobPostingById' });
         return { success: false, error: 'Failed to fetch job posting.' };
     }
 }
@@ -114,7 +114,7 @@ export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting
         revalidatePath(`/manage/hiring/${id}`);
         return { success: true };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to update job posting ${id}: ${e.message}`, stack: e.stack, source: 'updateJobPosting' });
+        await logger.error({ message: `Failed to update job posting ${id}: ${e.message}`, stack: e.stack, source: 'updateJobPosting' });
         return { success: false, error: 'Failed to update job posting.' };
     }
 }
@@ -125,7 +125,7 @@ export async function deleteJobPosting(id: string): Promise<{ success: boolean; 
         revalidatePath('/manage/hiring');
         return { success: true };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to delete job posting ${id}: ${e.message}`, stack: e.stack, source: 'deleteJobPosting' });
+        await logger.error({ message: `Failed to delete job posting ${id}: ${e.message}`, stack: e.stack, source: 'deleteJobPosting' });
         return { success: false, error: 'Failed to delete job posting.' };
     }
 }

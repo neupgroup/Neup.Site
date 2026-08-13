@@ -48,7 +48,7 @@ function AssetList() {
         setIsSwitching(assetId);
         const result = await setAssetIdCookie(assetId);
         if (result.success) {
-            toast({ title: 'Asset Switched', description: `You are now working on asset: ${assetId}.` });
+            toast({ title: 'Project Switched', description: `You are now working on project: ${assetId}.` });
             setActiveAssetId(assetId);
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
@@ -58,7 +58,7 @@ function AssetList() {
 
     const handleCreateAsset = async () => {
         if (!createForm.name.trim()) {
-            toast({ variant: 'destructive', title: 'Missing name', description: 'Asset name is required.' });
+            toast({ variant: 'destructive', title: 'Missing name', description: 'Project name is required.' });
             return;
         }
 
@@ -105,8 +105,8 @@ function AssetList() {
         <div className="w-full space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Create Asset</CardTitle>
-                    <CardDescription>Start a new asset for your account.</CardDescription>
+                    <CardTitle>Create Project</CardTitle>
+                    <CardDescription>Start a new project for your account.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
@@ -114,7 +114,7 @@ function AssetList() {
                         <Input
                             value={createForm.name}
                             onChange={(event) => setCreateForm((prev) => ({ ...prev, name: event.target.value }))}
-                            placeholder="Asset name"
+                            placeholder="Project name"
                         />
                     </div>
                 </CardContent>
@@ -125,14 +125,14 @@ function AssetList() {
                         ) : (
                             <Plus className="mr-2 h-4 w-4" />
                         )}
-                        Create Asset
+                        Create Project
                     </Button>
                 </CardFooter>
             </Card>
 
             {currentAsset && (
                 <div>
-                    <h2 className="text-lg font-semibold mb-2">Current Asset</h2>
+                    <h2 className="text-lg font-semibold mb-2">Current Project</h2>
                     <div className="p-3 bg-primary/10 rounded-md flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-2 border-primary">
                         <div className="flex items-center gap-3">
                             <Package className="h-5 w-5 text-primary" />
@@ -151,7 +151,7 @@ function AssetList() {
 
             {otherAssets.length > 0 && (
                 <div>
-                     <h2 className="text-lg font-semibold mb-2 mt-8">Available Assets</h2>
+                     <h2 className="text-lg font-semibold mb-2 mt-8">Available Projects</h2>
                      <div className="space-y-2">
                         {otherAssets.map(asset => (
                             <div key={asset.id} className="p-3 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border">
@@ -179,7 +179,7 @@ function AssetList() {
                 <Card>
                     <CardContent className="p-6 text-center">
                         <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground">No assets found for your account.</p>
+                        <p className="text-muted-foreground">No projects found for your account.</p>
                     </CardContent>
                 </Card>
             )}
@@ -189,15 +189,15 @@ function AssetList() {
 
 
 export default function SwitchPage() {
-    usePageTitle('Switch Asset');
+    usePageTitle('Switch Project');
     const { loading: profileLoading } = useProfile();
     
     return (
         <div className="w-full">
             <header className="mb-8">
-                     <h1 className="text-3xl font-bold font-headline">Switch Asset</h1>
+                     <h1 className="text-3xl font-bold font-headline">Switch Project</h1>
                 <p className="text-muted-foreground">
-                         Choose an asset to continue working on.
+                         Choose a project to continue working on.
                 </p>
             </header>
 

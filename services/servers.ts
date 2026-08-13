@@ -4,7 +4,7 @@
 
 import { Server, ServerAllocation } from '@/services/server/type';
 import { cookies } from 'next/headers';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { prisma as db } from '@/core/database/prisma';
 
 /**
@@ -38,7 +38,7 @@ export async function createServer(serverData: Omit<Server, 'id' | 'createdOn' |
     });
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create server: ${e.message}`, stack: e.stack, source: 'createServer' });
+    await logger.error({ message: `Failed to create server: ${e.message}`, stack: e.stack, source: 'createServer' });
     return { success: false, error: 'Failed to create server.' };
   }
 }
@@ -73,7 +73,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
     })) as Server[];
     return { success: true, servers };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get servers: ${e.message}`, stack: e.stack, source: 'getServers' });
+    await logger.error({ message: `Failed to get servers: ${e.message}`, stack: e.stack, source: 'getServers' });
     return { success: false, error: 'Failed to fetch servers.' };
   }
 }
@@ -122,7 +122,7 @@ export async function getSiteServers(): Promise<{ success: boolean; servers?: (S
 
     return { success: true, servers };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get site servers: ${e.message}`, stack: e.stack, source: 'getSiteServers' });
+    await logger.error({ message: `Failed to get site servers: ${e.message}`, stack: e.stack, source: 'getSiteServers' });
     return { success: false, error: 'Failed to fetch site-specific servers.' };
   }
 }
@@ -157,7 +157,7 @@ export async function getServer(id: string): Promise<{ success: boolean, server?
     };
     return { success: true, server };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get server ${id}: ${e.message}`, stack: e.stack, source: 'getServer' });
+    await logger.error({ message: `Failed to get server ${id}: ${e.message}`, stack: e.stack, source: 'getServer' });
     return { success: false, error: 'Failed to fetch server.' };
   }
 }
@@ -192,7 +192,7 @@ export async function getPrivateServerDetails(id: string): Promise<{ success: bo
     };
     return { success: true, server };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get private server details for ${id}: ${e.message}`, stack: e.stack, source: 'getPrivateServerDetails' });
+    await logger.error({ message: `Failed to get private server details for ${id}: ${e.message}`, stack: e.stack, source: 'getPrivateServerDetails' });
     return { success: false, error: 'Failed to fetch server details.' };
   }
 }
@@ -234,7 +234,7 @@ export async function updateServer(id: string, serverData: Partial<Omit<Server, 
     await db.server.update({ where: { id }, data: dataToUpdate });
     return { success: true, id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update server ${id}: ${e.message}`, stack: e.stack, source: 'updateServer' });
+    await logger.error({ message: `Failed to update server ${id}: ${e.message}`, stack: e.stack, source: 'updateServer' });
     return { success: false, error: `Failed to update server ${id}.` };
   }
 }
@@ -247,7 +247,7 @@ export async function deleteServer(id: string) {
     await db.server.delete({ where: { id } });
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to delete server ${id}: ${e.message}`, stack: e.stack, source: 'deleteServer' });
+    await logger.error({ message: `Failed to delete server ${id}: ${e.message}`, stack: e.stack, source: 'deleteServer' });
     return { success: false, error: 'Failed to delete server.' };
   }
 }

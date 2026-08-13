@@ -10,7 +10,7 @@ import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } 
 import { getServerLogs } from '@/services/server-logs';
 import type { ServerLog } from '@/services/server/type';
 import { formatDistanceToNow } from 'date-fns';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { cn } from '@/core/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -32,7 +32,7 @@ const ServerLogs = ({ serverId }: { serverId: string }) => {
         } else {
             const errorMessage = result.error || 'Failed to load logs.';
             setLogsError(errorMessage);
-            logErrorToDatabase({
+            logger.error({
                 message: `Client-side error in fetchLogs for serverId: ${serverId}. Error: ${errorMessage}`,
                 stack: new Error().stack,
                 source: 'ServerLogs.fetchLogs',

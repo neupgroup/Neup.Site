@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { markStructureAsPending } from './structure';
 
 export interface Path {
@@ -45,7 +45,7 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
 
     return { success: true, id: record.id };
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to add path: ${error.message}`,
       stack: error.stack,
       source: 'addPath',
@@ -76,7 +76,7 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
     })) as Path[];
     return { success: true, paths };
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to fetch paths for page ${pageId}: ${error.message}`,
       stack: error.stack,
       source: 'getPathsForPage',
@@ -107,7 +107,7 @@ export async function deletePath(id: string): Promise<{ success: boolean; error?
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to delete path ${id}: ${error.message}`,
       stack: error.stack,
       source: 'deletePath',

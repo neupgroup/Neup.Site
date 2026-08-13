@@ -4,7 +4,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import type { ServerLog } from '@/services/server/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 /**
  * Creates a new server log entry.
@@ -128,7 +128,7 @@ export async function getServerLogs({ serverId, page = 1, pageSize = 10 }: { ser
         return { logs, hasMore, success: true };
 
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to fetch server logs for serverId: ${serverId}: ${e.message}`, stack: e.stack, source: 'getServerLogs' });
+        await logger.error({ message: `Failed to fetch server logs for serverId: ${serverId}: ${e.message}`, stack: e.stack, source: 'getServerLogs' });
         return { error: 'Failed to load logs. Please check the error logs for more details.', success: false };
     }
 }

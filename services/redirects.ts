@@ -3,7 +3,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import type { Redirect } from '@/services/redirect/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { getAccountId } from '@/services/accounts';
 import { cookies } from 'next/headers';
 import { markRedirectsAsPending } from './structure';
@@ -39,7 +39,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'assetId' | 'cr
     revalidatePath('/manage/redirects');
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create redirect: ${e.message}`, stack: e.stack, source: 'createRedirect' });
+    await logger.error({ message: `Failed to create redirect: ${e.message}`, stack: e.stack, source: 'createRedirect' });
     return { success: false, error: 'Failed to create redirect.' };
   }
 }
@@ -70,7 +70,7 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
     })) as Redirect[];
     return { success: true, redirects, totalCount };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get redirects: ${e.message}`, stack: e.stack, source: 'getRedirects' });
+    await logger.error({ message: `Failed to get redirects: ${e.message}`, stack: e.stack, source: 'getRedirects' });
     return { success: false, error: 'Failed to fetch redirects.' };
   }
 }
@@ -92,7 +92,7 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
     revalidatePath('/manage/redirects');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to delete redirect ${id}: ${e.message}`, stack: e.stack, source: 'deleteRedirect' });
+    await logger.error({ message: `Failed to delete redirect ${id}: ${e.message}`, stack: e.stack, source: 'deleteRedirect' });
     return { success: false, error: 'Failed to delete redirect.' };
   }
 }
@@ -119,7 +119,7 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
     })) as Redirect[];
     return { success: true, redirects };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get all redirects: ${e.message}`, stack: e.stack, source: 'getAllRedirects' });
+    await logger.error({ message: `Failed to get all redirects: ${e.message}`, stack: e.stack, source: 'getAllRedirects' });
     return { success: false, error: 'Failed to fetch redirects.' };
   }
 }
@@ -213,7 +213,7 @@ export async function deployRedirects(): Promise<{ success: boolean; error?: str
 
   } catch (e: any) {
     if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToDatabase({ message: `Failed to deploy redirects: ${e.message}`, stack: e.stack, source: 'deployRedirects' });
+    await logger.error({ message: `Failed to deploy redirects: ${e.message}`, stack: e.stack, source: 'deployRedirects' });
     return { success: false, error: e.message };
   }
 }

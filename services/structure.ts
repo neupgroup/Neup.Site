@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
 import type { Structure, PathStructure, Deployment, Asset } from '@/services/asset/type';
 import type { EnvironmentVariable } from '@/services/environment/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { getPages } from './editor/pages';
 import { getAsset } from './editor/asset';
 import { getPrivateServerDetails } from '@/services/servers';
@@ -39,7 +39,7 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
     };
     return { success: true, structure };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to get structure: ${error.message}`, stack: error.stack, source: 'getStructure' });
+    await logger.error({ message: `Failed to get structure: ${error.message}`, stack: error.stack, source: 'getStructure' });
     return { success: false, error: 'Failed to get structure.' };
   }
 }
@@ -69,7 +69,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
     };
     return { success: true, deployment };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to get last deployment: ${error.message}`, stack: error.stack, source: 'getLastDeployment' });
+    await logger.error({ message: `Failed to get last deployment: ${error.message}`, stack: error.stack, source: 'getLastDeployment' });
     return { success: false, error: 'Failed to get last deployment.' };
   }
 }
@@ -102,7 +102,7 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to build structure: ${error.message}`, stack: error.stack, source: 'buildStructure' });
+    await logger.error({ message: `Failed to build structure: ${error.message}`, stack: error.stack, source: 'buildStructure' });
     return { success: false, error: 'Failed to build asset structure.' };
   }
 }
@@ -149,7 +149,7 @@ export async function createDeployment(): Promise<{ success: boolean; error?: st
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to create deployment: ${error.message}`, stack: error.stack, source: 'createDeployment' });
+    await logger.error({ message: `Failed to create deployment: ${error.message}`, stack: error.stack, source: 'createDeployment' });
     return { success: false, error: error.message || 'Failed to create deployment record.' };
   }
 }
@@ -257,7 +257,7 @@ async function uploadStructureToServer(assetId: string, structure: Structure, as
     return { success: true };
   } catch (e: any) {
     if (logId) await updateServerLog(logId, { status: 'failed', output: `Internal Error: ${e.message}` });
-    await logErrorToDatabase({ message: `Failed to upload asset data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
+    await logger.error({ message: `Failed to upload asset data: ${e.message}`, stack: e.stack, source: 'uploadStructureToServer' });
     return { success: false, error: e.message };
   }
 }
@@ -288,7 +288,7 @@ export async function markStructureAsPending(assetId: string, paths: string[], i
       update: { status: 'pendingDeployment', structure: finalStructure as any, updatedAt: new Date() },
     });
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to mark structure as pending: ${error.message}`, stack: error.stack, source: 'markStructureAsPending' });
+    await logger.error({ message: `Failed to mark structure as pending: ${error.message}`, stack: error.stack, source: 'markStructureAsPending' });
   }
 }
 

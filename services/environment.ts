@@ -3,7 +3,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import type { EnvironmentVariable } from '@/services/environment/type';
@@ -38,7 +38,7 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
     revalidatePath('/site/environment');
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create environment variable: ${e.message}`, stack: e.stack, source: 'createEnvironmentVariable' });
+    await logger.error({ message: `Failed to create environment variable: ${e.message}`, stack: e.stack, source: 'createEnvironmentVariable' });
     return { success: false, error: 'Failed to create environment variable.' };
   }
 }
@@ -69,7 +69,7 @@ export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { pag
     })) as EnvironmentVariable[];
     return { success: true, variables, totalCount };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get environment variables: ${e.message}`, stack: e.stack, source: 'getEnvironmentVariables' });
+    await logger.error({ message: `Failed to get environment variables: ${e.message}`, stack: e.stack, source: 'getEnvironmentVariables' });
     return { success: false, error: 'Failed to fetch environment variables.' };
   }
 }
@@ -89,7 +89,7 @@ export async function deleteEnvironmentVariable(id: string): Promise<{ success: 
     revalidatePath('/site/environment');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to delete environment variable ${id}: ${e.message}`, stack: e.stack, source: 'deleteEnvironmentVariable' });
+    await logger.error({ message: `Failed to delete environment variable ${id}: ${e.message}`, stack: e.stack, source: 'deleteEnvironmentVariable' });
     return { success: false, error: 'Failed to delete environment variable.' };
   }
 }

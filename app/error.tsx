@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { logErrorToDatabase, logInfo } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
@@ -19,18 +19,16 @@ export default function GlobalError({
     const logError = async () => {
         console.error("Caught an error:", error);
         try {
-            await logErrorToDatabase({
+            await logger.error({
                 message: error.message,
                 stack: error.stack,
                 source: 'global-error-boundary',
             });
-            await logInfo({
+            await logger.type('info').log({
                 message: 'Global error boundary reported an application error.',
                 source: 'global-error-boundary',
-                data: {
-                    digest: error.digest,
-                    name: error.name,
-                },
+                digest: error.digest,
+                name: error.name,
             });
         } catch (loggingError) {
             console.error("Failed to log error using Logica logger:", loggingError);

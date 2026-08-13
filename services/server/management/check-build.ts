@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { getAsset } from '@/services/editor/asset';
 import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { runCommand } from '@/services/runner';
@@ -57,7 +57,7 @@ export async function checkPathExists(serverId: string, path?: string, isProduct
     return { exists: result.code === 0, resolvedPath: resolvedPathForOutput };
 
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to check path existence for server ${serverId} at path ${pathToCheck}: ${error.message}`,
       stack: error.stack,
       source: 'checkPathExists',
@@ -124,7 +124,7 @@ echo "--- Rebuild Complete ---"
     return { success: result.success, error: result.error, logId: result.logId };
   } catch (error: any) {
     const errorMessage = `Failed to rebuild application for server ${serverId}: ${error.message}`;
-    await logErrorToDatabase({
+    await logger.error({
       message: errorMessage,
       stack: error.stack,
       source: 'rebuildApplication',

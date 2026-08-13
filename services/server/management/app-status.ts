@@ -3,7 +3,7 @@
 import { resolveAppPath } from './server-paths';
 import { readFileContent } from './read-file-content';
 import { saveFileContent } from './save-file-content';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export interface DeploymentStepStatus {
     status: 'pending' | 'success' | 'failure' | 'loading' | 'warning' | 'built' | 'notBuilt' | 'building';
@@ -74,7 +74,7 @@ export async function updateAppStatus(serverId: string, partialStatus: Partial<A
         return saveResult;
 
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to update status: ${e.message}`, source: 'updateAppStatus', stack: e.stack });
+        await logger.error({ message: `Failed to update status: ${e.message}`, source: 'updateAppStatus', stack: e.stack });
         return { success: false, error: e.message };
     }
 }

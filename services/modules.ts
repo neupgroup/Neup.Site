@@ -4,7 +4,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { cookies } from 'next/headers';
 import type { Asset } from '@/services/asset/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export interface AssetModule {
   active: boolean;
@@ -33,7 +33,7 @@ export async function getAssetModules(): Promise<{ success: boolean; modules?: A
     const modules = (record?.modules as any) || {};
     return { success: true, modules };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get asset modules: ${e.message}`, stack: e.stack, source: 'getAssetModules' });
+    await logger.error({ message: `Failed to get asset modules: ${e.message}`, stack: e.stack, source: 'getAssetModules' });
     return { success: false, error: 'Failed to fetch asset modules.' };
   }
 }
@@ -74,7 +74,7 @@ export async function updateAssetModule(moduleId: string, isActive: boolean): Pr
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateAssetModule' });
+    await logger.error({ message: `Failed to update module ${moduleId}: ${e.message}`, stack: e.stack, source: 'updateAssetModule' });
     return { success: false, error: 'Failed to update module.' };
   }
 }

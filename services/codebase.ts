@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import type { CodeFile } from '@/services/codebase/type';
 
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'assetId'>) {
@@ -18,7 +18,7 @@ export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt'
     });
     return { success: true, id: record.id };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to upload code file: ${error.message}`, source: 'uploadCodeFile' });
+    await logger.error({ message: `Failed to upload code file: ${error.message}`, source: 'uploadCodeFile' });
     return { success: false, error: error.message || 'Failed to upload file.' };
   }
 }
@@ -51,7 +51,7 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
 
     return { success: true, files, totalCount };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to get code files: ${error.message}`, source: 'getCodeFiles' });
+    await logger.error({ message: `Failed to get code files: ${error.message}`, source: 'getCodeFiles' });
     return { success: false, error: error.message || 'Failed to fetch files.' };
   }
 }
@@ -67,7 +67,7 @@ export async function deleteCodeFile(id: string) {
     await db.codeFile.delete({ where: { id } });
     return { success: true };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to delete code file ${id}: ${error.message}`, source: 'deleteCodeFile' });
+    await logger.error({ message: `Failed to delete code file ${id}: ${error.message}`, source: 'deleteCodeFile' });
     return { success: false, error: error.message || 'Failed to delete file.' };
   }
 }

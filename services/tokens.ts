@@ -2,7 +2,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import { ApiToken } from '@/services/token/type';
@@ -28,7 +28,7 @@ export async function createToken(name: string, tokenHash: string, tokenPrefix: 
     revalidatePath('/settings/tokens');
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to create token: ${e.message}`,
       stack: e.stack,
       source: 'createToken',
@@ -59,7 +59,7 @@ export async function getTokens(): Promise<{ success: boolean; tokens?: ApiToken
     })) as ApiToken[];
     return { success: true, tokens };
   } catch (e: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to get tokens: ${e.message}`,
       stack: e.stack,
       source: 'getTokens',
@@ -82,7 +82,7 @@ export async function revokeToken(id: string): Promise<{ success: boolean; error
     revalidatePath('/settings/tokens');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to revoke token: ${e.message}`,
       stack: e.stack,
       source: 'revokeToken',

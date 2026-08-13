@@ -5,7 +5,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/services/server/command/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { getConfigureNginxCommand } from './server/management/configure-nginx';
 import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
 
@@ -316,7 +316,7 @@ export async function createServerCommand(data: Omit<ServerCommand, 'id' | 'crea
 
         return { success: true, id: record.id };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
+        await logger.error({ message: `Failed to create server command: ${e.message}`, stack: e.stack, source: 'createServerCommand' });
         return { success: false, error: 'Failed to create command.' };
     }
 }
@@ -367,7 +367,7 @@ export async function getServerCommands({
 
         return { success: true, commands, totalCount };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to get server commands: ${e.message}`, stack: e.stack, source: 'getServerCommands' });
+        await logger.error({ message: `Failed to get server commands: ${e.message}`, stack: e.stack, source: 'getServerCommands' });
         return { success: false, error: 'Failed to fetch commands.' };
     }
 }
@@ -396,7 +396,7 @@ export async function getServerCommand(id: string): Promise<{ success: boolean; 
         return { success: true, command };
 
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to get server command ${id}: ${e.message}`, stack: e.stack, source: 'getServerCommand' });
+        await logger.error({ message: `Failed to get server command ${id}: ${e.message}`, stack: e.stack, source: 'getServerCommand' });
         return { success: false, error: 'Failed to fetch command.' };
     }
 }
@@ -435,7 +435,7 @@ export async function updateServerCommand(id: string, data: Partial<Omit<ServerC
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to update server command ${id}: ${e.message}`, stack: e.stack, source: 'updateServerCommand' });
+        await logger.error({ message: `Failed to update server command ${id}: ${e.message}`, stack: e.stack, source: 'updateServerCommand' });
         return { success: false, error: 'Failed to update command.' };
     }
 }
@@ -446,7 +446,7 @@ export async function deleteServerCommand(id: string): Promise<{ success: boolea
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to delete server command ${id}: ${e.message}`, stack: e.stack, source: 'deleteServerCommand' });
+        await logger.error({ message: `Failed to delete server command ${id}: ${e.message}`, stack: e.stack, source: 'deleteServerCommand' });
         return { success: false, error: 'Failed to delete command.' };
     }
 }

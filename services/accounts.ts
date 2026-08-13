@@ -2,7 +2,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
@@ -63,7 +63,7 @@ export async function getLinkedAccounts(): Promise<{ accounts?: LinkedAccount[],
         })) as LinkedAccount[];
         return { accounts };
     } catch (e: any) {
-        await logErrorToDatabase({
+        await logger.error({
             message: `Failed to get linked accounts for user ${accountId}: ${e.message}`,
             stack: e.stack,
             source: 'getLinkedAccounts',
@@ -86,7 +86,7 @@ export async function deleteLinkedAccount(id: string): Promise<{ success: boolea
         }
         return { success: true };
     } catch (e: any) {
-        await logErrorToDatabase({
+        await logger.error({
             message: `Failed to delete linked account ${id} for user ${accountId}: ${e.message}`,
             stack: e.stack,
             source: 'deleteLinkedAccount',

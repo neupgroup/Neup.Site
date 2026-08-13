@@ -7,7 +7,7 @@ import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { getAsset } from './editor/asset';
 
 export interface PublicFile {
@@ -98,7 +98,7 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
 
         return { success: true, files };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to read remote public directory at ${directoryPath}: ${e.message}`, source: 'getPublicFiles' });
+        await logger.error({ message: `Failed to read remote public directory at ${directoryPath}: ${e.message}`, source: 'getPublicFiles' });
         return { success: false, error: `Could not read directory. ${e.message}` };
     } finally {
         ssh?.dispose();
@@ -127,7 +127,7 @@ export async function deletePublicFile(relativePath: string): Promise<{ success:
 
         return { success: true };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to delete remote path ${relativePath}: ${e.message}`, source: 'deletePublicFile' });
+        await logger.error({ message: `Failed to delete remote path ${relativePath}: ${e.message}`, source: 'deletePublicFile' });
         return { success: false, error: 'Failed to delete path.' };
     } finally {
         ssh?.dispose();

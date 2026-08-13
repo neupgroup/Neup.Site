@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export async function readFileContent(serverId: string, filePath: string): Promise<{ success: boolean; content?: string | null; error?: string }> {
   const ssh = new NodeSSH();
@@ -37,7 +37,7 @@ export async function readFileContent(serverId: string, filePath: string): Promi
     return { success: true, content: result.stdout };
 
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to read file content for server ${serverId} at path ${filePath}: ${error.message}`,
       stack: error.stack,
       source: 'readFileContent',

@@ -3,7 +3,7 @@
 
 import { Template } from '@/services/template/type';
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
@@ -28,7 +28,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
       return { success: true, id: record.id };
     }
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to save template: ${error.message}`, stack: error.stack, source: 'saveTemplate' });
+    await logger.error({ message: `Failed to save template: ${error.message}`, stack: error.stack, source: 'saveTemplate' });
     return { success: false, error: 'Failed to save template. An error has been logged.' };
   }
 }

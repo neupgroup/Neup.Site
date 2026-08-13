@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export interface Applicant {
   id: string;
@@ -33,7 +33,7 @@ export async function createApplicant(jobId: string, data: Partial<Omit<Applican
     revalidatePath(`/manage/hiring/${jobId}/applicants`);
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create applicant for job ${jobId}: ${e.message}`, stack: e.stack, source: 'createApplicant' });
+    await logger.error({ message: `Failed to create applicant for job ${jobId}: ${e.message}`, stack: e.stack, source: 'createApplicant' });
     return { success: false, error: 'Failed to create applicant.' };
   }
 }
@@ -56,7 +56,7 @@ export async function getApplicantsForJob(jobId: string): Promise<{ success: boo
     })) as Applicant[];
     return { success: true, applicants };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get applicants for job ${jobId}: ${e.message}`, stack: e.stack, source: 'getApplicantsForJob' });
+    await logger.error({ message: `Failed to get applicants for job ${jobId}: ${e.message}`, stack: e.stack, source: 'getApplicantsForJob' });
     return { success: false, error: 'Failed to fetch applicants.' };
   }
 }

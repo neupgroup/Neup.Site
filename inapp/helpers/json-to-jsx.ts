@@ -1,5 +1,5 @@
 
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import type { CanvasElementData } from '@/services/canvas/type';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {
@@ -239,7 +239,7 @@ ${componentBody}
 }
   `.trim();
 } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
         message: `Failed to convert JSON to JSX: ${error.message}`,
         stack: error.stack,
         source: 'convertJsonToJsx',

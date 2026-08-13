@@ -1,7 +1,7 @@
 
 'use server';
 
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { convertJsonToJsx } from '@/inapp/helpers/json-to-jsx';
 import { cookies } from 'next/headers';
 import { Page } from '@/services/asset/type';
@@ -21,7 +21,7 @@ export async function createPage(type: Page['type'] = 'editor') {
     });
     return { success: true, id: record.id };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to create page: ${error.message}`, stack: error.stack, source: 'createPage' });
+    await logger.error({ message: `Failed to create page: ${error.message}`, stack: error.stack, source: 'createPage' });
     return { success: false, error: 'Failed to create page. An error has been logged.' };
   }
 }
@@ -47,7 +47,7 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'asse
 
     return { success: true, id };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to save page ${id}: ${error.message}`, stack: error.stack, source: 'savePage' });
+    await logger.error({ message: `Failed to save page ${id}: ${error.message}`, stack: error.stack, source: 'savePage' });
     return { success: false, error: `Failed to save page ${id}. An error has been logged.` };
   }
 }
@@ -73,7 +73,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
     };
     return { success: true, page };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to fetch page with ID ${id}: ${error.message}`, stack: error.stack, source: 'getPage' });
+    await logger.error({ message: `Failed to fetch page with ID ${id}: ${error.message}`, stack: error.stack, source: 'getPage' });
     return { success: false, error: 'Failed to fetch page. An error has been logged.' };
   }
 }
@@ -103,7 +103,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
 
     return { success: true, pages };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to fetch pages: ${error.message}`, stack: error.stack, source: 'getPages' });
+    await logger.error({ message: `Failed to fetch pages: ${error.message}`, stack: error.stack, source: 'getPages' });
     return { success: false, error: 'Failed to fetch pages. An error has been logged.' };
   }
 }
@@ -127,7 +127,7 @@ export async function deletePage(id: string) {
 
     return { success: true };
   } catch (error: any) {
-    await logErrorToDatabase({ message: `Failed to delete page with ID ${id}: ${error.message}`, stack: error.stack, source: 'deletePage' });
+    await logger.error({ message: `Failed to delete page with ID ${id}: ${error.message}`, stack: error.stack, source: 'deletePage' });
     return { success: false, error: `Failed to delete page with ID ${id}. An error has been logged.` };
   }
 }

@@ -6,7 +6,7 @@ import { getPrivateServerDetails } from '@/services/servers';
 import { getAsset } from '@/services/editor/asset';
 import { getAccountId } from './accounts';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import { prisma as db } from '@/core/database/prisma';
 import type { AppBaseBackup, AppBaseFile } from '@/services/app-base/type';
 import { cookies } from 'next/headers';
@@ -50,7 +50,7 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
     const [internalFiles, externalFiles] = await Promise.all([fetchFilesFromPath('internal'), fetchFilesFromPath('external')]);
     return { success: true, files: [...internalFiles, ...externalFiles].sort((a, b) => a.name.localeCompare(b.name)) };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get app base files: ${e.message}`, source: 'getAppBaseFiles' });
+    await logger.error({ message: `Failed to get app base files: ${e.message}`, source: 'getAppBaseFiles' });
     return { success: false, error: e.message };
   }
 }
@@ -81,7 +81,7 @@ export async function createAppBaseFile(serverId: string, name: string, type: 'i
     if (assetId) await markAppBaseAsPending(assetId);
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create app base file: ${e.message}`, source: 'createAppBaseFile' });
+    await logger.error({ message: `Failed to create app base file: ${e.message}`, source: 'createAppBaseFile' });
     return { success: false, error: e.message };
   } finally {
     ssh?.dispose();
@@ -98,7 +98,7 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
     if (result.code !== 0) throw new Error(result.stderr);
     return { success: true, content: result.stdout };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get app base file content: ${e.message}`, source: 'getAppBaseFileContent' });
+    await logger.error({ message: `Failed to get app base file content: ${e.message}`, source: 'getAppBaseFileContent' });
     return { success: false, error: e.message };
   } finally {
     ssh?.dispose();
@@ -117,7 +117,7 @@ export async function saveAppBaseFileContent(serverId: string, fileName: string,
     if (assetId) await markAppBaseAsPending(assetId);
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to save app base file content: ${e.message}`, source: 'saveAppBaseFileContent' });
+    await logger.error({ message: `Failed to save app base file content: ${e.message}`, source: 'saveAppBaseFileContent' });
     return { success: false, error: e.message };
   } finally {
     ssh?.dispose();
@@ -138,7 +138,7 @@ export async function backupAppBaseFile(serverId: string, fileName: string, type
     });
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to backup file ${fileName}: ${e.message}`, source: 'backupAppBaseFile' });
+    await logger.error({ message: `Failed to backup file ${fileName}: ${e.message}`, source: 'backupAppBaseFile' });
     return { success: false, error: e.message };
   }
 }
@@ -164,7 +164,7 @@ export async function getAppBaseBackups(): Promise<{ success: boolean; backups?:
     }));
     return { success: true, backups };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get backups: ${e.message}`, source: 'getAppBaseBackups' });
+    await logger.error({ message: `Failed to get backups: ${e.message}`, source: 'getAppBaseBackups' });
     return { success: false, error: e.message };
   }
 }
@@ -180,7 +180,7 @@ export async function restoreAppBaseBackup(backupId: string, serverId: string): 
     if (!saveResult.success) throw new Error(saveResult.error || 'Failed to write restored content to server.');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to restore backup ${backupId}: ${e.message}`, source: 'restoreAppBaseBackup' });
+    await logger.error({ message: `Failed to restore backup ${backupId}: ${e.message}`, source: 'restoreAppBaseBackup' });
     return { success: false, error: e.message };
   }
 }

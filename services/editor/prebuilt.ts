@@ -5,7 +5,7 @@ import { getPage } from '@/services/editor/pages';
 import { getTemplates } from '@/services/editor/templates';
 import { getSections } from '@/services/editor/sections';
 import type { CanvasElementData } from '@/services/canvas/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export interface LibraryItem {
     id: string;
@@ -82,7 +82,7 @@ export async function getPrebuiltEditorData(id: string): Promise<{ success: bool
         return { success: true, data: { pageElements, libraryItems: combinedLibrary } };
 
     } catch (e: any) {
-        await logErrorToDatabase({
+        await logger.error({
             message: e.message,
             stack: e.stack,
             source: 'getPrebuiltEditorData',

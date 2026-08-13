@@ -3,7 +3,7 @@
 import { getPrivateServerDetails } from '@/services/servers';
 import { updateAllocationPort } from '@/services/allocations';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export async function detectAndAppPortFromPm2(assetId: string, serverId: string): Promise<{ success: boolean; port?: number; error?: string }> {
     const ssh = new NodeSSH();
@@ -61,7 +61,7 @@ export async function detectAndAppPortFromPm2(assetId: string, serverId: string)
 
     } catch (e: any) {
         console.error('Port detection error:', e);
-        await logErrorToDatabase({ message: `Port detection failed for ${assetId}: ${e.message}`, stack: e.stack, source: 'detectAndAppPortFromPm2' });
+        await logger.error({ message: `Port detection failed for ${assetId}: ${e.message}`, stack: e.stack, source: 'detectAndAppPortFromPm2' });
         return { success: false, error: e.message };
     } finally {
         ssh.dispose();

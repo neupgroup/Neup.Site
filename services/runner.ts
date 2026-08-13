@@ -4,7 +4,7 @@ import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { getPrivateServerDetails, updateServer } from '@/services/servers'; // Make sure updateServer is imported
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
@@ -390,7 +390,7 @@ echo ""
 
     } catch (error: any) {
         await updateServerLog(logId, { status: 'failed', output: error.message });
-        await logErrorToDatabase({ message: `Runner Error for server ${serverId}, log ${logId}:`, stack: error.stack, source: 'runCommand.main' });
+        await logger.error({ message: `Runner Error for server ${serverId}, log ${logId}:`, stack: error.stack, source: 'runCommand.main' });
         return { success: false, error: error.message, logId, finalStatus: 'failed' };
     }
 }

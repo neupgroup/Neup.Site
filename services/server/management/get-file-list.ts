@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export interface FileInfo {
   type: 'd' | '-' | 'l'; // directory, file, link
@@ -116,7 +116,7 @@ export async function getFileList(serverId: string, path: string = '/'): Promise
     return { success: true, files };
 
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to get file list for server ${serverId} at path ${path}: ${error.message}`,
       stack: error.stack,
       source: 'getFileList',

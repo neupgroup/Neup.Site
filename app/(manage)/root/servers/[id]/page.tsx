@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { getServer } from '@/services/servers';
 import type { Server } from '@/services/server/type';
 
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 import ServerInfoCard from '@/components/dashboard/server/ServerInfoCard';
 import ServerLogs from '@/components/dashboard/server/ServerLogs';
@@ -43,7 +43,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
 
       } catch (e: any) {
         setError('An unexpected error occurred while fetching server data.');
-        logErrorToDatabase({
+        logger.error({
           message: `Client-side error fetching server details for serverId: ${id}. Error: ${e.message}`,
           stack: e.stack,
           source: 'ServerDetailPage.fetchInitialData',

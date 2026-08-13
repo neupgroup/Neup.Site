@@ -5,7 +5,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { Member } from '@/services/member/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 /*
 ::neup.documentation::member-service
@@ -66,7 +66,7 @@ export async function createMember(data: Omit<Member, 'id'>): Promise<{ success:
     revalidatePath('/manage/team');
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create member: ${e.message}`, stack: e.stack, source: 'createMember' });
+    await logger.error({ message: `Failed to create member: ${e.message}`, stack: e.stack, source: 'createMember' });
     return { success: false, error: 'Failed to create member.' };
   }
 }
@@ -103,7 +103,7 @@ export async function getMembers(): Promise<{ success: boolean; members?: Member
     })) as Member[];
     return { success: true, members };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get members: ${e.message}`, stack: e.stack, source: 'getMembers' });
+    await logger.error({ message: `Failed to get members: ${e.message}`, stack: e.stack, source: 'getMembers' });
     return { success: false, error: 'Failed to fetch members.' };
   }
 }
@@ -145,7 +145,7 @@ export async function getMember(id: string): Promise<{ success: boolean; member?
     };
     return { success: true, member };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get member ${id}: ${e.message}`, stack: e.stack, source: 'getMember' });
+    await logger.error({ message: `Failed to get member ${id}: ${e.message}`, stack: e.stack, source: 'getMember' });
     return { success: false, error: 'Failed to fetch member.' };
   }
 }
@@ -188,7 +188,7 @@ export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>
     revalidatePath('/manage/team');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update member ${id}: ${e.message}`, stack: e.stack, source: 'updateMember' });
+    await logger.error({ message: `Failed to update member ${id}: ${e.message}`, stack: e.stack, source: 'updateMember' });
     return { success: false, error: 'Failed to update member.' };
   }
 }
@@ -209,7 +209,7 @@ export async function deleteMember(id: string): Promise<{ success: boolean; erro
     revalidatePath('/manage/team');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to delete member ${id}: ${e.message}`, stack: e.stack, source: 'deleteMember' });
+    await logger.error({ message: `Failed to delete member ${id}: ${e.message}`, stack: e.stack, source: 'deleteMember' });
     return { success: false, error: 'Failed to delete member.' };
   }
 }
@@ -247,7 +247,7 @@ export async function saveMemberOrder(memberIds: string[]): Promise<{ success: b
     revalidatePath('/manage/team');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to save member order: ${e.message}`, stack: e.stack, source: 'saveMemberOrder' });
+    await logger.error({ message: `Failed to save member order: ${e.message}`, stack: e.stack, source: 'saveMemberOrder' });
     return { success: false, error: 'Failed to save member order.' };
   }
 }

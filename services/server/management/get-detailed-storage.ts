@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 import type { ServerAllocationStorage } from '@/services/server/type';
 
 function parseDuOutput(output: string): { value: number; unit: string } {
@@ -83,7 +83,7 @@ export async function getDetailedStorage(
     return { success: true, data: storageData };
 
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to get detailed storage for server ${serverId}: ${error.message}`,
       stack: error.stack,
       source: 'getDetailedStorage',

@@ -3,7 +3,7 @@
 
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 
@@ -134,7 +134,7 @@ export async function testApiMethod(sourceId: string, method: SourceMethod, para
     if (!response.ok) throw new Error(`API returned status ${response.status}: ${await response.text()}`);
     return { success: true, data: await response.json() };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `API Test Failed for ${fullUrl}: ${e.message}`, source: 'testApiMethod', details: JSON.stringify({ sourceId, method, params }) });
+    await logger.error({ message: `API Test Failed for ${fullUrl}: ${e.message}`, source: 'testApiMethod', details: JSON.stringify({ sourceId, method, params }) });
     return { success: false, error: e.message };
   }
 }

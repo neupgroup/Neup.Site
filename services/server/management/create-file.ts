@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export async function createFile(serverId: string, filePath: string): Promise<{ success: boolean; error?: string }> {
   const ssh = new NodeSSH();
@@ -35,7 +35,7 @@ export async function createFile(serverId: string, filePath: string): Promise<{ 
     return { success: true };
 
   } catch (error: any) {
-    await logErrorToDatabase({
+    await logger.error({
       message: `Failed to create file for server ${serverId} at path ${filePath}: ${error.message}`,
       stack: error.stack,
       source: 'createFile',

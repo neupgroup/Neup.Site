@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export interface NewsArticle {
     id: string;
@@ -50,7 +50,7 @@ export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | '
     revalidatePath(`/news/${id}`);
     return { success: true, id: id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create news article: ${e.message}`, stack: e.stack, source: 'createNewsArticle' });
+    await logger.error({ message: `Failed to create news article: ${e.message}`, stack: e.stack, source: 'createNewsArticle' });
     return { success: false, error: 'Failed to create news article.' };
   }
 }
@@ -72,7 +72,7 @@ export async function getNewsArticles(): Promise<{ success: boolean; articles?: 
         })) as NewsArticle[];
         return { success: true, articles };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to get news articles: ${e.message}`, stack: e.stack, source: 'getNewsArticles' });
+        await logger.error({ message: `Failed to get news articles: ${e.message}`, stack: e.stack, source: 'getNewsArticles' });
         return { success: false, error: 'Failed to fetch news articles.' };
     }
 }
@@ -97,7 +97,7 @@ export async function getNewsArticleById(id: string): Promise<{ success: boolean
         return { success: true, article };
 
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to get news article ${id}: ${e.message}`, stack: e.stack, source: 'getNewsArticleById' });
+        await logger.error({ message: `Failed to get news article ${id}: ${e.message}`, stack: e.stack, source: 'getNewsArticleById' });
         return { success: false, error: 'Failed to fetch news article.' };
     }
 }
@@ -120,7 +120,7 @@ export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArtic
     
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update news article ${id}: ${e.message}`, stack: e.stack, source: 'updateNewsArticle' });
+    await logger.error({ message: `Failed to update news article ${id}: ${e.message}`, stack: e.stack, source: 'updateNewsArticle' });
     return { success: false, error: 'Failed to update news article.' };
   }
 }
@@ -131,7 +131,7 @@ export async function deleteNewsArticle(id: string): Promise<{ success: boolean;
         revalidatePath('/news');
         return { success: true };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to delete news article ${id}: ${e.message}`, stack: e.stack, source: 'deleteNewsArticle' });
+        await logger.error({ message: `Failed to delete news article ${id}: ${e.message}`, stack: e.stack, source: 'deleteNewsArticle' });
         return { success: false, error: 'Failed to delete news article.' };
     }
 }

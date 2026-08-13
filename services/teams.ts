@@ -5,7 +5,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import type { Team } from '@/services/team/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 /*
 ::neup.documentation::team-service
@@ -54,7 +54,7 @@ export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boo
     revalidatePath('/manage/team');
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create team: ${e.message}`, stack: e.stack, source: 'createTeam' });
+    await logger.error({ message: `Failed to create team: ${e.message}`, stack: e.stack, source: 'createTeam' });
     return { success: false, error: 'Failed to create team.' };
   }
 }
@@ -77,7 +77,7 @@ export async function getTeams(): Promise<{ success: boolean; teams?: Team[]; er
     })) as Team[];
     return { success: true, teams };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get teams: ${e.message}`, stack: e.stack, source: 'getTeams' });
+    await logger.error({ message: `Failed to get teams: ${e.message}`, stack: e.stack, source: 'getTeams' });
     return { success: false, error: 'Failed to fetch teams.' };
   }
 }
@@ -105,7 +105,7 @@ export async function getTeam(id: string): Promise<{ success: boolean; team?: Te
         };
         return { success: true, team };
     } catch (e: any) {
-        await logErrorToDatabase({ message: `Failed to get team ${id}: ${e.message}`, stack: e.stack, source: 'getTeam' });
+        await logger.error({ message: `Failed to get team ${id}: ${e.message}`, stack: e.stack, source: 'getTeam' });
         return { success: false, error: 'Failed to fetch team.' };
     }
 }
@@ -133,7 +133,7 @@ export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): P
     revalidatePath(`/manage/team/${id}`);
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update team ${id}: ${e.message}`, stack: e.stack, source: 'updateTeam' });
+    await logger.error({ message: `Failed to update team ${id}: ${e.message}`, stack: e.stack, source: 'updateTeam' });
     return { success: false, error: 'Failed to update team.' };
   }
 }
@@ -154,7 +154,7 @@ export async function deleteTeam(id: string): Promise<{ success: boolean; error?
     revalidatePath('/manage/team');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to delete team ${id}: ${e.message}`, stack: e.stack, source: 'deleteTeam' });
+    await logger.error({ message: `Failed to delete team ${id}: ${e.message}`, stack: e.stack, source: 'deleteTeam' });
     return { success: false, error: 'Failed to delete team.' };
   }
 }
@@ -238,7 +238,7 @@ export async function saveTeamBoardOrder(input: TeamBoardOrderInput): Promise<{ 
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to save team board order: ${e.message}`, stack: e.stack, source: 'saveTeamBoardOrder' });
+    await logger.error({ message: `Failed to save team board order: ${e.message}`, stack: e.stack, source: 'saveTeamBoardOrder' });
     return { success: false, error: 'Failed to save team board order.' };
   }
 }

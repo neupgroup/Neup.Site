@@ -4,7 +4,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import type { Allocation } from '@/services/server/allocation/type';
-import { logErrorToDatabase } from '@/logica.logger';
+import { logger } from '@/logica/logger';
 
 export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedOn' | 'status'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
@@ -22,7 +22,7 @@ export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedO
     revalidatePath('/root/servers/allocations');
     return { success: true, id: record.id };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to create allocation: ${e.message}`, stack: e.stack, source: 'createAllocation' });
+    await logger.error({ message: `Failed to create allocation: ${e.message}`, stack: e.stack, source: 'createAllocation' });
     return { success: false, error: 'Failed to create allocation.' };
   }
 }
@@ -52,7 +52,7 @@ export async function getAllocations(): Promise<{ success: boolean; allocations?
     })) as Allocation[];
     return { success: true, allocations };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get allocations: ${e.message}`, stack: e.stack, source: 'getAllocations' });
+    await logger.error({ message: `Failed to get allocations: ${e.message}`, stack: e.stack, source: 'getAllocations' });
     return { success: false, error: 'Failed to fetch allocations.' };
   }
 }
@@ -87,7 +87,7 @@ export async function getAllocation(id: string): Promise<{ success: boolean; all
     return { success: true, allocation };
 
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to get allocation ${id}: ${e.message}`, stack: e.stack, source: 'getAllocation' });
+    await logger.error({ message: `Failed to get allocation ${id}: ${e.message}`, stack: e.stack, source: 'getAllocation' });
     return { success: false, error: 'Failed to fetch allocation.' };
   }
 }
@@ -108,7 +108,7 @@ export async function updateAllocation(id: string, data: Partial<Omit<Allocation
     revalidatePath(`/root/servers/allocations/${id}`);
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update allocation ${id}: ${e.message}`, stack: e.stack, source: 'updateAllocation' });
+    await logger.error({ message: `Failed to update allocation ${id}: ${e.message}`, stack: e.stack, source: 'updateAllocation' });
     return { success: false, error: 'Failed to update allocation.' };
   }
 }
@@ -119,7 +119,7 @@ export async function deleteAllocation(id: string): Promise<{ success: boolean; 
     revalidatePath('/root/servers/allocations');
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to delete allocation ${id}: ${e.message}`, stack: e.stack, source: 'deleteAllocation' });
+    await logger.error({ message: `Failed to delete allocation ${id}: ${e.message}`, stack: e.stack, source: 'deleteAllocation' });
     return { success: false, error: 'Failed to delete allocation.' };
   }
 }
@@ -141,7 +141,7 @@ export async function updateAllocationPort(assetId: string, serverId: string, po
 
     return { success: true };
   } catch (e: any) {
-    await logErrorToDatabase({ message: `Failed to update allocation port for site ${assetId}: ${e.message}`, stack: e.stack, source: 'updateAllocationPort' });
+    await logger.error({ message: `Failed to update allocation port for site ${assetId}: ${e.message}`, stack: e.stack, source: 'updateAllocationPort' });
     return { success: false, error: 'Failed to update allocation port.' };
   }
 }
