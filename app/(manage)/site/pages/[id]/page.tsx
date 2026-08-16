@@ -5,13 +5,11 @@ import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPage, savePage, deletePage } from '@/services/editor/pages';
 import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/services/paths';
-import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import {
   AlertDialog,
@@ -25,14 +23,14 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import Link from 'next/link';
-import { AlertCircle, ArrowLeft, Pencil, Trash2, Eye, EyeOff, Loader2, Settings, X, Save, Layers } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Pencil, Trash2, Loader2, Settings, X, Save, Layers } from 'lucide-react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 
 
-export default function ViewPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ViewPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -44,7 +42,6 @@ export default function ViewPage({ params }: { params: { id: string } }) {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isPreviewVisible, setIsPreviewVisible] = useState(true);
 
   const fetchPageData = useCallback(async () => {
     setLoading(true);
@@ -123,8 +120,6 @@ export default function ViewPage({ params }: { params: { id: string } }) {
     }
   }
   
-  const htmlContent = page ? convertJsonToHtml(page.elements) : '';
-
   if (loading) {
       return (
         <div className="flex flex-col h-full space-y-4">
@@ -246,33 +241,6 @@ export default function ViewPage({ params }: { params: { id: string } }) {
             )}
           </div>
         </CardContent>
-      </Card>
-      
-       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Live Preview</CardTitle>
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="preview-mode"
-              checked={isPreviewVisible}
-              onCheckedChange={setIsPreviewVisible}
-            />
-            <Label htmlFor="preview-mode">
-              {isPreviewVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            </Label>
-          </div>
-        </CardHeader>
-        {isPreviewVisible && (
-          <CardContent>
-            <div className="relative w-full h-[60vh] border rounded-md">
-              <iframe
-                srcDoc={htmlContent}
-                title="Page Preview"
-                className="w-full h-full"
-              />
-            </div>
-          </CardContent>
-        )}
       </Card>
       
        <AlertDialog open={showDeleteConfirm} onOpenChange={(open) => !open && setShowDeleteConfirm(null)}>
