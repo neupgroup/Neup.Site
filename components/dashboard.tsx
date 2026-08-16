@@ -44,7 +44,6 @@ import {
   List,
   Wrench,
   UploadCloud,
-  BookOpen,
   Users,
   Briefcase,
   Menu,
@@ -169,7 +168,6 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Asset
         </div>
-        <NavLink href="/site/pages" currentPath={currentPath} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
         <NavLink href="/site/sources" currentPath={currentPath} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
         <NavLink href="/site/datalists" currentPath={currentPath} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></NavLink>
         <NavLink href="/site/servers" currentPath={currentPath} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
@@ -178,11 +176,19 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <NavLink href="/site/appbase" currentPath={currentPath} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></NavLink>
         <NavLink href="/site/environment" currentPath={currentPath} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></NavLink>
         <NavLink href="/analytics" currentPath={currentPath} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
-        <NavLink href="/site/theme" currentPath={currentPath} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
-        <NavLink href="/site/sections" currentPath={currentPath} onClick={onLinkClick}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
         <NavLink href="/site/deploy" currentPath={currentPath} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></NavLink>
         <NavLink href="/site/advanced" currentPath={currentPath} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></NavLink>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+          Editor
+        </div>
+        <NavLink href="/site/pages" currentPath={currentPath} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
+        <NavLink href="/site/sections" currentPath={currentPath} onClick={onLinkClick}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
+        <NavLink href="/editor/elements" currentPath={currentPath} onClick={onLinkClick}><Network className="h-4 w-4" /><span>Elements</span></NavLink>
         <NavLink href="/site/codebase" currentPath={currentPath} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></NavLink>
+        <NavLink href="/site/theme" currentPath={currentPath} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
       </div>
 
       {/* Root Section */}

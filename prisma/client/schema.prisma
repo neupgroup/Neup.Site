@@ -101,6 +101,7 @@ model Page {
   id                 String                  @id @default(cuid())
   assetId            String
   name               String                  @default("")
+  description        String?
   elements           Json?
   reactComponent     String?
   type               String                  @default("editor")

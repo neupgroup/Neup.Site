@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback, use, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPage, savePage, deletePage } from '@/services/editor/pages';
+import type { Page } from '@/services/editor/pages';
 import { getPathsForPage, addPath, deletePath as deletePathAction, type Path } from '@/services/paths';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -27,6 +28,7 @@ import { AlertCircle, ArrowLeft, Pencil, Trash2, Loader2, Settings, X, Save, Lay
 import { useToast } from '@/core/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 
 export default function ViewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -36,6 +38,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
 
   const [page, setPage] = useState<Page | null>(null);
   const [pageName, setPageName] = useState('');
+  const [pageDescription, setPageDescription] = useState('');
   const [paths, setPaths] = useState<Path[]>([]);
   const [newPathValue, setNewPathValue] = useState('');
   const [loading, setLoading] = useState(true);
@@ -53,6 +56,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
     if (pageResult.success && pageResult.page) {
       setPage(pageResult.page);
       setPageName(pageResult.page.name || '');
+      setPageDescription(pageResult.page.description || '');
     } else {
       setError(pageResult.error || 'Failed to load page content.');
     }
@@ -100,7 +104,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
   const handleSaveSettings = async () => {
     if (!page) return;
     setIsSaving(true);
-    const result = await savePage(id, { name: pageName });
+    const result = await savePage(id, { name: pageName, description: pageDescription.trim() || null });
     if(result.success) {
         toast({ title: 'Page Updated!', description: `The page settings have been saved.`});
     } else {
@@ -181,6 +185,17 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
                 <Input id="pageName" value={pageName} onChange={(e) => setPageName(e.target.value)} />
             </div>
 
+            <div className="space-y-2">
+                <Label htmlFor="pageDescription">Page Description</Label>
+                <Textarea
+                    id="pageDescription"
+                    value={pageDescription}
+                    onChange={(e) => setPageDescription(e.target.value)}
+                    placeholder="Briefly describe what this page is for."
+                    rows={3}
+                />
+            </div>
+
             <div className="space-y-4">
                 <Label>URL Paths</Label>
                 <div className="space-y-2">
@@ -243,7 +258,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
         </CardContent>
       </Card>
       
-       <AlertDialog open={showDeleteConfirm} onOpenChange={(open) => !open && setShowDeleteConfirm(null)}>
+       <AlertDialog open={showDeleteConfirm} onOpenChange={(open) => !open && setShowDeleteConfirm(false)}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -252,7 +267,7 @@ export default function ViewPage({ params }: { params: Promise<{ id: string }> }
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setShowDeleteConfirm(null)}>Cancel</AlertDialogCancel>
+              <AlertDialogCancel onClick={() => setShowDeleteConfirm(false)}>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

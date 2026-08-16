@@ -94,8 +94,9 @@ export default function PagesPage() {
 
   return (
     <div className="w-full">
-      <header className="flex items-center justify-between mb-8">
+      <header className="mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Pages</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Create and organize the pages visitors move through across your site.</p>
       </header>
       <div className="space-y-0">
           <Link
@@ -145,7 +146,6 @@ export default function PagesPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                           <h2 className="truncate text-base font-semibold">{page.name || page.id}</h2>
-                          <p className="text-sm text-muted-foreground">Last updated: {page.updatedAt ? new Date(page.updatedAt).toLocaleString() : 'N/A'}</p>
                           <div className="mt-2 flex flex-wrap items-center gap-2">
                             <LinkIcon className="h-4 w-4 text-muted-foreground" />
                             {page.paths && page.paths.length > 0 ? (

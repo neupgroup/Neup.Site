@@ -74,6 +74,7 @@ export interface Page {
   id: string;
   assetId: string;
   name: string;
+  description?: string | null;
   elements: CanvasElementData[];
   reactComponent?: string;
   type: 'editor' | 'ai' | 'html' | 'template';

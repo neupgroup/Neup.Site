@@ -10,6 +10,8 @@ import { getPathsForPage } from '@/services/paths';
 import { markStructureAsPending } from '@/services/structure';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/services/canvas/type';
 
+export type { Page } from '@/services/asset/type';
+
 function serializeCanvasElements(elements: unknown): CanvasElementData[] {
   const parsed = CanvasElementDataSchema.array().safeParse(
     JSON.parse(JSON.stringify(elements ?? [])),
@@ -74,6 +76,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
       id: record.id,
       assetId: record.assetId,
       name: record.name,
+      description: record.description,
       elements: serializeCanvasElements(record.elements),
       reactComponent: record.reactComponent ?? undefined,
       type: (record.type as Page['type']) || 'editor',
@@ -101,6 +104,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
         id: record.id,
         assetId: record.assetId,
         name: record.name,
+        description: record.description,
         elements: serializeCanvasElements(record.elements),
         reactComponent: record.reactComponent ?? undefined,
         type: (record.type as Page['type']) || 'editor',

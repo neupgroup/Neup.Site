@@ -174,6 +174,7 @@ exports.Prisma.PageScalarFieldEnum = {
   id: 'id',
   assetId: 'assetId',
   name: 'name',
+  description: 'description',
   elements: 'elements',
   reactComponent: 'reactComponent',
   type: 'type',

@@ -62,6 +62,7 @@ Columns:
 - id: String; primary key; default cuid()
 - assetId: String; references Asset.id
 - name: String; default ""
+- description: String?
 - elements: Json?
 - reactComponent: String?
 - type: String; default "editor"

@@ -2,7 +2,8 @@
 - [ ] Add Neup documentation for the current schema contract in `prisma/schema.prisma`.
 - [ ] Add Neup documentation coverage for the package scripts and dependency contract in `package.json`.
 - [ ] Review and upgrade Neup documentation coverage for remaining manage team routes after the `/manage/member` split.
-- [ ] Resolve current `npm run typecheck` failures from the latest type-only check in generated Next validators, appbase/codebase/templates/tokens/datalists/site pages, editor elements, `services/canvas/type.ts`, and shared services.
+- [ ] Resolve current `npm run typecheck` failures from the latest type-only check in generated Next validators, appbase/codebase/templates/tokens/datalists, editor elements, `services/canvas/type.ts`, and shared services.
+- [ ] Investigate the existing Next dev runtime error where client navigation logs `Only plain objects, and a few built-ins, can be passed to Client Components from Server Components`.
 - [ ] Add Neup documentation blocks for the shared app shell files reviewed during the `/manage/team` fix, including `app/layout.tsx`, `app/not-found.tsx`, `inapp/context/profilecontext.tsx`, `components/ui/sidebar.tsx`, `components/ui/toaster.tsx`, `components/ui/avatar.tsx`, and `components/ui/table.tsx`.
 - [ ] Add Neup documentation blocks for font and app-rendering surfaces reviewed during the Outfit font update, including `app/globals.css`, `tailwind.config.ts`, `app/(public)/[...slug]/page.tsx`, and `core/lib/json-to-html.ts`.
 - [ ] Add Neup documentation blocks for existing asset creation and color helper files reviewed during the default theme update, including `services/assets.ts`, `services/auth.ts`, and `core/helpers/color.ts`.

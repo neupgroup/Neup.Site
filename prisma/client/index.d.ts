@@ -11189,6 +11189,7 @@ export namespace Prisma {
     id: string | null
     assetId: string | null
     name: string | null
+    description: string | null
     reactComponent: string | null
     type: string | null
     createdAt: Date | null
@@ -11199,6 +11200,7 @@ export namespace Prisma {
     id: string | null
     assetId: string | null
     name: string | null
+    description: string | null
     reactComponent: string | null
     type: string | null
     createdAt: Date | null
@@ -11209,6 +11211,7 @@ export namespace Prisma {
     id: number
     assetId: number
     name: number
+    description: number
     elements: number
     reactComponent: number
     type: number
@@ -11222,6 +11225,7 @@ export namespace Prisma {
     id?: true
     assetId?: true
     name?: true
+    description?: true
     reactComponent?: true
     type?: true
     createdAt?: true
@@ -11232,6 +11236,7 @@ export namespace Prisma {
     id?: true
     assetId?: true
     name?: true
+    description?: true
     reactComponent?: true
     type?: true
     createdAt?: true
@@ -11242,6 +11247,7 @@ export namespace Prisma {
     id?: true
     assetId?: true
     name?: true
+    description?: true
     elements?: true
     reactComponent?: true
     type?: true
@@ -11326,6 +11332,7 @@ export namespace Prisma {
     id: string
     assetId: string
     name: string
+    description: string | null
     elements: JsonValue | null
     reactComponent: string | null
     type: string
@@ -11354,6 +11361,7 @@ export namespace Prisma {
     id?: boolean
     assetId?: boolean
     name?: boolean
+    description?: boolean
     elements?: boolean
     reactComponent?: boolean
     type?: boolean
@@ -11369,6 +11377,7 @@ export namespace Prisma {
     id?: boolean
     assetId?: boolean
     name?: boolean
+    description?: boolean
     elements?: boolean
     reactComponent?: boolean
     type?: boolean
@@ -11381,6 +11390,7 @@ export namespace Prisma {
     id?: boolean
     assetId?: boolean
     name?: boolean
+    description?: boolean
     elements?: boolean
     reactComponent?: boolean
     type?: boolean
@@ -11393,6 +11403,7 @@ export namespace Prisma {
     id?: boolean
     assetId?: boolean
     name?: boolean
+    description?: boolean
     elements?: boolean
     reactComponent?: boolean
     type?: boolean
@@ -11400,7 +11411,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "elements" | "reactComponent" | "type" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
+  export type PageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "description" | "elements" | "reactComponent" | "type" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
   export type PageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     paths?: boolean | Page$pathsArgs<ExtArgs>
@@ -11425,6 +11436,7 @@ export namespace Prisma {
       id: string
       assetId: string
       name: string
+      description: string | null
       elements: Prisma.JsonValue | null
       reactComponent: string | null
       type: string
@@ -11859,6 +11871,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Page", 'String'>
     readonly assetId: FieldRef<"Page", 'String'>
     readonly name: FieldRef<"Page", 'String'>
+    readonly description: FieldRef<"Page", 'String'>
     readonly elements: FieldRef<"Page", 'Json'>
     readonly reactComponent: FieldRef<"Page", 'String'>
     readonly type: FieldRef<"Page", 'String'>
@@ -42118,6 +42131,7 @@ export namespace Prisma {
     id: 'id',
     assetId: 'assetId',
     name: 'name',
+    description: 'description',
     elements: 'elements',
     reactComponent: 'reactComponent',
     type: 'type',
@@ -43057,6 +43071,7 @@ export namespace Prisma {
     id?: StringFilter<"Page"> | string
     assetId?: StringFilter<"Page"> | string
     name?: StringFilter<"Page"> | string
+    description?: StringNullableFilter<"Page"> | string | null
     elements?: JsonNullableFilter<"Page">
     reactComponent?: StringNullableFilter<"Page"> | string | null
     type?: StringFilter<"Page"> | string
@@ -43071,6 +43086,7 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
     elements?: SortOrderInput | SortOrder
     reactComponent?: SortOrderInput | SortOrder
     type?: SortOrder
@@ -43088,6 +43104,7 @@ export namespace Prisma {
     NOT?: PageWhereInput | PageWhereInput[]
     assetId?: StringFilter<"Page"> | string
     name?: StringFilter<"Page"> | string
+    description?: StringNullableFilter<"Page"> | string | null
     elements?: JsonNullableFilter<"Page">
     reactComponent?: StringNullableFilter<"Page"> | string | null
     type?: StringFilter<"Page"> | string
@@ -43102,6 +43119,7 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
     elements?: SortOrderInput | SortOrder
     reactComponent?: SortOrderInput | SortOrder
     type?: SortOrder
@@ -43119,6 +43137,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Page"> | string
     assetId?: StringWithAggregatesFilter<"Page"> | string
     name?: StringWithAggregatesFilter<"Page"> | string
+    description?: StringNullableWithAggregatesFilter<"Page"> | string | null
     elements?: JsonNullableWithAggregatesFilter<"Page">
     reactComponent?: StringNullableWithAggregatesFilter<"Page"> | string | null
     type?: StringWithAggregatesFilter<"Page"> | string
@@ -45523,6 +45542,7 @@ export namespace Prisma {
   export type PageCreateInput = {
     id?: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -45537,6 +45557,7 @@ export namespace Prisma {
     id?: string
     assetId: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -45549,6 +45570,7 @@ export namespace Prisma {
   export type PageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -45563,6 +45585,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -45576,6 +45599,7 @@ export namespace Prisma {
     id?: string
     assetId: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -45586,6 +45610,7 @@ export namespace Prisma {
   export type PageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -45597,6 +45622,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -48289,6 +48315,7 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     elements?: SortOrder
     reactComponent?: SortOrder
     type?: SortOrder
@@ -48300,6 +48327,7 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     reactComponent?: SortOrder
     type?: SortOrder
     createdAt?: SortOrder
@@ -48310,6 +48338,7 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     reactComponent?: SortOrder
     type?: SortOrder
     createdAt?: SortOrder
@@ -51729,6 +51758,7 @@ export namespace Prisma {
   export type PageCreateWithoutAssetInput = {
     id?: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -51741,6 +51771,7 @@ export namespace Prisma {
   export type PageUncheckedCreateWithoutAssetInput = {
     id?: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -52290,6 +52321,7 @@ export namespace Prisma {
     id?: StringFilter<"Page"> | string
     assetId?: StringFilter<"Page"> | string
     name?: StringFilter<"Page"> | string
+    description?: StringNullableFilter<"Page"> | string | null
     elements?: JsonNullableFilter<"Page">
     reactComponent?: StringNullableFilter<"Page"> | string | null
     type?: StringFilter<"Page"> | string
@@ -53320,6 +53352,7 @@ export namespace Prisma {
   export type PageCreateWithoutPathsInput = {
     id?: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -53333,6 +53366,7 @@ export namespace Prisma {
     id?: string
     assetId: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -53437,6 +53471,7 @@ export namespace Prisma {
   export type PageUpdateWithoutPathsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -53450,6 +53485,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -53797,6 +53833,7 @@ export namespace Prisma {
   export type PageCreateWithoutDataSourceBindingsInput = {
     id?: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -53810,6 +53847,7 @@ export namespace Prisma {
     id?: string
     assetId: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -53870,6 +53908,7 @@ export namespace Prisma {
   export type PageUpdateWithoutDataSourceBindingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -53883,6 +53922,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -56176,6 +56216,7 @@ export namespace Prisma {
   export type PageCreateManyAssetInput = {
     id?: string
     name?: string
+    description?: string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: string | null
     type?: string
@@ -56377,6 +56418,7 @@ export namespace Prisma {
   export type PageUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -56389,6 +56431,7 @@ export namespace Prisma {
   export type PageUncheckedUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
@@ -56401,6 +56444,7 @@ export namespace Prisma {
   export type PageUncheckedUpdateManyWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     elements?: NullableJsonNullValueInput | InputJsonValue
     reactComponent?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
