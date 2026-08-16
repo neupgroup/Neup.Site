@@ -35,6 +35,10 @@ export async function getErrorLogsAction({ page = 1, pageSize = 10 }: { page?: n
 }
 
 export async function getErrorLogById(id: string): Promise<{ log?: ErrorLog, error?: string }> {
+    if (!id) {
+        return { error: 'Error log not found.' };
+    }
+
     try {
         const record = await db.errorLog.findUnique({ where: { id } });
         if (!record) {

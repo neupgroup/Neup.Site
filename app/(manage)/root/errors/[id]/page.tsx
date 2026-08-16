@@ -12,8 +12,8 @@ import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
-export default function ErrorDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ErrorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [log, setLog] = useState<ErrorLog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
