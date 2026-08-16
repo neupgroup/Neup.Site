@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowRight, Code, Edit, MessageSquare, PlusSquare, Loader2 } from 'lucide-react';
-import { createPage, type Page } from '@/services/editor/pages';
+import { createPage } from '@/services/editor/pages';
+import type { Page } from '@/services/asset/type';
 import { useToast } from '@/core/hooks/use-toast';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
@@ -23,7 +24,7 @@ const creationOptions: {
         description: 'Build your page visually by dragging and dropping elements.',
         icon: <Edit className="h-8 w-8 text-primary" />,
         type: 'editor',
-        href: '/site/editor/dragger', // Will be appended with ID
+        href: '/editor/dragger', // Will be appended with ID
     },
     {
         title: 'From Natural Language',

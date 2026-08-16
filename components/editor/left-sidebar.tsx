@@ -11,7 +11,7 @@ import { Plus, Type, Image as ImageIcon, MousePointerClick, LayoutTemplate, Box,
 import type { CanvasElementData } from '@/services/canvas/type';
 import type { Template } from '@/services/template/type';
 import { cn } from '@/core/utils';
-import { logger } from '@/logica/logger';
+import { logger } from '@/core/logger';
 import Link from 'next/link';
 import { getTemplates } from '@/services/editor/templates';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -170,7 +170,7 @@ const LayerItem: FC<{
       </div>
       {isContainer && element.children && (
         <div className="relative">
-          {element.children.map(child => (
+          {element.children.map((child: CanvasElementData) => (
             <LayerItem
               key={child.id}
               element={child}
@@ -211,7 +211,7 @@ const TemplateLibrary = ({ addGeneratedElement }: { addGeneratedElement: (elemen
         }
       } catch (e: any) {
         setError('An unexpected error occurred.');
-        logger.error({ message: e.message, stack: e.stack });
+        logger({ method: 'error' }, { message: e.message, stack: e.stack });
       } finally {
         setLoading(false);
       }

@@ -8,6 +8,15 @@ import { Page } from '@/services/asset/type';
 import { prisma as db } from '@/core/database/prisma';
 import { getPathsForPage } from '@/services/paths';
 import { markStructureAsPending } from '@/services/structure';
+import { CanvasElementDataSchema, type CanvasElementData } from '@/services/canvas/type';
+
+function serializeCanvasElements(elements: unknown): CanvasElementData[] {
+  const parsed = CanvasElementDataSchema.array().safeParse(
+    JSON.parse(JSON.stringify(elements ?? [])),
+  );
+
+  return parsed.success ? parsed.data : [];
+}
 
 export async function createPage(type: Page['type'] = 'editor') {
   const cookieStore = await cookies();
@@ -65,7 +74,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
       id: record.id,
       assetId: record.assetId,
       name: record.name,
-      elements: (record.elements as any) || [],
+      elements: serializeCanvasElements(record.elements),
       reactComponent: record.reactComponent ?? undefined,
       type: (record.type as Page['type']) || 'editor',
       createdAt: record.createdAt ? record.createdAt.toISOString() : null,
@@ -92,7 +101,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
         id: record.id,
         assetId: record.assetId,
         name: record.name,
-        elements: (record.elements as any) || [],
+        elements: serializeCanvasElements(record.elements),
         reactComponent: record.reactComponent ?? undefined,
         type: (record.type as Page['type']) || 'editor',
         createdAt: record.createdAt ? record.createdAt.toISOString() : null,

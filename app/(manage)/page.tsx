@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Users, FileText, Puzzle, Palette, Newspaper, Plus } from 'lucide-react';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { generatePageMetadata } from '@/inapp/lib/metadata';
 
 export async function generateMetadata() {
   return await generatePageMetadata('Home');

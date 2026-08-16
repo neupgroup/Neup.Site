@@ -7,7 +7,7 @@ import EditorHeader from '@/components/editor/header';
 import LeftSidebar from '@/components/editor/left-sidebar';
 import RightSidebar from '@/components/editor/right-sidebar';
 import Canvas from '@/components/editor/canvas';
-import { logger } from '@/logica/logger';
+import { logger } from '@/core/logger';
 import { savePage, createPage } from '@/services/editor/pages';
 import { useToast } from '@/core/hooks/use-toast';
 import type { CanvasElementData } from '@/services/canvas/type';
@@ -52,7 +52,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             }
         } catch (e: any) {
             console.error("Error updating elements:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
             throw e;
         }
     };
@@ -271,7 +271,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
                 const addElementToParent = (els: CanvasElementData[], pId: string, element: CanvasElementData): boolean => {
                     for (let i = 0; i < els.length; i++) {
                         if (els[i].id === pId && els[i].children) {
-                            const dropIndex = dropZoneId ? els[i].children!.findIndex(child => child.id === dropZoneId) : -1;
+                            const dropIndex = dropZoneId ? els[i].children!.findIndex((child: CanvasElementData) => child.id === dropZoneId) : -1;
                             if (dropIndex !== -1) {
                                 els[i].children!.splice(dropIndex, 0, element);
                             } else {
@@ -316,7 +316,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             });
         } catch (e: any) {
             console.error("Error moving element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     };
 
@@ -359,7 +359,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
                 const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
                     return els.map(el => {
                         if (el.id === parentId && el.children) {
-                            const dropIndex = dropZoneId ? el.children.findIndex(child => child.id === dropZoneId) : -1;
+                            const dropIndex = dropZoneId ? el.children.findIndex((child: CanvasElementData) => child.id === dropZoneId) : -1;
                             const newChildren = [...el.children];
                             if (dropIndex !== -1) {
                                 newChildren.splice(dropIndex, 0, newElement);
@@ -390,7 +390,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             });
         } catch (e: any) {
             console.error("Error adding element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     };
 
@@ -435,7 +435,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
                 const addRecursively = (els: CanvasElementData[]): CanvasElementData[] => {
                     return els.map(el => {
                         if (el.id === parentId && el.children) {
-                            const dropIndex = dropZoneId ? el.children.findIndex(child => child.id === dropZoneId) : -1;
+                            const dropIndex = dropZoneId ? el.children.findIndex((child: CanvasElementData) => child.id === dropZoneId) : -1;
                             const newChildren = [...el.children];
                             if (dropIndex !== -1) {
                                 newChildren.splice(dropIndex, 0, newElement);
@@ -466,7 +466,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             });
         } catch (e: any) {
             console.error("Error adding generated element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     };
 
@@ -493,7 +493,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             }, recordHistory);
         } catch (e: any) {
             console.error("Error updating element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     };
 
@@ -528,7 +528,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             setSelectedElementId(newId);
         } catch (e: any) {
             console.error("Error updating element ID:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     };
 
@@ -539,7 +539,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             setSelectedElementId(null);
         } catch (e: any) {
             console.error("Error deleting element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     }, [selectedElementId, setElements]);
 
@@ -562,7 +562,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             }
         } catch (e: any) {
             console.error("Error copying element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     }, [selectedElementId, elements]);
 
@@ -603,7 +603,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
                         if (parentId) {
                             for (let i = 0; i < els.length; i++) {
                                 if (els[i].id === parentId && els[i].children) {
-                                    const targetIdx = els[i].children!.findIndex(c => c.id === targetId);
+                                    const targetIdx = els[i].children!.findIndex((child: CanvasElementData) => child.id === targetId);
                                     if (targetIdx !== -1) {
                                         els[i].children!.splice(targetIdx + 1, 0, newElement);
                                     }
@@ -627,7 +627,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             });
         } catch (e: any) {
             console.error("Error pasting element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     }, [clipboard, selectedElementId, setElements]);
 
@@ -638,7 +638,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
             deleteElement();
         } catch (e: any) {
             console.error("Error cutting element:", e);
-            logger.error({ message: e.message, stack: e.stack });
+            logger({ method: 'error' }, { message: e.message, stack: e.stack });
         }
     }, [selectedElementId, copyElement, deleteElement]);
 
@@ -718,7 +718,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
                 }
             } catch (error) {
                 console.error("Error during keydown event:", error);
-                logger.error({ message: (error as Error).message, stack: (error as Error).stack });
+                logger({ method: 'error' }, { message: (error as Error).message, stack: (error as Error).stack });
             }
         };
 
@@ -767,7 +767,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
                 title: 'Saving Failed',
                 description: error.message || 'An unknown error occurred while saving.',
             });
-            logger.error({ message: error.message, stack: error.stack });
+            logger({ method: 'error' }, { message: error.message, stack: error.stack });
         } finally {
             setIsSaving(false);
         }
@@ -787,7 +787,7 @@ const Editor: FC<EditorProps> = ({ initialElements, pageId: initialPageId, pageN
                 title: 'Preview Failed',
                 description: `Could not save the page for previewing. ${error.message}`,
             });
-            logger.error({ message: error.message, stack: error.stack });
+            logger({ method: 'error' }, { message: error.message, stack: error.stack });
         } finally {
             setIsPreviewing(false);
         }
