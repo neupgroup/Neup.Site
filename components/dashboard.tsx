@@ -286,7 +286,10 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden items-center gap-3 md:flex">
+          <Link
+            href="/profile"
+            className="hidden items-center gap-3 rounded-md px-1 py-1 transition-colors hover:bg-muted/60 md:flex"
+          >
             <div className="text-right leading-tight">
               <div className="text-sm font-semibold text-foreground">
                 {accountBasicsLoading ? <Skeleton className="ml-auto h-4 w-32" /> : (displayName || 'Account')}
@@ -299,7 +302,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
               {displayImage ? <AvatarImage src={displayImage} alt={displayName || neupid || 'Account'} /> : null}
               <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">{initials}</AvatarFallback>
             </Avatar>
-          </div>
+          </Link>
           <div className="md:hidden">
           <Button variant="plain" size="icon" onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
