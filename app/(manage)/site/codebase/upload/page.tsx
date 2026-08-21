@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 import { ArrowLeft, AlertCircle, FileText, Loader2, UploadCloud } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,9 +28,12 @@ export default function CodebaseUploadPage() {
   usePageTitle('Upload Codebase Files');
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const currentPath = searchParams.get('path');
+  const codebaseHref = currentPath ? `/site/codebase?path=${encodeURIComponent(currentPath)}` : '/site/codebase';
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const nextFiles = acceptedFiles.map((file) => ({
@@ -85,13 +88,13 @@ export default function CodebaseUploadPage() {
 
     setIsUploading(false);
     toast({ title: 'Upload complete' });
-    router.push('/site/codebase');
+    router.push(codebaseHref);
   };
 
   return (
     <div className="w-full space-y-6">
       <header className="flex items-center gap-3">
-        <Button variant="tertiary" size="sm" onClick={() => router.push('/site/codebase')}>
+        <Button variant="tertiary" size="sm" onClick={() => router.push(codebaseHref)}>
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
@@ -113,7 +116,7 @@ export default function CodebaseUploadPage() {
               isDragActive ? 'border-primary bg-primary/10' : 'cursor-pointer hover:border-primary/50'
             }`}
           >
-            <input {...getInputProps({ directory: 'true', webkitdirectory: 'true' })} />
+            <input {...getInputProps()} {...({ directory: 'true', webkitdirectory: 'true' } as any)} />
             <UploadCloud className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <p className="text-base font-medium text-foreground">
               {isDragActive ? 'Drop the files here' : 'Drag and drop files, or click to browse'}

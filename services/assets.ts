@@ -5,6 +5,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from './accounts';
 import { normalizeUrl } from '@/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
+import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
 
 export interface AssetSummary {
   id: string;
@@ -46,7 +47,7 @@ export async function getAssetsForAccount(): Promise<{ assets?: AssetSummary[]; 
         assetsById.set(role.asset.id, {
           id: role.asset.id,
           name: role.asset.name,
-          logoUrl,
+          logoUrl: resolveAssetLogoUrl(logoUrl),
           description,
         });
       }
@@ -124,7 +125,7 @@ export async function createAssetForAccount(input: {
       success: true,
       asset: {
         ...assetData,
-        logoUrl: input.logoUrl?.trim() || null,
+        logoUrl: resolveAssetLogoUrl(input.logoUrl),
         description: input.description?.trim() || null,
       },
     };

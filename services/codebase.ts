@@ -4,7 +4,13 @@
 import { cookies } from 'next/headers';
 import { prisma as db } from '@/core/database/prisma';
 import { logger } from '@/logica/logger';
-import type { CodeFile } from '@/services/codebase/type';
+import type {
+  CodeFile,
+  CodebaseBrowserData,
+  CodebaseDirectoryEntry,
+  CodebaseFileEntry,
+  CodebaseSelectedFile,
+} from '@/services/codebase/type';
 
 function normalizeCodeFilePath(input: string): string | null {
   const trimmed = input.trim().replace(/\\/g, '/').replace(/^\/+/, '');
@@ -16,6 +22,33 @@ function normalizeCodeFilePath(input: string): string | null {
   }
 
   return segments.join('/');
+}
+
+function getBreadcrumbs(path: string | null) {
+  const breadcrumbs = [{ name: 'Codebase', path: null as string | null }];
+
+  if (!path) {
+    return breadcrumbs;
+  }
+
+  const segments = path.split('/').filter(Boolean);
+  let currentPath = '';
+
+  for (const segment of segments) {
+    currentPath = currentPath ? `${currentPath}/${segment}` : segment;
+    breadcrumbs.push({ name: segment, path: currentPath });
+  }
+
+  return breadcrumbs;
+}
+
+function getParentPath(path: string | null): string | null {
+  if (!path) return null;
+
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length <= 1) return null;
+
+  return segments.slice(0, -1).join('/');
 }
 
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'assetId'>) {
@@ -124,6 +157,161 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
   } catch (error: any) {
     await logger.error({ message: `Failed to get code files: ${error.message}`, source: 'getCodeFiles' });
     return { success: false, error: error.message || 'Failed to fetch files.' };
+  }
+}
+
+export async function getCodebaseBrowser(path?: string | null): Promise<{ success: boolean; data?: CodebaseBrowserData; error?: string }> {
+  const cookieStore = await cookies();
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
+
+  const normalizedPath = path ? normalizeCodeFilePath(path) : null;
+  if (path && !normalizedPath) {
+    return { success: false, error: 'Invalid path.' };
+  }
+
+  try {
+    const records = await db.codeFile.findMany({
+      where: { assetId },
+      orderBy: [{ filePath: 'asc' }, { createdAt: 'desc' }],
+      select: {
+        id: true,
+        assetId: true,
+        fileName: true,
+        filePath: true,
+        size: true,
+        createdAt: true,
+      },
+    });
+
+    const latestFilesByPath = new Map<string, CodeFile>();
+    for (const record of records) {
+      if (latestFilesByPath.has(record.filePath)) continue;
+
+      latestFilesByPath.set(record.filePath, {
+        id: record.id,
+        assetId: record.assetId,
+        fileName: record.fileName,
+        filePath: record.filePath,
+        content: '',
+        size: record.size,
+        createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+      });
+    }
+
+    const uniqueFiles = Array.from(latestFilesByPath.values());
+    const currentPath = normalizedPath;
+    const currentPrefix = currentPath ? `${currentPath}/` : '';
+    const currentDepth = currentPath ? currentPath.split('/').filter(Boolean).length : 0;
+    const exactFile = currentPath ? latestFilesByPath.get(currentPath) : undefined;
+    const folderChildren = uniqueFiles.filter((file) => {
+      if (!currentPrefix) return true;
+      return file.filePath.startsWith(currentPrefix);
+    });
+
+    if (currentPath && !exactFile && folderChildren.length === 0) {
+      return { success: false, error: 'Path not found.' };
+    }
+
+    if (exactFile) {
+      const record = await db.codeFile.findFirst({
+        where: { assetId, filePath: exactFile.filePath },
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          fileName: true,
+          filePath: true,
+          size: true,
+          content: true,
+          createdAt: true,
+        },
+      });
+
+      if (!record) {
+        return { success: false, error: 'File not found.' };
+      }
+
+      const selectedFile: CodebaseSelectedFile = {
+        id: record.id,
+        name: record.fileName || record.filePath.split('/').pop() || record.filePath,
+        path: record.filePath,
+        size: record.size,
+        createdAt: record.createdAt ? record.createdAt.toISOString() : null,
+        content: Buffer.from(record.content, 'base64').toString('utf-8'),
+      };
+
+      return {
+        success: true,
+        data: {
+          currentPath,
+          parentPath: getParentPath(currentPath),
+          breadcrumbs: getBreadcrumbs(currentPath),
+          directories: [],
+          files: [],
+          totalFileCount: uniqueFiles.length,
+          selectedFile,
+        },
+      };
+    }
+
+    const directoriesByPath = new Map<string, CodebaseDirectoryEntry>();
+    const files: CodebaseFileEntry[] = [];
+
+    for (const file of folderChildren) {
+      const relativePath = currentPrefix ? file.filePath.slice(currentPrefix.length) : file.filePath;
+      const segments = relativePath.split('/').filter(Boolean);
+      if (!segments.length) continue;
+
+      if (segments.length === 1) {
+        files.push({
+          id: file.id,
+          name: file.fileName || segments[0],
+          path: file.filePath,
+          size: file.size,
+          createdAt: file.createdAt,
+        });
+        continue;
+      }
+
+      const directoryName = segments[0];
+      const directoryPath = currentPath ? `${currentPath}/${directoryName}` : directoryName;
+      const existing = directoriesByPath.get(directoryPath);
+
+      if (existing) {
+        existing.fileCount += 1;
+        existing.totalSize += file.size;
+        continue;
+      }
+
+      directoriesByPath.set(directoryPath, {
+        name: directoryName,
+        path: directoryPath,
+        fileCount: 1,
+        totalSize: file.size,
+      });
+    }
+
+    const directories = Array.from(directoriesByPath.values()).sort((left, right) => left.name.localeCompare(right.name));
+    files.sort((left, right) => {
+      const depthDelta = left.path.split('/').length - right.path.split('/').length;
+      if (depthDelta !== 0) return depthDelta;
+      return left.name.localeCompare(right.name);
+    });
+
+    return {
+      success: true,
+      data: {
+        currentPath,
+        parentPath: currentDepth > 0 ? getParentPath(currentPath) : null,
+        breadcrumbs: getBreadcrumbs(currentPath),
+        directories,
+        files,
+        totalFileCount: uniqueFiles.length,
+      },
+    };
+  } catch (error: any) {
+    await logger.error({ message: `Failed to browse codebase: ${error.message}`, source: 'getCodebaseBrowser' });
+    return { success: false, error: error.message || 'Failed to browse codebase.' };
   }
 }
 

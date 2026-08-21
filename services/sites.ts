@@ -4,6 +4,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from './accounts';
 import type { Asset } from '@/services/asset/type';
+import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
 
 /**
  * Fetches all assets owned by the current account ID.
@@ -53,7 +54,7 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
         domainSettings: undefined,
         domains: record.domains ?? undefined,
         tier: (record.tier as Asset['tier']) || 'free',
-        logoUrl: logoUrl ?? undefined,
+        logoUrl: resolveAssetLogoUrl(logoUrl),
         icons: (record.icons as Asset['icons']) ?? {},
         hideSitename: record.themeEntry?.hideSitename ?? false,
         hideLogo: record.themeEntry?.hideLogo ?? false,
