@@ -1,3 +1,4 @@
+- [ ] Scope `app/(public)/[...slug]/page.tsx` page-path resolution by `assetId`; it currently queries `pagePath` by `path` alone and can serve the wrong site's page when paths collide.
 - [ ] Update `README.md` from the default Firebase Studio starter copy to the current Neup.Sites project overview, setup, structure, and documentation index.
 - [ ] Add Neup documentation for the current schema contract in `prisma/schema.prisma`.
 - [ ] Add Neup documentation coverage for the package scripts and dependency contract in `package.json`.
