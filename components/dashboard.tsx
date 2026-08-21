@@ -287,7 +287,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href="/site/profile"
+            href="/profile"
             className="hidden items-center gap-3 rounded-md px-1 py-1 transition-colors hover:bg-muted/60 md:flex"
           >
             <div className="text-right leading-tight">
