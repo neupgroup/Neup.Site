@@ -93,9 +93,14 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
   const renderPreview = () => {
     if (previewUrl) {
       if (acceptedFileTypes?.startsWith('image/')) {
+        const resolvedPreviewUrl = resolveAssetLogoUrl(previewUrl, asset?.theme);
+        if (!resolvedPreviewUrl) {
+          return <FileIcon className="h-8 w-8 text-muted-foreground" />;
+        }
+
         return (
           <Image
-            src={resolveAssetLogoUrl(previewUrl, asset?.theme)}
+            src={resolvedPreviewUrl}
             alt="Preview"
             width={48}
             height={48}

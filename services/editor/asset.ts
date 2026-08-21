@@ -68,7 +68,7 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
       url: record.url ?? undefined,
       domains: data.domains,
       tier: (record.tier as Asset['tier']) ?? 'free',
-      logoUrl: resolveAssetLogoUrl(logoUrlFromDb ?? data.logoUrl, theme),
+      logoUrl: resolveAssetLogoUrl(logoUrlFromDb ?? data.logoUrl, theme) ?? undefined,
       icons: data.icons || {},
       hideSitename: themeRecord?.hideSitename || false,
       hideLogo: themeRecord?.hideLogo || false,

@@ -24,6 +24,15 @@ function formatFileSize(size: number) {
   return `${(size / (1024 * 1024)).toFixed(2)} MB`;
 }
 
+function joinCodebasePath(basePath: string | null, filePath: string) {
+  const normalizedFilePath = filePath.replace(/^\/+/, '');
+  if (!basePath) {
+    return normalizedFilePath;
+  }
+
+  return `${basePath.replace(/\/+$/, '')}/${normalizedFilePath}`;
+}
+
 export default function CodebaseUploadPage() {
   usePageTitle('Upload Codebase Files');
 
@@ -58,7 +67,8 @@ export default function CodebaseUploadPage() {
 
       try {
         const content = await pendingFile.file.text();
-        const filePath = pendingFile.file.webkitRelativePath || pendingFile.file.name;
+        const relativePath = pendingFile.file.webkitRelativePath || pendingFile.file.name;
+        const filePath = joinCodebasePath(currentPath, relativePath);
         const response = await fetch(`/bridge/api.v1/codebase/upload?path=${encodeURIComponent(filePath)}`, {
           method: 'POST',
           headers: {

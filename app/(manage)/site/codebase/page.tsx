@@ -7,19 +7,22 @@ import {
   ChevronRight,
   FileText,
   Folder,
-  FolderOpen,
+  FolderPlus,
   Loader2,
   Rocket,
   Trash2,
   UploadCloud,
 } from 'lucide-react';
+import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 import { useToast } from '@/core/hooks/use-toast';
-import { deleteCodeFile, getCodebaseBrowser } from '@/services/codebase';
+import { createCodeFolder, deleteCodeFile, getCodebaseBrowser } from '@/services/codebase';
 import { deployCodebaseFromStorage } from '@/services/deploy';
 import type { CodebaseBrowserData, CodebaseBreadcrumb, CodebaseDirectoryEntry, CodebaseFileEntry } from '@/services/codebase/type';
 
@@ -29,100 +32,8 @@ function formatFileSize(size: number) {
   return `${(size / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-function formatPathLabel(path: string | null) {
-  return path ? `/${path}` : 'All folders and files';
-}
-
-function DirectoryCard({
-  directory,
-  onOpen,
-}: {
-  directory: CodebaseDirectoryEntry;
-  onOpen: (path: string) => void;
-}) {
-  return (
-    <Card
-      className="h-full cursor-pointer border-border/70 transition hover:border-primary/40 hover:bg-muted/30"
-      onClick={() => onOpen(directory.path)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          onOpen(directory.path);
-        }
-      }}
-    >
-      <CardContent className="flex min-h-[180px] flex-col justify-between gap-6 p-5">
-        <div className="space-y-4">
-          <div className="flex items-start justify-between gap-3">
-            <Folder className="h-8 w-8 text-primary" />
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-              {directory.fileCount} file{directory.fileCount === 1 ? '' : 's'}
-            </span>
-          </div>
-          <div className="space-y-2">
-            <p className="break-all text-lg font-semibold text-foreground">{directory.name}</p>
-            <p className="text-sm text-muted-foreground">Open folder contents</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>{formatFileSize(directory.totalSize)}</span>
-          <ChevronRight className="h-4 w-4" />
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function FileCard({
-  file,
-  onOpen,
-  onDelete,
-}: {
-  file: CodebaseFileEntry;
-  onOpen: (path: string) => void;
-  onDelete: (id: string) => void;
-}) {
-  return (
-    <Card
-      className="h-full cursor-pointer border-border/70 transition hover:border-primary/40 hover:bg-muted/30"
-      onClick={() => onOpen(file.path)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          onOpen(file.path);
-        }
-      }}
-    >
-      <CardContent className="flex min-h-[180px] flex-col justify-between gap-6 p-5">
-        <div className="space-y-4">
-          <div className="flex items-start justify-between gap-3">
-            <FileText className="h-8 w-8 text-muted-foreground" />
-            <Button
-              variant="plain"
-              size="icon"
-              className="-mr-2 -mt-2"
-              onClick={(event) => {
-                event.stopPropagation();
-                onDelete(file.id);
-              }}
-              aria-label={`Delete ${file.name}`}
-            >
-              <Trash2 className="h-4 w-4 text-destructive" />
-            </Button>
-          </div>
-          <div className="space-y-2">
-            <p className="break-all text-lg font-semibold text-foreground">{file.name}</p>
-            <p className="break-all text-sm text-muted-foreground">{file.path}</p>
-          </div>
-        </div>
-        <div className="text-sm text-muted-foreground">{formatFileSize(file.size)}</div>
-      </CardContent>
-    </Card>
-  );
+function formatCurrentPath(path: string | null) {
+  return path ? `/${path}` : '/';
 }
 
 function Breadcrumbs({
@@ -139,7 +50,7 @@ function Breadcrumbs({
 
         return (
           <div key={breadcrumb.path ?? 'codebase-root'} className="flex items-center gap-2">
-            {index > 0 && <ChevronRight className="h-4 w-4" />}
+            {index > 0 ? <ChevronRight className="h-4 w-4" /> : null}
             <button
               type="button"
               onClick={() => onOpen(breadcrumb.path)}
@@ -155,6 +66,182 @@ function Breadcrumbs({
   );
 }
 
+function DirectoryCard({
+  directory,
+  isFirst,
+  isLast,
+  onOpen,
+}: {
+  directory: CodebaseDirectoryEntry;
+  isFirst: boolean;
+  isLast: boolean;
+  onOpen: (path: string) => void;
+}) {
+  return (
+    <Card
+      className={[
+        'w-full cursor-pointer border-border/70 shadow-none transition hover:bg-muted/30',
+        isFirst ? 'rounded-t-md' : 'rounded-t-none',
+        isLast ? 'rounded-b-md' : 'rounded-b-none border-b-0',
+      ].join(' ')}
+      onClick={() => onOpen(directory.path)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(directory.path);
+        }
+      }}
+    >
+      <CardContent className="flex items-center justify-between gap-4 p-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
+            <Folder className="h-6 w-6 text-primary" />
+          </div>
+          <div className="min-w-0 space-y-1">
+            <p className="break-all text-base font-semibold text-foreground">{directory.name}</p>
+            <p className="text-sm text-muted-foreground">
+              {directory.fileCount} file{directory.fileCount === 1 ? '' : 's'}
+            </p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
+          <ChevronRight className="h-4 w-4" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function FileCard({
+  file,
+  isFirst,
+  isLast,
+  onOpen,
+  onDelete,
+}: {
+  file: CodebaseFileEntry;
+  isFirst: boolean;
+  isLast: boolean;
+  onOpen: (path: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <Card
+      className={[
+        'w-full cursor-pointer border-border/70 shadow-none transition hover:bg-muted/30',
+        isFirst ? 'rounded-t-md' : 'rounded-t-none',
+        isLast ? 'rounded-b-md' : 'rounded-b-none border-b-0',
+      ].join(' ')}
+      onClick={() => onOpen(file.path)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(file.path);
+        }
+      }}
+    >
+      <CardContent className="flex items-center justify-between gap-4 p-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
+            <FileText className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <div className="min-w-0 space-y-1">
+            <p className="break-all text-base font-semibold text-foreground">{file.name}</p>
+            <p className="text-sm text-muted-foreground">{formatFileSize(file.size)}</p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button
+            variant="plain"
+            size="icon"
+            onClick={(event) => {
+              event.stopPropagation();
+              onDelete(file.id);
+            }}
+            aria-label={`Delete ${file.name}`}
+          >
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function UploadCard({
+  href,
+  isFirst,
+  isLast,
+}: {
+  href: string;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={[
+        'block w-full rounded-lg border border-border/70 bg-card text-card-foreground shadow-none transition hover:bg-muted/30',
+        isFirst ? 'rounded-t-md' : 'rounded-t-none',
+        isLast ? 'rounded-b-md' : 'rounded-b-none border-b-0',
+      ].join(' ')}
+    >
+      <div className="flex items-center justify-between gap-4 p-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
+            <UploadCloud className="h-6 w-6 text-primary" />
+          </div>
+          <div className="min-w-0 space-y-1">
+            <p className="text-base font-semibold text-foreground">Upload Files</p>
+            <p className="text-sm text-muted-foreground">Add files or an entire folder to this codebase.</p>
+          </div>
+        </div>
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+      </div>
+    </Link>
+  );
+}
+
+function NewFolderCard({
+  isFirst,
+  isLast,
+  onClick,
+}: {
+  isFirst: boolean;
+  isLast: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        'block w-full rounded-lg border border-border/70 bg-card text-left text-card-foreground shadow-none transition hover:bg-muted/30',
+        isFirst ? 'rounded-t-md' : 'rounded-t-none',
+        isLast ? 'rounded-b-md' : 'rounded-b-none border-b-0',
+      ].join(' ')}
+    >
+      <div className="flex items-center justify-between gap-4 p-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
+            <FolderPlus className="h-6 w-6 text-primary" />
+          </div>
+          <div className="min-w-0 space-y-1">
+            <p className="text-base font-semibold text-foreground">New Folder</p>
+            <p className="text-sm text-muted-foreground">Create an empty folder in this location.</p>
+          </div>
+        </div>
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+      </div>
+    </button>
+  );
+}
+
 export default function CodebasePage() {
   usePageTitle('Codebase');
 
@@ -164,6 +251,9 @@ export default function CodebasePage() {
   const [browserData, setBrowserData] = useState<CodebaseBrowserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDeploying, setIsDeploying] = useState(false);
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [isCreateFolderDialogOpen, setIsCreateFolderDialogOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const currentPath = searchParams.get('path');
@@ -235,18 +325,50 @@ export default function CodebasePage() {
     setIsDeploying(false);
   };
 
+  const handleCreateFolder = async () => {
+    const trimmedName = newFolderName.trim();
+    if (!trimmedName) {
+      toast({ variant: 'destructive', title: 'Folder name required', description: 'Enter a folder name to continue.' });
+      return;
+    }
+
+    if (trimmedName.includes('/')) {
+      toast({ variant: 'destructive', title: 'Invalid folder name', description: 'Use a single folder name without slashes.' });
+      return;
+    }
+
+    const nextFolderPath = currentPath ? `${currentPath}/${trimmedName}` : trimmedName;
+
+    setIsCreatingFolder(true);
+    const result = await createCodeFolder(nextFolderPath);
+
+    if (!result.success) {
+      toast({ variant: 'destructive', title: 'Folder creation failed', description: result.error });
+      setIsCreatingFolder(false);
+      return;
+    }
+
+    toast({ title: 'Folder created' });
+    setNewFolderName('');
+    setIsCreateFolderDialogOpen(false);
+    setIsCreatingFolder(false);
+    await fetchCodebase();
+  };
+
   const uploadHref = currentPath ? `/site/codebase/upload?path=${encodeURIComponent(currentPath)}` : '/site/codebase/upload';
   const selectedFile = browserData?.selectedFile;
   const directories = browserData?.directories ?? [];
   const files = browserData?.files ?? [];
-  const hasEntries = directories.length > 0 || files.length > 0;
+  const breadcrumbs = browserData?.breadcrumbs ?? [{ name: 'Codebase', path: null }];
+  const currentLocation = formatCurrentPath(browserData?.currentPath ?? currentPath);
 
   return (
     <div className="w-full space-y-6">
       <header className="flex items-center justify-between gap-4">
         <div className="space-y-2">
           <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Codebase</h1>
-          <p className="text-muted-foreground">Browse folders, open files, and deploy the current codebase.</p>
+          <p className="text-muted-foreground">Browse folders, open files, and edit. Currently at {currentLocation}</p>
+          <Breadcrumbs breadcrumbs={breadcrumbs} onOpen={navigateToPath} />
         </div>
         <Button variant="primary" onClick={handleDeploy} disabled={isDeploying || !browserData?.totalFileCount}>
           {isDeploying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
@@ -254,27 +376,11 @@ export default function CodebasePage() {
         </Button>
       </header>
 
-      <Card className="border-border/70">
-        <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-2">
-            <Breadcrumbs breadcrumbs={browserData?.breadcrumbs ?? [{ name: 'Codebase', path: null }]} onOpen={navigateToPath} />
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <FolderOpen className="h-4 w-4" />
-              <span>{formatPathLabel(browserData?.currentPath ?? null)}</span>
-            </div>
-          </div>
-          <Button variant="secondary" onClick={() => router.push(uploadHref)}>
-            <UploadCloud className="mr-2 h-4 w-4" />
-            Upload Codefiles
-          </Button>
-        </CardContent>
-      </Card>
-
       {loading ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-48 w-full" />
+        <div className="space-y-0">
+          <Skeleton className="h-20 w-full rounded-b-none" />
+          <Skeleton className="h-20 w-full rounded-none" />
+          <Skeleton className="h-20 w-full rounded-t-none" />
         </div>
       ) : error ? (
         <Alert variant="destructive">
@@ -302,51 +408,86 @@ export default function CodebasePage() {
             </CardContent>
           </Card>
         </div>
-      ) : hasEntries ? (
-        <div className="space-y-6">
-          {directories.length > 0 && (
-            <section className="space-y-3">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">Folders</h2>
-                <p className="text-sm text-muted-foreground">Open a folder to view what is inside it.</p>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {directories.map((directory) => (
-                  <DirectoryCard key={directory.path} directory={directory} onOpen={navigateToPath} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {files.length > 0 && (
-            <section className="space-y-3">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">Files</h2>
-                <p className="text-sm text-muted-foreground">Open a file to inspect its contents.</p>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {files.map((file) => (
-                  <FileCard key={file.id} file={file} onOpen={navigateToPath} onDelete={handleDelete} />
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
       ) : (
-        <Card className="border-border/70">
-          <CardContent className="flex min-h-[220px] flex-col items-center justify-center gap-4 p-8 text-center">
-            <FolderOpen className="h-10 w-10 text-muted-foreground" />
-            <div className="space-y-2">
-              <p className="text-lg font-semibold text-foreground">This folder is empty</p>
-              <p className="text-sm text-muted-foreground">Upload files or open a different path.</p>
+        <div className="space-y-6">
+          <section className="space-y-3">
+            <div className="space-y-0">
+              <UploadCard href={uploadHref} isFirst={true} isLast={false} />
+              <NewFolderCard
+                isFirst={false}
+                isLast={directories.length === 0 && files.length === 0}
+                onClick={() => setIsCreateFolderDialogOpen(true)}
+              />
+              {directories.map((directory, index) => (
+                <DirectoryCard
+                  key={directory.path}
+                  directory={directory}
+                  isFirst={false}
+                  isLast={files.length === 0 && index === directories.length - 1}
+                  onOpen={navigateToPath}
+                />
+              ))}
+              {files.map((file, index) => (
+                <FileCard
+                  key={file.id}
+                  file={file}
+                  isFirst={false}
+                  isLast={index === files.length - 1}
+                  onOpen={navigateToPath}
+                  onDelete={handleDelete}
+                />
+              ))}
             </div>
-            <Button variant="secondary" onClick={() => router.push(uploadHref)}>
-              <UploadCloud className="mr-2 h-4 w-4" />
-              Upload Codefiles
-            </Button>
-          </CardContent>
-        </Card>
+          </section>
+        </div>
       )}
+
+      <Dialog
+        open={isCreateFolderDialogOpen}
+        onOpenChange={(open) => {
+          setIsCreateFolderDialogOpen(open);
+          if (!open) {
+            setNewFolderName('');
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>New Folder</DialogTitle>
+            <DialogDescription>Enter the name for the new folder in this location.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Input
+              value={newFolderName}
+              onChange={(event) => setNewFolderName(event.target.value)}
+              placeholder="components"
+              autoFocus
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !isCreatingFolder) {
+                  event.preventDefault();
+                  handleCreateFolder();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="tertiary"
+              onClick={() => {
+                setIsCreateFolderDialogOpen(false);
+                setNewFolderName('');
+              }}
+              disabled={isCreatingFolder}
+            >
+              Cancel
+            </Button>
+            <Button variant="secondary" onClick={handleCreateFolder} disabled={isCreatingFolder}>
+              {isCreatingFolder ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderPlus className="h-4 w-4" />}
+              Create Folder
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

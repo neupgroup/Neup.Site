@@ -12,6 +12,8 @@ import type {
   CodebaseSelectedFile,
 } from '@/services/codebase/type';
 
+const CODEBASE_FOLDER_MARKER = '.neup-folder';
+
 function normalizeCodeFilePath(input: string): string | null {
   const trimmed = input.trim().replace(/\\/g, '/').replace(/^\/+/, '');
   if (!trimmed || trimmed.includes('\0')) return null;
@@ -22,6 +24,14 @@ function normalizeCodeFilePath(input: string): string | null {
   }
 
   return segments.join('/');
+}
+
+function isFolderMarkerPath(path: string) {
+  return path.endsWith(`/${CODEBASE_FOLDER_MARKER}`) || path === CODEBASE_FOLDER_MARKER;
+}
+
+function isFolderMarkerName(name: string) {
+  return name === CODEBASE_FOLDER_MARKER;
 }
 
 function getBreadcrumbs(path: string | null) {
@@ -127,6 +137,53 @@ export async function saveCodeFileByPath(params: {
   }
 }
 
+export async function createCodeFolder(folderPath: string): Promise<{ success: boolean; error?: string }> {
+  const cookieStore = await cookies();
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
+
+  const normalizedPath = normalizeCodeFilePath(folderPath);
+  if (!normalizedPath) return { success: false, error: 'Invalid folder path.' };
+
+  const markerPath = `${normalizedPath}/${CODEBASE_FOLDER_MARKER}`;
+
+  try {
+    const existing = await db.codeFile.findFirst({
+      where: {
+        assetId,
+        OR: [
+          { filePath: normalizedPath },
+          { filePath: markerPath },
+          { filePath: { startsWith: `${normalizedPath}/` } },
+        ],
+      },
+      select: { id: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (existing) {
+      return { success: false, error: 'Folder already exists.' };
+    }
+
+    await db.codeFile.create({
+      data: {
+        assetId,
+        fileName: CODEBASE_FOLDER_MARKER,
+        filePath: markerPath,
+        content: '',
+        size: 0,
+        createdAt: new Date(),
+      },
+      select: { id: true },
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    await logger.error({ message: `Failed to create code folder at path ${normalizedPath}: ${error.message}`, source: 'createCodeFolder' });
+    return { success: false, error: error.message || 'Failed to create folder.' };
+  }
+}
+
 export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number, pageSize?: number }): Promise<{ success: boolean; files?: CodeFile[]; error?: string; totalCount?: number }> {
   const cookieStore = await cookies();
   const assetId = cookieStore.get('assetId')?.value;
@@ -204,18 +261,19 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
     const currentPrefix = currentPath ? `${currentPath}/` : '';
     const currentDepth = currentPath ? currentPath.split('/').filter(Boolean).length : 0;
     const exactFile = currentPath ? latestFilesByPath.get(currentPath) : undefined;
+    const exactVisibleFile = exactFile && !isFolderMarkerName(exactFile.fileName) ? exactFile : undefined;
     const folderChildren = uniqueFiles.filter((file) => {
       if (!currentPrefix) return true;
       return file.filePath.startsWith(currentPrefix);
     });
 
-    if (currentPath && !exactFile && folderChildren.length === 0) {
+    if (currentPath && !exactVisibleFile && folderChildren.length === 0) {
       return { success: false, error: 'Path not found.' };
     }
 
-    if (exactFile) {
+    if (exactVisibleFile) {
       const record = await db.codeFile.findFirst({
-        where: { assetId, filePath: exactFile.filePath },
+        where: { assetId, filePath: exactVisibleFile.filePath },
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,
@@ -248,7 +306,7 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
           breadcrumbs: getBreadcrumbs(currentPath),
           directories: [],
           files: [],
-          totalFileCount: uniqueFiles.length,
+          totalFileCount: uniqueFiles.filter((file) => !isFolderMarkerName(file.fileName)).length,
           selectedFile,
         },
       };
@@ -261,8 +319,11 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
       const relativePath = currentPrefix ? file.filePath.slice(currentPrefix.length) : file.filePath;
       const segments = relativePath.split('/').filter(Boolean);
       if (!segments.length) continue;
+      const isMarkerFile = isFolderMarkerPath(file.filePath);
 
       if (segments.length === 1) {
+        if (isMarkerFile) continue;
+
         files.push({
           id: file.id,
           name: file.fileName || segments[0],
@@ -276,18 +337,20 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
       const directoryName = segments[0];
       const directoryPath = currentPath ? `${currentPath}/${directoryName}` : directoryName;
       const existing = directoriesByPath.get(directoryPath);
+      const fileCountDelta = isMarkerFile ? 0 : 1;
+      const sizeDelta = isMarkerFile ? 0 : file.size;
 
       if (existing) {
-        existing.fileCount += 1;
-        existing.totalSize += file.size;
+        existing.fileCount += fileCountDelta;
+        existing.totalSize += sizeDelta;
         continue;
       }
 
       directoriesByPath.set(directoryPath, {
         name: directoryName,
         path: directoryPath,
-        fileCount: 1,
-        totalSize: file.size,
+        fileCount: fileCountDelta,
+        totalSize: sizeDelta,
       });
     }
 
@@ -306,7 +369,7 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
         breadcrumbs: getBreadcrumbs(currentPath),
         directories,
         files,
-        totalFileCount: uniqueFiles.length,
+        totalFileCount: uniqueFiles.filter((file) => !isFolderMarkerName(file.fileName)).length,
       },
     };
   } catch (error: any) {
