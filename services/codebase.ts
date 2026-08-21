@@ -6,20 +6,91 @@ import { prisma as db } from '@/core/database/prisma';
 import { logger } from '@/logica/logger';
 import type { CodeFile } from '@/services/codebase/type';
 
+function normalizeCodeFilePath(input: string): string | null {
+  const trimmed = input.trim().replace(/\\/g, '/').replace(/^\/+/, '');
+  if (!trimmed || trimmed.includes('\0')) return null;
+
+  const segments = trimmed.split('/').filter(Boolean);
+  if (!segments.length || segments.some((segment) => segment === '.' || segment === '..')) {
+    return null;
+  }
+
+  return segments.join('/');
+}
+
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'assetId'>) {
   const cookieStore = await cookies();
   const assetId = cookieStore.get('assetId')?.value;
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
+    const normalizedPath = normalizeCodeFilePath(fileData.filePath);
+    if (!normalizedPath) return { success: false, error: 'Invalid file path.' };
+
     const record = await db.codeFile.create({
-      data: { ...fileData, assetId, createdAt: new Date() },
+      data: { ...fileData, assetId, filePath: normalizedPath, createdAt: new Date() },
       select: { id: true },
     });
     return { success: true, id: record.id };
   } catch (error: any) {
     await logger.error({ message: `Failed to upload code file: ${error.message}`, source: 'uploadCodeFile' });
     return { success: false, error: error.message || 'Failed to upload file.' };
+  }
+}
+
+export async function saveCodeFileByPath(params: {
+  filePath: string;
+  content: string;
+  fileName?: string;
+}): Promise<{ success: boolean; id?: string; error?: string; created?: boolean }> {
+  const cookieStore = await cookies();
+  const assetId = cookieStore.get('assetId')?.value;
+  if (!assetId) return { success: false, error: 'Asset ID not found.' };
+
+  const normalizedPath = normalizeCodeFilePath(params.filePath);
+  if (!normalizedPath) return { success: false, error: 'Invalid file path.' };
+
+  const fileName = params.fileName?.trim() || normalizedPath.split('/').pop() || normalizedPath;
+  const size = Buffer.byteLength(params.content, 'utf-8');
+  const encodedContent = Buffer.from(params.content, 'utf-8').toString('base64');
+
+  try {
+    const existing = await db.codeFile.findFirst({
+      where: { assetId, filePath: normalizedPath },
+      select: { id: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (existing) {
+      await db.codeFile.update({
+        where: { id: existing.id },
+        data: {
+          fileName,
+          filePath: normalizedPath,
+          content: encodedContent,
+          size,
+        },
+      });
+
+      return { success: true, id: existing.id, created: false };
+    }
+
+    const created = await db.codeFile.create({
+      data: {
+        assetId,
+        fileName,
+        filePath: normalizedPath,
+        content: encodedContent,
+        size,
+        createdAt: new Date(),
+      },
+      select: { id: true },
+    });
+
+    return { success: true, id: created.id, created: true };
+  } catch (error: any) {
+    await logger.error({ message: `Failed to save code file at path ${normalizedPath}: ${error.message}`, source: 'saveCodeFileByPath' });
+    return { success: false, error: error.message || 'Failed to save file.' };
   }
 }
 

@@ -2,33 +2,32 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
-import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/services/codebase';
+import { Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
+import { getCodeFiles, deleteCodeFile } from '@/services/codebase';
 import { deployCodebaseFromStorage } from '@/services/deploy';
 import type { CodeFile } from '@/services/codebase/type';
 import { useToast } from '@/core/hooks/use-toast';
-import { format } from 'date-fns';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
-type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
-interface UploadingFile {
-  file: File;
-  status: UploadStatus;
-  progress: number;
-  error?: string;
+function getFolderLabel(filePath: string) {
+  const segments = filePath.split('/').filter(Boolean);
+  if (segments.length <= 1) return 'Root';
+  return segments.slice(0, -1).join('/');
+}
+
+function formatFileSize(size: number) {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 export default function CodebasePage() {
   usePageTitle('Codebase');
-  const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<CodeFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDeploying, setIsDeploying] = useState(false);
@@ -57,54 +56,6 @@ export default function CodebasePage() {
   useEffect(() => {
     fetchFiles();
   }, [fetchFiles]);
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles: UploadingFile[] = acceptedFiles.map(file => ({
-      file,
-      status: 'pending',
-      progress: 0,
-    }));
-    setUploadingFiles(prev => [...prev, ...newFiles]);
-  }, []);
-
-  const handleUpload = async () => {
-    const filesToUpload = uploadingFiles.filter(f => f.status === 'pending');
-    if (filesToUpload.length === 0) return;
-
-    for (const fileToUpload of filesToUpload) {
-      setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, status: 'uploading' } : f));
-
-      try {
-        const reader = new FileReader();
-        reader.readAsDataURL(fileToUpload.file);
-        reader.onload = async (e) => {
-          const content = (e.target?.result as string).split(',')[1]; // Get base64 part
-          const result = await uploadCodeFile({
-            fileName: fileToUpload.file.name,
-            filePath: fileToUpload.file.webkitRelativePath || fileToUpload.file.name,
-            content,
-            size: fileToUpload.file.size
-          });
-
-          if (result.success) {
-            setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, status: 'success', progress: 100 } : f));
-          } else {
-            throw new Error(result.error);
-          }
-        };
-        reader.onerror = (error) => {
-          throw new Error('Failed to read file.');
-        };
-      } catch (e: any) {
-        setUploadingFiles(prev => prev.map(f => f === fileToUpload ? { ...f, status: 'error', error: e.message } : f));
-      }
-    }
-    // After all uploads are initiated, refresh the file list
-    setTimeout(() => {
-        setUploadingFiles([]);
-        fetchFiles();
-    }, 2000);
-  };
   
   const handleDelete = async (id: string) => {
     const originalFiles = [...uploadedFiles];
@@ -133,8 +84,6 @@ export default function CodebasePage() {
     }
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
   const totalSize = useMemo(() => {
     // This only calculates size for the current page. A full calculation would require fetching all files.
     // For now, let's keep it simple or indicate it's for the current view.
@@ -154,119 +103,91 @@ export default function CodebasePage() {
       <header className="flex items-center justify-between">
         <div>
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Codebase</h1>
-            <p className="text-muted-foreground">Upload your codebase files and manage deployments to your custom host.</p>
+            <p className="text-muted-foreground">Manage deployments to your custom host and review uploaded codebase files.</p>
         </div>
          <Button variant="primary" onClick={handleDeploy} disabled={isDeploying || totalCount === 0}>
             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2" />}
             {isDeploying ? 'Deploying...' : 'Deploy Assets'}
         </Button>
       </header>
-      <Card>
-        <CardHeader>
-          <CardTitle>Upload Code Files</CardTitle>
-          <CardDescription>Drag and drop your project folder or individual files here.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div {...getRootProps()} className={`p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'hover:border-primary/50'}`}>
-            <input {...getInputProps({ directory: "true", webkitdirectory: "true" })} />
-            <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            {isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
-          </div>
-          {uploadingFiles.length > 0 && (
-            <div className="mt-6 space-y-4">
-              {uploadingFiles.map((uf, index) => (
-                <div key={index} className="flex items-center gap-4 p-2 border rounded-md">
-                  {uf.status === 'success' ? <CheckCircle className="h-5 w-5 text-green-500" /> : uf.status === 'uploading' ? <Loader2 className="h-5 w-5 animate-spin" /> : uf.status === 'error' ? <AlertCircle className="h-5 w-5 text-destructive" title={uf.error} /> : <FileText className="h-5 w-5" />}
-                  <div className="flex-1 truncate">
-                    <p className="text-sm font-medium">{uf.file.name}</p>
-                    {uf.status === 'error' && <p className="text-xs text-destructive">{uf.error}</p>}
+      {loading ? (
+        <div className="space-y-3"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>
+      ) : error ? (
+        <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription className="break-all">{error}</AlertDescription></Alert>
+      ) : (
+        <div className="space-y-3">
+          <Card className="w-full">
+            <CardContent
+              className="cursor-pointer p-5 transition-colors hover:bg-muted/40"
+              onClick={() => router.push('/site/codebase/upload')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  router.push('/site/codebase/upload');
+                }
+              }}
+            >
+              <p className="text-base font-semibold text-foreground">Upload Codefiles</p>
+            </CardContent>
+          </Card>
+          {uploadedFiles.length > 0 && (
+            uploadedFiles.map(file => (
+              <Card key={file.id} className="w-full">
+                <CardContent className="flex w-full items-start justify-between gap-4 p-5">
+                  <div className="min-w-0 space-y-2">
+                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                      {getFolderLabel(file.filePath)}
+                    </p>
+                    <p className="break-all text-base font-semibold text-foreground">
+                      {file.fileName || file.filePath.split('/').pop() || file.filePath}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatFileSize(file.size)}
+                    </p>
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {(uf.file.size / 1024).toFixed(2)} KB
-                  </span>
-                </div>
-              ))}
-              <Button variant="primary" onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
-                Upload {uploadingFiles.length} file(s)
-              </Button>
+                  <Button
+                    variant="plain"
+                    size="icon"
+                    onClick={() => handleDelete(file.id)}
+                    aria-label={`Delete ${file.fileName || file.filePath}`}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))
+          )}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <div className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="tertiary"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <Button
+                  variant="tertiary"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
-      
-       <Card>
-            <CardHeader>
-                <CardTitle>Uploaded Files</CardTitle>
-                <CardDescription>
-                    {totalCount} files uploaded, totaling {(totalSize / (1024 * 1024)).toFixed(2)} MB on this page.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                {loading ? (
-                    <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
-                ) : error ? (
-                    <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription className="break-all">{error}</AlertDescription></Alert>
-                ) : (
-                    <div className="border rounded-lg">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>File Path</TableHead>
-                                    <TableHead>Size (KB)</TableHead>
-                                    <TableHead>Uploaded</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {uploadedFiles.length === 0 ? (
-                                    <TableRow><TableCell colSpan={4} className="h-24 text-center">No files uploaded yet.</TableCell></TableRow>
-                                ) : (
-                                    uploadedFiles.map(file => (
-                                        <TableRow key={file.id}>
-                                            <TableCell className="font-mono text-xs max-w-sm whitespace-pre-wrap break-all">{file.filePath}</TableCell>
-                                            <TableCell>{(file.size / 1024).toFixed(2)}</TableCell>
-                                            <TableCell>{file.createdAt ? format(new Date(file.createdAt), 'PPpp') : 'N/A'}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="plain" size="icon" onClick={() => handleDelete(file.id)}>
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-                )}
-            </CardContent>
-            {totalPages > 1 && (
-                <CardFooter className="flex items-center justify-between">
-                    <div className="text-sm text-muted-foreground">
-                        Page {currentPage} of {totalPages}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="tertiary"
-                            size="sm"
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage <= 1}
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                            Previous
-                        </Button>
-                        <Button
-                            variant="tertiary"
-                            size="sm"
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage >= totalPages}
-                        >
-                            Next
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </CardFooter>
-            )}
-        </Card>
+        </div>
+      )}
     </div>
   );
 }
