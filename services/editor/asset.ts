@@ -61,13 +61,14 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
     const descriptionFromDb = subjectToValues.get('brand.description')?.[0];
 
     const data = record as any;
+    const theme = (themeRecord?.theme as unknown as AssetTheme) || {};
     const asset: Asset = {
       id: record.id,
       name: record.name,
       url: record.url ?? undefined,
       domains: data.domains,
       tier: (record.tier as Asset['tier']) ?? 'free',
-      logoUrl: resolveAssetLogoUrl(logoUrlFromDb ?? data.logoUrl),
+      logoUrl: resolveAssetLogoUrl(logoUrlFromDb ?? data.logoUrl, theme),
       icons: data.icons || {},
       hideSitename: themeRecord?.hideSitename || false,
       hideLogo: themeRecord?.hideLogo || false,
@@ -76,7 +77,7 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
       contactEmail: contactEmailFromDb.length ? contactEmailFromDb : (data.contactEmail || []),
       contactPhone: contactPhoneFromDb.length ? contactPhoneFromDb : (data.contactPhone || []),
       modules: data.modules || {},
-      theme: (themeRecord?.theme as unknown as AssetTheme) || {},
+      theme,
       createdAt: record.createdAt ? record.createdAt.toISOString() : null,
       updatedAt: record.updatedAt ? record.updatedAt.toISOString() : null,
     };

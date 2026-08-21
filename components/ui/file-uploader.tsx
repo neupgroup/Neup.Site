@@ -9,6 +9,7 @@ import { cn } from '@/core/utils';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/inapp/context/ProfileContext';
 import Image from 'next/image';
+import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
 
 interface FileUploaderProps {
   uploadPath: string;
@@ -92,7 +93,15 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
   const renderPreview = () => {
     if (previewUrl) {
       if (acceptedFileTypes?.startsWith('image/')) {
-        return <Image src={previewUrl} alt="Preview" width={48} height={48} className="object-contain" />;
+        return (
+          <Image
+            src={resolveAssetLogoUrl(previewUrl, asset?.theme)}
+            alt="Preview"
+            width={48}
+            height={48}
+            className="object-contain"
+          />
+        );
       }
       return <FileIcon className="h-8 w-8 text-muted-foreground" />;
     }

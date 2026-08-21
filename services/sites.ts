@@ -46,6 +46,7 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
       const description = subjectToValues.get('brand.description')?.[0];
       const contactEmail = subjectToValues.get('contact.email')?.map((value) => ({ value })) ?? [];
       const contactPhone = subjectToValues.get('contact.phone')?.map((value) => ({ value })) ?? [];
+      const theme = (record.themeEntry?.theme as Asset['theme']) ?? undefined;
 
       return {
         id: record.id,
@@ -54,7 +55,7 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
         domainSettings: undefined,
         domains: record.domains ?? undefined,
         tier: (record.tier as Asset['tier']) || 'free',
-        logoUrl: resolveAssetLogoUrl(logoUrl),
+        logoUrl: resolveAssetLogoUrl(logoUrl, theme),
         icons: (record.icons as Asset['icons']) ?? {},
         hideSitename: record.themeEntry?.hideSitename ?? false,
         hideLogo: record.themeEntry?.hideLogo ?? false,
@@ -63,7 +64,7 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
         contactEmail,
         contactPhone,
         modules: (record.modules as Asset['modules']) ?? {},
-        theme: (record.themeEntry?.theme as Asset['theme']) ?? undefined,
+        theme,
         ownerAccountId: record.ownerAccountId ?? undefined,
         status: record.status ?? undefined,
         type: record.type ?? undefined,

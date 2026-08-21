@@ -74,6 +74,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getCookie } from '@/inapp/helpers/session-manager';
+import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
 
 const navLinkClassName = (isActive: boolean) => cn(
   'flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
@@ -222,7 +223,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
   const { asset, loading } = useProfile();
 
   const profileName = asset?.name;
-  const logoUrl = asset?.logoUrl;
+  const logoUrl = resolveAssetLogoUrl(asset?.logoUrl, asset?.theme);
   const hideSitename = asset?.hideSitename;
 
   return (
@@ -233,8 +234,8 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
             {(loading ? (
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
-              <div className="relative h-6 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image src={logoUrl} alt="Asset Logo" layout="fill" objectFit="contain" className="!relative !h-6 !w-auto" />
+              <div className="relative h-7 w-auto" style={{ aspectRatio: 'auto' }}>
+                <Image src={logoUrl} alt="Asset Logo" layout="fill" objectFit="contain" className="!relative !h-7 !w-auto" />
               </div>
             ) : (
               <Rocket className="h-6 w-6 text-primary" />

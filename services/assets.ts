@@ -26,6 +26,9 @@ export async function getAssetsForAccount(): Promise<{ assets?: AssetSummary[]; 
       include: {
         asset: {
           include: {
+            themeEntry: {
+              select: { theme: true },
+            },
             profiles: {
               where: { subject: { in: ['brand.logo', 'brand.description'] } },
               select: { subject: true, value: true },
@@ -43,11 +46,12 @@ export async function getAssetsForAccount(): Promise<{ assets?: AssetSummary[]; 
         const logoUrl = role.asset.profiles.find((entry) => entry.subject === 'brand.logo')?.value ?? null;
         const description =
           role.asset.profiles.find((entry) => entry.subject === 'brand.description')?.value ?? null;
+        const theme = role.asset.themeEntry?.theme as any;
 
         assetsById.set(role.asset.id, {
           id: role.asset.id,
           name: role.asset.name,
-          logoUrl: resolveAssetLogoUrl(logoUrl),
+          logoUrl: resolveAssetLogoUrl(logoUrl, theme),
           description,
         });
       }
@@ -125,7 +129,7 @@ export async function createAssetForAccount(input: {
       success: true,
       asset: {
         ...assetData,
-        logoUrl: resolveAssetLogoUrl(input.logoUrl),
+        logoUrl: resolveAssetLogoUrl(input.logoUrl, defaultTheme),
         description: input.description?.trim() || null,
       },
     };
