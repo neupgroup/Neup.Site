@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ['ssh2', 'node-ssh', '@prisma/client', '.prisma/client'],
   images: {
+    localPatterns: [
+      {
+        pathname: '/bridge/api.v1/asset/logo',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',

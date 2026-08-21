@@ -74,7 +74,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getCookie } from '@/inapp/helpers/session-manager';
-import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/accounts';
 
@@ -228,6 +228,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
 
   const profileName = asset?.name;
   const logoUrl = resolveAssetLogoUrl(asset?.logoUrl, asset?.theme);
+  const isSvgLogo = isResolvedAssetLogoSvg(logoUrl);
   const hideSitename = asset?.hideSitename;
 
   useEffect(() => {
@@ -266,7 +267,15 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
               <div className="relative h-7 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image src={logoUrl} alt="Asset Logo" layout="fill" objectFit="contain" className="!relative !h-7 !w-auto" />
+                <Image
+                  src={logoUrl}
+                  alt="Asset Logo"
+                  width={160}
+                  height={28}
+                  unoptimized={isSvgLogo}
+                  className="h-7 w-auto"
+                  style={{ objectFit: 'contain' }}
+                />
               </div>
             ) : (
               <Rocket className="h-6 w-6 text-primary" />

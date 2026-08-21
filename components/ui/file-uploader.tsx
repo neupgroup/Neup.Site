@@ -9,7 +9,7 @@ import { cn } from '@/core/utils';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/inapp/context/ProfileContext';
 import Image from 'next/image';
-import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
 
 interface FileUploaderProps {
   uploadPath: string;
@@ -104,6 +104,7 @@ export function FileUploader({ uploadPath, acceptedFileTypes, onUploadSuccess, c
             alt="Preview"
             width={48}
             height={48}
+            unoptimized={isResolvedAssetLogoSvg(resolvedPreviewUrl)}
             className="object-contain"
           />
         );
