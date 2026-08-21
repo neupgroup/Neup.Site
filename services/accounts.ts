@@ -3,6 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { logger } from '@/logica/logger';
+import { getBasics } from '@/logica/account/self';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
@@ -18,6 +19,12 @@ export interface LinkedAccount {
         provider_user_id: string;
         provider_username: string;
     };
+}
+
+export interface SelfAccountBasics {
+    displayName: string | null;
+    displayImage: string | null;
+    neupid: string | null;
 }
 
 export async function getAccountId(): Promise<string> {
@@ -92,5 +99,19 @@ export async function deleteLinkedAccount(id: string): Promise<{ success: boolea
             source: 'deleteLinkedAccount',
         });
         return { success: false, error: 'Failed to disconnect account.' };
+    }
+}
+
+export async function getSelfAccountBasics(): Promise<{ basics?: SelfAccountBasics | null; error?: string }> {
+    try {
+        const basics = await getBasics();
+        return { basics: basics[0] ?? null };
+    } catch (e: any) {
+        await logger.error({
+            message: `Failed to get self account basics: ${e.message}`,
+            stack: e.stack,
+            source: 'getSelfAccountBasics',
+        });
+        return { error: 'Failed to retrieve account basics.' };
     }
 }

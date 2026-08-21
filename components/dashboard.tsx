@@ -75,6 +75,8 @@ import { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getCookie } from '@/inapp/helpers/session-manager';
 import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/accounts';
 
 const navLinkClassName = (isActive: boolean) => cn(
   'flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
@@ -221,10 +223,39 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
 
 function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: boolean, toggleMobileMenu: () => void }) {
   const { asset, loading } = useProfile();
+  const [accountBasics, setAccountBasics] = useState<SelfAccountBasics | null>(null);
+  const [accountBasicsLoading, setAccountBasicsLoading] = useState(true);
 
   const profileName = asset?.name;
   const logoUrl = resolveAssetLogoUrl(asset?.logoUrl, asset?.theme);
   const hideSitename = asset?.hideSitename;
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadAccountBasics() {
+      const result = await getSelfAccountBasics();
+      if (!active) return;
+      setAccountBasics(result.basics ?? null);
+      setAccountBasicsLoading(false);
+    }
+
+    loadAccountBasics();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const displayName = accountBasics?.displayName?.trim() || null;
+  const neupid = accountBasics?.neupid?.trim() || null;
+  const displayImage = accountBasics?.displayImage?.trim() || null;
+  const initials = (displayName || neupid || 'A')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('') || 'A';
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow-lg">
@@ -242,16 +273,38 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
             ))}
 
             {(!hideSitename && hideSitename !== null) && (
-              <h1 className="font-headline text-xl font-semibold tracking-tight">
-                {loading ? <Skeleton className="h-6 w-32" /> : (profileName?.trim() ? profileName : 'Neup.Sites')}
-              </h1>
+              loading ? (
+                <div className="font-headline text-xl font-semibold tracking-tight">
+                  <Skeleton className="h-6 w-32" />
+                </div>
+              ) : (
+                <h1 className="font-headline text-xl font-semibold tracking-tight">
+                  {profileName?.trim() ? profileName : 'Neup.Sites'}
+                </h1>
+              )
             )}
           </Link>
         </div>
-        <div className="md:hidden">
+        <div className="flex items-center gap-4">
+          <div className="hidden items-center gap-3 md:flex">
+            <div className="text-right leading-tight">
+              <div className="text-sm font-semibold text-foreground">
+                {accountBasicsLoading ? <Skeleton className="ml-auto h-4 w-32" /> : (displayName || 'Account')}
+              </div>
+              <div className="font-mono text-xs text-muted-foreground">
+                {accountBasicsLoading ? <Skeleton className="ml-auto mt-1 h-3 w-24" /> : (neupid ? `@${neupid}` : '')}
+              </div>
+            </div>
+            <Avatar className="h-10 w-10 border border-border/60">
+              {displayImage ? <AvatarImage src={displayImage} alt={displayName || neupid || 'Account'} /> : null}
+              <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">{initials}</AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="md:hidden">
           <Button variant="plain" size="icon" onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
+          </div>
         </div>
       </div>
     </header>
