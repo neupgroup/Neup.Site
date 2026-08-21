@@ -291,7 +291,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu }: { isMobileMenuOpen: bool
               <div className="text-sm font-semibold text-foreground">
                 {accountBasicsLoading ? <Skeleton className="ml-auto h-4 w-32" /> : (displayName || 'Account')}
               </div>
-              <div className="font-mono text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground">
                 {accountBasicsLoading ? <Skeleton className="ml-auto mt-1 h-3 w-24" /> : (neupid ? `@${neupid}` : '')}
               </div>
             </div>
