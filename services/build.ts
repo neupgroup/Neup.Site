@@ -2,16 +2,16 @@ import { prisma as db } from '@/core/database/prisma';
 import { logger } from '@/logica/logger';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 
+const CODEBASE_FOLDER_MARKER = '.neup-folder';
+
 type BuildMapRoute = {
   path: string;
   pageId: string;
-  type: 'page';
 };
 
 type BuildMapFile = {
   path: string;
   size: number;
-  type: 'codeFile';
 };
 
 export type BuildMap = {
@@ -68,6 +68,10 @@ function normalizeRoutePath(input: string): string | null {
   return segments.length ? `/${segments.join('/')}` : '/';
 }
 
+function isFolderMarkerPath(path: string) {
+  return path.endsWith(`/${CODEBASE_FOLDER_MARKER}`) || path === CODEBASE_FOLDER_MARKER;
+}
+
 function getContentType(filePath: string): string {
   const extension = filePath.split('.').pop()?.toLowerCase();
 
@@ -120,7 +124,13 @@ export async function getBuildMap(siteId: string): Promise<{ success: true; buil
         select: { path: true, pageId: true },
       }),
       db.codeFile.findMany({
-        where: { assetId: siteId },
+        where: {
+          assetId: siteId,
+          NOT: [
+            { filePath: CODEBASE_FOLDER_MARKER },
+            { filePath: { endsWith: `/${CODEBASE_FOLDER_MARKER}` } },
+          ],
+        },
         orderBy: [{ filePath: 'asc' }, { createdAt: 'asc' }],
         select: { filePath: true, size: true },
       }),
@@ -133,12 +143,10 @@ export async function getBuildMap(siteId: string): Promise<{ success: true; buil
         routes: pagePaths.map((entry) => ({
           path: entry.path,
           pageId: entry.pageId,
-          type: 'page' as const,
         })),
         files: codeFiles.map((entry) => ({
           path: entry.filePath,
           size: entry.size,
-          type: 'codeFile' as const,
         })),
       },
     };
@@ -162,6 +170,10 @@ export async function getBuildFile(siteId: string, requestedPath: string): Promi
 
   try {
     if (codeFilePath) {
+      if (isFolderMarkerPath(codeFilePath)) {
+        return { success: false, error: 'File not found.', status: 404 };
+      }
+
       const codeFile = await db.codeFile.findFirst({
         where: { assetId: siteId, filePath: codeFilePath },
         select: { content: true, filePath: true },

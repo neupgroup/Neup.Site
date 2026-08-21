@@ -13,6 +13,7 @@ import { usePageTitle } from '@/core/hooks/use-page-title';
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 
 interface UploadingFile {
+  id: string;
   file: File;
   status: UploadStatus;
   error?: string;
@@ -33,6 +34,14 @@ function joinCodebasePath(basePath: string | null, filePath: string) {
   return `${basePath.replace(/\/+$/, '')}/${normalizedFilePath}`;
 }
 
+function getUploadRelativePath(file: File) {
+  return file.webkitRelativePath || file.name;
+}
+
+function getUploadTargetPath(basePath: string | null, file: File) {
+  return `/${joinCodebasePath(basePath, getUploadRelativePath(file))}`;
+}
+
 export default function CodebaseUploadPage() {
   usePageTitle('Upload Codebase Files');
 
@@ -45,7 +54,8 @@ export default function CodebaseUploadPage() {
   const codebaseHref = currentPath ? `/site/codebase?path=${encodeURIComponent(currentPath)}` : '/site/codebase';
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const nextFiles = acceptedFiles.map((file) => ({
+    const nextFiles = acceptedFiles.map((file, index) => ({
+      id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2, 10)}`,
       file,
       status: 'pending' as const,
     }));
@@ -67,8 +77,7 @@ export default function CodebaseUploadPage() {
 
       try {
         const content = await pendingFile.file.text();
-        const relativePath = pendingFile.file.webkitRelativePath || pendingFile.file.name;
-        const filePath = joinCodebasePath(currentPath, relativePath);
+        const filePath = joinCodebasePath(currentPath, getUploadRelativePath(pendingFile.file));
         const response = await fetch(`/bridge/api.v1/codebase/upload?path=${encodeURIComponent(filePath)}`, {
           method: 'POST',
           headers: {
@@ -137,7 +146,7 @@ export default function CodebaseUploadPage() {
             <div className="space-y-3">
               {uploadingFiles.map((uploadingFile) => (
                 <div
-                  key={`${uploadingFile.file.name}-${uploadingFile.file.lastModified}`}
+                  key={uploadingFile.id}
                   className="flex items-start justify-between gap-4 rounded-lg border p-4"
                 >
                   <div className="flex min-w-0 items-start gap-3">
@@ -151,6 +160,9 @@ export default function CodebaseUploadPage() {
                     <div className="min-w-0">
                       <p className="break-all text-sm font-medium text-foreground">{uploadingFile.file.name}</p>
                       <p className="text-xs text-muted-foreground">{formatFileSize(uploadingFile.file.size)}</p>
+                      <p className="break-all font-mono text-xs text-muted-foreground">
+                        {getUploadTargetPath(currentPath, uploadingFile.file)}
+                      </p>
                       {uploadingFile.error && <p className="text-xs text-destructive">{uploadingFile.error}</p>}
                     </div>
                   </div>
