@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Loader2, Trash2 } from 'lucide-react';
 
+import { makeAppPath } from '@/core/appconfig';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,11 +66,11 @@ export function ProjectDeleteButton({
 
     if (isCurrentProject) {
       clearSession();
-      window.location.assign('/switch?returnTo=/manage/projects');
+      window.location.assign(makeAppPath('/switch?returnTo=/manage/projects'));
       return;
     }
 
-    window.location.assign('/manage/projects');
+    window.location.assign(makeAppPath('/manage/projects'));
   };
 
   return (

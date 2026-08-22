@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
+import { makeAppPath } from '@/core/appconfig';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@/core/hooks/use-toast';
 import { clearSession } from '@/inapp/helpers/session-manager';
@@ -112,10 +113,10 @@ function AssetList() {
     }, [selectedProjectId]);
 
     const getProjectDestination = (assetId: string) => {
-        const destination = new URL(returnTo, window.location.origin);
+        const destination = new URL(makeAppPath(returnTo), window.location.origin);
 
-        if (destination.pathname === '/switch') {
-            destination.pathname = '/';
+        if (destination.pathname === makeAppPath('/switch')) {
+            destination.pathname = makeAppPath('/');
             destination.search = '';
         }
 
