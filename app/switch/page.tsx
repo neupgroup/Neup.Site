@@ -3,9 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@/core/hooks/use-toast';
+import { clearSession } from '@/inapp/helpers/session-manager';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -77,7 +78,6 @@ function ProjectRow({
 }
 
 function AssetList() {
-    const router = useRouter();
     const searchParams = useSearchParams();
     const [allAssets, setAllAssets] = useState<AssetSummary[]>([]);
     const [loading, setLoading] = useState(true);
@@ -126,9 +126,8 @@ function AssetList() {
     const handleSelectAsset = async (assetId: string) => {
         setIsSwitching(assetId);
         setActiveAssetId(assetId);
-        toast({ title: 'Project Switched', description: `You are now working on project: ${assetId}.` });
-        router.push(getProjectDestination(assetId));
-        setIsSwitching(null);
+        clearSession();
+        window.location.assign(getProjectDestination(assetId));
     };
 
     const handleCreateAsset = async () => {

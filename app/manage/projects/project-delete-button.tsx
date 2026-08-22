@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Loader2, Trash2 } from 'lucide-react';
 
 import {
@@ -40,7 +39,6 @@ export function ProjectDeleteButton({
   projectName: string;
   isCurrentProject: boolean;
 }) {
-  const router = useRouter();
   const { toast } = useToast();
   const [showConfirm, setShowConfirm] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -67,12 +65,11 @@ export function ProjectDeleteButton({
 
     if (isCurrentProject) {
       clearSession();
-      router.push('/switch?returnTo=/manage/projects');
+      window.location.assign('/switch?returnTo=/manage/projects');
       return;
     }
 
-    setIsPending(false);
-    router.refresh();
+    window.location.assign('/manage/projects');
   };
 
   return (
