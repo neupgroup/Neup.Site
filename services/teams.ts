@@ -2,6 +2,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
+import { slugify } from '@/core/helpers/slug';
 import { revalidatePath } from 'next/cache';
 import { getActiveProjectId } from '@/services/projects';
 import type { Team } from '@/services/team/type';
@@ -38,12 +39,41 @@ async function getTeamAssetId(): Promise<string> {
   return assetId;
 }
 
+async function resolveUniqueTeamSlug(assetId: string, name: string, excludeId?: string) {
+  const baseSlug = slugify(name, 'team');
+  const existingTeams = await db.team.findMany({
+    where: {
+      assetId,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+      slug: {
+        startsWith: baseSlug,
+      },
+    },
+    select: { slug: true },
+    orderBy: { slug: 'asc' },
+  });
+
+  const existingSlugs = new Set(existingTeams.map((team) => team.slug));
+  if (!existingSlugs.has(baseSlug)) {
+    return baseSlug;
+  }
+
+  let suffix = 2;
+  while (existingSlugs.has(`${baseSlug}-${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${baseSlug}-${suffix}`;
+}
+
 export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const assetId = await getTeamAssetId();
+    const slug = await resolveUniqueTeamSlug(assetId, data.name);
     const record = await db.team.create({
       data: {
         assetId,
+        slug,
         name: data.name,
         description: data.description ?? null,
         order: data.order ?? null,
@@ -65,12 +95,13 @@ export async function getTeams(): Promise<{ success: boolean; teams?: Team[]; er
     const records = await db.team.findMany({
       where: { assetId },
       orderBy: [{ order: 'asc' }, { id: 'asc' }],
-      select: { id: true, assetId: true, name: true, description: true, order: true },
+      select: { id: true, assetId: true, slug: true, name: true, description: true, order: true },
     });
 
     const teams = records.map((record) => ({
       id: record.id,
       assetId: record.assetId,
+      slug: record.slug,
       name: record.name,
       description: record.description ?? undefined,
       order: record.order ?? undefined,
@@ -90,7 +121,7 @@ export async function getTeam(id: string): Promise<{ success: boolean; team?: Te
             id,
             assetId,
           },
-          select: { id: true, assetId: true, name: true, description: true, order: true },
+          select: { id: true, assetId: true, slug: true, name: true, description: true, order: true },
         });
         if (!record) {
             return { success: false, error: 'Team not found.' };
@@ -99,6 +130,7 @@ export async function getTeam(id: string): Promise<{ success: boolean; team?: Te
         const team: Team = {
             id: record.id,
             assetId: record.assetId,
+            slug: record.slug,
             name: record.name,
             description: record.description ?? undefined,
             order: record.order ?? undefined,
@@ -113,6 +145,7 @@ export async function getTeam(id: string): Promise<{ success: boolean; team?: Te
 export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): Promise<{ success: boolean; error?: string }> {
   try {
     const assetId = await getTeamAssetId();
+    const slug = typeof data.name === 'string' ? await resolveUniqueTeamSlug(assetId, data.name, id) : undefined;
     const result = await db.team.updateMany({
       where: {
         id,
@@ -120,6 +153,7 @@ export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): P
       },
       data: {
         assetId,
+        ...(slug ? { slug } : {}),
         ...(typeof data.name === 'string' ? { name: data.name } : {}),
         ...(data.description !== undefined ? { description: data.description ?? null } : {}),
         ...(data.order !== undefined ? { order: data.order ?? null } : {}),

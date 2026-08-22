@@ -399,12 +399,14 @@ model ApiToken {
 model Team {
   id          String   @id @default(cuid())
   assetId     String   @map("asset_id")
+  slug        String
   name        String
   description String?
   order       Int?
   asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
   members     Member[]
 
+  @@unique([assetId, slug])
   @@index([assetId, order])
   @@map("teams")
 }

@@ -399,6 +399,7 @@ exports.Prisma.ApiTokenScalarFieldEnum = {
 exports.Prisma.TeamScalarFieldEnum = {
   id: 'id',
   assetId: 'assetId',
+  slug: 'slug',
   name: 'name',
   description: 'description',
   order: 'order'

@@ -13,6 +13,7 @@ Type contract for a team record used by services and management UIs.
 export interface Team {
   id: string;
   assetId?: string;
+  slug?: string;
   name: string;
   description?: string;
   order?: number;

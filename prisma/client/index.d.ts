@@ -31306,6 +31306,7 @@ export namespace Prisma {
   export type TeamMinAggregateOutputType = {
     id: string | null
     assetId: string | null
+    slug: string | null
     name: string | null
     description: string | null
     order: number | null
@@ -31314,6 +31315,7 @@ export namespace Prisma {
   export type TeamMaxAggregateOutputType = {
     id: string | null
     assetId: string | null
+    slug: string | null
     name: string | null
     description: string | null
     order: number | null
@@ -31322,6 +31324,7 @@ export namespace Prisma {
   export type TeamCountAggregateOutputType = {
     id: number
     assetId: number
+    slug: number
     name: number
     description: number
     order: number
@@ -31340,6 +31343,7 @@ export namespace Prisma {
   export type TeamMinAggregateInputType = {
     id?: true
     assetId?: true
+    slug?: true
     name?: true
     description?: true
     order?: true
@@ -31348,6 +31352,7 @@ export namespace Prisma {
   export type TeamMaxAggregateInputType = {
     id?: true
     assetId?: true
+    slug?: true
     name?: true
     description?: true
     order?: true
@@ -31356,6 +31361,7 @@ export namespace Prisma {
   export type TeamCountAggregateInputType = {
     id?: true
     assetId?: true
+    slug?: true
     name?: true
     description?: true
     order?: true
@@ -31451,6 +31457,7 @@ export namespace Prisma {
   export type TeamGroupByOutputType = {
     id: string
     assetId: string
+    slug: string
     name: string
     description: string | null
     order: number | null
@@ -31478,6 +31485,7 @@ export namespace Prisma {
   export type TeamSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     description?: boolean
     order?: boolean
@@ -31489,6 +31497,7 @@ export namespace Prisma {
   export type TeamSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     description?: boolean
     order?: boolean
@@ -31498,6 +31507,7 @@ export namespace Prisma {
   export type TeamSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     description?: boolean
     order?: boolean
@@ -31507,12 +31517,13 @@ export namespace Prisma {
   export type TeamSelectScalar = {
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     description?: boolean
     order?: boolean
   }
 
-  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "description" | "order", ExtArgs["result"]["team"]>
+  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "slug" | "name" | "description" | "order", ExtArgs["result"]["team"]>
   export type TeamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     members?: boolean | Team$membersArgs<ExtArgs>
@@ -31534,6 +31545,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       assetId: string
+      slug: string
       name: string
       description: string | null
       order: number | null
@@ -31964,6 +31976,7 @@ export namespace Prisma {
   interface TeamFieldRefs {
     readonly id: FieldRef<"Team", 'String'>
     readonly assetId: FieldRef<"Team", 'String'>
+    readonly slug: FieldRef<"Team", 'String'>
     readonly name: FieldRef<"Team", 'String'>
     readonly description: FieldRef<"Team", 'String'>
     readonly order: FieldRef<"Team", 'Int'>
@@ -42497,6 +42510,7 @@ export namespace Prisma {
   export const TeamScalarFieldEnum: {
     id: 'id',
     assetId: 'assetId',
+    slug: 'slug',
     name: 'name',
     description: 'description',
     order: 'order'
@@ -44579,6 +44593,7 @@ export namespace Prisma {
     NOT?: TeamWhereInput | TeamWhereInput[]
     id?: StringFilter<"Team"> | string
     assetId?: StringFilter<"Team"> | string
+    slug?: StringFilter<"Team"> | string
     name?: StringFilter<"Team"> | string
     description?: StringNullableFilter<"Team"> | string | null
     order?: IntNullableFilter<"Team"> | number | null
@@ -44589,6 +44604,7 @@ export namespace Prisma {
   export type TeamOrderByWithRelationInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     order?: SortOrderInput | SortOrder
@@ -44598,20 +44614,23 @@ export namespace Prisma {
 
   export type TeamWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    assetId_slug?: TeamAssetIdSlugCompoundUniqueInput
     AND?: TeamWhereInput | TeamWhereInput[]
     OR?: TeamWhereInput[]
     NOT?: TeamWhereInput | TeamWhereInput[]
     assetId?: StringFilter<"Team"> | string
+    slug?: StringFilter<"Team"> | string
     name?: StringFilter<"Team"> | string
     description?: StringNullableFilter<"Team"> | string | null
     order?: IntNullableFilter<"Team"> | number | null
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     members?: MemberListRelationFilter
-  }, "id">
+  }, "id" | "assetId_slug">
 
   export type TeamOrderByWithAggregationInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     order?: SortOrderInput | SortOrder
@@ -44628,6 +44647,7 @@ export namespace Prisma {
     NOT?: TeamScalarWhereWithAggregatesInput | TeamScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Team"> | string
     assetId?: StringWithAggregatesFilter<"Team"> | string
+    slug?: StringWithAggregatesFilter<"Team"> | string
     name?: StringWithAggregatesFilter<"Team"> | string
     description?: StringNullableWithAggregatesFilter<"Team"> | string | null
     order?: IntNullableWithAggregatesFilter<"Team"> | number | null
@@ -47256,6 +47276,7 @@ export namespace Prisma {
 
   export type TeamCreateInput = {
     id?: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -47266,6 +47287,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateInput = {
     id?: string
     assetId: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -47274,6 +47296,7 @@ export namespace Prisma {
 
   export type TeamUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -47284,6 +47307,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -47293,6 +47317,7 @@ export namespace Prisma {
   export type TeamCreateManyInput = {
     id?: string
     assetId: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -47300,6 +47325,7 @@ export namespace Prisma {
 
   export type TeamUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -47308,6 +47334,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -49281,9 +49308,15 @@ export namespace Prisma {
     lastUsed?: SortOrder
   }
 
+  export type TeamAssetIdSlugCompoundUniqueInput = {
+    assetId: string
+    slug: string
+  }
+
   export type TeamCountOrderByAggregateInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     description?: SortOrder
     order?: SortOrder
@@ -49296,6 +49329,7 @@ export namespace Prisma {
   export type TeamMaxOrderByAggregateInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     description?: SortOrder
     order?: SortOrder
@@ -49304,6 +49338,7 @@ export namespace Prisma {
   export type TeamMinOrderByAggregateInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     description?: SortOrder
     order?: SortOrder
@@ -52372,6 +52407,7 @@ export namespace Prisma {
 
   export type TeamCreateWithoutAssetInput = {
     id?: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -52380,6 +52416,7 @@ export namespace Prisma {
 
   export type TeamUncheckedCreateWithoutAssetInput = {
     id?: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -52932,6 +52969,7 @@ export namespace Prisma {
     NOT?: TeamScalarWhereInput | TeamScalarWhereInput[]
     id?: StringFilter<"Team"> | string
     assetId?: StringFilter<"Team"> | string
+    slug?: StringFilter<"Team"> | string
     name?: StringFilter<"Team"> | string
     description?: StringNullableFilter<"Team"> | string | null
     order?: IntNullableFilter<"Team"> | number | null
@@ -55840,6 +55878,7 @@ export namespace Prisma {
 
   export type TeamCreateWithoutMembersInput = {
     id?: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -55849,6 +55888,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateWithoutMembersInput = {
     id?: string
     assetId: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -55949,6 +55989,7 @@ export namespace Prisma {
 
   export type TeamUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55958,6 +55999,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -56567,6 +56609,7 @@ export namespace Prisma {
 
   export type TeamCreateManyAssetInput = {
     id?: string
+    slug: string
     name: string
     description?: string | null
     order?: number | null
@@ -57029,6 +57072,7 @@ export namespace Prisma {
 
   export type TeamUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -57037,6 +57081,7 @@ export namespace Prisma {
 
   export type TeamUncheckedUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
@@ -57045,6 +57090,7 @@ export namespace Prisma {
 
   export type TeamUncheckedUpdateManyWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null

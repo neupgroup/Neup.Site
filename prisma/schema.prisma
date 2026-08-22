@@ -399,6 +399,7 @@ model ApiToken {
 model Team {
   id          String   @id @default(cuid())
   assetId     String   @map("asset_id")
+  slug        String
   name        String
   description String?
   order       Int?
@@ -406,6 +407,7 @@ model Team {
   members     Member[]
 
   @@index([assetId, order])
+  @@unique([assetId, slug])
   @@map("teams")
 }
 
