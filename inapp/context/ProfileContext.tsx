@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { validateSession, saveSessionData, getSelectedProjectIdFromLocation } from '@/inapp/helpers/session-manager';
+import { clearSession, saveAccountSessionData, validateSession, getSelectedProjectIdFromLocation } from '@/inapp/helpers/session-manager';
 
 const SESSION_STORAGE_KEY_ARTIFACT = 'assetProfileData';
 
@@ -30,7 +30,15 @@ interface ProfileContextType {
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
-export function ProfileProvider({ children, loadAsset }: { children: ReactNode; loadAsset?: LoadAssetProfile }) {
+export function ProfileProvider({
+  children,
+  loadAsset,
+  currentAccountId,
+}: {
+  children: ReactNode;
+  loadAsset?: LoadAssetProfile;
+  currentAccountId?: string | null;
+}) {
   const [asset, setAsset] = useState<CoreAssetProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,15 +47,12 @@ export function ProfileProvider({ children, loadAsset }: { children: ReactNode; 
       setLoading(true);
       try {
         // Validate session
-        const sessionValidation = validateSession();
+        const sessionValidation = validateSession(currentAccountId);
 
         if (!sessionValidation.valid) {
           console.log('Session invalid:', sessionValidation.reason);
 
-          // Clear sessionStorage
-          if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.removeItem(SESSION_STORAGE_KEY_ARTIFACT);
-          }
+          clearSession();
 
           // Automatically fetch fresh data instead of showing banner
           console.log('Fetching fresh data due to invalid session...');
@@ -65,7 +70,7 @@ export function ProfileProvider({ children, loadAsset }: { children: ReactNode; 
             // Save session metadata
             const selectedProject = getSelectedProjectIdFromLocation();
             if (selectedProject) {
-              saveSessionData(selectedProject);
+              saveAccountSessionData(currentAccountId, selectedProject);
             }
           }
           setLoading(false);
@@ -97,7 +102,7 @@ export function ProfileProvider({ children, loadAsset }: { children: ReactNode; 
             // Save session metadata
             const selectedProject = getSelectedProjectIdFromLocation();
             if (selectedProject) {
-              saveSessionData(selectedProject);
+              saveAccountSessionData(currentAccountId, selectedProject);
             }
           }
           setLoading(false);
@@ -109,7 +114,7 @@ export function ProfileProvider({ children, loadAsset }: { children: ReactNode; 
     }
 
     initializeProfile();
-  }, [loadAsset]);
+  }, [currentAccountId, loadAsset]);
 
   // Update sessionStorage when asset changes
   useEffect(() => {

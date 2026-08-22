@@ -135,6 +135,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         </div>
         <NavLink href="/manage/member" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></NavLink>
         <NavLink href="/manage/accounts" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></NavLink>
+        <NavLink href="/manage/projects" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></NavLink>
         <NavLink href="/manage/hiring" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></NavLink>
         <NavLink href="/manage/billing" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
         <NavLink href="/manage/access" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></NavLink>

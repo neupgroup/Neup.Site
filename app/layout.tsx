@@ -6,6 +6,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense } from 'react';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { getAsset } from '@/services/editor/asset';
+import { initializeUserAccount } from '@/services/auth/initialize';
 import { cn } from '@/core/utils';
 import { AppLayoutClient } from './layout-client';
 
@@ -19,7 +20,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { asset } = await getAsset();
+  const [{ asset }, { accountId }] = await Promise.all([getAsset(), initializeUserAccount()]);
   const radius = asset?.theme?.radius;
   const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
   const themeMode = asset?.theme?.mode || 'light';
@@ -110,7 +111,7 @@ export default async function RootLayout({
           <ProgressBar />
         </Suspense>
         <SidebarProvider>
-          <AppLayoutClient>{children}</AppLayoutClient>
+          <AppLayoutClient currentAccountId={accountId}>{children}</AppLayoutClient>
         </SidebarProvider>
         <Toaster />
       </body>

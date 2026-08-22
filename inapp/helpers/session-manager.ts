@@ -22,6 +22,7 @@ This module only reads browser-native `document.cookie` and `sessionStorage` so 
 const COOKIE_LAST_FETCH = 'lastFetch';
 const SESSION_SELECTED_PROJECT = 'sessionSelectedProject';
 const SESSION_LAST_FETCH = 'lastFetch';
+const SESSION_ACCOUNT_ID = 'sessionAccountId';
 
 export function getSelectedProjectIdFromLocation(): string | null {
     if (typeof window === 'undefined') return null;
@@ -68,15 +69,24 @@ export function clearSession() {
     deleteCookie(COOKIE_LAST_FETCH);
 
     if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem(SESSION_ACCOUNT_ID);
         sessionStorage.removeItem(SESSION_SELECTED_PROJECT);
         sessionStorage.removeItem(SESSION_LAST_FETCH);
         sessionStorage.removeItem('assetProfileData');
+        sessionStorage.removeItem('neup_user');
     }
 }
 
-export function validateSession(): { valid: boolean; reason?: string } {
+export function validateSession(currentAccountId?: string | null): { valid: boolean; reason?: string } {
     if (typeof sessionStorage === 'undefined') {
         return { valid: false, reason: 'sessionStorage not available' };
+    }
+
+    const sessionAccountId = sessionStorage.getItem(SESSION_ACCOUNT_ID);
+    const normalizedCurrentAccountId = currentAccountId?.trim() || null;
+
+    if (normalizedCurrentAccountId !== sessionAccountId) {
+        return { valid: false, reason: 'account mismatch' };
     }
 
     const currentSelectedProject = getSelectedProjectIdFromLocation();
@@ -104,11 +114,20 @@ export function validateSession(): { valid: boolean; reason?: string } {
 }
 
 export function saveSessionData(assetId: string) {
+    saveAccountSessionData(null, assetId);
+}
+
+export function saveAccountSessionData(accountId: string | null | undefined, assetId: string) {
     const timestamp = Date.now().toString();
 
     setCookie(COOKIE_LAST_FETCH, timestamp);
 
     if (typeof sessionStorage !== 'undefined') {
+        if (accountId?.trim()) {
+            sessionStorage.setItem(SESSION_ACCOUNT_ID, accountId.trim());
+        } else {
+            sessionStorage.removeItem(SESSION_ACCOUNT_ID);
+        }
         sessionStorage.setItem(SESSION_SELECTED_PROJECT, assetId);
         sessionStorage.setItem(SESSION_LAST_FETCH, timestamp);
     }
@@ -116,6 +135,7 @@ export function saveSessionData(assetId: string) {
 
 export function getSessionMetadata() {
     return {
+        sessionAccountId: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_ACCOUNT_ID) : null,
         selectedProject: getSelectedProjectIdFromLocation(),
         cookieLastFetch: getCookie(COOKIE_LAST_FETCH),
         sessionSelectedProject: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_SELECTED_PROJECT) : null,
