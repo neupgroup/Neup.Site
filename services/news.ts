@@ -7,6 +7,7 @@ import { logger } from '@/logica/logger';
 
 export interface NewsArticle {
     id: string;
+    slug?: string;
     title: string;
     content: string;
     author: string;

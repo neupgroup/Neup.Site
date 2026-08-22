@@ -157,7 +157,7 @@ export async function getAppBaseBackups(): Promise<{ success: boolean; backups?:
       id: r.id,
       assetId: r.assetId,
       fileName: r.fileName,
-      fileType: r.fileType,
+      fileType: r.fileType as AppBaseBackup['fileType'],
       content: r.content,
       backedUpAt: r.backedUpAt ? r.backedUpAt.toISOString() : null,
       backedUpBy: r.backedUpBy,

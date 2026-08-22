@@ -29,7 +29,7 @@ function renderElementToJsx(element: CanvasElementData, level: number, isInsideL
     if (repeater && repeater.enabled && repeater.dataPath) {
         const loopVar = 'item'; // or make this configurable
         const indexVar = 'index';
-        const childrenJsx = children ? children.map(child => renderElementToJsx(child, level + 1, true)).join('\n') : '';
+        const childrenJsx = children ? children.map((child: CanvasElementData) => renderElementToJsx(child, level + 1, true)).join('\n') : '';
 
         return `
     {items?.${repeater.dataPath}?.map((${loopVar}, ${indexVar}) => (
@@ -105,8 +105,10 @@ ${childrenJsx}
     }
 
     switch (type) {
-        case 'text': {
-            const Tag = (properties['tag'] || 'p') as keyof JSX.IntrinsicElements;
+        case 'text':
+        case 'heading': {
+            const defaultTag = type === 'heading' ? `h${properties.level || 1}` : 'p';
+            const Tag = (properties['tag'] || defaultTag) as keyof JSX.IntrinsicElements;
             if (textContent.includes('<a')) {
                 return `${indent}<${Tag} ${attributesString} dangerouslySetInnerHTML={{ __html: \`${textContent.replace(/`/g, '\\`')}\` }} />`;
             }
@@ -147,7 +149,7 @@ ${childrenJsx}
         case 'form':
         case 'list': {
             const Tag = type === 'container' ? 'div' : (type === 'list' ? 'ul' : type);
-            const childrenJsx = children ? children.map(child => renderElementToJsx(child, level + 1, isInsideLoop)).join('\n') : '';
+            const childrenJsx = children ? children.map((child: CanvasElementData) => renderElementToJsx(child, level + 1, isInsideLoop)).join('\n') : '';
             return `${indent}<${Tag} ${attributesString}>\n${childrenJsx}\n${indent}</${Tag}>`;
         }
         case 'list-item': {
@@ -179,13 +181,14 @@ export async function convertJsonToJsx(elements: CanvasElementData[]): Promise<s
       // A top-level element might be a repeater itself.
       const isRepeater = element.repeater && element.repeater.enabled && element.repeater.dataPath;
       if (isRepeater) {
+          const repeaterPath = element.repeater!.dataPath;
           const loopVar = 'item';
           const indexVar = 'index';
-          const childrenJsx = element.children ? element.children.map(child => renderElementToJsx(child, 3, true)).join('\n') : '';
+          const childrenJsx = element.children ? element.children.map((child: CanvasElementData) => renderElementToJsx(child, 3, true)).join('\n') : '';
           const rootElementAttributes = `key={${loopVar}.id || ${indexVar}}`;
 
           return `
-        {items?.${element.repeater.dataPath}?.map((${loopVar}, ${indexVar}) => (
+        {items?.${repeaterPath}?.map((${loopVar}, ${indexVar}) => (
           <div ${rootElementAttributes}>
 ${childrenJsx}
           </div>

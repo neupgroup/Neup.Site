@@ -13,8 +13,12 @@ import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { createServerLog, updateServerLog } from '@/services/server-logs';
-import { getAllRedirects, Redirect } from './redirects';
+import { getAllRedirects } from './redirects';
 import { getEnvironmentVariables } from './environment';
+
+function parsePathStructureArray(value: unknown): PathStructure[] {
+  return (value as unknown as PathStructure[]) || [];
+}
 
 export async function getStructure(): Promise<{ success: boolean; structure?: Structure; error?: string }> {
   const cookieStore = await cookies();
@@ -29,7 +33,7 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
       id: record.id,
       assetId: record.assetId,
       status: record.status as Structure['status'],
-      structure: (record.structure as PathStructure[]) || [],
+      structure: parsePathStructureArray(record.structure),
       themeChanged: record.themeChanged,
       redirectsChanged: record.redirectsChanged,
       assetsChanged: record.assetsChanged,
@@ -59,7 +63,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
     const deployment: Deployment = {
       id: record.id,
       assetId: record.assetId,
-      structure: (record.structure as PathStructure[]) || [],
+      structure: parsePathStructureArray(record.structure),
       status: record.status as Deployment['status'],
       theme: record.theme as any,
       redirects: record.redirects as any,
@@ -268,7 +272,7 @@ export async function markStructureAsPending(assetId: string, paths: string[], i
     let finalStructure: PathStructure[] = [];
 
     if (record) {
-      finalStructure = ((record.structure as PathStructure[]) || []).map(p => paths.includes(p.path) ? { ...p, changesMade: true } : p);
+      finalStructure = parsePathStructureArray(record.structure).map(p => paths.includes(p.path) ? { ...p, changesMade: true } : p);
       if (isDeletion) finalStructure = finalStructure.filter(p => !paths.includes(p.path));
     } else if (!isDeletion) {
       const { pages } = await getPages();

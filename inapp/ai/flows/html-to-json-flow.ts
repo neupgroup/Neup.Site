@@ -6,7 +6,7 @@
  * - convertHtmlToJson - A function that handles the HTML to JSON conversion.
  */
 
-import {ai} from '@/ai/genkit';
+import { ai } from '@/inapp/ai/genkit';
 import {z} from 'genkit';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/services/canvas/type';
 

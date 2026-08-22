@@ -72,9 +72,9 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
             throw new Error(`Failed to list files: ${result.stderr}`);
         }
 
-        const files: PublicFile[] = result.stdout.trim().split('\n').slice(1).map(line => {
+        const parsedFiles = result.stdout.trim().split('\n').slice(1).map(line => {
             const parts = line.split(/\s+/);
-            const type = parts[0][0] === 'd' ? 'directory' : 'file';
+            const type: PublicFile['type'] = parts[0][0] === 'd' ? 'directory' : 'file';
             const name = parts.slice(8).join(' ');
             const size = parseInt(parts[4], 10);
             
@@ -89,7 +89,10 @@ export async function getPublicFiles(directoryPath: string = '/'): Promise<{ suc
                 size,
                 modified: new Date(`${parts[5]} ${parts[6]}`),
             };
-        }).filter((file): file is PublicFile => file !== null)
+        });
+
+        const files: PublicFile[] = parsedFiles
+        .filter((file): file is NonNullable<typeof file> => file !== null)
         .sort((a, b) => {
             if (a.type === 'directory' && b.type !== 'directory') return -1;
             if (a.type !== 'directory' && b.type === 'directory') return 1;

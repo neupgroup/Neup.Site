@@ -24,7 +24,14 @@ import { AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
-type FormValues = Partial<Source>;
+type FormValues = {
+  name?: string;
+  type?: Source['type'];
+  url?: string;
+  headers?: string;
+  datalistId?: string;
+  methods?: Source['methods'];
+};
 
 const ApiFields = ({ control }: { control: any }) => {
   return (
@@ -63,10 +70,14 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
       const result = await getSource(id);
       if (result.success && result.source) {
         const sourceData = result.source;
-        if (sourceData.type === 'api' && typeof sourceData.headers !== 'string') {
-          sourceData.headers = JSON.stringify(sourceData.headers || {}, null, 2);
+        if (sourceData.type === 'api') {
+          methods.reset({
+            ...sourceData,
+            headers: JSON.stringify(sourceData.headers || {}, null, 2),
+          });
+        } else {
+          methods.reset(sourceData);
         }
-        methods.reset(sourceData);
       } else {
         setError(result.error || 'Failed to fetch source.');
       }

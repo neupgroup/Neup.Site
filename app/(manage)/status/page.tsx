@@ -16,7 +16,7 @@ import type { ServerAllocation } from '@/services/server/type';
 import type { Asset, Structure } from '@/services/asset/type';
 import { getPm2Processes } from '@/services/server/management/get-pm2-processes';
 import { checkPathExists, rebuildApplication } from '@/services/server/management/check-build';
-import { useProfile } from '@/inapp/context/ProfileContext';
+import { useProfile, type CoreAssetProfile } from '@/inapp/context/ProfileContext';
 import { getStructure, createDeployment } from '@/services/structure';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
@@ -28,7 +28,7 @@ interface DeploymentStep {
     subActions?: { commandId: string; label: string; }[];
 }
 
-const DeploymentStatusChecker = ({ server, allocation, asset, isProduction }: { server: Server, allocation: ServerAllocation, asset: Asset | null, isProduction: boolean }) => {
+const DeploymentStatusChecker = ({ server, allocation, asset, isProduction }: { server: Server, allocation: ServerAllocation, asset: CoreAssetProfile | null, isProduction: boolean }) => {
     const router = useRouter();
     const { toast } = useToast();
     const [isChecking, setIsChecking] = useState(true);

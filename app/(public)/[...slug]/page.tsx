@@ -1,12 +1,9 @@
-
-
 import { prisma as db } from '@/core/database/prisma';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
-import { NextResponse } from 'next/server';
 import { cookies, headers } from 'next/headers';
-import type { Redirect } from '@/services/redirect/type';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 
-async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
+async function resolveRedirect(slug: string[]): Promise<{ destination: string; permanent: boolean } | null> {
   const cookieStore = await cookies();
   const assetId = cookieStore.get('assetId')?.value;
   if (!assetId) return null;
@@ -31,9 +28,12 @@ async function handleRedirect(slug: string[]): Promise<NextResponse | null> {
       const headersList = await headers();
       const host = headersList.get('host') || 'localhost:3000';
       const protocol = headersList.get('x-forwarded-proto') || 'http';
-      return NextResponse.redirect(new URL(destination, `${protocol}://${host}`), { status });
+      return {
+        destination: new URL(destination, `${protocol}://${host}`).toString(),
+        permanent: status === 301,
+      };
     }
-    return NextResponse.redirect(destination, { status });
+    return { destination, permanent: status === 301 };
   }
 
   return null;
@@ -64,17 +64,19 @@ async function getPageForPath(slug: string[]): Promise<{ html: string | null, th
 export default async function CatchAllPage(props: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await props.params;
 
-  const redirectResponse = await handleRedirect(slug);
-  if (redirectResponse) return redirectResponse;
+  const redirectTarget = await resolveRedirect(slug);
+  if (redirectTarget) {
+    if (redirectTarget.permanent) {
+      permanentRedirect(redirectTarget.destination);
+    }
+    redirect(redirectTarget.destination);
+  }
 
   const { html: htmlContent } = await getPageForPath(slug);
 
   if (!htmlContent) {
-    return new Response(`<div style="display:flex;height:100vh;width:100%;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;"><div style="text-align:center;"><h1 style="font-size:3rem;font-weight:bold;">404</h1><p>Page Not Found</p></div></div>`, {
-      headers: { 'Content-Type': 'text/html' },
-      status: 404,
-    });
+    notFound();
   }
 
-  return new Response(htmlContent, { headers: { 'Content-Type': 'text/html' }, status: 200 });
+  return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
 }

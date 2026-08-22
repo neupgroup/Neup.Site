@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket } from 'lucide-react';
+import { UploadCloud, FileText, Trash2, AlertCircle, Loader2, ChevronLeft, ChevronRight, Rocket, CheckCircle } from 'lucide-react';
 import { uploadCodeFile, getCodeFiles, deleteCodeFile } from '@/services/codebase';
 import { deployCodebaseFromStorage } from '@/services/deploy';
 import type { CodeFile } from '@/services/codebase/type';
@@ -169,7 +169,10 @@ export default function CodebasePage() {
         </CardHeader>
         <CardContent>
           <div {...getRootProps()} className={`p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'hover:border-primary/50'}`}>
-            <input {...getInputProps({ directory: "true", webkitdirectory: "true" })} />
+            <input
+              {...getInputProps()}
+              {...({ directory: '', webkitdirectory: '' } as React.InputHTMLAttributes<HTMLInputElement>)}
+            />
             <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             {isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
           </div>
@@ -177,7 +180,7 @@ export default function CodebasePage() {
             <div className="mt-6 space-y-4">
               {uploadingFiles.map((uf, index) => (
                 <div key={index} className="flex items-center gap-4 p-2 border rounded-md">
-                  {uf.status === 'success' ? <CheckCircle className="h-5 w-5 text-green-500" /> : uf.status === 'uploading' ? <Loader2 className="h-5 w-5 animate-spin" /> : uf.status === 'error' ? <AlertCircle className="h-5 w-5 text-destructive" title={uf.error} /> : <FileText className="h-5 w-5" />}
+                  {uf.status === 'success' ? <CheckCircle className="h-5 w-5 text-green-500" /> : uf.status === 'uploading' ? <Loader2 className="h-5 w-5 animate-spin" /> : uf.status === 'error' ? <AlertCircle className="h-5 w-5 text-destructive" aria-label={uf.error || 'Upload failed'} /> : <FileText className="h-5 w-5" />}
                   <div className="flex-1 truncate">
                     <p className="text-sm font-medium">{uf.file.name}</p>
                     {uf.status === 'error' && <p className="text-xs text-destructive">{uf.error}</p>}

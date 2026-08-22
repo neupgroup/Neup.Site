@@ -6,7 +6,7 @@
  * - createTemplateFromPrompt - A function that handles the prompt to JSON conversion.
  */
 
-import {ai} from '@/core/ai/direct/googleai';
+import { ai } from '@/inapp/ai/genkit';
 import {z} from 'genkit';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/services/canvas/type';
 

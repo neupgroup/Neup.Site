@@ -1,6 +1,4 @@
 import { getPage } from '@/services/editor/pages';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 import { use } from 'react';
 
@@ -16,10 +14,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
     `;
-    return new Response(errorHtml, {
-      headers: { 'Content-Type': 'text/html' },
-      status: 400,
-    });
+    return <div dangerouslySetInnerHTML={{ __html: errorHtml }} />;
   }
 
   const { success, page, error } = await getPage(id);
@@ -33,15 +28,10 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
     `;
-    return new Response(errorHtml, {
-      headers: { 'Content-Type': 'text/html' },
-      status: 404,
-    });
+    return <div dangerouslySetInnerHTML={{ __html: errorHtml }} />;
   }
 
   const htmlContent = convertJsonToHtml(page.elements);
 
-  return new Response(htmlContent, {
-    headers: { 'Content-Type': 'text/html' },
-  });
+  return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
 }

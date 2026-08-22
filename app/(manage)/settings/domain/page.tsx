@@ -142,13 +142,13 @@ export default function DomainPage() {
                     production: {
                         url: asset.domains?.production?.url || '',
                         forceHttps: asset.domains?.production?.forceHttps ?? true,
-                        ignoredPaths: asset.domains?.production?.ignoredPaths?.map(p => ({ value: p })) || [],
+                        ignoredPaths: asset.domains?.production?.ignoredPaths?.map((p: string) => ({ value: p })) || [],
                         proxies: asset.domains?.production?.proxies || [],
                     },
                     development: {
                         url: asset.domains?.development?.url || '',
                         forceHttps: asset.domains?.development?.forceHttps ?? false,
-                        ignoredPaths: asset.domains?.development?.ignoredPaths?.map(p => ({ value: p })) || [],
+                        ignoredPaths: asset.domains?.development?.ignoredPaths?.map((p: string) => ({ value: p })) || [],
                         proxies: asset.domains?.development?.proxies || [],
                     },
                 },

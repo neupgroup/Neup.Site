@@ -65,7 +65,7 @@ export default function TemplatesGuidePage() {
             <TabsContent value="data" className="pt-6 space-y-4">
               <h3 className="text-xl font-semibold font-headline">Working with Dynamic Data</h3>
               <p>
-                To make your templates dynamic, you can use placeholders for data that will be supplied later. The system uses a simple double-curly-brace syntax: `{{ }}`.
+                To make your templates dynamic, you can use placeholders for data that will be supplied later. The system uses a simple double-curly-brace syntax: <code>{'{{ }}'}</code>.
               </p>
               <p>
                 When a page is connected to a data source that returns an array of items, you can use `item` to access the properties of each individual item in that array.

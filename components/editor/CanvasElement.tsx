@@ -122,8 +122,10 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
   }
 
   switch (type) {
-    case 'text': {
-      const Tag = (properties['tag'] || 'p') as keyof JSX.IntrinsicElements;
+    case 'text':
+    case 'heading': {
+      const defaultTag = type === 'heading' ? `h${properties.level || 1}` : 'p';
+      const Tag = (properties['tag'] || defaultTag) as keyof JSX.IntrinsicElements;
       const content = properties['text'] || 'New Text Block';
       return (
         <Tag {...commonProps} className={cn(commonProps.className, 'font-headline tracking-tight')}>
@@ -224,7 +226,7 @@ const CanvasElement: FC<CanvasElementProps> = (props) => {
           onDragOver={(e) => onDragOver(e, id, null)}
         >
           {children && children.length > 0
-            ? children.map(child => <CanvasElement key={child.id} {...{ ...props, element: child, parentId: id }} />)
+            ? children.map((child: CanvasElementData) => <CanvasElement key={child.id} {...{ ...props, element: child, parentId: id }} />)
             : <div className="min-h-[20px]" onDragOver={(e) => onDragOver(e, id, null)}></div>
           }
           {renderResizeHandles()}

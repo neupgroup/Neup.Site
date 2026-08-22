@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useRef, useEffect, FC } from 'react';
+import React, { useState, useRef, useEffect, FC } from 'react';
 import { cn } from '@/core/utils';
 import { Bold, Italic, Strikethrough, Link as LinkIcon, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ interface EditableTextProps {
 
 export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, onTagChange, currentTag, className, style, as = 'div' }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const editorRef = useRef<HTMLDivElement>(null);
+    const editorRef = useRef<HTMLElement | null>(null);
 
     // Set initial content only when the initialValue prop changes
     useEffect(() => {
@@ -60,7 +60,22 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
     const tagOptions = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
 
-    const Wrapper = as as keyof JSX.IntrinsicElements;
+    const wrapperProps = {
+        ref: (node: HTMLElement | null) => {
+            editorRef.current = node;
+        },
+        contentEditable: true,
+        suppressContentEditableWarning: true,
+        onFocus: handleFocus,
+        onBlur: handleBlur,
+        className: cn(
+            'w-full whitespace-pre-wrap outline-none relative block',
+            'focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background rounded-sm',
+            className
+        ),
+        style,
+        dangerouslySetInnerHTML: { __html: initialValue || ' ' },
+    };
 
     return (
         <>
@@ -119,20 +134,7 @@ export const EditableText: FC<EditableTextProps> = ({ id, initialValue, onSave, 
                     </Popover>
                 </div>
             )}
-            <Wrapper
-                ref={editorRef}
-                contentEditable={true}
-                suppressContentEditableWarning={true}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                className={cn(
-                    "w-full whitespace-pre-wrap outline-none relative block", // added block
-                    "focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background rounded-sm",
-                    className
-                )}
-                style={style}
-                dangerouslySetInnerHTML={{ __html: initialValue || ' ' }}
-            />
+            {React.createElement(as, wrapperProps)}
         </>
     );
 };

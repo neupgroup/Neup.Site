@@ -42,6 +42,7 @@ type ElementType = CanvasElementData['type'];
 
 const elementLabels: Record<ElementType, string> = {
   text: 'Text',
+  heading: 'Heading',
   image: 'Image',
   button: 'Button',
   section: 'Section',
@@ -59,6 +60,7 @@ const elementLabels: Record<ElementType, string> = {
 
 const elementDescriptions: Record<ElementType, string> = {
   text: 'Add paragraphs and inline copy blocks.',
+  heading: 'Add semantic headings with level-based typography.',
   image: 'Display responsive images inside your layout.',
   button: 'Add clickable actions and calls to action.',
   section: 'Create large layout regions for page structure.',
@@ -78,6 +80,8 @@ const getIconForType = (type: ElementType) => {
   switch (type) {
     case 'text':
       return <Type className="h-5 w-5" />;
+    case 'heading':
+      return <Pilcrow className="h-5 w-5" />;
     case 'image':
       return <ImageIcon className="h-5 w-5" />;
     case 'button':

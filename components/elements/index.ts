@@ -3,6 +3,7 @@ import { button } from './button';
 import { container } from './container';
 import { div } from './div';
 import { form } from './form';
+import { heading } from './heading';
 import { html } from './html';
 import { image } from './image';
 import { input } from './input';
@@ -19,6 +20,7 @@ export const elementDefinitions: { [key in CanvasElementData['type']]: Omit<Canv
     container,
     div,
     form,
+    heading,
     html,
     image,
     input,

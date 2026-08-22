@@ -16,7 +16,7 @@ export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>,
       type: template.type || 'section',
       status: template.status || 'draft',
       usableOn: template.usableOn || ['json'],
-      content: template.content || {},
+      content: (template.content || {}) as any,
       createdBy: template.createdBy || 'user',
     };
 
@@ -43,11 +43,11 @@ export async function getTemplates(): Promise<{ success: boolean, templates?: Te
       imageUrl: r.imageUrl ?? undefined,
       previewUrl: r.previewUrl ?? undefined,
       category: r.category ?? undefined,
-      type: r.type || 'section',
-      status: r.status || 'draft',
+      type: (r.type as Template['type']) || 'section',
+      status: (r.status as Template['status']) || 'draft',
       usableOn: (r.usableOn as any) || ['json'],
       content: (r.content as any) || {},
-      createdBy: r.createdBy,
+      createdBy: (r.createdBy as Template['createdBy']) || 'user',
       createdAt: r.createdAt ? r.createdAt.toISOString() : null,
     }));
     return { success: true, templates };
@@ -68,11 +68,11 @@ export async function getTemplate(id: string): Promise<{ success: boolean, templ
       imageUrl: record.imageUrl ?? undefined,
       previewUrl: record.previewUrl ?? undefined,
       category: record.category ?? undefined,
-      type: record.type || 'section',
-      status: record.status || 'draft',
+      type: (record.type as Template['type']) || 'section',
+      status: (record.status as Template['status']) || 'draft',
       usableOn: (record.usableOn as any) || ['json'],
       content: (record.content as any) || {},
-      createdBy: record.createdBy || 'user',
+      createdBy: (record.createdBy as Template['createdBy']) || 'user',
       createdAt: record.createdAt ? record.createdAt.toISOString() : null,
     };
     return { success: true, template };

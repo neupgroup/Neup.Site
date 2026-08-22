@@ -12,6 +12,7 @@ import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
+import { getPrivateServerDetails } from '@/services/servers';
 
 export async function createRedirect(data: Omit<Redirect, 'id' | 'assetId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();

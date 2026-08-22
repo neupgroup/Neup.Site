@@ -1,4 +1,4 @@
-import type { CanvasElementData } from "@/core/lib/schemas";
+import type { CanvasElementData } from '@/services/canvas/type';
 
 export const div: CanvasElementData = {
     id: '',

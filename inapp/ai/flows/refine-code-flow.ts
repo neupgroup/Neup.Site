@@ -6,7 +6,7 @@
  * - refineCode - A function that handles the code refinement.
  */
 
-import { ai } from '@/ai/genkit';
+import { ai } from '@/inapp/ai/genkit';
 import { z } from 'genkit';
 
 const RefineCodeInputSchema = z.object({

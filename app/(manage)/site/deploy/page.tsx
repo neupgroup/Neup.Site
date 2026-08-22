@@ -68,7 +68,7 @@ export default function DeployPage() {
             setLastDeployment(deploymentResult.deployment || null);
         }
 
-        setHasServer(serverResult.success && serverResult.servers && serverResult.servers.length > 0);
+        setHasServer(Boolean(serverResult.success && serverResult.servers && serverResult.servers.length > 0));
         setLoading(false);
     }, []);
 
