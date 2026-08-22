@@ -27,6 +27,18 @@ export interface SelfAccountBasics {
     neupid: string | null;
 }
 
+export interface PlatformAccountSummary {
+    id: string;
+    displayName: string;
+    displayImage: string;
+    neupId: string | null;
+    type: string;
+    createdOn: string;
+    status: string;
+    moreDetails: unknown;
+    roleCount: number;
+}
+
 export async function getAccountId(): Promise<string> {
     const cookieStore = await cookies();
     let accountId = cookieStore.get('account_id')?.value;
@@ -113,5 +125,51 @@ export async function getSelfAccountBasics(): Promise<{ basics?: SelfAccountBasi
             source: 'getSelfAccountBasics',
         });
         return { error: 'Failed to retrieve account basics.' };
+    }
+}
+
+export async function getPlatformAccounts(): Promise<{ accounts?: PlatformAccountSummary[]; error?: string }> {
+    try {
+        const records = await db.account.findMany({
+            select: {
+                id: true,
+                displayName: true,
+                displayImage: true,
+                neupId: true,
+                type: true,
+                createdOn: true,
+                status: true,
+                moreDetails: true,
+                roles: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+            orderBy: {
+                id: 'asc',
+            },
+        });
+
+        return {
+            accounts: records.map((record) => ({
+                id: record.id,
+                displayName: record.displayName,
+                displayImage: record.displayImage,
+                neupId: record.neupId,
+                type: record.type,
+                createdOn: record.createdOn.toISOString(),
+                status: record.status,
+                moreDetails: record.moreDetails,
+                roleCount: record.roles.length,
+            })),
+        };
+    } catch (e: any) {
+        await logger.error({
+            message: `Failed to get platform accounts: ${e.message}`,
+            stack: e.stack,
+            source: 'getPlatformAccounts',
+        });
+        return { error: 'Failed to retrieve platform accounts.' };
     }
 }

@@ -130,12 +130,14 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
       {/* TODO: Add permission-based filtering when permissions are implemented */}
       {/* For now, showing all navigation items regardless of authentication status */}
       <div className="mt-4 space-y-2">
-        <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
+        <div className="px-3 text-sm font-semibold text-muted-foreground">
           Manage
         </div>
         <NavLink href="/manage/member" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></NavLink>
+        <NavLink href="/manage/accounts" currentPath={currentPath} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></NavLink>
         <NavLink href="/manage/hiring" currentPath={currentPath} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></NavLink>
         <NavLink href="/manage/billing" currentPath={currentPath} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
+        <NavLink href="/manage/access" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></NavLink>
         <NavLink href="/manage/permissions" currentPath={currentPath} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
         <NavLink href="/manage/redirects" currentPath={currentPath} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></NavLink>
         <NavLink href="/manage/contacts" currentPath={currentPath} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>

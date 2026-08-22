@@ -8,10 +8,17 @@ datasource db {
 }
 
 model Account {
-  id    String @id
-  roles Role[]
+  id           String   @id
+  displayName  String   @default("")
+  displayImage String   @default("")
+  neupId       String?  @unique
+  type         String   @default("individual")
+  createdOn    DateTime @default(now())
+  status       String   @default("active")
+  moreDetails  Json?
+  roles        Role[]
 
-  @@map("account")
+  @@map("accounts")
 }
 
 model Role {
