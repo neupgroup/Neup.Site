@@ -414,6 +414,7 @@ model Team {
 model Member {
   id          String  @id @default(cuid())
   assetId     String  @map("asset_id")
+  slug        String
   name        String
   email       String
   role        String
@@ -424,6 +425,7 @@ model Member {
   asset       Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
   team        Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
 
+  @@unique([assetId, slug])
   @@index([assetId, teamId, order])
   @@index([teamId, order])
   @@map("members")

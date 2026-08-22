@@ -408,6 +408,7 @@ exports.Prisma.TeamScalarFieldEnum = {
 exports.Prisma.MemberScalarFieldEnum = {
   id: 'id',
   assetId: 'assetId',
+  slug: 'slug',
   name: 'name',
   email: 'email',
   role: 'role',

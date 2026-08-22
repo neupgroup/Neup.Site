@@ -32446,6 +32446,7 @@ export namespace Prisma {
   export type MemberMinAggregateOutputType = {
     id: string | null
     assetId: string | null
+    slug: string | null
     name: string | null
     email: string | null
     role: string | null
@@ -32457,6 +32458,7 @@ export namespace Prisma {
   export type MemberMaxAggregateOutputType = {
     id: string | null
     assetId: string | null
+    slug: string | null
     name: string | null
     email: string | null
     role: string | null
@@ -32468,6 +32470,7 @@ export namespace Prisma {
   export type MemberCountAggregateOutputType = {
     id: number
     assetId: number
+    slug: number
     name: number
     email: number
     role: number
@@ -32490,6 +32493,7 @@ export namespace Prisma {
   export type MemberMinAggregateInputType = {
     id?: true
     assetId?: true
+    slug?: true
     name?: true
     email?: true
     role?: true
@@ -32501,6 +32505,7 @@ export namespace Prisma {
   export type MemberMaxAggregateInputType = {
     id?: true
     assetId?: true
+    slug?: true
     name?: true
     email?: true
     role?: true
@@ -32512,6 +32517,7 @@ export namespace Prisma {
   export type MemberCountAggregateInputType = {
     id?: true
     assetId?: true
+    slug?: true
     name?: true
     email?: true
     role?: true
@@ -32611,6 +32617,7 @@ export namespace Prisma {
   export type MemberGroupByOutputType = {
     id: string
     assetId: string
+    slug: string
     name: string
     email: string
     role: string
@@ -32642,6 +32649,7 @@ export namespace Prisma {
   export type MemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     email?: boolean
     role?: boolean
@@ -32656,6 +32664,7 @@ export namespace Prisma {
   export type MemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     email?: boolean
     role?: boolean
@@ -32670,6 +32679,7 @@ export namespace Prisma {
   export type MemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     email?: boolean
     role?: boolean
@@ -32684,6 +32694,7 @@ export namespace Prisma {
   export type MemberSelectScalar = {
     id?: boolean
     assetId?: boolean
+    slug?: boolean
     name?: boolean
     email?: boolean
     role?: boolean
@@ -32693,7 +32704,7 @@ export namespace Prisma {
     permissions?: boolean
   }
 
-  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "email" | "role" | "imageUrl" | "order" | "teamId" | "permissions", ExtArgs["result"]["member"]>
+  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "slug" | "name" | "email" | "role" | "imageUrl" | "order" | "teamId" | "permissions", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
@@ -32716,6 +32727,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       assetId: string
+      slug: string
       name: string
       email: string
       role: string
@@ -33150,6 +33162,7 @@ export namespace Prisma {
   interface MemberFieldRefs {
     readonly id: FieldRef<"Member", 'String'>
     readonly assetId: FieldRef<"Member", 'String'>
+    readonly slug: FieldRef<"Member", 'String'>
     readonly name: FieldRef<"Member", 'String'>
     readonly email: FieldRef<"Member", 'String'>
     readonly role: FieldRef<"Member", 'String'>
@@ -42522,6 +42535,7 @@ export namespace Prisma {
   export const MemberScalarFieldEnum: {
     id: 'id',
     assetId: 'assetId',
+    slug: 'slug',
     name: 'name',
     email: 'email',
     role: 'role',
@@ -44659,6 +44673,7 @@ export namespace Prisma {
     NOT?: MemberWhereInput | MemberWhereInput[]
     id?: StringFilter<"Member"> | string
     assetId?: StringFilter<"Member"> | string
+    slug?: StringFilter<"Member"> | string
     name?: StringFilter<"Member"> | string
     email?: StringFilter<"Member"> | string
     role?: StringFilter<"Member"> | string
@@ -44673,6 +44688,7 @@ export namespace Prisma {
   export type MemberOrderByWithRelationInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
@@ -44686,10 +44702,12 @@ export namespace Prisma {
 
   export type MemberWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    assetId_slug?: MemberAssetIdSlugCompoundUniqueInput
     AND?: MemberWhereInput | MemberWhereInput[]
     OR?: MemberWhereInput[]
     NOT?: MemberWhereInput | MemberWhereInput[]
     assetId?: StringFilter<"Member"> | string
+    slug?: StringFilter<"Member"> | string
     name?: StringFilter<"Member"> | string
     email?: StringFilter<"Member"> | string
     role?: StringFilter<"Member"> | string
@@ -44699,11 +44717,12 @@ export namespace Prisma {
     permissions?: JsonNullableFilter<"Member">
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
-  }, "id">
+  }, "id" | "assetId_slug">
 
   export type MemberOrderByWithAggregationInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
@@ -44724,6 +44743,7 @@ export namespace Prisma {
     NOT?: MemberScalarWhereWithAggregatesInput | MemberScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Member"> | string
     assetId?: StringWithAggregatesFilter<"Member"> | string
+    slug?: StringWithAggregatesFilter<"Member"> | string
     name?: StringWithAggregatesFilter<"Member"> | string
     email?: StringWithAggregatesFilter<"Member"> | string
     role?: StringWithAggregatesFilter<"Member"> | string
@@ -47342,6 +47362,7 @@ export namespace Prisma {
 
   export type MemberCreateInput = {
     id?: string
+    slug: string
     name: string
     email: string
     role: string
@@ -47355,6 +47376,7 @@ export namespace Prisma {
   export type MemberUncheckedCreateInput = {
     id?: string
     assetId: string
+    slug: string
     name: string
     email: string
     role: string
@@ -47366,6 +47388,7 @@ export namespace Prisma {
 
   export type MemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -47379,6 +47402,7 @@ export namespace Prisma {
   export type MemberUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -47391,6 +47415,7 @@ export namespace Prisma {
   export type MemberCreateManyInput = {
     id?: string
     assetId: string
+    slug: string
     name: string
     email: string
     role: string
@@ -47402,6 +47427,7 @@ export namespace Prisma {
 
   export type MemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -47413,6 +47439,7 @@ export namespace Prisma {
   export type MemberUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -49353,9 +49380,15 @@ export namespace Prisma {
     isNot?: TeamWhereInput | null
   }
 
+  export type MemberAssetIdSlugCompoundUniqueInput = {
+    assetId: string
+    slug: string
+  }
+
   export type MemberCountOrderByAggregateInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
@@ -49372,6 +49405,7 @@ export namespace Prisma {
   export type MemberMaxOrderByAggregateInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
@@ -49383,6 +49417,7 @@ export namespace Prisma {
   export type MemberMinOrderByAggregateInput = {
     id?: SortOrder
     assetId?: SortOrder
+    slug?: SortOrder
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
@@ -52435,6 +52470,7 @@ export namespace Prisma {
 
   export type MemberCreateWithoutAssetInput = {
     id?: string
+    slug: string
     name: string
     email: string
     role: string
@@ -52446,6 +52482,7 @@ export namespace Prisma {
 
   export type MemberUncheckedCreateWithoutAssetInput = {
     id?: string
+    slug: string
     name: string
     email: string
     role: string
@@ -52997,6 +53034,7 @@ export namespace Prisma {
     NOT?: MemberScalarWhereInput | MemberScalarWhereInput[]
     id?: StringFilter<"Member"> | string
     assetId?: StringFilter<"Member"> | string
+    slug?: StringFilter<"Member"> | string
     name?: StringFilter<"Member"> | string
     email?: StringFilter<"Member"> | string
     role?: StringFilter<"Member"> | string
@@ -55682,6 +55720,7 @@ export namespace Prisma {
 
   export type MemberCreateWithoutTeamInput = {
     id?: string
+    slug: string
     name: string
     email: string
     role: string
@@ -55694,6 +55733,7 @@ export namespace Prisma {
   export type MemberUncheckedCreateWithoutTeamInput = {
     id?: string
     assetId: string
+    slug: string
     name: string
     email: string
     role: string
@@ -56617,6 +56657,7 @@ export namespace Prisma {
 
   export type MemberCreateManyAssetInput = {
     id?: string
+    slug: string
     name: string
     email: string
     role: string
@@ -57098,6 +57139,7 @@ export namespace Prisma {
 
   export type MemberUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -57109,6 +57151,7 @@ export namespace Prisma {
 
   export type MemberUncheckedUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -57120,6 +57163,7 @@ export namespace Prisma {
 
   export type MemberUncheckedUpdateManyWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -57312,6 +57356,7 @@ export namespace Prisma {
   export type MemberCreateManyTeamInput = {
     id?: string
     assetId: string
+    slug: string
     name: string
     email: string
     role: string
@@ -57322,6 +57367,7 @@ export namespace Prisma {
 
   export type MemberUpdateWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -57334,6 +57380,7 @@ export namespace Prisma {
   export type MemberUncheckedUpdateWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -57345,6 +57392,7 @@ export namespace Prisma {
   export type MemberUncheckedUpdateManyWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string

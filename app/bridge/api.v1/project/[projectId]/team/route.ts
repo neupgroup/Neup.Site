@@ -15,7 +15,7 @@ assigned team's id, title, slug, and description when available.
 
 import { NextResponse } from 'next/server';
 
-import { getProjectTeams } from '@/services/bridge/project-teams';
+import { getProjectMembers } from '@/services/bridge/project-members';
 
 export async function GET(_request: Request, context: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await context.params;
@@ -25,14 +25,14 @@ export async function GET(_request: Request, context: { params: Promise<{ projec
   }
 
   try {
-    const result = await getProjectTeams(projectId.trim());
+    const result = await getProjectMembers(projectId.trim());
 
     if (!result.success) {
       return NextResponse.json(result, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: result.teams });
+    return NextResponse.json({ success: true, data: result.members });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch teams.' }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch members.' }, { status: 500 });
   }
 }

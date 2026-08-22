@@ -2,6 +2,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
+import { slugify } from '@/core/helpers/slug';
 import { revalidatePath } from 'next/cache';
 import { getActiveProjectId } from '@/services/projects';
 import type { Member } from '@/services/member/type';
@@ -29,6 +30,33 @@ async function getMemberAssetId(): Promise<string> {
   return assetId;
 }
 
+async function resolveUniqueMemberSlug(assetId: string, name: string, excludeId?: string) {
+  const baseSlug = slugify(name, 'member');
+  const existingMembers = await db.member.findMany({
+    where: {
+      assetId,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+      slug: {
+        startsWith: baseSlug,
+      },
+    },
+    select: { slug: true },
+    orderBy: { slug: 'asc' },
+  });
+
+  const existingSlugs = new Set(existingMembers.map((member) => member.slug));
+  if (!existingSlugs.has(baseSlug)) {
+    return baseSlug;
+  }
+
+  let suffix = 2;
+  while (existingSlugs.has(`${baseSlug}-${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${baseSlug}-${suffix}`;
+}
+
 export async function createMember(data: Omit<Member, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const assetId = await getMemberAssetId();
@@ -49,9 +77,11 @@ export async function createMember(data: Omit<Member, 'id'>): Promise<{ success:
       orderBy: [{ order: 'desc' }, { id: 'desc' }],
       select: { order: true },
     });
+    const slug = await resolveUniqueMemberSlug(assetId, data.name);
     const record = await db.member.create({
       data: {
         assetId,
+        slug,
         name: data.name,
         email: data.email,
         role: data.role,
@@ -80,6 +110,7 @@ export async function getMembers(): Promise<{ success: boolean; members?: Member
       select: {
         id: true,
         assetId: true,
+        slug: true,
         name: true,
         email: true,
         role: true,
@@ -93,6 +124,7 @@ export async function getMembers(): Promise<{ success: boolean; members?: Member
     const members = records.map((record) => ({
       id: record.id,
       assetId: record.assetId,
+      slug: record.slug,
       name: record.name,
       email: record.email,
       role: record.role,
@@ -119,6 +151,7 @@ export async function getMember(id: string): Promise<{ success: boolean; member?
       select: {
         id: true,
         assetId: true,
+        slug: true,
         name: true,
         email: true,
         role: true,
@@ -135,6 +168,7 @@ export async function getMember(id: string): Promise<{ success: boolean; member?
     const member: Member = {
       id: record.id,
       assetId: record.assetId,
+      slug: record.slug,
       name: record.name,
       email: record.email,
       role: record.role,
@@ -165,6 +199,7 @@ export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>
         return { success: false, error: 'Team not found for this asset.' };
       }
     }
+    const slug = typeof data.name === 'string' ? await resolveUniqueMemberSlug(assetId, data.name, id) : undefined;
     const result = await db.member.updateMany({
       where: {
         id,
@@ -172,6 +207,7 @@ export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>
       },
       data: {
         assetId,
+        ...(slug ? { slug } : {}),
         ...(typeof data.name === 'string' ? { name: data.name } : {}),
         ...(typeof data.email === 'string' ? { email: data.email } : {}),
         ...(typeof data.role === 'string' ? { role: data.role } : {}),
