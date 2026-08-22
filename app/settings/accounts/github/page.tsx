@@ -8,9 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Github } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/core/hooks/use-toast';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export default function LinkGitHubPage() {
   const searchParams = useSearchParams();
+  const selectedProject = searchParams.get('selectedProject');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function LinkGitHubPage() {
           <div className="text-center p-12">
             <Github className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <Button variant="primary" asChild>
-              <Link href="/bridge/api/v1/github/start">
+              <Link href={appendSelectedProject('/bridge/api/v1/github/start', selectedProject)}>
                 <Github className="mr-2 h-4 w-4" /> Connect with GitHub
               </Link>
             </Button>

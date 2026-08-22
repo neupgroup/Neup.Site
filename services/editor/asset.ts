@@ -1,7 +1,7 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { Asset, AssetTheme, AssetIcons } from '@/services/asset/type';
 import { generateThemeFromColor } from '@/core/helpers/color';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
@@ -25,8 +25,7 @@ objects, so database JSON fields are normalized before being returned.
 */
 
 export async function getAsset(): Promise<{ success: boolean, asset?: Asset, error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: true, asset: undefined };
 
   try {
@@ -91,8 +90,7 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
 }
 
 export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

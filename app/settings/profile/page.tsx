@@ -23,6 +23,7 @@ import { useSearchParams } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
 import { usePageTitle } from '@/core/hooks/use-page-title';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export const SocialProfileSchema = z.object({
     platformName: z.string().min(1, 'Platform name is required'),
@@ -48,6 +49,8 @@ export default function ProfilePage() {
     const { asset, setAsset, loading } = useProfile();
     const { toast } = useToast();
     usePageTitle('Profile Settings');
+    const searchParams = useSearchParams();
+    const selectedProject = searchParams.get('selectedProject');
 
     const form = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileFormSchema),
@@ -159,7 +162,7 @@ export default function ProfilePage() {
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
                             <Button asChild variant="tertiary">
-                                <Link href="/settings/profile/logo">
+                                <Link href={appendSelectedProject('/settings/profile/logo', selectedProject)}>
                                     <ImageIcon className="mr-2" /> Manage Logos
                                 </Link>
                             </Button>

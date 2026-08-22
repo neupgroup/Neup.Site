@@ -9,7 +9,7 @@ import { NodeSSH } from 'node-ssh';
 import { logger } from '@/logica/logger';
 import { prisma as db } from '@/core/database/prisma';
 import type { AppBaseBackup, AppBaseFile } from '@/services/app-base/type';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { markAppBaseAsPending } from './structure';
 
 async function resolveAppBasePath(serverId: string, type: 'internal' | 'external') {
@@ -58,8 +58,7 @@ export async function getAppBaseFiles(serverId: string): Promise<{ success: bool
 export async function createAppBaseFile(serverId: string, name: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
   const sanitizedName = name.replace(/[^a-zA-Z0-9-]/g, '_');
   const fileName = `${sanitizedName}.json`;
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
 
   let ssh: NodeSSH | undefined;
   try {
@@ -106,8 +105,7 @@ export async function getAppBaseFileContent(serverId: string, fileName: string, 
 }
 
 export async function saveAppBaseFileContent(serverId: string, fileName: string, content: string, type: 'internal' | 'external'): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   let ssh: NodeSSH | undefined;
   try {
     const { ssh: sshInstance, server, basePath } = await resolveAppBasePath(serverId, type);

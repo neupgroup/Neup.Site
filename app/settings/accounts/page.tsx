@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { usePageTitle } from '@/core/hooks/use-page-title';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 function LinkedAccountCard({ account, onDisconnect }: { account: LinkedAccount, onDisconnect: (id: string) => void }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -69,6 +70,7 @@ export default function AccountsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
+  const selectedProject = searchParams.get('selectedProject');
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [loading, setLoading] = useState(true);
   usePageTitle('Account Management');
@@ -92,8 +94,7 @@ export default function AccountsPage() {
         title: 'Account Linked Successfully',
         description: 'Your GitHub account has been connected.',
       });
-      // Clean up URL
-      router.replace('/settings/accounts');
+      router.replace(appendSelectedProject('/settings/accounts', selectedProject));
     }
     const error = searchParams.get('error');
     if (error) {
@@ -102,10 +103,9 @@ export default function AccountsPage() {
         title: 'GitHub Authentication Failed',
         description: decodeURIComponent(error),
       });
-       // Clean up URL
-      router.replace('/settings/accounts');
+      router.replace(appendSelectedProject('/settings/accounts', selectedProject));
     }
-  }, [searchParams, toast, router]);
+  }, [searchParams, toast, router, selectedProject]);
   
   const handleDisconnect = async (id: string) => {
       const result = await deleteLinkedAccount(id);
@@ -136,7 +136,7 @@ export default function AccountsPage() {
                 <CardContent className="p-6 text-center">
                     <p className="text-muted-foreground mb-4">No accounts linked yet.</p>
                      <Button asChild>
-                        <Link href="/settings/accounts/github">
+                        <Link href={appendSelectedProject('/settings/accounts/github', selectedProject)}>
                             <Github className="mr-2 h-4 w-4" /> Link GitHub Account
                         </Link>
                     </Button>

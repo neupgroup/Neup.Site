@@ -1,6 +1,6 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 
 import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from '@/services/accounts';
@@ -62,7 +62,7 @@ export async function getAccessOverview(): Promise<{
 }> {
   try {
     const accountId = await getAccountId();
-    const currentAssetId = (await cookies()).get('assetId')?.value ?? null;
+    const currentAssetId = await getActiveProjectId() ?? null;
 
     const managedAssets = await db.asset.findMany({
       where: {

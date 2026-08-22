@@ -1,7 +1,7 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { prisma as db } from '@/core/database/prisma';
 import { logger } from '@/logica/logger';
 import type {
@@ -62,8 +62,7 @@ function getParentPath(path: string | null): string | null {
 }
 
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'assetId'>) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -86,8 +85,7 @@ export async function saveCodeFileByPath(params: {
   content: string;
   fileName?: string;
 }): Promise<{ success: boolean; id?: string; error?: string; created?: boolean }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   const normalizedPath = normalizeCodeFilePath(params.filePath);
@@ -138,8 +136,7 @@ export async function saveCodeFileByPath(params: {
 }
 
 export async function createCodeFolder(folderPath: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   const normalizedPath = normalizeCodeFilePath(folderPath);
@@ -185,8 +182,7 @@ export async function createCodeFolder(folderPath: string): Promise<{ success: b
 }
 
 export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number, pageSize?: number }): Promise<{ success: boolean; files?: CodeFile[]; error?: string; totalCount?: number }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -218,8 +214,7 @@ export async function getCodeFiles({ page = 1, pageSize = 10 }: { page?: number,
 }
 
 export async function getCodebaseBrowser(path?: string | null): Promise<{ success: boolean; data?: CodebaseBrowserData; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   const normalizedPath = path ? normalizeCodeFilePath(path) : null;
@@ -379,8 +374,7 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
 }
 
 export async function deleteCodeFile(id: string) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

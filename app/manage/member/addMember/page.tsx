@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/core/hooks/use-toast';
 import { usePageTitle } from '@/core/hooks/use-page-title';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import type { Team } from '@/services/team/type';
 import { createMember } from '@/services/members';
 import { getTeams } from '@/services/teams';
@@ -43,7 +44,9 @@ type FormValues = z.infer<typeof formSchema>;
 export default function AddMemberPage() {
   usePageTitle('Add Member');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+  const selectedProject = searchParams.get('selectedProject');
   const [teams, setTeams] = useState<Team[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(true);
   const form = useForm<FormValues>({
@@ -88,14 +91,14 @@ export default function AddMemberPage() {
     }
 
     toast({ title: 'Member Created' });
-    router.push('/manage/member');
+    router.push(appendSelectedProject('/manage/member', selectedProject));
   };
 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
         <Button variant="tertiary" asChild>
-          <Link href="/manage/member">
+          <Link href={appendSelectedProject('/manage/member', selectedProject)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </Link>
@@ -163,7 +166,7 @@ export default function AddMemberPage() {
                             </SelectContent>
                           </Select>
                           <Button asChild type="button" variant="tertiary" className="w-full sm:w-auto">
-                            <Link href="/manage/member/addTeam" target="_blank" rel="noreferrer">
+                            <Link href={appendSelectedProject('/manage/member/addTeam', selectedProject)} target="_blank" rel="noreferrer">
                               Add a new team as well
                             </Link>
                           </Button>
@@ -172,7 +175,7 @@ export default function AddMemberPage() {
                         <div className="space-y-3">
                           <p className="text-sm text-muted-foreground">Create a team first before adding a member.</p>
                           <Button asChild type="button" variant="tertiary" className="w-full sm:w-auto">
-                            <Link href="/manage/member/addTeam" target="_blank" rel="noreferrer">
+                            <Link href={appendSelectedProject('/manage/member/addTeam', selectedProject)} target="_blank" rel="noreferrer">
                               Add a new team as well
                             </Link>
                           </Button>

@@ -3,7 +3,7 @@
 'use server';
 
 import { Server, ServerAllocation } from '@/services/server/type';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { logger } from '@/logica/logger';
 import { prisma as db } from '@/core/database/prisma';
 
@@ -82,8 +82,7 @@ export async function getServers(): Promise<{ success: boolean; servers?: Server
  * Fetches servers relevant to the current assetId by checking the serverAllocations collection.
  */
 export async function getSiteServers(): Promise<{ success: boolean; servers?: (Server & { allocation: ServerAllocation })[]; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

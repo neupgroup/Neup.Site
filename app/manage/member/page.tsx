@@ -3,6 +3,7 @@ import { Plus, Users } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generatePageMetadata } from '@/core/helpers/metadata';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
 import { MemberCards } from './member-cards';
@@ -25,7 +26,13 @@ export async function generateMetadata() {
   });
 }
 
-export default async function ManageMemberPage() {
+export default async function ManageMemberPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ selectedProject?: string }>;
+}) {
+  const params = await searchParams;
+  const selectedProject = params.selectedProject?.trim() || null;
   const [{ teams, error: teamsError }, { members, error: membersError }] = await Promise.all([
     getTeams(),
     getMembers(),
@@ -52,7 +59,7 @@ export default async function ManageMemberPage() {
       {!members?.length && !teams?.length ? (
         <div className="grid gap-4">
           <Link
-            href="/manage/member/addMember"
+            href={appendSelectedProject('/manage/member/addMember', selectedProject)}
             className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
@@ -72,7 +79,7 @@ export default async function ManageMemberPage() {
       ) : (
         <div className="grid gap-4">
           <Link
-            href="/manage/member/addMember"
+            href={appendSelectedProject('/manage/member/addMember', selectedProject)}
             className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">

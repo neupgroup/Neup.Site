@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
 import { generatePageMetadata } from '@/core/helpers/metadata';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export async function generateMetadata() {
   return generatePageMetadata({
@@ -30,7 +31,14 @@ const QuickStatCard = ({ title, value, icon: Icon, description }: { title: strin
   </Card>
 );
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ selectedProject?: string }>;
+}) {
+  const params = await searchParams;
+  const selectedProject = params.selectedProject?.trim() || null;
+
   return (
     <div className="w-full">
       <header className="mb-8">
@@ -69,12 +77,12 @@ export default async function HomePage() {
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4">
             <Button asChild className="w-full sm:w-auto">
-              <Link href="/news/create">
+              <Link href={appendSelectedProject('/news/create', selectedProject)}>
                 <Newspaper className="mr-2" /> New Article
               </Link>
             </Button>
             <Button asChild variant="secondary" className="w-full sm:w-auto">
-              <Link href="/news">
+              <Link href={appendSelectedProject('/news', selectedProject)}>
                 <Newspaper className="mr-2" /> View News
               </Link>
             </Button>
@@ -89,7 +97,7 @@ export default async function HomePage() {
           </CardHeader>
           <CardContent>
             <Button asChild>
-              <Link href="/site/theme">
+              <Link href={appendSelectedProject('/site/theme', selectedProject)}>
                 <Palette className="mr-2" />
                 Edit Theme
               </Link>

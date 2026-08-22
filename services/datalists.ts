@@ -1,7 +1,7 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { prisma as db } from '@/core/database/prisma';
 import type { Datalist } from '@/services/datalist/type';
 
@@ -9,8 +9,7 @@ import type { Datalist } from '@/services/datalist/type';
  * Creates a new datalist.
  */
 export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'createdAt' | 'updatedAt' | 'assetId'>): Promise<{ success: boolean; id?: string; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -35,8 +34,7 @@ export async function createDatalist(datalistData: Omit<Datalist, 'id' | 'create
  * Fetches all datalists for the current site.
  */
 export async function getDatalists(): Promise<{ success: boolean; datalists?: Datalist[]; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -62,8 +60,7 @@ export async function getDatalists(): Promise<{ success: boolean; datalists?: Da
  * Fetches a single datalist by its ID.
  */
 export async function getDatalist(id: string): Promise<{ success: boolean; datalist?: Datalist; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -90,8 +87,7 @@ export async function getDatalist(id: string): Promise<{ success: boolean; datal
  * Updates a datalist.
  */
 export async function updateDatalist(id: string, datalistData: Partial<Omit<Datalist, 'id' | 'assetId' | 'createdAt'>>): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -117,8 +113,7 @@ export async function updateDatalist(id: string, datalistData: Partial<Omit<Data
  * Deletes a datalist.
  */
 export async function deleteDatalist(id: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

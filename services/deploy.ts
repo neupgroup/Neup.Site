@@ -1,13 +1,12 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { prisma as db } from '@/core/database/prisma';
 import { createServerLog } from '@/services/server-logs';
 
 export async function deployCodebaseFromStorage(): Promise<{ success: boolean; error?: string; serverId?: string; logId?: string; }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   const allocation = await db.allocation.findFirst({ where: { assetId } });

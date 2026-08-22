@@ -3,7 +3,7 @@
 
 import { logger } from '@/logica/logger';
 import { convertJsonToJsx } from '@/inapp/helpers/json-to-jsx';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { Page } from '@/services/asset/type';
 import { prisma as db } from '@/core/database/prisma';
 import { getPathsForPage } from '@/services/paths';
@@ -21,8 +21,7 @@ function serializeCanvasElements(elements: unknown): CanvasElementData[] {
 }
 
 export async function createPage(type: Page['type'] = 'editor') {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -38,8 +37,7 @@ export async function createPage(type: Page['type'] = 'editor') {
 }
 
 export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'assetId'>>) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -64,8 +62,7 @@ export async function savePage(id: string, data: Partial<Omit<Page, 'id' | 'asse
 }
 
 export async function getPage(id: string): Promise<{ success: boolean, page?: Page, error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -91,8 +88,7 @@ export async function getPage(id: string): Promise<{ success: boolean, page?: Pa
 }
 
 export async function getPages(): Promise<{ success: boolean, pages?: Page[], error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -122,8 +118,7 @@ export async function getPages(): Promise<{ success: boolean, pages?: Page[], er
 }
 
 export async function deletePage(id: string) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

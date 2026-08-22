@@ -2,7 +2,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import type { Asset } from '@/services/asset/type';
 import { logger } from '@/logica/logger';
 
@@ -20,8 +20,7 @@ export interface AssetModules {
  * Fetches the modules for the current asset.
  */
 export async function getAssetModules(): Promise<{ success: boolean; modules?: AssetModules; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -42,8 +41,7 @@ export async function getAssetModules(): Promise<{ success: boolean; modules?: A
  * Updates a specific module's status for the current asset.
  */
 export async function updateAssetModule(moduleId: string, isActive: boolean): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

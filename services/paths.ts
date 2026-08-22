@@ -1,7 +1,7 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { prisma as db } from '@/core/database/prisma';
 import { logger } from '@/logica/logger';
 import { markStructureAsPending } from './structure';
@@ -18,8 +18,7 @@ export interface Path {
  * Creates a new path mapping for a page.
  */
 export async function addPath(pageId: string, path: string): Promise<{ success: boolean; id?: string; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   if (!path.startsWith('/')) {
@@ -58,8 +57,7 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
  * Fetches all paths for a specific page.
  */
 export async function getPathsForPage(pageId: string): Promise<{ success: boolean; paths?: Path[]; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -89,8 +87,7 @@ export async function getPathsForPage(pageId: string): Promise<{ success: boolea
  * Deletes a path mapping.
  */
 export async function deletePath(id: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

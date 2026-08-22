@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/core/hooks/use-toast';
 import { usePageTitle } from '@/core/hooks/use-page-title';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import { createTeam } from '@/services/teams';
 
 /*
@@ -37,7 +38,9 @@ type FormValues = z.infer<typeof formSchema>;
 export default function AddTeamPage() {
   usePageTitle('Add Team');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+  const selectedProject = searchParams.get('selectedProject');
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,14 +61,14 @@ export default function AddTeamPage() {
     }
 
     toast({ title: 'Team Created' });
-    router.push('/manage/member');
+    router.push(appendSelectedProject('/manage/member', selectedProject));
   };
 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
         <Button variant="tertiary" asChild>
-          <Link href="/manage/member">
+          <Link href={appendSelectedProject('/manage/member', selectedProject)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </Link>

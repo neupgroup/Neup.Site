@@ -1,11 +1,15 @@
 
 'use client';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { ChevronRight, Users, Network, User, KeyRound, Terminal, RefreshCw } from 'lucide-react';
 import { usePageTitle } from '@/core/hooks/use-page-title';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export default function SettingsPage() {
   usePageTitle('Settings');
+  const searchParams = useSearchParams();
+  const selectedProject = searchParams.get('selectedProject');
 
   const settingsOptions = [
     {
@@ -61,7 +65,7 @@ export default function SettingsPage() {
           return (
             <Link
               key={option.title}
-              href={option.href}
+              href={appendSelectedProject(option.href, selectedProject)}
               className={[
                 'block w-full border p-4 transition-colors hover:bg-muted/90',
                 isFirst ? 'rounded-t-md' : 'rounded-t-none',

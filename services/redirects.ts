@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import type { Redirect } from '@/services/redirect/type';
 import { logger } from '@/logica/logger';
 import { getAccountId } from '@/services/accounts';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { markRedirectsAsPending } from './structure';
 import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { NodeSSH } from 'node-ssh';
@@ -16,7 +16,7 @@ import { getPrivateServerDetails } from '@/services/servers';
 
 export async function createRedirect(data: Omit<Redirect, 'id' | 'assetId' | 'created_by' | 'created_on'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
 
   if (!accountId || !assetId) {
     return { success: false, error: 'User or site context not found.' };
@@ -46,7 +46,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'assetId' | 'cr
 }
 
 export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number }): Promise<{ success: boolean; redirects?: Redirect[]; error?: string; totalCount?: number }> {
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) {
     return { success: false, error: 'Asset context not found.' };
   }
@@ -77,7 +77,7 @@ export async function getRedirects({ page = 1, pageSize = 10 }: { page?: number;
 }
 
 export async function deleteRedirect(id: string): Promise<{ success: boolean; error?: string }> {
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) {
     return { success: false, error: 'Asset context not found.' };
   }
@@ -99,7 +99,7 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
 }
 
 export async function getAllRedirects(): Promise<{ success: boolean; redirects?: Redirect[]; error?: string }> {
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) {
     return { success: false, error: 'Asset context not found.' };
   }
@@ -126,7 +126,7 @@ export async function getAllRedirects(): Promise<{ success: boolean; redirects?:
 }
 
 export async function deployRedirects(): Promise<{ success: boolean; error?: string }> {
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) {
     return { success: false, error: 'Asset context not found.' };
   }

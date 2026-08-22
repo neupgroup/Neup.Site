@@ -5,6 +5,7 @@ import baseJson from '@/logica/base.json'
 import { decodeNeupIdToken } from '@/logica/account/token/verify'
 
 const AUTH_ME_PATH = '/bridge/api.v1/auth/me'
+const SELECTED_PROJECT_QUERY_PARAM = 'selectedProject'
 
 function createAccountBridgeUrl(path: string): string {
   const basePath = baseJson.neupid.replace(/\/+$/, '')
@@ -59,9 +60,18 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
+function getSelectedProjectFromUrl(value: string): string | null {
+  try {
+    const projectId = new URL(value).searchParams.get(SELECTED_PROJECT_QUERY_PARAM)?.trim()
+    return projectId || null
+  } catch {
+    return null
+  }
+}
+
  
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname, search } = request.nextUrl
 
   if (pathname.startsWith('/bridge/')) {
     return NextResponse.next()
@@ -79,12 +89,26 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(baseJson.neupid)
   }
 
-  const assetId = request.cookies.get('assetId')?.value
+  const selectedProject =
+    request.nextUrl.searchParams.get(SELECTED_PROJECT_QUERY_PARAM)?.trim() ||
+    getSelectedProjectFromUrl(request.headers.get('referer') || '')
 
-  if (!assetId && !pathname.startsWith('/switch')) {
+  if (!selectedProject && !pathname.startsWith('/switch')) {
     const url = request.nextUrl.clone()
     url.pathname = '/switch'
+    url.search = ''
+    url.searchParams.set('returnTo', `${pathname}${search}`)
     return NextResponse.redirect(url)
+  }
+
+  if (selectedProject) {
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-selected-project', selectedProject)
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    })
   }
  
   return NextResponse.next()

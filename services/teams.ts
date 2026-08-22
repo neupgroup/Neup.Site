@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import type { Team } from '@/services/team/type';
 import { logger } from '@/logica/logger';
 
@@ -31,7 +31,7 @@ interface TeamBoardOrderInput {
 }
 
 async function getTeamAssetId(): Promise<string> {
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) {
     throw new Error('Asset ID not found.');
   }

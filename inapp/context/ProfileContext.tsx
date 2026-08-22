@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { validateSession, saveSessionData, getCookie } from '@/inapp/helpers/session-manager';
+import { validateSession, saveSessionData, getSelectedProjectIdFromLocation } from '@/inapp/helpers/session-manager';
 
 const SESSION_STORAGE_KEY_ARTIFACT = 'assetProfileData';
 
@@ -63,9 +63,9 @@ export function ProfileProvider({ children, loadAsset }: { children: ReactNode; 
             }
 
             // Save session metadata
-            const cookieAssetId = getCookie('assetId');
-            if (cookieAssetId) {
-              saveSessionData(cookieAssetId);
+            const selectedProject = getSelectedProjectIdFromLocation();
+            if (selectedProject) {
+              saveSessionData(selectedProject);
             }
           }
           setLoading(false);
@@ -95,9 +95,9 @@ export function ProfileProvider({ children, loadAsset }: { children: ReactNode; 
             }
 
             // Save session metadata
-            const cookieAssetId = getCookie('assetId');
-            if (cookieAssetId) {
-              saveSessionData(cookieAssetId);
+            const selectedProject = getSelectedProjectIdFromLocation();
+            if (selectedProject) {
+              saveSessionData(selectedProject);
             }
           }
           setLoading(false);

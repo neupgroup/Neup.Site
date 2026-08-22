@@ -1,7 +1,7 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { prisma as db } from '@/core/database/prisma';
 import { logger } from '@/logica/logger';
 
@@ -46,8 +46,7 @@ function toSource(r: any): Source {
 }
 
 export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' | 'assetId'>) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -62,8 +61,7 @@ export async function createSource(sourceData: Omit<Source, 'id' | 'createdAt' |
 }
 
 export async function getSources(): Promise<{ success: boolean; sources?: Source[]; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -75,8 +73,7 @@ export async function getSources(): Promise<{ success: boolean; sources?: Source
 }
 
 export async function getSource(id: string): Promise<{ success: boolean, source?: Source, error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -89,8 +86,7 @@ export async function getSource(id: string): Promise<{ success: boolean, source?
 }
 
 export async function updateSource(id: string, sourceData: Partial<Omit<Source, 'id' | 'createdAt' | 'assetId'>>) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -104,8 +100,7 @@ export async function updateSource(id: string, sourceData: Partial<Omit<Source, 
 }
 
 export async function deleteSource(id: string) {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

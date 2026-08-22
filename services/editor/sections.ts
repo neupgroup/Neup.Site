@@ -1,7 +1,7 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { prisma as db } from '@/core/database/prisma';
 
 export interface Section {
@@ -17,8 +17,7 @@ export interface Section {
 }
 
 export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'assetId'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -43,8 +42,7 @@ export async function saveSection(section: Omit<Section, 'id' | 'createdAt' | 'a
 }
 
 export async function getSections(): Promise<{ success: boolean; sections?: Section[]; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -66,8 +64,7 @@ export async function getSections(): Promise<{ success: boolean; sections?: Sect
 }
 
 export async function getSection(id: string): Promise<{ success: boolean; section?: Section; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -91,8 +88,7 @@ export async function getSection(id: string): Promise<{ success: boolean; sectio
 }
 
 export async function deleteSection(id: string): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

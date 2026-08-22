@@ -2,11 +2,11 @@
 ::neup.documentation::inapp-helper-session-manager
 ::title Browser Session Manager
 
-Synchronizes lightweight browser session metadata between cookies and sessionStorage.
+Synchronizes lightweight browser session metadata between the active URL and sessionStorage.
 
 ::public
 
-Use these helpers from client-side code that needs to validate whether cached asset profile data still belongs to the active `assetId` cookie.
+Use these helpers from client-side code that needs to validate whether cached asset profile data still belongs to the active `selectedProject` URL parameter.
 
 ::public end
 
@@ -19,10 +19,16 @@ This module only reads browser-native `document.cookie` and `sessionStorage` so 
 ::end
 */
 
-const COOKIE_ASSET_ID = 'assetId';
 const COOKIE_LAST_FETCH = 'lastFetch';
-const SESSION_ASSET_ID = 'sessionAssetId';
+const SESSION_SELECTED_PROJECT = 'sessionSelectedProject';
 const SESSION_LAST_FETCH = 'lastFetch';
+
+export function getSelectedProjectIdFromLocation(): string | null {
+    if (typeof window === 'undefined') return null;
+
+    const value = new URLSearchParams(window.location.search).get('selectedProject');
+    return value?.trim() || null;
+}
 
 export function getCookie(name: string): string | null {
     if (typeof document === 'undefined') return null;
@@ -59,11 +65,10 @@ export function updateLastFetch() {
 }
 
 export function clearSession() {
-    deleteCookie(COOKIE_ASSET_ID);
     deleteCookie(COOKIE_LAST_FETCH);
 
     if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.removeItem(SESSION_ASSET_ID);
+        sessionStorage.removeItem(SESSION_SELECTED_PROJECT);
         sessionStorage.removeItem(SESSION_LAST_FETCH);
         sessionStorage.removeItem('assetProfileData');
     }
@@ -74,11 +79,11 @@ export function validateSession(): { valid: boolean; reason?: string } {
         return { valid: false, reason: 'sessionStorage not available' };
     }
 
-    const cookieAssetId = getCookie(COOKIE_ASSET_ID);
-    const sessionAssetId = sessionStorage.getItem(SESSION_ASSET_ID);
+    const currentSelectedProject = getSelectedProjectIdFromLocation();
+    const sessionSelectedProject = sessionStorage.getItem(SESSION_SELECTED_PROJECT);
 
-    if (cookieAssetId !== sessionAssetId) {
-        return { valid: false, reason: 'assetId mismatch' };
+    if (currentSelectedProject !== sessionSelectedProject) {
+        return { valid: false, reason: 'selectedProject mismatch' };
     }
 
     const cookieLastFetch = getCookie(COOKIE_LAST_FETCH);
@@ -101,20 +106,19 @@ export function validateSession(): { valid: boolean; reason?: string } {
 export function saveSessionData(assetId: string) {
     const timestamp = Date.now().toString();
 
-    setCookie(COOKIE_ASSET_ID, assetId);
     setCookie(COOKIE_LAST_FETCH, timestamp);
 
     if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem(SESSION_ASSET_ID, assetId);
+        sessionStorage.setItem(SESSION_SELECTED_PROJECT, assetId);
         sessionStorage.setItem(SESSION_LAST_FETCH, timestamp);
     }
 }
 
 export function getSessionMetadata() {
     return {
-        cookieAssetId: getCookie(COOKIE_ASSET_ID),
+        selectedProject: getSelectedProjectIdFromLocation(),
         cookieLastFetch: getCookie(COOKIE_LAST_FETCH),
-        sessionAssetId: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_ASSET_ID) : null,
+        sessionSelectedProject: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_SELECTED_PROJECT) : null,
         sessionLastFetch: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_LAST_FETCH) : null,
     };
 }

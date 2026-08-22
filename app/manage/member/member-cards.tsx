@@ -3,10 +3,11 @@
 import { useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { GripVertical, Pencil, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import { cn } from '@/core/utils';
 import { useToast } from '@/core/hooks/use-toast';
 import type { Member } from '@/services/member/type';
@@ -142,6 +143,7 @@ interface MemberCardsProps {
 
 export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [groups, setGroups] = useState(() => createMemberGroups(initialTeams, initialMembers));
   const [previewGroups, setPreviewGroups] = useState<MemberGroup[] | null>(null);
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -149,6 +151,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
   const [dropMemberId, setDropMemberId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const selectedProject = searchParams.get('selectedProject');
   const suppressClickRef = useRef(false);
   const dragOverTargetRef = useRef<string | null>(null);
 
@@ -285,7 +288,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
               </div>
               {group.teamId ? (
                 <Button asChild variant="plain" size="icon">
-                  <Link href={`/manage/team/${group.teamId}/edit`} aria-label={`Edit ${group.name}`}>
+                  <Link href={appendSelectedProject(`/manage/team/${group.teamId}/edit`, selectedProject)} aria-label={`Edit ${group.name}`}>
                     <Pencil className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -308,7 +311,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                         return;
                       }
 
-                      router.push(`/manage/members/${member.id}`);
+                      router.push(appendSelectedProject(`/manage/members/${member.id}`, selectedProject));
                     }}
                     onKeyDown={(event) => {
                       if (event.key !== 'Enter' && event.key !== ' ') {
@@ -316,7 +319,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                       }
 
                       event.preventDefault();
-                      router.push(`/manage/members/${member.id}`);
+                      router.push(appendSelectedProject(`/manage/members/${member.id}`, selectedProject));
                     }}
                     onDragStart={(event) => {
                       event.stopPropagation();

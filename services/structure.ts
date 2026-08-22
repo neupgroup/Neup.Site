@@ -1,6 +1,6 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { prisma as db } from '@/core/database/prisma';
 import type { Structure, PathStructure, Deployment, Asset } from '@/services/asset/type';
 import type { EnvironmentVariable } from '@/services/environment/type';
@@ -21,8 +21,7 @@ function parsePathStructureArray(value: unknown): PathStructure[] {
 }
 
 export async function getStructure(): Promise<{ success: boolean; structure?: Structure; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -49,8 +48,7 @@ export async function getStructure(): Promise<{ success: boolean; structure?: St
 }
 
 export async function getLastDeployment(): Promise<{ success: boolean; deployment?: Deployment; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -79,8 +77,7 @@ export async function getLastDeployment(): Promise<{ success: boolean; deploymen
 }
 
 export async function buildStructure(): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
@@ -112,8 +109,7 @@ export async function buildStructure(): Promise<{ success: boolean; error?: stri
 }
 
 export async function createDeployment(): Promise<{ success: boolean; error?: string }> {
-  const cookieStore = await cookies();
-  const assetId = cookieStore.get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {

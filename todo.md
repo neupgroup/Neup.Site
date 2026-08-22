@@ -1,5 +1,4 @@
 - [ ] Fix the current TypeScript baseline Prisma import errors in `inapp/lib/db-utils.ts` and `inapp/lib/db.ts` where `@prisma/client` is missing exported members `Prisma` and `PrismaClient`.
-- [ ] Fix the existing TypeScript error in `app/switch/page.tsx` where `Package` is referenced but not defined.
 - [ ] Scope `app/(public)/[...slug]/page.tsx` page-path resolution by `assetId`; it currently queries `pagePath` by `path` alone and can serve the wrong site's page when paths collide.
 - [ ] Update `README.md` from the default Firebase Studio starter copy to the current Neup.Sites project overview, setup, structure, and documentation index.
 - [ ] Add Neup documentation for the current schema contract in `prisma/schema.prisma`.
@@ -8,7 +7,7 @@
 - [ ] Investigate the existing Next dev runtime error where client navigation logs `Only plain objects, and a few built-ins, can be passed to Client Components from Server Components`.
 - [ ] Add Neup documentation blocks for the shared app shell files reviewed during the `/manage/team` fix, including `app/layout.tsx`, `app/not-found.tsx`, `inapp/context/profilecontext.tsx`, `components/ui/sidebar.tsx`, `components/ui/toaster.tsx`, `components/ui/avatar.tsx`, and `components/ui/table.tsx`.
 - [ ] Add Neup documentation blocks for font and app-rendering surfaces reviewed during the Outfit font update, including `app/globals.css`, `tailwind.config.ts`, `app/(public)/[...slug]/page.tsx`, and `core/lib/json-to-html.ts`.
-- [ ] Add Neup documentation blocks for existing asset creation and color helper files reviewed during the default theme update, including `services/assets.ts`, `services/auth.ts`, and `core/helpers/color.ts`.
+- [ ] Add Neup documentation blocks for existing asset creation and color helper files reviewed during the default theme update, including `services/assets.ts` and `core/helpers/color.ts`.
 - [ ] Add or upgrade Neup documentation blocks for legacy in-app session helper surfaces reviewed during the helper move, including `inapp/lib/auth-helpers.ts` and `inapp/lib/session-manager.ts`.
 - [ ] Add a Neup documentation block for the editor left sidebar in `components/editor/left-sidebar.tsx`.
 - [ ] Add Neup documentation blocks for `templates/header.ts` and the shared `services/canvas/type.ts` canvas element contract.
@@ -20,3 +19,4 @@
 - [ ] Add Neup documentation blocks for metadata call sites reviewed during the metadata helper move, including `app/(manage)/page.tsx` and `core2/lib/metadata.ts`.
 - [ ] Add Neup documentation coverage for `tsconfig.json` path aliases and compiler options.
 - [ ] Add a Neup documentation block for `templates/footer.ts`.
+- [ ] Sweep route-local `Link` and `router.push()` call sites outside the dashboard shell so they preserve `?selectedProject=` during in-app navigation.

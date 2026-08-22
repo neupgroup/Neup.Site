@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma as db } from '@/core/database/prisma';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { normalizeUrl } from '@/core/helpers/link/url';
 
 type ProfileEntryInput = {
@@ -10,8 +10,7 @@ type ProfileEntryInput = {
 };
 
 async function getAssetIdOrThrow(explicitAssetId?: string): Promise<string> {
-  const cookieStore = await cookies();
-  const assetId = explicitAssetId ?? cookieStore.get('assetId')?.value;
+  const assetId = explicitAssetId ?? await getActiveProjectId();
   if (!assetId) {
     throw new Error('Asset context not found.');
   }

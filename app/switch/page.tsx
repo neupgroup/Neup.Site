@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
-import { setAssetIdCookie } from '@/services/auth';
 import { useToast } from '@/core/hooks/use-toast';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
@@ -14,8 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
-import { AlertCircle, Loader2, ArrowRight, CheckCircle, Plus, ChevronRight } from 'lucide-react';
-import { getCookie } from '@/inapp/helpers/session-manager';
+import { AlertCircle, Loader2, ArrowRight, CheckCircle, Plus, ChevronRight, Package } from 'lucide-react';
 import { usePageTitle } from '@/core/hooks/use-page-title';
 
 function ProjectRow({
@@ -78,6 +77,8 @@ function ProjectRow({
 }
 
 function AssetList() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [allAssets, setAllAssets] = useState<AssetSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -89,6 +90,8 @@ function AssetList() {
     });
 
     const { toast } = useToast();
+    const selectedProjectId = searchParams.get('selectedProject');
+    const returnTo = searchParams.get('returnTo') || '/';
 
     useEffect(() => {
         const fetchAssets = async () => {
@@ -98,22 +101,33 @@ function AssetList() {
                 setError(error);
             } else {
                 setAllAssets(assets || []);
-                setActiveAssetId(getCookie('assetId'));
             }
             setLoading(false);
         };
         fetchAssets();
     }, []);
 
+    useEffect(() => {
+        setActiveAssetId(selectedProjectId);
+    }, [selectedProjectId]);
+
+    const getProjectDestination = (assetId: string) => {
+        const destination = new URL(returnTo, window.location.origin);
+
+        if (destination.pathname === '/switch') {
+            destination.pathname = '/';
+            destination.search = '';
+        }
+
+        destination.searchParams.set('selectedProject', assetId);
+        return `${destination.pathname}${destination.search}${destination.hash}`;
+    };
+
     const handleSelectAsset = async (assetId: string) => {
         setIsSwitching(assetId);
-        const result = await setAssetIdCookie(assetId);
-        if (result.success) {
-            toast({ title: 'Project Switched', description: `You are now working on project: ${assetId}.` });
-            setActiveAssetId(assetId);
-        } else {
-            toast({ variant: 'destructive', title: 'Error', description: result.error });
-        }
+        setActiveAssetId(assetId);
+        toast({ title: 'Project Switched', description: `You are now working on project: ${assetId}.` });
+        router.push(getProjectDestination(assetId));
         setIsSwitching(null);
     };
 

@@ -5,15 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { FileUploader } from '@/components/ui/file-uploader';
 import { useProfile } from '@/inapp/context/ProfileContext';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset, AssetIcons } from '@/services/asset/type';
 import { useToast } from '@/core/hooks/use-toast';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export default function LogoUploadPage() {
   const { asset, setAsset } = useProfile();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const selectedProject = searchParams.get('selectedProject');
 
   const handleUploadSuccess = async (iconType: keyof AssetIcons, url: string) => {
     const newIcons = { ...asset?.icons, [iconType]: url };
@@ -54,7 +58,7 @@ export default function LogoUploadPage() {
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
         <Button variant="tertiary" asChild>
-            <Link href="/settings/profile">
+            <Link href={appendSelectedProject('/settings/profile', selectedProject)}>
                 <ArrowLeft className="mr-2" /> Back to Profile
             </Link>
         </Button>

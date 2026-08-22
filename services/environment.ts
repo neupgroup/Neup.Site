@@ -7,13 +7,13 @@ import { logger } from '@/logica/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import type { EnvironmentVariable } from '@/services/environment/type';
-import { cookies } from 'next/headers';
+import { getActiveProjectId } from '@/services/projects';
 import { markEnvironmentsAsPending } from './structure';
 
 
 export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 'id' | 'assetId' | 'createdBy' | 'createdOn'>): Promise<{ success: boolean; id?: string; error?: string }> {
   const accountId = await getAccountId();
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
 
   if (!accountId || !assetId) {
     return { success: false, error: 'User or site context not found.' };
@@ -44,7 +44,7 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
 }
 
 export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { page?: number; pageSize?: number } = {}): Promise<{ success: boolean; variables?: EnvironmentVariable[]; error?: string; totalCount?: number }> {
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) {
     return { success: false, error: 'Asset context not found.' };
   }
@@ -75,7 +75,7 @@ export async function getEnvironmentVariables({ page = 1, pageSize = 10 }: { pag
 }
 
 export async function deleteEnvironmentVariable(id: string): Promise<{ success: boolean; error?: string }> {
-  const assetId = (await cookies()).get('assetId')?.value;
+  const assetId = await getActiveProjectId();
   if (!assetId) {
     return { success: false, error: 'Asset context not found.' };
   }
