@@ -2,19 +2,80 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
 import { setAssetIdCookie } from '@/services/auth';
 import { useToast } from '@/core/hooks/use-toast';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
-import { AlertCircle, Package, Loader2, ArrowRight, CheckCircle, Plus } from 'lucide-react';
+import { AlertCircle, Loader2, ArrowRight, CheckCircle, Plus, ChevronRight } from 'lucide-react';
 import { getCookie } from '@/inapp/helpers/session-manager';
 import { usePageTitle } from '@/core/hooks/use-page-title';
+
+function ProjectRow({
+    asset,
+    isSelected = false,
+    isLoading = false,
+    onSelect,
+    className = '',
+}: {
+    asset: AssetSummary;
+    isSelected?: boolean;
+    isLoading?: boolean;
+    onSelect?: (assetId: string) => void;
+    className?: string;
+}) {
+    return (
+        <div
+            className={[
+                'block w-full border p-4 transition-colors',
+                isSelected ? 'border-primary bg-primary/10' : 'hover:bg-muted/90',
+                className,
+            ].join(' ')}
+        >
+            <div className="flex items-center justify-between gap-4">
+                <div className="flex min-w-0 items-start gap-3">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
+                        <Avatar className="h-12 w-12 rounded-[1rem]">
+                            {asset.logoUrl ? <AvatarImage src={asset.logoUrl} alt={asset.name} /> : null}
+                            <AvatarFallback className="rounded-[1rem] bg-muted">
+                                <Image src="/logo.svg" alt="Neup.Sites" width={24} height={24} className="h-6 w-6" />
+                            </AvatarFallback>
+                        </Avatar>
+                    </div>
+                    <div className="min-w-0 space-y-1">
+                        <h3 className="text-base font-semibold">{asset.name}</h3>
+                        <p className="text-sm text-muted-foreground font-mono">{asset.id}</p>
+                    </div>
+                </div>
+                {isSelected ? (
+                    <div className="flex items-center gap-2 text-green-600">
+                        <CheckCircle className="h-5 w-5" />
+                        <span className="font-semibold">Selected</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-3">
+                        <Button variant="secondary" onClick={() => onSelect?.(asset.id)} size="sm" disabled={isLoading}>
+                            {isLoading ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <ArrowRight className="mr-2 h-4 w-4" />
+                            )}
+                            Select
+                        </Button>
+                        <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
 
 function AssetList() {
     const [allAssets, setAllAssets] = useState<AssetSummary[]>([]);
@@ -133,45 +194,32 @@ function AssetList() {
             {currentAsset && (
                 <div>
                     <h2 className="text-lg font-semibold mb-2">Current Project</h2>
-                    <div className="p-3 bg-primary/10 rounded-md flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-2 border-primary">
-                        <div className="flex items-center gap-3">
-                            <Package className="h-5 w-5 text-primary" />
-                            <div>
-                                <p className="font-semibold">{currentAsset.name}</p>
-                                <p className="text-sm text-muted-foreground font-mono">{currentAsset.id}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-green-600">
-                           <CheckCircle className="h-5 w-5" />
-                           <span className="font-semibold">Selected</span>
-                        </div>
-                    </div>
+                    <ProjectRow asset={currentAsset} isSelected />
                 </div>
             )}
 
             {otherAssets.length > 0 && (
                 <div>
                      <h2 className="text-lg font-semibold mb-2 mt-8">Available Projects</h2>
-                     <div className="space-y-2">
-                        {otherAssets.map(asset => (
-                            <div key={asset.id} className="p-3 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border">
-                                <div className="flex items-center gap-3">
-                                    <Package className="h-5 w-5 text-muted-foreground" />
-                                    <div>
-                                        <p className="font-semibold">{asset.name}</p>
-                                        <p className="text-sm text-muted-foreground font-mono">{asset.id}</p>
-                                    </div>
-                                </div>
-                                <Button variant="primary" onClick={() => handleSelectAsset(asset.id)} size="sm" disabled={isSwitching === asset.id}>
-                                     {isSwitching === asset.id ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <ArrowRight className="mr-2 h-4 w-4" />
-                                    )}
-                                    Select
-                                </Button>
-                            </div>
-                        ))}
+                     <div className="space-y-0">
+                        {otherAssets.map((asset, index) => {
+                            const isFirst = index === 0;
+                            const isLast = index === otherAssets.length - 1;
+
+                            return (
+                                <ProjectRow
+                                    key={asset.id}
+                                    asset={asset}
+                                    isLoading={isSwitching === asset.id}
+                                    onSelect={handleSelectAsset}
+                                    className={[
+                                        isFirst ? 'rounded-t-md' : 'rounded-t-none',
+                                        isLast ? 'rounded-b-md' : 'rounded-b-none',
+                                        !isLast ? 'border-b-0' : '',
+                                    ].join(' ')}
+                                />
+                            );
+                        })}
                      </div>
                 </div>
             )}

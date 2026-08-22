@@ -1,4 +1,5 @@
 - [ ] Fix the current TypeScript baseline Prisma import errors in `inapp/lib/db-utils.ts` and `inapp/lib/db.ts` where `@prisma/client` is missing exported members `Prisma` and `PrismaClient`.
+- [ ] Fix the existing TypeScript error in `app/switch/page.tsx` where `Package` is referenced but not defined.
 - [ ] Scope `app/(public)/[...slug]/page.tsx` page-path resolution by `assetId`; it currently queries `pagePath` by `path` alone and can serve the wrong site's page when paths collide.
 - [ ] Update `README.md` from the default Firebase Studio starter copy to the current Neup.Sites project overview, setup, structure, and documentation index.
 - [ ] Add Neup documentation for the current schema contract in `prisma/schema.prisma`.
