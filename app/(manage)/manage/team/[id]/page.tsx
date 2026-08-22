@@ -25,7 +25,12 @@ assigned to the team, with the main management landing page under
 
 export async function generateMetadata({ params }: { params: { id: string }}) {
     const { team } = await getTeam(params.id);
-    return await generatePageMetadata(team ? `Team: ${team.name}` : 'Team');
+    return generatePageMetadata({
+        title: team?.name || 'Team',
+        prefix: 'Team',
+        titleKind: 'prefix-title',
+        prefixSeparator: ': ',
+    });
 }
 
 export default async function ViewTeamPage({ params }: { params: { id: string } }) {

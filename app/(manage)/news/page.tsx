@@ -22,7 +22,9 @@ import { AlertCircle, Plus, Newspaper } from 'lucide-react';
 import { generatePageMetadata } from '@/core/helpers/metadata';
 
 export async function generateMetadata() {
-    return await generatePageMetadata('News Articles');
+    return generatePageMetadata({
+        title: 'News Articles',
+    });
 }
 
 export default async function NewsListPage() {

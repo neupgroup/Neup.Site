@@ -3,10 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Users, FileText, Puzzle, Palette, Newspaper, Plus } from 'lucide-react';
-import { generatePageMetadata } from '@/inapp/lib/metadata';
+import { generatePageMetadata } from '@/core/helpers/metadata';
 
 export async function generateMetadata() {
-  return await generatePageMetadata('Home');
+  return generatePageMetadata({
+    title: 'Home',
+  });
 }
 
 // Placeholder data - in a real app, this would come from an API or database

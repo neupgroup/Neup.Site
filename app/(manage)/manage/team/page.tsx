@@ -21,7 +21,9 @@ It organizes teams and their members with drag-and-drop ordering.
 */
 
 export async function generateMetadata() {
-    return await generatePageMetadata('Teams');
+    return generatePageMetadata({
+        title: 'Teams',
+    });
 }
 
 export default async function TeamsPage() {

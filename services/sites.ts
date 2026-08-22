@@ -4,7 +4,7 @@
 import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from './accounts';
 import type { Asset } from '@/services/asset/type';
-import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 
 /**
  * Fetches all assets owned by the current account ID.

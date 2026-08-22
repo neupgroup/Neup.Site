@@ -1,5 +1,5 @@
 
-import { getNewsArticleById, type NewsArticle } from '@/services/news';
+import { getNewsArticleById } from '@/services/news';
 import {
   Card,
   CardContent,
@@ -13,12 +13,13 @@ import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
-import { use } from 'react';
 import { generatePageMetadata } from '@/core/helpers/metadata';
 
 export async function generateMetadata({ params }: { params: { slug: string }}) {
     const { article } = await getNewsArticleById(params.slug);
-    return generatePageMetadata(article?.title || 'View Article');
+    return generatePageMetadata({
+      title: article?.title || 'View Article',
+    });
 }
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {

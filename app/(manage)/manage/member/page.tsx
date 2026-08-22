@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { generatePageMetadata } from '@/inapp/lib/metadata';
+import { generatePageMetadata } from '@/core/helpers/metadata';
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
 import { MemberCards } from './member-cards';
@@ -20,7 +20,9 @@ buttons.
 */
 
 export async function generateMetadata() {
-  return await generatePageMetadata('Members');
+  return generatePageMetadata({
+    title: 'Members',
+  });
 }
 
 export default async function ManageMemberPage() {

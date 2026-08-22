@@ -4,20 +4,10 @@ import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 
 const CODEBASE_FOLDER_MARKER = '.neup-folder';
 
-type BuildMapRoute = {
-  path: string;
-  pageId: string;
-};
-
 type BuildMapFile = {
   path: string;
   size: number;
-};
-
-export type BuildMap = {
-  siteId: string;
-  routes: BuildMapRoute[];
-  files: BuildMapFile[];
+  version: number;
 };
 
 type BuildFileResult =
@@ -106,7 +96,7 @@ function getContentType(filePath: string): string {
   }
 }
 
-export async function getBuildMap(siteId: string): Promise<{ success: true; buildMap: BuildMap } | { success: false; error: string }> {
+export async function getBuildMap(siteId: string): Promise<{ success: true; buildMap: BuildMapFile[] } | { success: false; error: string }> {
   try {
     const asset = await db.asset.findUnique({
       where: { id: siteId },
@@ -117,38 +107,32 @@ export async function getBuildMap(siteId: string): Promise<{ success: true; buil
       return { success: false, error: 'Site not found.' };
     }
 
-    const [pagePaths, codeFiles] = await Promise.all([
-      db.pagePath.findMany({
-        where: { assetId: siteId },
-        orderBy: [{ path: 'asc' }, { createdAt: 'asc' }],
-        select: { path: true, pageId: true },
-      }),
-      db.codeFile.findMany({
-        where: {
-          assetId: siteId,
-          NOT: [
-            { filePath: CODEBASE_FOLDER_MARKER },
-            { filePath: { endsWith: `/${CODEBASE_FOLDER_MARKER}` } },
-          ],
-        },
-        orderBy: [{ filePath: 'asc' }, { createdAt: 'asc' }],
-        select: { filePath: true, size: true },
-      }),
-    ]);
+    const codeFiles = await db.codeFile.findMany({
+      where: {
+        assetId: siteId,
+        NOT: [
+          { filePath: CODEBASE_FOLDER_MARKER },
+          { filePath: { endsWith: `/${CODEBASE_FOLDER_MARKER}` } },
+        ],
+      },
+      orderBy: [{ filePath: 'asc' }, { createdAt: 'asc' }],
+      select: { filePath: true, size: true },
+    });
+
+    const fileVersions = new Map<string, number>();
 
     return {
       success: true,
-      buildMap: {
-        siteId,
-        routes: pagePaths.map((entry) => ({
-          path: entry.path,
-          pageId: entry.pageId,
-        })),
-        files: codeFiles.map((entry) => ({
+      buildMap: codeFiles.map((entry) => {
+        const version = (fileVersions.get(entry.filePath) ?? 0) + 1;
+        fileVersions.set(entry.filePath, version);
+
+        return {
           path: entry.filePath,
           size: entry.size,
-        })),
-      },
+          version,
+        };
+      }),
     };
   } catch (error: any) {
     await logger.error({

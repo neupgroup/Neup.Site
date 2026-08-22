@@ -74,7 +74,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getCookie } from '@/inapp/helpers/session-manager';
-import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/accounts';
 

@@ -9,7 +9,7 @@ import { cn } from '@/core/utils';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/inapp/context/ProfileContext';
 import Image from 'next/image';
-import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 
 interface FileUploaderProps {
   uploadPath: string;

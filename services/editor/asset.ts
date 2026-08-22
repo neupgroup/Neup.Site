@@ -4,7 +4,7 @@
 import { cookies } from 'next/headers';
 import { Asset, AssetTheme, AssetIcons } from '@/services/asset/type';
 import { generateThemeFromColor } from '@/core/helpers/color';
-import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
 import { prisma as db } from '@/core/database/prisma';

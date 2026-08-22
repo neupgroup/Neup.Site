@@ -5,7 +5,7 @@ import React, { type FC, useRef, DragEvent, Fragment } from 'react';
 import { cn } from '@/core/utils';
 import type { CanvasElementData } from '@/services/canvas/type';
 
-import { useElementResizing } from '@/core/hooks/useElementResizing';
+import { useElementResizing } from '@/inapp/hooks/useElementResizing';
 
 import CanvasElement from './CanvasElement';
 import SectionDropZone from './SectionDropZone';

@@ -32,7 +32,12 @@ function getInitials(name: string) {
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const { member } = await getMember(params.id);
-  return await generatePageMetadata(member ? `Member: ${member.name}` : 'Member');
+  return generatePageMetadata({
+    title: member?.name || 'Member',
+    prefix: 'Member',
+    titleKind: 'prefix-title',
+    prefixSeparator: ': ',
+  });
 }
 
 export default async function ViewMemberPage({ params }: { params: { id: string } }) {

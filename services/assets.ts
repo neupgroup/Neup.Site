@@ -5,7 +5,7 @@ import { prisma as db } from '@/core/database/prisma';
 import { getAccountId } from './accounts';
 import { normalizeUrl } from '@/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
-import { resolveAssetLogoUrl } from '@/core/helpers/asset/logo';
+import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 
 export interface AssetSummary {
   id: string;
