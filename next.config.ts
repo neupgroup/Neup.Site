@@ -1,11 +1,36 @@
 import type { NextConfig } from 'next';
 
+function getConfiguredBasePath(): string | undefined {
+  const value = process.env.NEXT_PUBLIC_APP_BASEPATH ?? process.env.APP_BASEPATH;
+  if (typeof value !== 'string') return undefined;
+
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+
+  const normalizedValue = (() => {
+    try {
+      if (/^https?:\/\//i.test(trimmed)) {
+        return new URL(trimmed).pathname;
+      }
+    } catch {
+      return trimmed;
+    }
+
+    return trimmed;
+  })();
+
+  const withoutTrailingSlash = normalizedValue.replace(/\/+$/, '');
+  if (!withoutTrailingSlash || withoutTrailingSlash === '/') return undefined;
+
+  return withoutTrailingSlash.startsWith('/') ? withoutTrailingSlash : `/${withoutTrailingSlash}`;
+}
+
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
-  basePath: process.env.NEXT_PUBLIC_APP_BASEPATH,
+  basePath: getConfiguredBasePath(),
   turbopack: {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
