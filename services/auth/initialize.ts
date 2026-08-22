@@ -1,13 +1,12 @@
 
 'use server';
 
-import { getAccountId } from '@/services/accounts';
+import { ensureRecord } from '@/logica/account/self';
 
 /**
- * Ensures an account ID exists for the current user session.
- * This can be called when a user first interacts with the application.
+ * Ensures the authenticated account is synchronized into the local accounts table.
  */
-export async function initializeUserAccount(): Promise<{ accountId: string; }> {
-  const accountId = await getAccountId();
-  return { accountId };
+export async function initializeUserAccount(): Promise<{ accountId: string | null; }> {
+  const account = await ensureRecord();
+  return { accountId: account?.id ?? null };
 }

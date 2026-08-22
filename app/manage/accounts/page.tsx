@@ -1,4 +1,5 @@
 import { Shield, Users } from 'lucide-react';
+import Link from 'next/link';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -101,17 +102,18 @@ export default async function ManageAccountsPage() {
               const isLast = index === platformAccounts.length - 1;
 
               return (
-                <div
+                <Link
                   key={account.id}
+                  href={`/manage/accounts/${account.id}`}
                   className={[
-                    'w-full border p-4',
+                    'block w-full border p-4 transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                     isFirst ? 'rounded-t-md' : 'rounded-t-none',
                     isLast ? 'rounded-b-md' : 'rounded-b-none border-b',
                     !isLast ? 'border-b-0' : '',
                   ].join(' ')}
                 >
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12">
+                      <Avatar className="h-12 w-12 rounded-[1.25rem]">
                       {account.displayImage ? <AvatarImage src={account.displayImage} alt={account.displayName || account.id} /> : null}
                       <AvatarFallback>{getInitials(account.displayName, account.id)}</AvatarFallback>
                     </Avatar>
@@ -120,7 +122,7 @@ export default async function ManageAccountsPage() {
                       <p className="text-sm text-muted-foreground">{account.neupId || 'No NeupID'}</p>
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

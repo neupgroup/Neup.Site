@@ -6,6 +6,7 @@ import { getAccountId } from './accounts';
 import { normalizeUrl } from '@/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
+import { ensureRecord } from '@/logica/account/self';
 
 export interface AssetSummary {
   id: string;
@@ -68,8 +69,9 @@ export async function createAssetForAccount(input: {
   logoUrl?: string | null;
   description?: string | null;
 }): Promise<{ success: boolean; asset?: AssetSummary; error?: string }> {
-  const accountId = await getAccountId();
-  if (!accountId) {
+  try {
+    await getAccountId();
+  } catch {
     return { success: false, error: 'User account not found.' };
   }
 
@@ -89,12 +91,12 @@ export async function createAssetForAccount(input: {
   const defaultTheme = createDefaultAssetTheme();
 
   try {
+    const account = await ensureRecord();
+    if (!account?.id) {
+      return { success: false, error: 'Authenticated account not found.' };
+    }
+
     await db.$transaction([
-      db.account.upsert({
-        where: { id: accountId },
-        create: { id: accountId },
-        update: {},
-      }),
       db.asset.create({ data: assetData }),
       db.theme.create({
         data: {
@@ -119,7 +121,7 @@ export async function createAssetForAccount(input: {
           id: roleId,
           assetId,
           portfolioId: assetId,
-          accountId,
+          accountId: account.id,
           role: 'owner',
         },
       }),
