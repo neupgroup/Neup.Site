@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { logica } from '@/logica'
 import baseJson from '@/logica/base.json'
+import { decodeNeupIdToken } from '@/logica/account/token/verify'
 
 const AUTH_ME_PATH = '/bridge/api.v1/auth/me'
 
@@ -15,6 +16,13 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   const authAccountToken = request.cookies.get('auth_account')?.value?.trim()
 
   if (!authAccountToken) {
+    return false
+  }
+
+  const tokenPayload = decodeNeupIdToken(authAccountToken)
+  const isGuestToken = tokenPayload?.guest === true || tokenPayload?.guest === 1
+
+  if (isGuestToken) {
     return false
   }
 
@@ -32,7 +40,19 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
       return false
     }
 
-    const body = await response.json().catch(() => null) as { success?: boolean } | null
+    const body = await response.json().catch(() => null) as {
+      success?: boolean
+      profile?: {
+        accountType?: string | null
+      } | null
+    } | null
+
+    const accountType = body?.profile?.accountType?.trim().toLowerCase()
+
+    if (accountType === 'guest') {
+      return false
+    }
+
     return body?.success === true
   } catch {
     return false
