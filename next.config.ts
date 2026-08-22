@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  basePath: process.env.NEXT_PUBLIC_APP_BASEPATH,
   turbopack: {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
