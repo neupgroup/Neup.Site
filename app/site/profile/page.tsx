@@ -13,4 +13,4 @@ direct profile page without duplicating profile-editing logic.
 ::end
 */
 
-export { default } from '@/app/(manage)/settings/profile/page';
+export { default } from '@/app/settings/profile/page';

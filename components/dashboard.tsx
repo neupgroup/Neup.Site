@@ -22,12 +22,10 @@ import {
   LayoutTemplate,
   Bug,
   Home,
-  Globe,
   Settings,
   Link as LinkIcon,
   Database,
   Server,
-  Layers,
   Puzzle,
   Palette,
   HardDrive,
@@ -54,7 +52,6 @@ import {
   Mountain,
   UtensilsCrossed,
   Activity,
-  Network,
   Redo,
   FolderKanban,
   FileLock,
@@ -185,11 +182,8 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
 
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
-          Editor
+          Site
         </div>
-        <NavLink href="/site/pages" currentPath={currentPath} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
-        <NavLink href="/site/sections" currentPath={currentPath} onClick={onLinkClick}><Layers className="h-4 w-4" /><span>Sections</span></NavLink>
-        <NavLink href="/editor/elements" currentPath={currentPath} onClick={onLinkClick}><Network className="h-4 w-4" /><span>Elements</span></NavLink>
         <NavLink href="/site/codebase" currentPath={currentPath} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></NavLink>
         <NavLink href="/site/theme" currentPath={currentPath} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
       </div>

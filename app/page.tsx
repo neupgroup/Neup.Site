@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Users, FileText, Puzzle, Palette, Newspaper, Plus } from 'lucide-react';
+import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
 import { generatePageMetadata } from '@/core/helpers/metadata';
 
 export async function generateMetadata() {
@@ -49,10 +49,10 @@ export default async function DashboardPage() {
           description="+20.1% from last month"
         />
         <QuickStatCard
-          title="Total Pages"
+          title="Content Entries"
           value={dashboardData.totalPages}
           icon={FileText}
-          description="Live and draft pages"
+          description="Tracked site content"
         />
         <QuickStatCard
           title="Active Modules"
@@ -67,13 +67,13 @@ export default async function DashboardPage() {
           <CardHeader>
             <CardTitle>Manage Content</CardTitle>
             <CardDescription>
-              Create, edit, and manage your site's pages and news articles.
+              Manage your published content and editorial workflows.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4">
             <Button asChild className="w-full sm:w-auto">
-              <Link href="/site/pages/create">
-                <Plus className="mr-2" /> New Page
+              <Link href="/news/create">
+                <Newspaper className="mr-2" /> New Article
               </Link>
             </Button>
             <Button asChild variant="secondary" className="w-full sm:w-auto">

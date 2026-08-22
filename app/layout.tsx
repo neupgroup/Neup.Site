@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { getAsset } from '@/services/editor/asset';
 import { cn } from '@/core/utils';
-import type { Asset } from '@/services/asset/type';
+import { AppLayoutClient } from './layout-client';
 
 
 export const metadata: Metadata = {
@@ -110,7 +110,7 @@ export default async function RootLayout({
           <ProgressBar />
         </Suspense>
         <SidebarProvider>
-          {children}
+          <AppLayoutClient>{children}</AppLayoutClient>
         </SidebarProvider>
         <Toaster />
       </body>
