@@ -3,7 +3,7 @@
 import { getPrivateServerDetails } from '@/services/servers';
 import { updateAllocationPort } from '@/services/allocations';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 
 export async function detectAndAppPortFromPm2(assetId: string, serverId: string): Promise<{ success: boolean; port?: number; error?: string }> {
     const ssh = new NodeSSH();

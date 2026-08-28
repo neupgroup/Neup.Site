@@ -1,7 +1,7 @@
 
 'use server';
 
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { getAccountId } from './accounts';
 import type { Asset } from '@/services/asset/type';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';

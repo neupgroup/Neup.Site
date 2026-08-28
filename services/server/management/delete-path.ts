@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 
 export async function deletePath(serverId: string, path: string): Promise<{ success: boolean; error?: string }> {
   if (!path || path === '/') {

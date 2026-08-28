@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 
 export async function readFileContent(serverId: string, filePath: string): Promise<{ success: boolean; content?: string | null; error?: string }> {
   const ssh = new NodeSSH();

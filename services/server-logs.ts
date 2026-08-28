@@ -2,9 +2,9 @@
 
 'use server';
 
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import type { ServerLog } from '@/services/server/type';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 
 /**
  * Creates a new server log entry.

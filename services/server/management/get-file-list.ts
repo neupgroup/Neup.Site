@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 
 export interface FileInfo {
   type: 'd' | '-' | 'l'; // directory, file, link

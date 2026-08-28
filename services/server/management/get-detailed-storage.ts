@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import type { ServerAllocationStorage } from '@/services/server/type';
 
 function parseDuOutput(output: string): { value: number; unit: string } {

@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import Link from 'next/link';
 import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { generatePageMetadata } from '#/core/helpers/metadata';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export async function generateMetadata() {

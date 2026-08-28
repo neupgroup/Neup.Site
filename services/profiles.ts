@@ -1,8 +1,8 @@
 'use server';
 
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { getActiveProjectId } from '@/services/projects';
-import { normalizeUrl } from '@/core/helpers/link/url';
+import { normalizeUrl } from '#/core/helpers/link/url';
 
 type ProfileEntryInput = {
   subject: string;

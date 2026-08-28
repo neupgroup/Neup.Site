@@ -1,10 +1,10 @@
 
 'use server';
 
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { getActiveProjectId } from '@/services/projects';
 import type { Asset } from '@/services/asset/type';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 
 export interface AssetModule {
   active: boolean;

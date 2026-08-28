@@ -4,8 +4,8 @@
 
 import { Server, ServerAllocation } from '@/services/server/type';
 import { getActiveProjectId } from '@/services/projects';
-import { logger } from '@/logica/logger';
-import { prisma as db } from '@/core/database/prisma';
+import { logger } from '#/logica/logger';
+import { prisma as db } from '#/core/database/prisma';
 
 /**
  * Creates a new server.

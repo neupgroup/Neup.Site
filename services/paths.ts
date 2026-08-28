@@ -2,8 +2,8 @@
 'use server';
 
 import { getActiveProjectId } from '@/services/projects';
-import { prisma as db } from '@/core/database/prisma';
-import { logger } from '@/logica/logger';
+import { prisma as db } from '#/core/database/prisma';
+import { logger } from '#/logica/logger';
 import { markStructureAsPending } from './structure';
 
 export interface Path {

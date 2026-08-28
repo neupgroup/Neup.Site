@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import { getAsset } from '@/services/editor/asset';
 import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { runCommand } from '@/services/runner';

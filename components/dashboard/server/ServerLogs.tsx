@@ -1,18 +1,18 @@
 
 'use client';
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Badge } from '#/components/ui/badge';
 import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } from 'lucide-react';
 import { getServerLogs } from '@/services/server-logs';
 import type { ServerLog } from '@/services/server/type';
 import { formatDistanceToNow } from 'date-fns';
 import { logger } from '@/logica/logger';
 import { cn } from '@/core/utils';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '#/components/ui/accordion';
 
 const ServerLogs = ({ serverId }: { serverId: string }) => {
     const [logs, setLogs] = useState<ServerLog[]>([]);

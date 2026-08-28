@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import crypto from 'crypto';
 
 const getAccountId = async () => {

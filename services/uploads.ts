@@ -7,7 +7,7 @@ import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import { getAsset } from './editor/asset';
 
 export interface PublicFile {
