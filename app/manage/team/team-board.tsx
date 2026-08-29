@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { GripVertical, Pencil } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader } from '#/components/ui/card';
 import { cn } from '#/core/utils';
 import { useToast } from '#/core/hooks/useToast';
@@ -241,7 +241,7 @@ export function TeamBoard({ teams, members }: TeamBoardProps) {
                 {group.description ? <p className="text-sm text-muted-foreground">{group.description}</p> : null}
               </div>
               {group.teamId ? (
-                <Button asChild variant="plain" size="icon">
+                <Button asChild type="plain" size="icon">
                   <Link href={`/manage/team/${group.teamId}/edit`} aria-label={`Edit ${group.name}`}>
                     <Pencil className="h-4 w-4" />
                   </Link>

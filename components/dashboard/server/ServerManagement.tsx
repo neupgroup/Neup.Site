@@ -8,7 +8,7 @@ import { runCommand } from '@/services/runner';
 import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Textarea } from '#/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';
@@ -68,7 +68,7 @@ const ServerManagement = ({ serverId }: { serverId: string }) => {
                 </div>
             </CardContent>
             <CardFooter>
-                 <Button variant="primary" onClick={handleRunCustomCommand} disabled={isPending}>
+                 <Button type="solid" onClick={handleRunCustomCommand} disabled={isPending}>
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Execute Command
                 </Button>

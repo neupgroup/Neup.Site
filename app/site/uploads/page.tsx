@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
@@ -244,7 +244,7 @@ export default function SiteUploadsPage() {
                 </div>
               ))}
               {pendingCount > 0 && (
-                <Button variant="primary" onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
+                <Button type="solid" onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
                   Upload {pendingCount} file(s)
                 </Button>
               )}

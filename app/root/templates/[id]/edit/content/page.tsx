@@ -4,7 +4,7 @@
 import { useState, useEffect, use } from 'react';
 import { getTemplate, saveTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Textarea } from '#/components/ui/textarea';
 import { Skeleton } from '#/components/ui/skeleton';
@@ -144,7 +144,7 @@ export default function EditContentPage({ params }: { params: Promise<{ id: stri
         </Card>
 
         <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
-             <Button variant="primary" onClick={handleSave} disabled={isSaving}>
+             <Button type="solid" onClick={handleSave} disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save All Content
             </Button>

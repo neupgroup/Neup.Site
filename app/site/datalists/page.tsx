@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getDatalists } from '@/services/datalists';
 import { Datalist } from '@/services/datalist/type';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/components/ui/table';
 import { Skeleton } from '#/components/ui/skeleton';
@@ -38,7 +38,7 @@ export default function DatalistsPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Datalists</h1>
-        <Button variant="primary" asChild>
+        <Button type="solid" asChild>
           <Link href="/site/datalists/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Datalist
           </Link>
@@ -81,7 +81,7 @@ export default function DatalistsPage() {
                     <TableCell className="font-medium">{datalist.name}</TableCell>
                     <TableCell>{datalist.createdAt ? new Date(datalist.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="plain" size="icon">
+                      <Button asChild type="plain" size="icon">
                         <Link href={`/site/datalists/${datalist.id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </Link>

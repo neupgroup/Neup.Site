@@ -1,7 +1,7 @@
 
 import { getTeam } from '@/services/teams';
 import { getMembers } from '@/services/members';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import Link from 'next/link';
@@ -48,7 +48,7 @@ export default async function ViewTeamPage({ params }: { params: { id: string } 
     return (
         <div className="w-full max-w-2xl">
             <div className="mb-4">
-                <Button variant="tertiary" asChild>
+                <Button type="outlined" asChild>
                     <Link href="/manage/member">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Members

@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
@@ -166,12 +166,12 @@ export default function AppBasePage() {
           <p className="text-muted-foreground">Manage JSON configuration files in your application's base directories.</p>
         </div>
         <div className="flex gap-2">
-           <Button asChild variant="tertiary">
+           <Button asChild type="outlined">
               <Link href="/site/appbase/backups">
                   <RotateCcw className="mr-2 h-4 w-4" /> View Backups
               </Link>
             </Button>
-            <Button variant="primary" asChild>
+            <Button type="solid" asChild>
                 <Link href="/site/appbase/create">
                     <Plus className="mr-2 h-4 w-4" /> Create File
                 </Link>
@@ -201,10 +201,10 @@ export default function AppBasePage() {
                         </Badge>
                     </div>
                     <div className="flex items-center gap-2 self-end sm:self-center">
-                        <Button variant="tertiary" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
+                        <Button type="outlined" size="sm" onClick={() => handleBackup(file)} disabled={!!isBackingUp}>
                             {isBackingUp === file.name ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <HardDrive className="mr-2 h-4 w-4"/>} Backup
                         </Button>
-                        <Button variant="secondary" size="sm" onClick={() => handleEditClick(file)}>
+                        <Button type="tinted" size="sm" onClick={() => handleEditClick(file)}>
                             <Edit className="mr-2 h-4 w-4"/> Edit
                         </Button>
                     </div>
@@ -228,8 +228,8 @@ export default function AppBasePage() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="tertiary" onClick={() => setEditingFile(null)}>Cancel</Button>
-            <Button variant="primary" onClick={handleSaveContent} disabled={isSaving || isEditorLoading}>
+            <Button type="outlined" onClick={() => setEditingFile(null)}>Cancel</Button>
+            <Button type="solid" onClick={handleSaveContent} disabled={isSaving || isEditorLoading}>
                 {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>} Save
             </Button>
           </DialogFooter>

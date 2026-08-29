@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';
 import { getErrorLogById, type ErrorLog } from '@/services/errors';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '#/components/ui/separator';
 import { usePageTitle } from '#/core/hooks/use-page-title';
@@ -53,7 +53,7 @@ export default function ErrorDetailPage({ params }: { params: Promise<{ id: stri
   if (error || !log) {
     return (
         <div className="w-full max-w-4xl mx-auto space-y-4">
-             <Button asChild variant="plain" className="mb-4">
+             <Button asChild type="plain" className="mb-4">
                 <Link href="/root/errors">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Errors
@@ -70,7 +70,7 @@ export default function ErrorDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4">
-        <Button asChild variant="plain">
+        <Button asChild type="plain">
             <Link href="/root/errors">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Errors

@@ -1,7 +1,7 @@
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { AlertCircle, UserPlus, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -43,13 +43,13 @@ export default async function TeamsPage() {
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    <Button asChild variant="tertiary">
+                    <Button asChild type="outlined">
                         <Link href="/manage/member/addTeam">
                             <Users className="mr-2 h-4 w-4" />
                             Create Group
                         </Link>
                     </Button>
-                    <Button variant="primary" asChild>
+                    <Button type="solid" asChild>
                         <Link href="/manage/member/addMember">
                             <UserPlus className="mr-2 h-4 w-4" />
                             Add Member

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '#/components/ui/radio-group';
 import { Label } from '#/components/ui/label';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Sun, Moon, Loader2, Save, Plus, Trash2, Contrast } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
@@ -122,7 +122,7 @@ export default function ThemePage() {
                   </div>
                   {colors.length > 1 && (
                     <Button
-                      variant="destructive"
+                      type="solid" convey="danger"
                       size="sm"
                       onClick={() => removeColor(index)}
                       className="w-fit"
@@ -133,7 +133,7 @@ export default function ThemePage() {
                 </div>
               ))}
               {colors.length < 3 && (
-                <Button variant="tertiary" onClick={addColor}>
+                <Button type="outlined" onClick={addColor}>
                   <Plus className="mr-2" /> Add Color
                 </Button>
               )}
@@ -220,7 +220,7 @@ export default function ThemePage() {
       </Card>
 
       <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
-        <Button variant="primary" onClick={handleSaveTheme} disabled={isSaving || loading}>
+        <Button type="solid" onClick={handleSaveTheme} disabled={isSaving || loading}>
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Theme
         </Button>

@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Badge } from '#/components/ui/badge';
@@ -77,7 +77,7 @@ const ServerLogs = ({ serverId }: { serverId: string }) => {
                         <CardTitle>Server Logs</CardTitle>
                         <CardDescription>History of all commands run on this server.</CardDescription>
                     </div>
-                    <Button variant="tertiary" size="sm" onClick={() => fetchLogs(logsPage)} disabled={loadingLogs}>
+                    <Button type="outlined" size="sm" onClick={() => fetchLogs(logsPage)} disabled={loadingLogs}>
                     {loadingLogs ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
                     Reload
                     </Button>
@@ -149,7 +149,7 @@ const ServerLogs = ({ serverId }: { serverId: string }) => {
                 <CardFooter className="flex items-center justify-between pt-4">
                     <div className="flex items-center gap-2">
                         <Button
-                            variant="tertiary"
+                            type="outlined"
                             size="sm"
                             onClick={() => setLogsPage(prev => Math.max(1, prev - 1))}
                             disabled={logsPage <= 1 || loadingLogs}
@@ -158,7 +158,7 @@ const ServerLogs = ({ serverId }: { serverId: string }) => {
                             Previous
                         </Button>
                         <Button
-                            variant="tertiary"
+                            type="outlined"
                             size="sm"
                             onClick={() => setLogsPage(prev => Math.min(5, prev + 1))}
                             disabled={!hasMoreLogs || loadingLogs}

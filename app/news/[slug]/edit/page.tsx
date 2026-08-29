@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { Save, ArrowLeft, Loader2, AlertCircle, Trash2, FileText } from 'lucide-react';
@@ -133,7 +133,7 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="plain" size="icon" asChild>
+            <Button type="plain" size="icon" asChild>
               <Link href={`/news/${slug}`}>
                 <ArrowLeft />
               </Link>
@@ -141,12 +141,12 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Article Settings</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button type="button" variant="tertiary" asChild>
+            <Button htmlType="button" type="outlined" asChild>
                 <Link href={`/news/${slug}/edit/content`}>
                     <FileText className="mr-2 h-4 w-4" /> Edit Content
                 </Link>
             </Button>
-            <Button type="button" variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+            <Button htmlType="button" type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete Article
             </Button>
           </div>
@@ -168,7 +168,7 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
             )} />
           </CardContent>
           <CardFooter>
-            <Button variant="primary" type="submit" disabled={isSaving}>
+            <Button type="solid" htmlType="submit" disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               {isSaving ? 'Saving...' : 'Save Settings'}
             </Button>

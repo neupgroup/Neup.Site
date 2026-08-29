@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
@@ -61,7 +61,7 @@ export default function CreateAllocationPage() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateAllocation)} className="w-full max-w-2xl space-y-6">
         <div className="mb-4">
-          <Button variant="plain" asChild>
+          <Button type="plain" asChild>
               <Link href="/root/servers/allocations">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Allocations
@@ -84,7 +84,7 @@ export default function CreateAllocationPage() {
               </div>
           </CardContent>
           <CardFooter>
-              <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
+              <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   {form.formState.isSubmitting ? 'Creating...' : 'Create Allocation'}
               </Button>

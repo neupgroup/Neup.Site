@@ -66,7 +66,8 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 import { Skeleton } from '#/components/ui/skeleton';
 import type { Asset, AssetTheme } from '@/services/asset/type';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '#/components/ui/collapsible';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
+import { NavButton } from '#/components/ui/navbutton';
 import { ChevronRight } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
 import { useState, useEffect } from 'react';
@@ -84,13 +85,11 @@ const navLinkClassName = (isActive: boolean) => cn(
 function NavLink({ href, children, currentPath, selectedProject, onClick }: { href: string; children: React.ReactNode; currentPath: string, selectedProject: string | null, onClick?: () => void }) {
   const isActive = href === '/' ? currentPath === href : currentPath.startsWith(href);
   return (
-    <Link
-      href={appendSelectedProject(href, selectedProject)}
-      onClick={onClick}
-      className={navLinkClassName(isActive)}
-    >
-      {children}
-    </Link>
+    <NavButton asChild active={isActive} className={navLinkClassName(isActive)}>
+      <Link href={appendSelectedProject(href, selectedProject)} onClick={onClick}>
+        {children}
+      </Link>
+    </NavButton>
   );
 }
 
@@ -106,17 +105,18 @@ function buildAnalyticsUrl(propertyId: string | null, currentUrl: string) {
 
 function ExternalAnalyticsNavLink({ propertyId, currentUrl, children, onClick }: { propertyId: string | null; currentUrl: string; children: React.ReactNode; onClick?: () => void }) {
   return (
-    <a
-      href={buildAnalyticsUrl(propertyId, currentUrl)}
-      onClick={(event) => {
-        event.preventDefault();
-        onClick?.();
-        window.location.assign(buildAnalyticsUrl(propertyId, window.location.href));
-      }}
-      className={navLinkClassName(false)}
-    >
-      {children}
-    </a>
+    <NavButton asChild className={navLinkClassName(false)}>
+      <a
+        href={buildAnalyticsUrl(propertyId, currentUrl)}
+        onClick={(event) => {
+          event.preventDefault();
+          onClick?.();
+          window.location.assign(buildAnalyticsUrl(propertyId, window.location.href));
+        }}
+      >
+        {children}
+      </a>
+    </NavButton>
   );
 }
 
@@ -311,7 +311,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, selectedProject }: { isMob
             </Avatar>
           </Link>
           <div className="md:hidden">
-          <Button variant="plain" size="icon" onClick={toggleMobileMenu}>
+          <Button type="plain" size="icon" onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           </div>

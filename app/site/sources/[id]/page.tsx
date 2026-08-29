@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -111,7 +111,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
   return (
     <div className="w-full max-w-4xl space-y-6">
         <div className="mb-4">
-            <Button variant="plain" asChild>
+            <Button type="plain" asChild>
                 <Link href="/site/sources">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Sources
@@ -127,7 +127,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge variant="outline">{source.type}</Badge>
-                         <Button asChild variant="tertiary" size="sm">
+                         <Button asChild type="outlined" size="sm">
                             <Link href={`/site/sources/${id}/edit`}>
                                 <Pencil className="mr-2 h-4 w-4"/> Edit
                             </Link>
@@ -198,7 +198,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                 </Table>
             </CardContent>
              <CardFooter className="flex justify-end gap-2">
-                <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                <Button type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete Source
                 </Button>
                 {source.type === 'api' && (

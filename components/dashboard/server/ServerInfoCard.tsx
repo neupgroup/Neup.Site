@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
 import { Server as ServerIcon, Globe, Warehouse, User, Share2, ServerCrash, RefreshCw, Loader2, Clock } from 'lucide-react';
 import { Badge } from '#/components/ui/badge';
@@ -112,16 +112,16 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
                     )}
                 </CardContent>
                 <CardFooter className="flex flex-wrap gap-2">
-                    <Button variant="tertiary" size="sm" onClick={handleRefreshAll} disabled={isRefreshing}>
+                    <Button type="outlined" size="sm" onClick={handleRefreshAll} disabled={isRefreshing}>
                         {isRefreshing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
                         Refresh Stats
                     </Button>
-                    <Button asChild variant="tertiary" size="sm">
+                    <Button asChild type="outlined" size="sm">
                         <Link href={`/root/servers/allocations/create?serverId=${server.id}`}>
                             <Share2 className="mr-2 h-4 w-4" /> Allocate Server
                         </Link>
                     </Button>
-                    <Button variant="destructive" size="sm" onClick={() => setShowRebootConfirm(true)} disabled={isPending}>
+                    <Button type="solid" convey="danger" size="sm" onClick={() => setShowRebootConfirm(true)} disabled={isPending}>
                         {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ServerCrash className="mr-2 h-4 w-4" />}
                         Reboot Server
                     </Button>

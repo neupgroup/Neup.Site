@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
 import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/services/structure';
 import type { Structure, Deployment } from '@/services/asset/type';
@@ -29,7 +29,7 @@ const StatusCard = ({ title, description, status, icon: Icon, onDeploy }: { titl
                     <p className="text-sm text-muted-foreground">{description}</p>
                 </div>
                  {status === 'deployed' && (
-                    <Button variant="link" size="sm" className="p-0 h-auto text-xs mt-1" onClick={onDeploy}>
+                    <Button type="text" size="sm" className="p-0 h-auto text-xs mt-1" onClick={onDeploy}>
                         Deploy again?
                     </Button>
                 )}
@@ -193,14 +193,14 @@ export default function DeployPage() {
             <div className="mt-8">
                 {hasServer ? (
                     hasAnyPendingChanges ? (
-                        <Button variant="primary" onClick={handleDeploy} disabled={isDeploying || loading}>
+                        <Button type="solid" onClick={handleDeploy} disabled={isDeploying || loading}>
                             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2 h-4 w-4" />}
                             {isDeploying ? 'Deploying...' : 'Deploy All Changes'}
                         </Button>
                     ) : (
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Up to date</span>
-                            <Button variant="link" className="p-0 h-auto" onClick={handleDeploy} disabled={isDeploying || loading}>
+                            <Button type="text" className="p-0 h-auto" onClick={handleDeploy} disabled={isDeploying || loading}>
                                 {isDeploying ? 'Deploying...' : 'Deploy again?'}
                             </Button>
                         </div>

@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -101,7 +101,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error || 'Allocation not found.'}</AlertDescription>
          <div className="mt-4">
-            <Button asChild variant="tertiary">
+            <Button asChild type="outlined">
               <Link href="/root/servers/allocations">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Allocations
               </Link>
@@ -114,7 +114,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
         <div className="mb-4">
-            <Button variant="plain" asChild>
+            <Button type="plain" asChild>
                 <Link href="/root/servers/allocations">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Allocations
@@ -158,7 +158,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
                 </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-                <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                <Button type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete
                 </Button>
                 <Button asChild>

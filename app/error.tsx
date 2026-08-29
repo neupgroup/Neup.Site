@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '#/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 
@@ -38,7 +38,7 @@ export default function GlobalError({
                 </p>
             </CardContent>
             <CardFooter>
-                <Button variant="primary" onClick={() => reset()}>Try again</Button>
+                <Button type="solid" onClick={() => reset()}>Try again</Button>
             </CardFooter>
         </Card>
     </div>

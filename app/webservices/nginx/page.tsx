@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import {
     Plus,
     RotateCw,
@@ -72,7 +72,7 @@ export default function NginxPage() {
                                 Create a new Nginx configuration file for your domain with SSL support,
                                 proxy settings, and optimized caching rules.
                             </p>
-                            <Button variant="primary"
+                            <Button type="solid"
                                 onClick={handleCreate}
                                 disabled={isCreating}
                                 className="w-full"
@@ -117,7 +117,7 @@ export default function NginxPage() {
                             <Button
                                 onClick={handleRestart}
                                 disabled={isRestarting}
-                                variant="secondary"
+                                type="tinted"
                                 className="w-full"
                             >
                                 {isRestarting ? (
@@ -155,7 +155,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="tertiary" className="w-full">
+                            <Button type="outlined" className="w-full">
                                 <FileText className="mr-2 h-4 w-4" />
                                 View Default
                             </Button>
@@ -176,7 +176,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="tertiary" className="w-full">
+                            <Button type="outlined" className="w-full">
                                 <Settings className="mr-2 h-4 w-4" />
                                 Configure
                             </Button>
@@ -197,7 +197,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="tertiary" className="w-full">
+                            <Button type="outlined" className="w-full">
                                 <Globe className="mr-2 h-4 w-4" />
                                 Manage Hosts
                             </Button>
@@ -218,7 +218,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="tertiary" className="w-full">
+                            <Button type="outlined" className="w-full">
                                 <Shield className="mr-2 h-4 w-4" />
                                 SSL Settings
                             </Button>
@@ -239,7 +239,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="tertiary" className="w-full">
+                            <Button type="outlined" className="w-full">
                                 <Settings className="mr-2 h-4 w-4" />
                                 Optimize
                             </Button>
@@ -260,7 +260,7 @@ export default function NginxPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <Button variant="tertiary" className="w-full">
+                            <Button type="outlined" className="w-full">
                                 <FileText className="mr-2 h-4 w-4" />
                                 View Logs
                             </Button>

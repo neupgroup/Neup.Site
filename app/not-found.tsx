@@ -14,7 +14,7 @@ header, sidebar, theme, and spacing.
 
 import Link from 'next/link';
 import { Home } from 'lucide-react';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 
 export default function NotFound() {
   return (
@@ -34,7 +34,7 @@ export default function NotFound() {
           </div>
         </div>
 
-        <Button asChild variant="secondary" size="lg" className="px-6">
+        <Button asChild type="tinted" size="lg" className="px-6">
           <Link href="/">
             <Home />
             Return home

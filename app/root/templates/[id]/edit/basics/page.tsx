@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getTemplate, saveTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardFooter } from '#/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { Input } from '#/components/ui/input';
@@ -175,7 +175,7 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
             </div>
           </CardContent>
           <CardFooter>
-            <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
+            <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

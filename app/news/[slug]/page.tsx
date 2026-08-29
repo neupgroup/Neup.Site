@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import Link from 'next/link';
@@ -34,7 +34,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error || 'Article not found.'}</AlertDescription>
           <div className="mt-4">
-            <Button asChild variant="tertiary">
+            <Button asChild type="outlined">
               <Link href="/news">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to News
               </Link>
@@ -48,7 +48,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="mb-4">
-        <Button variant="plain" asChild>
+        <Button type="plain" asChild>
           <Link href="/news">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to News
@@ -71,7 +71,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-           <Button asChild variant="tertiary">
+           <Button asChild type="outlined">
             <Link href={`/news/${article.id}/edit`}>
               <Settings className="mr-2 h-4 w-4" /> Settings
             </Link>

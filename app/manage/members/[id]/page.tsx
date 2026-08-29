@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, Mail } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getMember } from '@/services/members';
@@ -50,7 +50,7 @@ export default async function ViewMemberPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="tertiary" asChild>
+        <Button type="outlined" asChild>
           <Link href="/manage/member">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members

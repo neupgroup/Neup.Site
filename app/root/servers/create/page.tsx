@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Textarea } from '#/components/ui/textarea';
@@ -65,7 +65,7 @@ export default function CreateServerPage() {
   return (
     <form onSubmit={handleSubmit(handleCreateServer)} className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <Button variant="plain" asChild>
+        <Button type="plain" asChild>
             <Link href="/root/servers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Servers
@@ -149,7 +149,7 @@ export default function CreateServerPage() {
             </div>
         </CardContent>
         <CardFooter>
-            <Button variant="primary" type="submit" disabled={isSubmitting}>
+            <Button type="solid" htmlType="submit" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 {isSubmitting ? 'Creating...' : 'Create Server'}
             </Button>

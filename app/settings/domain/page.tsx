@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset } from '@/services/asset/type';
 
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Checkbox } from '#/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '#/components/ui/form';
@@ -67,10 +67,10 @@ const IgnoredPathsFields = ({ nestIndex, control }: { nestIndex: "domains.produc
                             <FormItem className="flex-1"><FormControl><Input {...field} placeholder="/path/to/ignore" /></FormControl><FormMessage /></FormItem>
                         )}
                     />
-                    <Button type="button" variant="destructive" size="icon" onClick={() => remove(k)}><Trash2 className="h-4 w-4" /></Button>
+                    <Button htmlType="button" type="solid" convey="danger" size="icon" onClick={() => remove(k)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
             ))}
-            <Button type="button" variant="tertiary" size="sm" onClick={() => append({ value: '' })}>
+            <Button htmlType="button" type="outlined" size="sm" onClick={() => append({ value: '' })}>
                 <Plus className="mr-2 h-4 w-4" /> Add Ignored Path
             </Button>
         </div>
@@ -110,10 +110,10 @@ const ProxyFields = ({ nestIndex, control }: { nestIndex: "domains.production.pr
                             <FormItem><FormLabel>Target Port</FormLabel><FormControl><Input {...field} placeholder="e.g., 8080" /></FormControl><FormMessage /></FormItem>
                         )}
                     />
-                    <Button type="button" variant="destructive" size="icon" onClick={() => remove(k)}><Trash2 className="h-4 w-4" /></Button>
+                    <Button htmlType="button" type="solid" convey="danger" size="icon" onClick={() => remove(k)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
             ))}
-            <Button type="button" variant="tertiary" size="sm" onClick={() => append({ path: '', ip: '', port: '' })}>
+            <Button htmlType="button" type="outlined" size="sm" onClick={() => append({ path: '', ip: '', port: '' })}>
                 <Plus className="mr-2 h-4 w-4" /> Add Proxy Rule
             </Button>
         </div>
@@ -280,7 +280,7 @@ export default function DomainPage() {
                 </div>
 
                 <div className="px-0">
-                    <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
+                    <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                         {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save All Settings
                     </Button>

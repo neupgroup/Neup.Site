@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import Link from 'next/link';
 import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
 import { generatePageMetadata } from '#/core/helpers/metadata';
@@ -81,7 +81,7 @@ export default async function HomePage({
                 <Newspaper className="mr-2" /> New Article
               </Link>
             </Button>
-            <Button asChild variant="secondary" className="w-full sm:w-auto">
+            <Button asChild type="tinted" className="w-full sm:w-auto">
               <Link href={appendSelectedProject('/news', selectedProject)}>
                 <Newspaper className="mr-2" /> View News
               </Link>

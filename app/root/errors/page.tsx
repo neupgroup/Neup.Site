@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, Terminal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';
 import { getErrorLogsAction, type ErrorLog } from '@/services/errors';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { usePageTitle } from '#/core/hooks/use-page-title';
@@ -179,7 +179,7 @@ const ErrorsPage = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button
-                        variant="tertiary"
+                        type="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1}
@@ -188,7 +188,7 @@ const ErrorsPage = () => {
                         Previous
                     </Button>
                     <Button
-                        variant="tertiary"
+                        type="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages}

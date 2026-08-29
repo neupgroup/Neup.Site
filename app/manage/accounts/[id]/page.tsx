@@ -4,7 +4,7 @@ import { ArrowLeft, ChevronRight, Globe } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Badge } from '#/components/ui/badge';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getPlatformAccount } from '@/services/accounts';
 
@@ -78,7 +78,7 @@ export default async function ManageAccountDetailPage({ params }: { params: Prom
   return (
     <div className="w-full space-y-8">
       <div>
-        <Button variant="tertiary" asChild>
+        <Button type="outlined" asChild>
           <Link href="/manage/accounts">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Accounts

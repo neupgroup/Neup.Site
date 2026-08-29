@@ -3,7 +3,7 @@
 
 import { prisma as db } from '#/core/database/prisma';
 import { logger } from '#/logica/logger';
-import { ensureRecord, getBasics, isAuthenticated } from '@/logica/account/self';
+import { ensureRecord, getBasics, isAuthenticated } from '#/logica/account/self';
 
 export interface LinkedAccount {
     id: string;

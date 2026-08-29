@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getAllocations } from '@/services/allocations';
 import { Allocation } from '@/services/server/allocation/type';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import {
   Table,
   TableBody,
@@ -56,7 +56,7 @@ export default function AllocationsPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Server Allocations</h1>
             <p className="text-muted-foreground">Manage which sites are deployed to which servers.</p>
         </div>
-        <Button variant="primary" asChild>
+        <Button type="solid" asChild>
           <Link href="/root/servers/allocations/create">
             <Plus className="mr-2 h-4 w-4" /> Create Allocation
           </Link>
@@ -104,7 +104,7 @@ export default function AllocationsPage() {
                     </TableCell>
                     <TableCell>{alloc.allocatedOn ? new Date(alloc.allocatedOn).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                         <Button asChild variant="plain" size="icon">
+                         <Button asChild type="plain" size="icon">
                             <Link href={`/root/servers/allocations/${alloc.id}`}>
                                 <ArrowRight className="h-4 w-4" />
                             </Link>

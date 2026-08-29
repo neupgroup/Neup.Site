@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/components/ui/table';
 import { Skeleton } from '#/components/ui/skeleton';
@@ -66,7 +66,7 @@ export default function BackupsPage() {
           <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Backups</h1>
           <p className="text-muted-foreground">View and restore backups of your base configuration files.</p>
         </div>
-        <Button asChild variant="tertiary">
+        <Button asChild type="outlined">
           <Link href="/site/appbase">
             Back to App Base
           </Link>
@@ -111,7 +111,7 @@ export default function BackupsPage() {
                     <TableCell>{backup.backedUpAt ? format(new Date(backup.backedUpAt), 'PPpp') : 'N/A'}</TableCell>
                     <TableCell className="font-mono text-xs">{backup.backedUpBy}</TableCell>
                     <TableCell className="text-right">
-                        <Button variant="secondary" size="sm" onClick={() => handleRestore(backup.id)} disabled={!!restoringId}>
+                        <Button type="tinted" size="sm" onClick={() => handleRestore(backup.id)} disabled={!!restoringId}>
                            {restoringId === backup.id ? 'Restoring...' : 'Restore'}
                         </Button>
                     </TableCell>

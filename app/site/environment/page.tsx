@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '#/components/ui/alert-dialog';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { useToast } from '#/core/hooks/useToast';
@@ -101,7 +101,7 @@ export default function EnvironmentPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Environments</h1>
             <p className="text-muted-foreground">Manage your site's environment variables.</p>
         </div>
-        <Button variant="primary" asChild>
+        <Button type="solid" asChild>
             <Link href="/site/environment/create">
                 <Plus className="mr-2 h-4 w-4"/> Create Variable
             </Link>
@@ -130,7 +130,7 @@ export default function EnvironmentPage() {
                     </div>
                     <div className="flex items-center gap-4 self-end sm:self-center">
                         <span className="text-xs text-muted-foreground capitalize">{variable.dataType}</span>
-                        <Button variant="plain" size="icon" onClick={() => setVariableToDelete(variable)}>
+                        <Button type="plain" size="icon" onClick={() => setVariableToDelete(variable)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                     </div>
@@ -146,7 +146,7 @@ export default function EnvironmentPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button
-                        variant="tertiary"
+                        type="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1 || isPending}
@@ -155,7 +155,7 @@ export default function EnvironmentPage() {
                         Previous
                     </Button>
                     <Button
-                        variant="tertiary"
+                        type="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages || isPending}

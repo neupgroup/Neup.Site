@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 import { ArrowLeft, AlertCircle, FileText, Loader2, UploadCloud } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { useToast } from '#/core/hooks/useToast';
 import { usePageTitle } from '#/core/hooks/use-page-title';
@@ -113,7 +113,7 @@ export default function CodebaseUploadPage() {
   return (
     <div className="w-full space-y-6">
       <header className="flex items-center gap-3">
-        <Button variant="tertiary" size="sm" onClick={() => router.push(codebaseHref)}>
+        <Button type="outlined" size="sm" onClick={() => router.push(codebaseHref)}>
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
@@ -170,7 +170,7 @@ export default function CodebaseUploadPage() {
                 </div>
               ))}
 
-              <Button variant="primary" onClick={handleUpload} disabled={isUploading}>
+              <Button type="solid" onClick={handleUpload} disabled={isUploading}>
                 {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
                 Upload {uploadingFiles.length} file(s)
               </Button>

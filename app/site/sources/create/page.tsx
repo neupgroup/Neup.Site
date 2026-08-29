@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
@@ -59,7 +59,7 @@ export default function CreateSourcePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="plain" asChild>
+        <Button type="plain" asChild>
             <Link href="/site/sources">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Sources
@@ -92,7 +92,7 @@ export default function CreateSourcePage() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button variant="primary" onClick={handleCreateSource} disabled={isSaving}>
+          <Button type="solid" onClick={handleCreateSource} disabled={isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             {isSaving ? 'Saving...' : 'Save and Continue'}
           </Button>

@@ -2,7 +2,7 @@
 'use client';
 
 import { getTeam, updateTeam, deleteTeam } from '@/services/teams';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
@@ -90,7 +90,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
          <>
             <div className="w-full max-w-2xl">
                 <div className="mb-4">
-                    <Button variant="tertiary" asChild>
+                    <Button type="outlined" asChild>
                         <Link href={`/manage/team/${id}`}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Team
@@ -119,10 +119,10 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
                             </CardContent>
                         </Card>
                         <div className="flex justify-between">
-                             <Button type="button" variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                             <Button htmlType="button" type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                                 <Trash2 className="mr-2"/> Delete Team
                             </Button>
-                            <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
+                            <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                                 {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2"/>}
                                 Save Changes
                             </Button>

@@ -9,6 +9,7 @@ const config = {
     './hooks/**/*.{js,ts,jsx,tsx}',
     './context/**/*.{js,ts,jsx,tsx}',
     './server/**/*.{js,ts,jsx,tsx}',
+    './.neup/components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {

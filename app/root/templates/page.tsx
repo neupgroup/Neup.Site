@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTemplates, deleteTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import {
   Card,
   CardDescription,
@@ -75,12 +75,12 @@ export default function TemplatesPage() {
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Templates</h1>
         <div className="flex items-center gap-2">
-            <Button asChild variant="tertiary">
+            <Button asChild type="outlined">
               <Link href="/root/templates/guide">
                 <BookOpen className="mr-2 h-4 w-4" /> View Guide
               </Link>
             </Button>
-            <Button variant="primary" asChild>
+            <Button type="solid" asChild>
               <Link href="/root/templates/create">
                 <Plus className="mr-2 h-4 w-4" /> Create New Template
               </Link>

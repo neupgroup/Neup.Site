@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { Input } from '#/components/ui/input';
@@ -97,7 +97,7 @@ export default function AddMemberPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="tertiary" asChild>
+        <Button type="outlined" asChild>
           <Link href={appendSelectedProject('/manage/member', selectedProject)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
@@ -165,7 +165,7 @@ export default function AddMemberPage() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <Button asChild type="button" variant="tertiary" className="w-full sm:w-auto">
+                          <Button asChild htmlType="button" type="outlined" className="w-full sm:w-auto">
                             <Link href={appendSelectedProject('/manage/member/addTeam', selectedProject)} target="_blank" rel="noreferrer">
                               Add a new team as well
                             </Link>
@@ -174,7 +174,7 @@ export default function AddMemberPage() {
                       ) : (
                         <div className="space-y-3">
                           <p className="text-sm text-muted-foreground">Create a team first before adding a member.</p>
-                          <Button asChild type="button" variant="tertiary" className="w-full sm:w-auto">
+                          <Button asChild htmlType="button" type="outlined" className="w-full sm:w-auto">
                             <Link href={appendSelectedProject('/manage/member/addTeam', selectedProject)} target="_blank" rel="noreferrer">
                               Add a new team as well
                             </Link>
@@ -188,7 +188,7 @@ export default function AddMemberPage() {
               />
             </CardContent>
             <CardFooter>
-              <Button variant="primary" type="submit" disabled={form.formState.isSubmitting || loadingTeams || !teams.length}>
+              <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting || loadingTeams || !teams.length}>
                 {form.formState.isSubmitting ? <Loader2 className="mr-2 animate-spin" /> : <Save className="mr-2" />}
                 Add Member
               </Button>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs';
 import { Code, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 
 const CodeBlock = ({ children }: { children: React.ReactNode }) => (
   <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto">
@@ -16,7 +16,7 @@ const CodeBlock = ({ children }: { children: React.ReactNode }) => (
 export default function TemplatesGuidePage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-       <Button asChild variant="plain" className="pl-0">
+       <Button asChild type="plain" className="pl-0">
           <Link href="/root/templates">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Templates

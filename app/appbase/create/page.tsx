@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
@@ -56,7 +56,7 @@ export default function CreateAppBaseFilePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="plain" asChild>
+        <Button type="plain" asChild>
           <Link href="/site/appbase">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to App Base
@@ -99,7 +99,7 @@ export default function CreateAppBaseFilePage() {
               )} />
             </CardContent>
             <CardFooter>
-              <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
+              <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 Create File
               </Button>

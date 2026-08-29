@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import Link from 'next/link';
 import { Github, Trash2 } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
@@ -37,7 +37,7 @@ function LinkedAccountCard({ account, onDisconnect }: { account: LinkedAccount, 
                         </CardDescription>
                     </div>
                 </div>
-                 <Button variant="destructive" size="sm" onClick={() => setShowDeleteConfirm(true)}>
+                 <Button type="solid" convey="danger" size="sm" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4" /> Disconnect
                 </Button>
             </CardHeader>

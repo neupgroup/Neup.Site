@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '#/components/ui/alert-dialog';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { useToast } from '#/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
 import { deleteManagedProject } from '@/services/projects';
@@ -75,7 +75,7 @@ export function ProjectDeleteButton({
 
   return (
     <>
-      <Button type="button" variant="destructiveTertiary" size="sm" onClick={() => setShowConfirm(true)} disabled={isPending}>
+      <Button htmlType="button" type="outlined" convey="danger" size="sm" onClick={() => setShowConfirm(true)} disabled={isPending}>
         {isPending ? <Loader2 className="animate-spin" /> : <Trash2 />}
         Delete this project
       </Button>

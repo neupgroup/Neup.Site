@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '#/components/ui/dialog';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Plus } from 'lucide-react';
@@ -37,7 +37,7 @@ export function AddDomainDialog({ onAdd }: AddDomainDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button type="button" variant="tertiary">
+                <Button htmlType="button" type="outlined">
                     <Plus className="mr-2" /> Add Domain
                 </Button>
             </DialogTrigger>
@@ -69,10 +69,10 @@ export function AddDomainDialog({ onAdd }: AddDomainDialogProps) {
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="button" variant="tertiary" onClick={() => setOpen(false)}>
+                    <Button htmlType="button" type="outlined" onClick={() => setOpen(false)}>
                         Cancel
                     </Button>
-                    <Button variant="primary" type="button" onClick={handleAdd}>
+                    <Button type="solid" htmlType="button" onClick={handleAdd}>
                         Add Domain
                     </Button>
                 </DialogFooter>

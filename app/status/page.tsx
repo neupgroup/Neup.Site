@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSiteServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket, Globe } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
 import { runCommand } from '@/services/runner';
@@ -426,7 +426,7 @@ const DeploymentStatusChecker = ({ server, allocation, asset, isProduction }: { 
                         <p className="text-muted-foreground mb-4">
                             Configure your {isProduction ? 'production' : 'development'} domain to check your app's status.
                         </p>
-                        <Button variant="tertiary" onClick={() => window.location.href = '/settings/domain'}>
+                        <Button type="outlined" onClick={() => window.location.href = '/settings/domain'}>
                             Configure Domain
                         </Button>
                     </div>

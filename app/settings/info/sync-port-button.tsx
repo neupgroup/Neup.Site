@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
 import { detectAndAppPortFromPm2 } from '@/services/server/management/port-detection';
@@ -47,7 +47,7 @@ export function SyncPortButton({ assetId, serverId }: SyncPortButtonProps) {
 
     return (
         <Button
-            variant="tertiary"
+            type="outlined"
             size="sm"
             onClick={handleSync}
             disabled={loading}

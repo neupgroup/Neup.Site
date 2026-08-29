@@ -9,7 +9,7 @@ import { saveAsset } from '@/services/editor/asset';
 import type { Asset } from '@/services/asset/type';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Textarea } from '#/components/ui/textarea';
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                                 <CardTitle>Asset Information</CardTitle>
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
-                            <Button asChild variant="tertiary">
+                            <Button asChild type="outlined">
                                 <Link href={appendSelectedProject('/settings/profile/logo', selectedProject)}>
                                     <ImageIcon className="mr-2" /> Manage Logos
                                 </Link>
@@ -220,10 +220,10 @@ export default function ProfilePage() {
                                 <FormField control={form.control} name={`socialProfiles.${index}.url`} render={({ field }) => (
                                     <FormItem className="flex-1"><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="twitter.com/username" /></FormControl><FormMessage /></FormItem>
                                 )} />
-                                <Button type="button" variant="destructive" size="icon" onClick={() => removeSocial(index)}><Trash2 /></Button>
+                                <Button htmlType="button" type="solid" convey="danger" size="icon" onClick={() => removeSocial(index)}><Trash2 /></Button>
                             </div>
                         ))}
-                        {socialFields.length < 9 && <Button type="button" variant="tertiary" onClick={() => appendSocial({ platformName: '', url: '' })}><Plus className="mr-2" /> Add Social Profile</Button>}
+                        {socialFields.length < 9 && <Button htmlType="button" type="outlined" onClick={() => appendSocial({ platformName: '', url: '' })}><Plus className="mr-2" /> Add Social Profile</Button>}
                     </CardContent>
                 </Card>
 
@@ -240,10 +240,10 @@ export default function ProfilePage() {
                                     <FormField control={form.control} name={`contactEmail.${index}.value`} render={({ field }) => (
                                         <FormItem className="flex-1"><FormControl><Input type="email" {...field} placeholder="you@example.com" /></FormControl><FormMessage /></FormItem>
                                     )} />
-                                    <Button type="button" variant="destructive" size="icon" onClick={() => removeEmail(index)}><Trash2 /></Button>
+                                    <Button htmlType="button" type="solid" convey="danger" size="icon" onClick={() => removeEmail(index)}><Trash2 /></Button>
                                 </div>
                             ))}
-                            {emailFields.length < 9 && <Button type="button" variant="tertiary" size="sm" onClick={() => appendEmail({ value: '' })}><Plus className="mr-2" /> Add Email</Button>}
+                            {emailFields.length < 9 && <Button htmlType="button" type="outlined" size="sm" onClick={() => appendEmail({ value: '' })}><Plus className="mr-2" /> Add Email</Button>}
                         </div>
                         <div className="space-y-2">
                             <Label>Contact Phone Numbers</Label>
@@ -252,15 +252,15 @@ export default function ProfilePage() {
                                     <FormField control={form.control} name={`contactPhone.${index}.value`} render={({ field }) => (
                                         <FormItem className="flex-1"><FormControl><Input type="tel" {...field} placeholder="+1 (555) 123-4567" /></FormControl><FormMessage /></FormItem>
                                     )} />
-                                    <Button type="button" variant="destructive" size="icon" onClick={() => removePhone(index)}><Trash2 /></Button>
+                                    <Button htmlType="button" type="solid" convey="danger" size="icon" onClick={() => removePhone(index)}><Trash2 /></Button>
                                 </div>
                             ))}
-                            {phoneFields.length < 9 && <Button type="button" variant="tertiary" size="sm" onClick={() => appendPhone({ value: '' })}><Plus className="mr-2" /> Add Phone</Button>}
+                            {phoneFields.length < 9 && <Button htmlType="button" type="outlined" size="sm" onClick={() => appendPhone({ value: '' })}><Plus className="mr-2" /> Add Phone</Button>}
                         </div>
                     </CardContent>
                 </Card>
                 <CardFooter>
-                    <Button variant="primary" type="submit" disabled={form.formState.isSubmitting}>
+                    <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                         {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save All Changes
                     </Button>

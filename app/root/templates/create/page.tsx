@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { saveTemplate } from '@/services/editor/templates';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
 import { Input } from '#/components/ui/input';
 import { Textarea } from '#/components/ui/textarea';
@@ -118,7 +118,7 @@ export default function CreateTemplatePage() {
                     />
                 </CardContent>
                 <CardFooter>
-                  <Button variant="primary" type="submit" disabled={form.formState.isSubmitting} className="w-full">
+                  <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting} className="w-full">
                     {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     {form.formState.isSubmitting ? 'Saving...' : 'Save and Continue'}
                   </Button>

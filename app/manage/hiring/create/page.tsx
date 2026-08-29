@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import {
   Form,
   FormControl,
@@ -82,7 +82,7 @@ export default function CreateJobPostingPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button variant="tertiary" asChild>
+        <Button type="outlined" asChild>
           <Link href="/manage/hiring">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Hiring
@@ -175,7 +175,7 @@ export default function CreateJobPostingPage() {
               />
             </CardContent>
             <CardFooter>
-              <Button variant="primary" type="submit" disabled={isSaving}>
+              <Button type="solid" htmlType="submit" disabled={isSaving}>
                 {isSaving ? (
                   <Loader2 className="animate-spin mr-2" />
                 ) : (

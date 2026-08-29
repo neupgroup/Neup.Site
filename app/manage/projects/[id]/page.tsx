@@ -4,7 +4,7 @@ import { ArrowLeft, ShieldAlert } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Badge } from '#/components/ui/badge';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
@@ -78,7 +78,7 @@ export default async function ManageProjectDetailPage({
   return (
     <div className="w-full space-y-8">
       <div>
-        <Button variant="tertiary" asChild>
+        <Button type="outlined" asChild>
           <Link href={appendSelectedProject('/manage/projects', selectedProject)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Projects

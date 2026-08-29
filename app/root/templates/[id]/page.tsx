@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getTemplate, deleteTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
@@ -69,7 +69,7 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <Button asChild variant="plain">
+       <Button asChild type="plain">
           <Link href="/root/templates">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Templates
@@ -104,7 +104,7 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
           </div>
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-            <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+            <Button type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete
             </Button>
             <Button asChild>

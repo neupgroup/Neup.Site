@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import Link from 'next/link';
@@ -60,7 +60,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     return (
       <div className="w-full space-y-6">
         <div className="mb-4">
-            <Button asChild variant="tertiary">
+            <Button asChild type="outlined">
             <Link href="/root/servers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Servers
@@ -78,7 +78,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     return (
       <div className="w-full">
         <div className="mb-4">
-          <Button asChild variant="tertiary">
+          <Button asChild type="outlined">
             <Link href="/root/servers">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Servers
             </Link>
@@ -96,7 +96,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   return (
     <div className="w-full space-y-6">
       <div className="mb-4">
-        <Button asChild variant="tertiary">
+        <Button asChild type="outlined">
           <Link href="/root/servers">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Servers

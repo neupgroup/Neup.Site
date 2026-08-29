@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/components/ui/dialog';
 import { Input } from '#/components/ui/input';
@@ -156,7 +156,7 @@ function FileCard({
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Button
-            variant="plain"
+            type="plain"
             size="icon"
             onClick={(event) => {
               event.stopPropagation();
@@ -370,7 +370,7 @@ export default function CodebasePage() {
           <p className="text-muted-foreground">Browse folders, open files, and edit. Currently at {currentLocation}</p>
           <Breadcrumbs breadcrumbs={breadcrumbs} onOpen={navigateToPath} />
         </div>
-        <Button variant="primary" onClick={handleDeploy} disabled={isDeploying || !browserData?.totalFileCount}>
+        <Button type="solid" onClick={handleDeploy} disabled={isDeploying || !browserData?.totalFileCount}>
           {isDeploying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
           {isDeploying ? 'Deploying...' : 'Deploy Assets'}
         </Button>
@@ -396,7 +396,7 @@ export default function CodebasePage() {
                 <CardTitle className="break-all text-xl">{selectedFile.name}</CardTitle>
                 <CardDescription className="break-all">{selectedFile.path}</CardDescription>
               </div>
-              <Button variant="plain" size="icon" onClick={() => handleDelete(selectedFile.id)} aria-label={`Delete ${selectedFile.name}`}>
+              <Button type="plain" size="icon" onClick={() => handleDelete(selectedFile.id)} aria-label={`Delete ${selectedFile.name}`}>
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </CardHeader>
@@ -472,7 +472,7 @@ export default function CodebasePage() {
           </div>
           <DialogFooter>
             <Button
-              variant="tertiary"
+              type="outlined"
               onClick={() => {
                 setIsCreateFolderDialogOpen(false);
                 setNewFolderName('');
@@ -481,7 +481,7 @@ export default function CodebasePage() {
             >
               Cancel
             </Button>
-            <Button variant="secondary" onClick={handleCreateFolder} disabled={isCreatingFolder}>
+            <Button type="tinted" onClick={handleCreateFolder} disabled={isCreatingFolder}>
               {isCreatingFolder ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderPlus className="h-4 w-4" />}
               Create Folder
             </Button>

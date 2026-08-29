@@ -12,7 +12,7 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/buttons';
+import { Button } from '#/components/ui/button';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Input } from '#/components/ui/input';
@@ -62,7 +62,7 @@ function ProjectRow({
                     </div>
                 ) : (
                     <div className="flex items-center gap-3">
-                        <Button variant="secondary" onClick={() => onSelect?.(asset.id)} size="sm" disabled={isLoading}>
+                        <Button type="tinted" onClick={() => onSelect?.(asset.id)} size="sm" disabled={isLoading}>
                             {isLoading ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
@@ -127,8 +127,21 @@ function AssetList() {
     const handleSelectAsset = async (assetId: string) => {
         setIsSwitching(assetId);
         setActiveAssetId(assetId);
+
+        toast({
+            name: 'project-switch',
+            state: 'info',
+            convey: 'info',
+            title: 'Switching project',
+            description: 'Loading the selected project...',
+            dismissesOn: 2,
+        });
+
         clearSession();
-        window.location.assign(getProjectDestination(assetId));
+
+        window.setTimeout(() => {
+            window.location.assign(getProjectDestination(assetId));
+        }, 150);
     };
 
     const handleCreateAsset = async () => {
@@ -194,7 +207,7 @@ function AssetList() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button variant="primary" onClick={handleCreateAsset} disabled={isCreating}>
+                    <Button type="solid" onClick={handleCreateAsset} disabled={isCreating}>
                         {isCreating ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
