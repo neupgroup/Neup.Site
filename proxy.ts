@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { logica } from '@/logica'
-import baseJson from '@/logica/base.json'
-import { decodeNeupIdToken } from '@/logica/account/token/verify'
+import { logica } from '#/logica'
+import baseJson from '#/logica/base.json'
+import { decodeNeupIdToken } from '#/logica/account/token/verify'
 
 const AUTH_ME_PATH = '/bridge/api.v1/auth/me'
 const SELECTED_PROJECT_QUERY_PARAM = 'selectedProject'

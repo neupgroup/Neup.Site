@@ -6,7 +6,7 @@ import { getAccountId } from './accounts';
 import { normalizeUrl } from '#/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
-import { ensureRecord } from '@/logica/account/self';
+import { ensureRecord } from '#/logica/account/self';
 
 export interface AssetSummary {
   id: string;

@@ -3,7 +3,7 @@
 
 import { prisma as db } from '#/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 
 export interface JobPosting {
   id: string;

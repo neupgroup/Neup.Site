@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ensureRecord } from '@/logica/account/self';
+import { ensureRecord } from '#/logica/account/self';
 
 /**
  * Ensures the authenticated account is synchronized into the local accounts table.

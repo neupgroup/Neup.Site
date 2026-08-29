@@ -1,5 +1,5 @@
 
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import type { CanvasElementData } from '@/services/canvas/type';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {

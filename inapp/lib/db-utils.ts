@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/prisma/client';
 
 export function toDate(value?: string | Date | null): Date | null | undefined {
   if (value === undefined) {

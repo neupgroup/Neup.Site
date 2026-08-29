@@ -1,5 +1,5 @@
 import { prisma as db } from '#/core/database/prisma';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 
 const CODEBASE_FOLDER_MARKER = '.neup-folder';

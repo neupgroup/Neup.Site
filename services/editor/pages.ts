@@ -1,7 +1,7 @@
 
 'use server';
 
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import { convertJsonToJsx } from '@/inapp/helpers/json-to-jsx';
 import { getActiveProjectId } from '@/services/projects';
 import { Page } from '@/services/asset/type';

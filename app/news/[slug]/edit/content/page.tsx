@@ -21,7 +21,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { RichTextEditor } from '#/components/ui/rich-text-editor';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { usePageTitle } from '#/core/hooks/use-page-title';
 
 const formSchema = z.object({

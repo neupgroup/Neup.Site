@@ -5,7 +5,7 @@
 import { prisma as db } from '#/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/services/server/command/type';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import { getConfigureNginxCommand } from './server/management/configure-nginx';
 import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
 

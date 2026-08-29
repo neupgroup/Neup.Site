@@ -10,7 +10,7 @@ import { Terminal, AlertCircle, ChevronLeft, ChevronRight, Loader2, RefreshCw } 
 import { getServerLogs } from '@/services/server-logs';
 import type { ServerLog } from '@/services/server/type';
 import { formatDistanceToNow } from 'date-fns';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import { cn } from '#/core/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '#/components/ui/accordion';
 

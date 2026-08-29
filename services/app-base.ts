@@ -6,7 +6,7 @@ import { getPrivateServerDetails } from '@/services/servers';
 import { getAsset } from '@/services/editor/asset';
 import { getAccountId } from './accounts';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '@/logica/logger';
+import { logger } from '#/logica/logger';
 import { prisma as db } from '#/core/database/prisma';
 import type { AppBaseBackup, AppBaseFile } from '@/services/app-base/type';
 import { getActiveProjectId } from '@/services/projects';
