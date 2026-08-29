@@ -66,7 +66,7 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 import { Skeleton } from '#/components/ui/skeleton';
 import type { Asset, AssetTheme } from '@/services/asset/type';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '#/components/ui/collapsible';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { ChevronRight } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
 import { useState, useEffect } from 'react';

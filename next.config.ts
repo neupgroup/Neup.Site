@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
   },
   basePath: getConfiguredBasePath(),
   turbopack: {
+    root: process.cwd(),
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   serverExternalPackages: ['ssh2', 'node-ssh', '@prisma/client', '.prisma/client'],

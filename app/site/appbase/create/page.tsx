@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';

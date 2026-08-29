@@ -1,7 +1,7 @@
 
 import { getTeam } from '@/services/teams';
 import { getMembers } from '@/services/members';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import Link from 'next/link';

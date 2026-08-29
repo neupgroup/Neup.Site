@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';
 import { getErrorLogById, type ErrorLog } from '@/services/errors';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import Link from 'next/link';
 import { Separator } from '#/components/ui/separator';
 import { usePageTitle } from '#/core/hooks/use-page-title';

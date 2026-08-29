@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSiteServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket, Globe } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
 import { runCommand } from '@/services/runner';

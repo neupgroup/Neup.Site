@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getDatalist, deleteDatalist } from '@/services/datalists';
 import { Datalist } from '@/services/datalist/type';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';

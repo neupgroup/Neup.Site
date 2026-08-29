@@ -12,7 +12,7 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Input } from '#/components/ui/input';

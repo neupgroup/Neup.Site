@@ -2,7 +2,7 @@
 'use client';
 
 import { getTeam, updateTeam, deleteTeam } from '@/services/teams';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';

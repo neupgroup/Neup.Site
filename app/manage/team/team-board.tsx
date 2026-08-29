@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { GripVertical, Pencil } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardHeader } from '#/components/ui/card';
 import { cn } from '#/core/utils';
 import { useToast } from '#/core/hooks/useToast';

@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { useState } from 'react';
 
 // This is a placeholder for a real check against your site's status in Firestore

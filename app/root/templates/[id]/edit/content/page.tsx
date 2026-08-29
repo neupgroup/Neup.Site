@@ -4,7 +4,7 @@
 import { useState, useEffect, use } from 'react';
 import { getTemplate, saveTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Textarea } from '#/components/ui/textarea';
 import { Skeleton } from '#/components/ui/skeleton';

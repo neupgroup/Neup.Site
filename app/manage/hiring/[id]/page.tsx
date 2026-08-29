@@ -3,7 +3,7 @@
 
 import { getJobPostingById, updateJobPosting, type JobPosting } from '@/services/hiring';
 import { getApplicantsForJob, type Applicant } from '@/services/applicants';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, ArrowLeft, Pencil, Users, Save, X, Loader2, Plus, Trash2, Send, DollarSign, UserPlus } from 'lucide-react';

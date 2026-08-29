@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { saveTemplate } from '@/services/editor/templates';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
 import { Input } from '#/components/ui/input';
 import { Textarea } from '#/components/ui/textarea';

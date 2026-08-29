@@ -12,7 +12,7 @@ import { createRedirect } from '@/services/redirects';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Input } from '#/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';

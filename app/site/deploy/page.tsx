@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
 import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/services/structure';
 import type { Structure, Deployment } from '@/services/asset/type';

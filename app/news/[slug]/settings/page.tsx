@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { Save, ArrowLeft, Loader2, AlertCircle, Trash2 } from 'lucide-react';

@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from '#/components/ui/form';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Input } from '#/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
 import { Switch } from '#/components/ui/switch';

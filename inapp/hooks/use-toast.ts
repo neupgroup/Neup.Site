@@ -6,7 +6,7 @@ import * as React from "react"
 import type {
   ToastActionElement,
   ToastProps,
-} from "#/components/ui/toast"
+} from "#/core/hooks/useToast"
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -156,6 +156,7 @@ function toast({ ...props }: Toast) {
     type: "ADD_TOAST",
     toast: {
       ...props,
+      name: (props.name as string | undefined) ?? "default",
       id,
       open: true,
       onOpenChange: (open) => {

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/components/ui/dialog';
 import { Input } from '#/components/ui/input';

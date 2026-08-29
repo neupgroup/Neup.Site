@@ -4,7 +4,7 @@ import { ArrowLeft, ChevronRight, Globe } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Badge } from '#/components/ui/badge';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getPlatformAccount } from '@/services/accounts';
 

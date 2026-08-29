@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import Link from 'next/link';
 import { Github, Trash2 } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';

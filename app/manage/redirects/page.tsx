@@ -8,7 +8,7 @@ import { useToast } from '#/core/hooks/useToast';
 import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redirects';
 import type { Redirect } from '@/services/redirect/type';
 
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';

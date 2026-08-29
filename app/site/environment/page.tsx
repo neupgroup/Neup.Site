@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '#/components/ui/alert-dialog';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { useToast } from '#/core/hooks/useToast';

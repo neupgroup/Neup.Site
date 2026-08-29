@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import Link from 'next/link';

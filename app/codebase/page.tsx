@@ -6,7 +6,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Progress } from '#/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/components/ui/table';
 import { Skeleton } from '#/components/ui/skeleton';

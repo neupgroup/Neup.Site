@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/components/ui/table';
 import { Skeleton } from '#/components/ui/skeleton';

@@ -4,7 +4,7 @@ import { ArrowLeft, ShieldAlert } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Badge } from '#/components/ui/badge';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs';
 import { Code, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 
 const CodeBlock = ({ children }: { children: React.ReactNode }) => (
   <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto">

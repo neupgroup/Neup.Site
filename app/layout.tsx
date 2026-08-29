@@ -1,10 +1,10 @@
 
 import type { Metadata } from 'next';
-import { Toaster } from "#/components/ui/toaster"
+import { Toaster } from "#/components/ui/toast"
 import './globals.css';
 import { SidebarProvider } from '#/components/ui/sidebar';
 import { Suspense } from 'react';
-import { ProgressBar } from '#/components/ui/progress-bar';
+import { ProgressBar } from '#/components/element/progressbar';
 import { getAsset } from '@/services/editor/asset';
 import { initializeUserAccount } from '@/services/auth/initialize';
 import { cn } from '#/core/utils';

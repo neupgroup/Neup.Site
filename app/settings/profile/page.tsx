@@ -9,7 +9,7 @@ import { saveAsset } from '@/services/editor/asset';
 import type { Asset } from '@/services/asset/type';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Textarea } from '#/components/ui/textarea';

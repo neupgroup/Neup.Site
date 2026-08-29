@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';

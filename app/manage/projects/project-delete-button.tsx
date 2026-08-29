@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '#/components/ui/alert-dialog';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { useToast } from '#/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
 import { deleteManagedProject } from '@/services/projects';

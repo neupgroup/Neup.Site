@@ -4,7 +4,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { getApplicantsForJob, type Applicant } from '@/services/applicants';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import {
   Card,
   CardContent,

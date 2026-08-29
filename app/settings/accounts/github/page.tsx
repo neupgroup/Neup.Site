@@ -4,7 +4,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Github } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '#/core/hooks/useToast';

@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import Link from 'next/link';

@@ -8,7 +8,7 @@ import { runCommand } from '@/services/runner';
 import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Textarea } from '#/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';

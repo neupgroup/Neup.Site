@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '#/components/ui/radio-group';
 import { Label } from '#/components/ui/label';
-import { Button } from '#/components/ui/button';
+import { Button } from '#/components/ui/buttons';
 import { Input } from '#/components/ui/input';
 import { Sun, Moon, Loader2, Save, Plus, Trash2, Contrast } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
