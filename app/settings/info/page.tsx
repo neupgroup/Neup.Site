@@ -1,9 +1,9 @@
 
 import { getSiteServers } from '@/services/servers';
 import { getAsset } from '@/services/editor/asset';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '#/components/ui/card';
+import { Badge } from '#/components/ui/badge';
+import { Separator } from '#/components/ui/separator';
 import { CheckCircle2, XCircle, Server, Globe, Shield, Zap, Folder, HardDrive } from 'lucide-react';
 
 import { SyncPortButton } from './sync-port-button';

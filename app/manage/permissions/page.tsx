@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Shield } from 'lucide-react';
 
 export default function PermissionsPage() {

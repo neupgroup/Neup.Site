@@ -3,16 +3,16 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
 import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/services/structure';
 import type { Structure, Deployment } from '@/services/asset/type';
 import { getSiteServers } from '@/services/servers';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { useToast } from '#/core/hooks/useToast';
+import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 const StatusCard = ({ title, description, status, icon: Icon, onDeploy }: { title: string; description: string; status: 'loading' | 'pending' | 'deployed'; icon: React.ElementType, onDeploy: () => void }) => {
     return (

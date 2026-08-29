@@ -2,7 +2,7 @@
 'use server';
 
 import { Template } from '@/services/template/type';
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { logger } from '@/logica/logger';
 
 export async function saveTemplate(template: Omit<Template, 'id' | 'createdAt'>, id?: string): Promise<{ success: boolean; id?: string; error?: string }> {

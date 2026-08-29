@@ -2,15 +2,15 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '#/components/ui/skeleton';
 import { getErrorLogById, type ErrorLog } from '@/services/errors';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { Separator } from '#/components/ui/separator';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 export default function ErrorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

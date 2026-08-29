@@ -1,7 +1,7 @@
 
 'use server';
 
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import type { Allocation } from '@/services/server/allocation/type';
 import { logger } from '@/logica/logger';

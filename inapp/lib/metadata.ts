@@ -1,1 +1,1 @@
-export { generatePageMetadata } from '@/core/helpers/metadata';
+export { generatePageMetadata } from '#/core/helpers/metadata';

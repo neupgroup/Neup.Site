@@ -1,12 +1,12 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
+import { Label } from '#/components/ui/label';
+import { Switch } from '#/components/ui/switch';
 import { useState } from 'react';
-import { Separator } from '@/components/ui/separator';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { Separator } from '#/components/ui/separator';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 const allPossibleModules = [
     { id: 'user', name: 'User Module', description: 'Manages user authentication and profiles.' },

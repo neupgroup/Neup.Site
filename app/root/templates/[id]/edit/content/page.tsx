@@ -4,14 +4,14 @@
 import { useState, useEffect, use } from 'react';
 import { getTemplate, saveTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useToast } from '@/core/hooks/use-toast';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
+import { Textarea } from '#/components/ui/textarea';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { useToast } from '#/core/hooks/useToast';
 import { Save, Loader2, AlertCircle, Code, Braces } from 'lucide-react';
-import { Label } from '@/components/ui/label';
+import { Label } from '#/components/ui/label';
 
 export default function EditContentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

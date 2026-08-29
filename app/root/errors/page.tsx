@@ -3,14 +3,14 @@
 
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, Terminal, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '#/components/ui/skeleton';
 import { getErrorLogsAction, type ErrorLog } from '@/services/errors';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 const ErrorsPage = () => {
   usePageTitle('Errors', 'NeupSites');

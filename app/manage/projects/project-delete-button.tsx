@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Loader2, Trash2 } from 'lucide-react';
 
-import { makeAppPath } from '@/core/appconfig';
+import { makeAppPath } from '#/core/appconfig';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,9 +13,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/core/hooks/use-toast';
+} from '#/components/ui/alert-dialog';
+import { Button } from '#/components/ui/button';
+import { useToast } from '#/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
 import { deleteManagedProject } from '@/services/projects';
 

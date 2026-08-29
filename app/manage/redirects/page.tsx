@@ -4,18 +4,18 @@
 import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '#/core/hooks/useToast';
 import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redirects';
 import type { Redirect } from '@/services/redirect/type';
 
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '#/components/ui/button';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '#/components/ui/badge';
 import { format } from 'date-fns';
-import { CardFooter } from '@/components/ui/card';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { CardFooter } from '#/components/ui/card';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 export default function RedirectsPage() {
   const { toast } = useToast();

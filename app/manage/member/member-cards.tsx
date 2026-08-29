@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { GripVertical, Pencil, Users } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Button } from '#/components/ui/button';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
-import { cn } from '@/core/utils';
-import { useToast } from '@/core/hooks/use-toast';
+import { cn } from '#/core/utils';
+import { useToast } from '#/core/hooks/useToast';
 import type { Member } from '@/services/member/type';
 import type { Team } from '@/services/team/type';
 import { saveTeamBoardOrder } from '@/services/teams';

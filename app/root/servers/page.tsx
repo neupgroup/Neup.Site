@@ -5,14 +5,14 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '#/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, Plus, Server as ServerIcon, ArrowRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '#/components/ui/badge';
 import { format } from 'date-fns';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 export default function ServersPage() {
   usePageTitle('Servers', 'NeupSites');

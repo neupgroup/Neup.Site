@@ -9,15 +9,15 @@ import { z } from 'zod';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset } from '@/services/asset/type';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { useToast } from '@/core/hooks/use-toast';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Checkbox } from '#/components/ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '#/components/ui/form';
+import { useToast } from '#/core/hooks/useToast';
 import { Save, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useProfile } from '@/inapp/context/ProfileContext';
-import { Skeleton } from '@/components/ui/skeleton';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { Skeleton } from '#/components/ui/skeleton';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 const ProxySchema = z.object({
     path: z.string().min(1, 'Path is required').refine(p => p.startsWith('/'), 'Path must start with /'),

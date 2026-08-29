@@ -13,7 +13,7 @@ import {
   CardTitle,
   CardDescription,
   CardFooter
-} from '@/components/ui/card';
+} from '#/components/ui/card';
 import {
   Form,
   FormControl,
@@ -21,16 +21,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { useToast } from '@/core/hooks/use-toast';
+} from '#/components/ui/form';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
+import { Switch } from '#/components/ui/switch';
+import { useToast } from '#/core/hooks/useToast';
 import { createEnvironmentVariable } from '@/services/environment';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Variable name is required'),

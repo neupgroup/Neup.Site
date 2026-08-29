@@ -18,7 +18,7 @@ URLs that proxy an underlying SVG source.
 ::end
 */
 
-import { normalizeUrl } from '@/core/helpers/link/url';
+import { normalizeUrl } from '#/core/helpers/link/url';
 
 type GeneratedThemeSurface = {
   primary?: string;

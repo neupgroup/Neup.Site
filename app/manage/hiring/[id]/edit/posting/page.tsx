@@ -10,13 +10,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+} from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Label } from '#/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '#/components/ui/radio-group';
 import { ArrowLeft, Send } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { Input } from '#/components/ui/input';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 export default function JobPostingOptionsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getAllocations } from '@/services/allocations';
 import { Allocation } from '@/services/server/allocation/type';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,12 +13,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+} from '#/components/ui/table';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, Plus, Share2, ArrowRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/core/utils';
+import { Badge } from '#/components/ui/badge';
+import { cn } from '#/core/utils';
 
 export default function AllocationsPage() {
   const [allocations, setAllocations] = useState<Allocation[]>([]);

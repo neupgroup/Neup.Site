@@ -3,11 +3,11 @@
 
 import { getActiveProjectId } from '@/services/projects';
 import { Asset, AssetTheme, AssetIcons } from '@/services/asset/type';
-import { generateThemeFromColor } from '@/core/helpers/color';
+import { generateThemeFromColor } from '#/core/helpers/color';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { syncAssetProfileSubjects } from '@/services/profiles';
 
 /*

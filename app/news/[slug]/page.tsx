@@ -7,13 +7,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+} from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { generatePageMetadata } from '#/core/helpers/metadata';
 
 export async function generateMetadata({ params }: { params: { slug: string }}) {
     const { article } = await getNewsArticleById(params.slug);

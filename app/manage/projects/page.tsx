@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { ChevronRight, FolderKanban } from 'lucide-react';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Badge } from '#/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { generatePageMetadata } from '#/core/helpers/metadata';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import { getManagedProjectsOverview } from '@/services/projects';
 

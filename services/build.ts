@@ -1,4 +1,4 @@
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { logger } from '@/logica/logger';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 

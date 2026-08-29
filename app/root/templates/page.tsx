@@ -5,18 +5,18 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTemplates, deleteTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+} from '#/components/ui/card';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, Plus, LayoutTemplate, ArrowRight, BookOpen } from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { useToast } from '#/core/hooks/useToast';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 export default function TemplatesPage() {
   usePageTitle('Templates', 'NeupSites');

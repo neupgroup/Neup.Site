@@ -1,7 +1,7 @@
 
 'use server';
 
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 
 export interface ErrorLog {
     id: string;

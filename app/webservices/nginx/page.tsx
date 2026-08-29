@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import {
     Plus,
     RotateCw,
@@ -12,8 +12,8 @@ import {
     Shield,
     Loader2
 } from 'lucide-react';
-import { usePageTitle } from '@/core/hooks/use-page-title';
-import { Badge } from '@/components/ui/badge';
+import { usePageTitle } from '#/core/hooks/use-page-title';
+import { Badge } from '#/components/ui/badge';
 
 export default function NginxPage() {
     usePageTitle('Nginx', 'NeupSites');

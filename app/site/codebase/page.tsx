@@ -14,14 +14,14 @@ import {
   UploadCloud,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { usePageTitle } from '@/core/hooks/use-page-title';
-import { useToast } from '@/core/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/components/ui/dialog';
+import { Input } from '#/components/ui/input';
+import { Skeleton } from '#/components/ui/skeleton';
+import { usePageTitle } from '#/core/hooks/use-page-title';
+import { useToast } from '#/core/hooks/useToast';
 import { createCodeFolder, deleteCodeFile, getCodebaseBrowser } from '@/services/codebase';
 import { deployCodebaseFromStorage } from '@/services/deploy';
 import type { CodebaseBrowserData, CodebaseBreadcrumb, CodebaseDirectoryEntry, CodebaseFileEntry } from '@/services/codebase/type';

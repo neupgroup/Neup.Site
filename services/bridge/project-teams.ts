@@ -1,4 +1,4 @@
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 
 /*
 ::neup.documentation::bridge-project-team-service

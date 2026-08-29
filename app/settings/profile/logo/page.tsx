@@ -1,16 +1,16 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { FileUploader } from '@/components/ui/file-uploader';
+import { FileUploader } from '#/components/ui/file-uploader';
 import { useProfile } from '@/inapp/context/ProfileContext';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset, AssetIcons } from '@/services/asset/type';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '#/core/hooks/useToast';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export default function LogoUploadPage() {

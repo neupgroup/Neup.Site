@@ -1,14 +1,14 @@
 
 import Link from 'next/link';
 import { getNewsArticles, type NewsArticle } from '@/services/news';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '#/components/ui/card';
 import {
   Table,
   TableBody,
@@ -16,10 +16,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+} from '#/components/ui/table';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, Plus, Newspaper } from 'lucide-react';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { generatePageMetadata } from '#/core/helpers/metadata';
 
 export async function generateMetadata() {
     return generatePageMetadata({

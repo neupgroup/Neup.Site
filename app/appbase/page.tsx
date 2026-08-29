@@ -29,7 +29,7 @@ import {
 } from '#/components/ui/table';
 import { Badge } from '#/components/ui/badge';
 import type { AppBaseFile } from '@/services/app-base/type';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 
 export default function AppBasePage() {

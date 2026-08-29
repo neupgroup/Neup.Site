@@ -2,7 +2,7 @@
 'use server';
 
 import { getActiveProjectId } from '@/services/projects';
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { logger } from '@/logica/logger';
 
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';

@@ -3,11 +3,11 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import { Github } from 'lucide-react';
 import Link from 'next/link';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '#/core/hooks/useToast';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export default function LinkGitHubPage() {

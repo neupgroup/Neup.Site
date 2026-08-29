@@ -2,7 +2,7 @@
 
 'use server';
 
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { logger } from '@/logica/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';

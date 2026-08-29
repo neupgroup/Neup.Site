@@ -1,9 +1,9 @@
 'use server';
 
 import crypto from 'crypto';
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { getAccountId } from './accounts';
-import { normalizeUrl } from '@/core/helpers/link/url';
+import { normalizeUrl } from '#/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 import { ensureRecord } from '@/logica/account/self';

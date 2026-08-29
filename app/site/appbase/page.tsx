@@ -4,19 +4,19 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Label } from '#/components/ui/label';
+import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
+import { Skeleton } from '#/components/ui/skeleton';
 import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus, Upload } from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
-import { cn } from '@/core/utils';
+import { useToast } from '#/core/hooks/useToast';
+import { cn } from '#/core/utils';
 import { getSiteServers } from '@/services/servers';
 import { getAppBaseFiles, getAppBaseFileContent, saveAppBaseFileContent, backupAppBaseFile, createAppBaseFile } from '@/services/app-base';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '#/components/ui/dialog';
+import { Textarea } from '#/components/ui/textarea';
 import Link from 'next/link';
 import {
   Table,
@@ -25,10 +25,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+} from '#/components/ui/table';
+import { Badge } from '#/components/ui/badge';
 import type { AppBaseFile } from '@/services/app-base/type';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 
 export default function AppBasePage() {

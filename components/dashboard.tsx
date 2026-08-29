@@ -61,18 +61,18 @@ import {
   Globe,
 } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { cn } from '@/core/utils';
+import { cn } from '#/core/utils';
 import { useProfile } from '@/inapp/context/ProfileContext';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '#/components/ui/skeleton';
 import type { Asset, AssetTheme } from '@/services/asset/type';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '#/components/ui/collapsible';
+import { Button } from '#/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '#/core/hooks/useToast';
 import { useState, useEffect } from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from '#/components/ui/scroll-area';
 import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/accounts';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 

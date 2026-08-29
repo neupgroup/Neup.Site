@@ -11,18 +11,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useToast } from '@/core/hooks/use-toast';
+} from '#/components/ui/alert-dialog';
+import { Button } from '#/components/ui/button';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { useToast } from '#/core/hooks/useToast';
 import { getEnvironmentVariables, deleteEnvironmentVariable } from '@/services/environment';
 import { EnvironmentVariable } from '@/services/environment/type';
 import { FileLock, Plus, Trash2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { CardFooter } from '@/components/ui/card';
+import { CardFooter } from '#/components/ui/card';
 
 export default function EnvironmentPage() {
   usePageTitle('Environments');

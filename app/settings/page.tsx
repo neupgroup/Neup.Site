@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ChevronRight, Users, Network, User, KeyRound, Terminal, RefreshCw } from 'lucide-react';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export default function SettingsPage() {

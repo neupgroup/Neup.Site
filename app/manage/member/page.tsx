@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { generatePageMetadata } from '#/core/helpers/metadata';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';

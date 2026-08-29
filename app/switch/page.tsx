@@ -4,20 +4,20 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { makeAppPath } from '@/core/appconfig';
+import { makeAppPath } from '#/core/appconfig';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '#/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Input } from '#/components/ui/input';
 import { AlertCircle, Loader2, ArrowRight, CheckCircle, Plus, ChevronRight, Package } from 'lucide-react';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 function ProjectRow({
     asset,

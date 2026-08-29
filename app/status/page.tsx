@@ -4,13 +4,13 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSiteServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket, Globe } from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '#/core/hooks/useToast';
 import { runCommand } from '@/services/runner';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
+import { Skeleton } from '#/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/services/server/type';
 import type { Asset, Structure } from '@/services/asset/type';
@@ -18,7 +18,7 @@ import { getPm2Processes } from '@/services/server/management/get-pm2-processes'
 import { checkPathExists, rebuildApplication } from '@/services/server/management/check-build';
 import { useProfile, type CoreAssetProfile } from '@/inapp/context/ProfileContext';
 import { getStructure, createDeployment } from '@/services/structure';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 interface DeploymentStep {
     name: string;

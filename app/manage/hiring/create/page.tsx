@@ -14,8 +14,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+} from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import {
   Form,
   FormControl,
@@ -23,20 +23,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '#/components/ui/form';
+import { Input } from '#/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/core/hooks/use-toast';
+} from '#/components/ui/select';
+import { Textarea } from '#/components/ui/textarea';
+import { useToast } from '#/core/hooks/useToast';
 import { createJobPosting } from '@/services/hiring';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Job title is required'),

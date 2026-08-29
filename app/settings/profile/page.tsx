@@ -8,21 +8,21 @@ import { z } from 'zod';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset } from '@/services/asset/type';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useToast } from '@/core/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Label } from '#/components/ui/label';
+import { Textarea } from '#/components/ui/textarea';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+import { useToast } from '#/core/hooks/useToast';
 import { Save, Loader2, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
 import { useProfile } from '@/inapp/context/ProfileContext';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/core/utils';
+import { Skeleton } from '#/components/ui/skeleton';
+import { cn } from '#/core/utils';
 import { useSearchParams } from 'next/navigation';
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '#/components/ui/switch';
 import Link from 'next/link';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export const SocialProfileSchema = z.object({

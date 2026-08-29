@@ -4,11 +4,11 @@ import { useCallback, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 import { ArrowLeft, AlertCircle, FileText, Loader2, UploadCloud } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useToast } from '@/core/hooks/use-toast';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { useToast } from '#/core/hooks/useToast';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 

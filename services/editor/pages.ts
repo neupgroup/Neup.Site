@@ -5,7 +5,7 @@ import { logger } from '@/logica/logger';
 import { convertJsonToJsx } from '@/inapp/helpers/json-to-jsx';
 import { getActiveProjectId } from '@/services/projects';
 import { Page } from '@/services/asset/type';
-import { prisma as db } from '@/core/database/prisma';
+import { prisma as db } from '#/core/database/prisma';
 import { getPathsForPage } from '@/services/paths';
 import { markStructureAsPending } from '@/services/structure';
 import { CanvasElementDataSchema, type CanvasElementData } from '@/services/canvas/type';

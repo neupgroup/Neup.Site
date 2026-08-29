@@ -15,10 +15,10 @@ user's basic account identity without redirecting into asset profile editing.
 import { useEffect, useState } from 'react';
 import { AlertCircle, ChevronRight, KeyRound, Pencil, User } from 'lucide-react';
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
-import { usePageTitle } from '@/core/hooks/use-page-title';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Skeleton } from '#/components/ui/skeleton';
+import { usePageTitle } from '#/core/hooks/use-page-title';
 import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/accounts';
 
 function getInitials(displayName: string | null, neupid: string | null) {

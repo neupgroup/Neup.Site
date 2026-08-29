@@ -2,10 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ChevronRight, Globe } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Badge } from '#/components/ui/badge';
+import { Button } from '#/components/ui/button';
+import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getPlatformAccount } from '@/services/accounts';
 
 /*

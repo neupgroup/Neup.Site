@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import { RefreshCw } from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '#/core/hooks/useToast';
 import { detectAndAppPortFromPm2 } from '@/services/server/management/port-detection';
 import { useRouter } from 'next/navigation';
 

@@ -1,9 +1,9 @@
 import { Shield, Users } from 'lucide-react';
 import Link from 'next/link';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { generatePageMetadata } from '@/core/helpers/metadata';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getPlatformAccounts } from '@/services/accounts';
 
 /*
