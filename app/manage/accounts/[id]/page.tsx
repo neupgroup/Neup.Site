@@ -14,7 +14,7 @@ import { getPlatformAccount } from '@/services/accounts';
 
 ::public
 
-Account detail page for `/manage/accounts/[id]`.
+Account detail page for `/accounts/[id]`.
 
 It returns a 404 when the account does not exist and summarizes the account's
 record, access footprint, and connected resources.
@@ -79,7 +79,7 @@ export default async function ManageAccountDetailPage({ params }: { params: Prom
   return (
     <div className="w-full space-y-8">
       <div>
-        <LinkButton variant="outlined" href="/manage/accounts">
+        <LinkButton variant="outlined" href="/accounts">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Accounts
           </LinkButton>

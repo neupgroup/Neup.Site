@@ -268,7 +268,7 @@ export default function CodebasePage() {
       }
 
       const query = params.toString();
-      router.push(query ? `/site/codebase?${query}` : '/site/codebase');
+      router.push(query ? `/codebase?${query}` : '/codebase');
     },
     [router, searchParams],
   );
@@ -355,7 +355,7 @@ export default function CodebasePage() {
     await fetchCodebase();
   };
 
-  const uploadHref = currentPath ? `/site/codebase/upload?path=${encodeURIComponent(currentPath)}` : '/site/codebase/upload';
+  const uploadHref = currentPath ? `/codebase/upload?path=${encodeURIComponent(currentPath)}` : '/codebase/upload';
   const selectedFile = browserData?.selectedFile;
   const directories = browserData?.directories ?? [];
   const files = browserData?.files ?? [];

@@ -162,7 +162,7 @@ export default function ProfilePage() {
                                 <CardTitle>Asset Information</CardTitle>
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
-                            <LinkButton variant="outlined" href={appendSelectedProject('/settings/profile/logo', selectedProject)}>
+                            <LinkButton variant="outlined" href={appendSelectedProject('/settings/identity/logo', selectedProject)}>
                                     <ImageIcon className="mr-2" /> Manage Logos
                                 </LinkButton>
                         </div>

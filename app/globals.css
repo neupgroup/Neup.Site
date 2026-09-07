@@ -44,6 +44,34 @@
     --radius-low: 0.25rem;
     --radius-medium: 0.5rem;
     --radius-high: 1rem;
+    --font-body: 'Outfit', sans-serif;
+    --font-headline: 'Outfit', sans-serif;
+  }
+
+  .typography-modern {
+    --font-body: 'Outfit', sans-serif;
+    --font-headline: 'Outfit', sans-serif;
+  }
+  .typography-classic {
+    --font-body: Georgia, serif;
+    --font-headline: Georgia, serif;
+  }
+  .typography-technical {
+    --font-body: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-headline: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .elevation-flat {
+    --shadow-elevation: none;
+  }
+  .elevation-subtle {
+    --shadow-elevation: 0 1px 3px hsl(0 0% 0% / 0.1);
+  }
+  .elevation-raised {
+    --shadow-elevation: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+  }
+  .elevation-floating {
+    --shadow-elevation: 0 10px 25px -5px hsl(0 0% 0% / 0.15), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
   }
 
   .radius-none {

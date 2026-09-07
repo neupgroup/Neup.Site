@@ -21,6 +21,9 @@ export default function ThemePage() {
   const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'black'>('light');
   const [colors, setColors] = useState<string[]>(['#64C5CF']);
   const [radius, setRadius] = useState<'none' | 'low' | 'medium' | 'high'>('medium');
+  const [spacing, setSpacing] = useState<'compact' | 'comfortable' | 'spacious'>('comfortable');
+  const [typography, setTypography] = useState<'modern' | 'classic' | 'technical'>('modern');
+  const [elevation, setElevation] = useState<'flat' | 'subtle' | 'raised' | 'floating'>('subtle');
 
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -33,6 +36,15 @@ export default function ThemePage() {
       }
       if (asset.theme.radius) {
         setRadius(asset.theme.radius);
+      }
+      if (asset.theme.spacing) {
+        setSpacing(asset.theme.spacing);
+      }
+      if (asset.theme.typography) {
+        setTypography(asset.theme.typography);
+      }
+      if (asset.theme.elevation) {
+        setElevation(asset.theme.elevation);
       }
     } else if (!loading) {
       // Set default if no theme is loaded
@@ -53,7 +65,10 @@ export default function ThemePage() {
       ...asset?.theme,
       mode: themeMode,
       colors,
-      radius
+      radius,
+      spacing,
+      typography,
+      elevation,
     };
     const result = await saveAsset({ theme: newTheme });
 
@@ -144,6 +159,40 @@ export default function ThemePage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Spacing</CardTitle>
+          <CardDescription>Choose how much space to use between elements and sections.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup value={spacing} onValueChange={(value) => setSpacing(value as typeof spacing)}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Label htmlFor="spacing-compact" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary text-center">
+                <div className="w-12 h-8 bg-muted p-1 mx-auto mb-2">
+                  <div className="h-full bg-primary" />
+                </div>
+                Compact
+                <RadioGroupItem value="compact" id="spacing-compact" className="sr-only" />
+              </Label>
+              <Label htmlFor="spacing-comfortable" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary text-center">
+                <div className="w-12 h-8 bg-muted p-2 mx-auto mb-2">
+                  <div className="h-full bg-primary" />
+                </div>
+                Comfortable
+                <RadioGroupItem value="comfortable" id="spacing-comfortable" className="sr-only" />
+              </Label>
+              <Label htmlFor="spacing-spacious" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary text-center">
+                <div className="w-12 h-8 bg-muted p-3 mx-auto mb-2">
+                  <div className="h-full bg-primary" />
+                </div>
+                Spacious
+                <RadioGroupItem value="spacious" id="spacing-spacious" className="sr-only" />
+              </Label>
+            </div>
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Border Radius</CardTitle>
           <CardDescription>Adjust the roundness of components like buttons and cards.</CardDescription>
         </CardHeader>
@@ -219,7 +268,68 @@ export default function ThemePage() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
+      <Card>
+        <CardHeader>
+          <CardTitle>Typography</CardTitle>
+          <CardDescription>Choose the font style used throughout your asset.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup value={typography} onValueChange={(value) => setTypography(value as typeof typography)}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Label htmlFor="typography-modern" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary">
+                <p className="text-lg font-semibold">Modern</p>
+                <p className="text-sm text-muted-foreground">Clean and friendly</p>
+                <RadioGroupItem value="modern" id="typography-modern" className="sr-only" />
+              </Label>
+              <Label htmlFor="typography-classic" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary font-serif">
+                <p className="text-lg font-semibold">Classic</p>
+                <p className="text-sm text-muted-foreground">Editorial and timeless</p>
+                <RadioGroupItem value="classic" id="typography-classic" className="sr-only" />
+              </Label>
+              <Label htmlFor="typography-technical" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary font-mono">
+                <p className="text-lg font-semibold">Technical</p>
+                <p className="text-sm text-muted-foreground">Precise and structured</p>
+                <RadioGroupItem value="technical" id="typography-technical" className="sr-only" />
+              </Label>
+            </div>
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      <Card className="w-fit max-w-full">
+        <CardHeader>
+          <CardTitle>Elevation &amp; Shadow</CardTitle>
+          <CardDescription>Control how much depth and shadow your components use.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup value={elevation} onValueChange={(value) => setElevation(value as typeof elevation)}>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Label htmlFor="elevation-flat" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary text-center">
+                <div className="h-10 w-16 bg-card border mx-auto mb-2" />
+                Flat
+                <RadioGroupItem value="flat" id="elevation-flat" className="sr-only" />
+              </Label>
+              <Label htmlFor="elevation-subtle" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary text-center">
+                <div className="h-10 w-16 bg-card border shadow-sm mx-auto mb-2" />
+                Subtle
+                <RadioGroupItem value="subtle" id="elevation-subtle" className="sr-only" />
+              </Label>
+              <Label htmlFor="elevation-raised" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary text-center">
+                <div className="h-10 w-16 bg-card border shadow-md mx-auto mb-2" />
+                Raised
+                <RadioGroupItem value="raised" id="elevation-raised" className="sr-only" />
+              </Label>
+              <Label htmlFor="elevation-floating" className="p-4 border rounded-md cursor-pointer has-[[data-state=checked]]:border-primary hover:border-primary text-center">
+                <div className="h-10 w-16 bg-card border shadow-xl mx-auto mb-2" />
+                Floating
+                <RadioGroupItem value="floating" id="elevation-floating" className="sr-only" />
+              </Label>
+            </div>
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end">
         <Button variant="solid" onClick={handleSaveTheme} disabled={isSaving || loading}>
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Theme

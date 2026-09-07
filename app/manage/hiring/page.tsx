@@ -26,9 +26,13 @@ import { AlertCircle, Plus, Briefcase, ArrowRight } from 'lucide-react';
 import { Badge } from '#/components/ui/badge';
 import { format } from 'date-fns';
 import { usePageTitle } from '#/core/hooks/use-page-title';
+import { useSearchParams } from 'next/navigation';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 export default function HiringDashboardPage() {
   usePageTitle('Hiring');
+  const searchParams = useSearchParams();
+  const selectedProject = searchParams.get('selectedProject');
 
   const [postings, setPostings] = useState<JobPosting[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +57,7 @@ export default function HiringDashboardPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Hiring</h1>
-        <LinkButton variant="solid" href="/manage/hiring/create">
+        <LinkButton variant="solid" href={appendSelectedProject('/manage/hiring/create', selectedProject)}>
             <Plus className="mr-2 h-4 w-4" /> Create Job Posting
           </LinkButton>
       </header>
@@ -101,7 +105,11 @@ export default function HiringDashboardPage() {
                     <TableCell><Badge variant={posting.status === 'Open' ? 'default' : 'secondary'}>{posting.status}</Badge></TableCell>
                     <TableCell>{posting.createdAt ? format(new Date(posting.createdAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <LinkButton variant="plain" size="icon" href={`/manage/hiring/${posting.id}`}>
+                      <LinkButton
+                        variant="plain"
+                        size="icon"
+                        href={appendSelectedProject(`/manage/hiring/${posting.id}`, selectedProject)}
+                      >
                           <ArrowRight className="h-4 w-4" />
                         </LinkButton>
                     </TableCell>

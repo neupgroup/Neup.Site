@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -38,6 +38,7 @@ import { useToast } from '#/core/hooks/useToast';
 import { createJobPosting } from '@/services/hiring';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import { usePageTitle } from '#/core/hooks/use-page-title';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Job title is required'),
@@ -51,6 +52,8 @@ type FormValues = z.infer<typeof formSchema>;
 export default function CreateJobPostingPage() {
   usePageTitle('Create Job Posting');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedProject = searchParams.get('selectedProject');
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -69,7 +72,7 @@ export default function CreateJobPostingPage() {
     const result = await createJobPosting(data);
     if (result.success) {
       toast({ title: 'Job Posting Created' });
-      router.push('/manage/hiring');
+      router.push(appendSelectedProject('/manage/hiring', selectedProject));
     } else {
       toast({
         variant: 'destructive',
@@ -83,7 +86,7 @@ export default function CreateJobPostingPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href="/manage/hiring">
+        <LinkButton variant="outlined" href={appendSelectedProject('/manage/hiring', selectedProject)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Hiring
           </LinkButton>

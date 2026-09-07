@@ -27,6 +27,9 @@ export function createDefaultAssetTheme(): AssetTheme {
     mode: 'light',
     colors,
     radius: 'medium',
+    spacing: 'comfortable',
+    typography: 'modern',
+    elevation: 'subtle',
     generated: generateThemeFromColor(colors),
   };
 }

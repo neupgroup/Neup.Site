@@ -15,7 +15,7 @@
 - [ ] Add Neup documentation blocks for the core navigation helpers reviewed during the core boundary fix, including `core/helpers/link.ts` and `core/helpers/navigation.ts`.
 - [ ] Add Neup documentation for `services/logging/type.ts` or remove it after confirming `LogErrorParams` is fully owned by `core/helpers/logger.ts`.
 - [ ] Add Neup documentation blocks for moved service type contracts that still lack upgraded documentation, including `services/server/allocation/type.ts`, `services/app-base/type.ts`, `services/asset/type.ts`, `services/codebase/type.ts`, `services/server/command/type.ts`, `services/data/type.ts`, `services/datalist/type.ts`, `services/editor/type.ts`, `services/environment/type.ts`, `services/profile/type.ts`, `services/redirect/type.ts`, `services/server/type.ts`, `services/template/type.ts`, and `services/token/type.ts`.
-- [ ] Add Neup documentation blocks for profile URL normalization and profile sync surfaces reviewed during the `normalizeUrl` move, including `services/profiles.ts` and `app/(manage)/settings/profile/page.tsx`.
+- [ ] Add Neup documentation blocks for profile URL normalization and profile sync surfaces reviewed during the `normalizeUrl` move, including `services/profiles.ts` and `app/identity/page.tsx`.
 - [ ] Add Neup documentation blocks for metadata call sites reviewed during the metadata helper move, including `app/(manage)/page.tsx` and `core2/lib/metadata.ts`.
 - [ ] Add Neup documentation coverage for `tsconfig.json` path aliases and compiler options.
 - [ ] Add a Neup documentation block for `templates/footer.ts`.

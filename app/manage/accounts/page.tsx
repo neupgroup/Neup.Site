@@ -11,7 +11,7 @@ import { getPlatformAccounts } from '@/services/accounts';
 
 ::public
 
-Accounts overview page for `/manage/accounts`.
+Accounts overview page for `/accounts`.
 
 It lists the account records stored in this platform.
 
@@ -104,7 +104,7 @@ export default async function ManageAccountsPage() {
               return (
                 <Link
                   key={account.id}
-                  href={`/manage/accounts/${account.id}`}
+                  href={`/accounts/${account.id}`}
                   className={[
                     'block w-full border p-4 transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                     isFirst ? 'rounded-t-md' : 'rounded-t-none',

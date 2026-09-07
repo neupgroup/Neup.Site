@@ -15,6 +15,9 @@ export interface AssetTheme {
   mode?: 'light' | 'dark' | 'black';
   colors: string[];
   radius?: 'none' | 'low' | 'medium' | 'high';
+  spacing?: 'compact' | 'comfortable' | 'spacious';
+  typography?: 'modern' | 'classic' | 'technical';
+  elevation?: 'flat' | 'subtle' | 'raised' | 'floating';
   generated?: GeneratedTheme;
 }
 

@@ -93,7 +93,7 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LinkButton href={appendSelectedProject('/site/theme', selectedProject)}>
+            <LinkButton href={appendSelectedProject('/settings/design', selectedProject)}>
                 <Palette className="mr-2" />
                 Edit Theme
               </LinkButton>

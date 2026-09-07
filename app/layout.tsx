@@ -22,6 +22,8 @@ export default async function RootLayout({
   const radius = asset?.theme?.radius;
   const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
   const themeMode = asset?.theme?.mode || 'light';
+  const typography = asset?.theme?.typography || 'modern';
+  const elevation = asset?.theme?.elevation || 'subtle';
   const generatedTheme = asset?.theme?.generated;
   const renderThemeStyles = !!(generatedTheme && generatedTheme.light && generatedTheme.dark && generatedTheme.black);
 
@@ -98,7 +100,7 @@ export default async function RootLayout({
   ` : '';
 
   return (
-    <html lang="en" suppressHydrationWarning className={cn(radiusClass, themeMode)}>
+    <html lang="en" suppressHydrationWarning className={cn(radiusClass, themeMode, `typography-${typography}`, `elevation-${elevation}`)}>
       <head>
         {renderThemeStyles && (
           <style dangerouslySetInnerHTML={{ __html: themeStyleString }} />

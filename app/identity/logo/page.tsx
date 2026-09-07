@@ -58,7 +58,7 @@ export default function LogoUploadPage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
-        <LinkButton variant="outlined" href={appendSelectedProject('/settings/profile', selectedProject)}>
+        <LinkButton variant="outlined" href={appendSelectedProject('/settings/identity', selectedProject)}>
                 <ArrowLeft className="mr-2" /> Back to Profile
             </LinkButton>
       </header>

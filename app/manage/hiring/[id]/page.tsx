@@ -239,7 +239,8 @@ function EditPostingForm({ posting, onCancel, onSave }: { posting: JobPosting, o
     )
 }
 
-export default function ViewJobPostingPage({ params }: { params: { id: string } }) {
+export default function ViewJobPostingPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [posting, setPosting] = useState<JobPosting | null>(null);
   const [applicants, setApplicants] = useState<Applicant[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -253,8 +254,8 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   const fetchJobData = async () => {
     setLoading(true);
     const [postingResult, applicantsResult] = await Promise.all([
-      getJobPostingById(params.id),
-      getApplicantsForJob(params.id)
+      getJobPostingById(id),
+      getApplicantsForJob(id)
     ]);
     
     if (postingResult.error || !postingResult.posting) {
@@ -272,7 +273,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
   useEffect(() => {
     fetchJobData();
-  }, [params.id]);
+  }, [id]);
 
   const handleSaveDetails = async (data: FormValues) => {
     if (!posting) return;
@@ -392,7 +393,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<LinkButton variant="outlined" size="sm" href={`/manage/hiring/${params.id}`}>View All</LinkButton></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<LinkButton variant="outlined" size="sm" href={`/manage/hiring/${id}`}>View All</LinkButton></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

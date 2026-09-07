@@ -51,7 +51,7 @@ export default function CodebaseUploadPage() {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const currentPath = searchParams.get('path');
-  const codebaseHref = currentPath ? `/site/codebase?path=${encodeURIComponent(currentPath)}` : '/site/codebase';
+  const codebaseHref = currentPath ? `/codebase?path=${encodeURIComponent(currentPath)}` : '/codebase';
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const nextFiles = acceptedFiles.map((file, index) => ({

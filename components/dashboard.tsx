@@ -133,7 +133,6 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
   return (
     <nav className="flex w-full flex-col items-stretch gap-2">
       <SidebarNavItem href="/home" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></SidebarNavItem>
-      <SidebarNavItem href="/settings" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></SidebarNavItem>
       <SidebarNavItem href="/status" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></SidebarNavItem>
 
       {/* TODO: Add permission-based filtering when permissions are implemented */}
@@ -143,7 +142,6 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
           Manage
         </div>
         <SidebarNavItem href="/manage/member" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></SidebarNavItem>
-        <SidebarNavItem href="/manage/accounts" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></SidebarNavItem>
         <SidebarNavItem href="/manage/projects" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></SidebarNavItem>
         <SidebarNavItem href="/manage/hiring" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></SidebarNavItem>
         <SidebarNavItem href="/manage/billing" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
@@ -197,8 +195,8 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Site
         </div>
-        <SidebarNavItem href="/site/codebase" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></SidebarNavItem>
-        <SidebarNavItem href="/site/theme" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></SidebarNavItem>
+        <SidebarNavItem href="/settings" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></SidebarNavItem>
+        <SidebarNavItem href="/codebase" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></SidebarNavItem>
       </div>
 
       {/* Root Section */}
@@ -222,6 +220,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
             Account
           </div>
           <SidebarNavItem href="/switch" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></SidebarNavItem>
+          <SidebarNavItem href="/accounts" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></SidebarNavItem>
         </div>
       </div>
     </nav>
