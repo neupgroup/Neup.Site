@@ -4,6 +4,7 @@
 import { getActiveProjectId } from '@/services/projects';
 import { Asset, AssetTheme, AssetIcons } from '@/services/asset/type';
 import { generateThemeFromColor } from '#/core/helpers/color';
+import { createDefaultAssetTheme } from '@/services/themes';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
@@ -29,9 +30,8 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
   if (!assetId) return { success: true, asset: undefined };
 
   try {
-    const [record, themeRecord, profileEntries] = await Promise.all([
+    const [record, profileEntries] = await Promise.all([
       db.asset.findUnique({ where: { id: assetId } }),
-      db.theme.findUnique({ where: { id: assetId } }),
       db.profile.findMany({
         where: { assetId },
         select: { subject: true, value: true },
@@ -60,7 +60,8 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
     const descriptionFromDb = subjectToValues.get('brand.description')?.[0];
 
     const data = record as any;
-    const theme = (themeRecord?.theme as unknown as AssetTheme) || {};
+    const design = (record.design as any) || {};
+    const theme = (design.theme as AssetTheme) || createDefaultAssetTheme();
     const asset: Asset = {
       id: record.id,
       name: record.name,
@@ -69,8 +70,8 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
       tier: (record.tier as Asset['tier']) ?? 'free',
       logoUrl: resolveAssetLogoUrl(logoUrlFromDb ?? data.logoUrl, theme) ?? undefined,
       icons: data.icons || {},
-      hideSitename: themeRecord?.hideSitename || false,
-      hideLogo: themeRecord?.hideLogo || false,
+      hideSitename: design.hideSitename || false,
+      hideLogo: design.hideLogo || false,
       description: descriptionFromDb ?? data.description,
       socialProfiles: socialProfilesFromDb.length ? socialProfilesFromDb : (data.socialProfiles || []),
       contactEmail: contactEmailFromDb.length ? contactEmailFromDb : (data.contactEmail || []),
@@ -94,10 +95,7 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const [existing, existingTheme] = await Promise.all([
-      db.asset.findUnique({ where: { id: assetId } }),
-      db.theme.findUnique({ where: { id: assetId } }),
-    ]);
+    const existing = await db.asset.findUnique({ where: { id: assetId } });
 
     const {
       hideSitename: nextHideSitename,
@@ -131,8 +129,9 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
       await markAssetsAsPending(assetId);
     }
 
-    const hideSitenameChanged = typeof nextHideSitename === 'boolean' && nextHideSitename !== existingTheme?.hideSitename;
-    const hideLogoChanged = typeof nextHideLogo === 'boolean' && nextHideLogo !== existingTheme?.hideLogo;
+    const existingDesign = (existing?.design as any) || {};
+    const hideSitenameChanged = typeof nextHideSitename === 'boolean' && nextHideSitename !== existingDesign.hideSitename;
+    const hideLogoChanged = typeof nextHideLogo === 'boolean' && nextHideLogo !== existingDesign.hideLogo;
 
     if (data.name !== existing?.name || hideSitenameChanged || hideLogoChanged) await markAssetsAsPending(assetId);
     if (socialProfiles) await markAssetsAsPending(assetId);
@@ -143,24 +142,22 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
       update: assetData,
     });
 
-    const themeData: Record<string, any> = { updatedAt: new Date() };
-    if (!existingTheme) themeData.createdAt = new Date();
-    if (typeof nextHideSitename === 'boolean') themeData.hideSitename = nextHideSitename;
-    if (typeof nextHideLogo === 'boolean') themeData.hideLogo = nextHideLogo;
-
     if (nextTheme) {
-      themeData.theme = { ...nextTheme };
+      const designData = { ...existingDesign, theme: { ...nextTheme } };
       if (nextTheme.colors && nextTheme.colors.length > 0) {
-        themeData.theme.generated = generateThemeFromColor(nextTheme.colors);
+        designData.theme.generated = generateThemeFromColor(nextTheme.colors);
       }
+      if (typeof nextHideSitename === 'boolean') designData.hideSitename = nextHideSitename;
+      if (typeof nextHideLogo === 'boolean') designData.hideLogo = nextHideLogo;
       await markThemeAsPending(assetId);
+      assetData.design = designData;
+    } else if (typeof nextHideSitename === 'boolean' || typeof nextHideLogo === 'boolean') {
+      assetData.design = {
+        ...existingDesign,
+        ...(typeof nextHideSitename === 'boolean' ? { hideSitename: nextHideSitename } : {}),
+        ...(typeof nextHideLogo === 'boolean' ? { hideLogo: nextHideLogo } : {}),
+      };
     }
-
-    await db.theme.upsert({
-      where: { id: assetId },
-      create: { id: assetId, ...themeData },
-      update: themeData,
-    });
 
     const profileSync = await syncAssetProfileSubjects({
       assetId,

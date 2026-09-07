@@ -154,6 +154,8 @@ exports.Prisma.AssetScalarFieldEnum = {
   modules: 'modules',
   icons: 'icons',
   domains: 'domains',
+  design: 'design',
+  features: 'features',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   ownerAccountId: 'ownerAccountId',
@@ -166,15 +168,6 @@ exports.Prisma.ProfileScalarFieldEnum = {
   assetId: 'assetId',
   subject: 'subject',
   value: 'value'
-};
-
-exports.Prisma.ThemeScalarFieldEnum = {
-  id: 'id',
-  hideSitename: 'hideSitename',
-  hideLogo: 'hideLogo',
-  theme: 'theme',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.PageScalarFieldEnum = {
@@ -539,7 +532,6 @@ exports.Prisma.ModelName = {
   Domain: 'Domain',
   Asset: 'Asset',
   Profile: 'Profile',
-  Theme: 'Theme',
   Page: 'Page',
   PagePath: 'PagePath',
   Section: 'Section',

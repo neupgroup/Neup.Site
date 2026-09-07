@@ -39,11 +39,6 @@ export type Asset = $Result.DefaultSelection<Prisma.$AssetPayload>
  */
 export type Profile = $Result.DefaultSelection<Prisma.$ProfilePayload>
 /**
- * Model Theme
- * 
- */
-export type Theme = $Result.DefaultSelection<Prisma.$ThemePayload>
-/**
  * Model Page
  * 
  */
@@ -354,16 +349,6 @@ export class PrismaClient<
     * ```
     */
   get profile(): Prisma.ProfileDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.theme`: Exposes CRUD operations for the **Theme** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Themes
-    * const themes = await prisma.theme.findMany()
-    * ```
-    */
-  get theme(): Prisma.ThemeDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.page`: Exposes CRUD operations for the **Page** model.
@@ -1083,7 +1068,6 @@ export namespace Prisma {
     Domain: 'Domain',
     Asset: 'Asset',
     Profile: 'Profile',
-    Theme: 'Theme',
     Page: 'Page',
     PagePath: 'PagePath',
     Section: 'Section',
@@ -1127,7 +1111,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "role" | "domain" | "asset" | "profile" | "theme" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "newsArticle" | "syncRequest" | "assetModule" | "syncerLog"
+      modelProps: "account" | "role" | "domain" | "asset" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "newsArticle" | "syncRequest" | "assetModule" | "syncerLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1498,80 +1482,6 @@ export namespace Prisma {
           count: {
             args: Prisma.ProfileCountArgs<ExtArgs>
             result: $Utils.Optional<ProfileCountAggregateOutputType> | number
-          }
-        }
-      }
-      Theme: {
-        payload: Prisma.$ThemePayload<ExtArgs>
-        fields: Prisma.ThemeFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.ThemeFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.ThemeFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>
-          }
-          findFirst: {
-            args: Prisma.ThemeFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.ThemeFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>
-          }
-          findMany: {
-            args: Prisma.ThemeFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>[]
-          }
-          create: {
-            args: Prisma.ThemeCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>
-          }
-          createMany: {
-            args: Prisma.ThemeCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.ThemeCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>[]
-          }
-          delete: {
-            args: Prisma.ThemeDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>
-          }
-          update: {
-            args: Prisma.ThemeUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>
-          }
-          deleteMany: {
-            args: Prisma.ThemeDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.ThemeUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.ThemeUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>[]
-          }
-          upsert: {
-            args: Prisma.ThemeUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ThemePayload>
-          }
-          aggregate: {
-            args: Prisma.ThemeAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateTheme>
-          }
-          groupBy: {
-            args: Prisma.ThemeGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ThemeGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.ThemeCountArgs<ExtArgs>
-            result: $Utils.Optional<ThemeCountAggregateOutputType> | number
           }
         }
       }
@@ -3760,7 +3670,6 @@ export namespace Prisma {
     domain?: DomainOmit
     asset?: AssetOmit
     profile?: ProfileOmit
-    theme?: ThemeOmit
     page?: PageOmit
     pagePath?: PagePathOmit
     section?: SectionOmit
@@ -7529,6 +7438,8 @@ export namespace Prisma {
     modules: number
     icons: number
     domains: number
+    design: number
+    features: number
     createdAt: number
     updatedAt: number
     ownerAccountId: number
@@ -7570,6 +7481,8 @@ export namespace Prisma {
     modules?: true
     icons?: true
     domains?: true
+    design?: true
+    features?: true
     createdAt?: true
     updatedAt?: true
     ownerAccountId?: true
@@ -7658,6 +7571,8 @@ export namespace Prisma {
     modules: JsonValue | null
     icons: JsonValue | null
     domains: JsonValue | null
+    design: JsonValue | null
+    features: JsonValue | null
     createdAt: Date | null
     updatedAt: Date | null
     ownerAccountId: string | null
@@ -7690,12 +7605,13 @@ export namespace Prisma {
     modules?: boolean
     icons?: boolean
     domains?: boolean
+    design?: boolean
+    features?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     ownerAccountId?: boolean
     status?: boolean
     type?: boolean
-    themeEntry?: boolean | Asset$themeEntryArgs<ExtArgs>
     roles?: boolean | Asset$rolesArgs<ExtArgs>
     domainEntries?: boolean | Asset$domainEntriesArgs<ExtArgs>
     profiles?: boolean | Asset$profilesArgs<ExtArgs>
@@ -7725,6 +7641,8 @@ export namespace Prisma {
     modules?: boolean
     icons?: boolean
     domains?: boolean
+    design?: boolean
+    features?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     ownerAccountId?: boolean
@@ -7740,6 +7658,8 @@ export namespace Prisma {
     modules?: boolean
     icons?: boolean
     domains?: boolean
+    design?: boolean
+    features?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     ownerAccountId?: boolean
@@ -7755,6 +7675,8 @@ export namespace Prisma {
     modules?: boolean
     icons?: boolean
     domains?: boolean
+    design?: boolean
+    features?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     ownerAccountId?: boolean
@@ -7762,9 +7684,8 @@ export namespace Prisma {
     type?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "url" | "tier" | "modules" | "icons" | "domains" | "createdAt" | "updatedAt" | "ownerAccountId" | "status" | "type", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "url" | "tier" | "modules" | "icons" | "domains" | "design" | "features" | "createdAt" | "updatedAt" | "ownerAccountId" | "status" | "type", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    themeEntry?: boolean | Asset$themeEntryArgs<ExtArgs>
     roles?: boolean | Asset$rolesArgs<ExtArgs>
     domainEntries?: boolean | Asset$domainEntriesArgs<ExtArgs>
     profiles?: boolean | Asset$profilesArgs<ExtArgs>
@@ -7791,7 +7712,6 @@ export namespace Prisma {
   export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Asset"
     objects: {
-      themeEntry: Prisma.$ThemePayload<ExtArgs> | null
       roles: Prisma.$RolePayload<ExtArgs>[]
       domainEntries: Prisma.$DomainPayload<ExtArgs>[]
       profiles: Prisma.$ProfilePayload<ExtArgs>[]
@@ -7819,6 +7739,8 @@ export namespace Prisma {
       modules: Prisma.JsonValue | null
       icons: Prisma.JsonValue | null
       domains: Prisma.JsonValue | null
+      design: Prisma.JsonValue | null
+      features: Prisma.JsonValue | null
       createdAt: Date | null
       updatedAt: Date | null
       ownerAccountId: string | null
@@ -8218,7 +8140,6 @@ export namespace Prisma {
    */
   export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    themeEntry<T extends Asset$themeEntryArgs<ExtArgs> = {}>(args?: Subset<T, Asset$themeEntryArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     roles<T extends Asset$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     domainEntries<T extends Asset$domainEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$domainEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     profiles<T extends Asset$profilesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$profilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -8273,6 +8194,8 @@ export namespace Prisma {
     readonly modules: FieldRef<"Asset", 'Json'>
     readonly icons: FieldRef<"Asset", 'Json'>
     readonly domains: FieldRef<"Asset", 'Json'>
+    readonly design: FieldRef<"Asset", 'Json'>
+    readonly features: FieldRef<"Asset", 'Json'>
     readonly createdAt: FieldRef<"Asset", 'DateTime'>
     readonly updatedAt: FieldRef<"Asset", 'DateTime'>
     readonly ownerAccountId: FieldRef<"Asset", 'String'>
@@ -8668,25 +8591,6 @@ export namespace Prisma {
      * Limit how many Assets to delete.
      */
     limit?: number
-  }
-
-  /**
-   * Asset.themeEntry
-   */
-  export type Asset$themeEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    where?: ThemeWhereInput
   }
 
   /**
@@ -10187,1078 +10091,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProfileInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Theme
-   */
-
-  export type AggregateTheme = {
-    _count: ThemeCountAggregateOutputType | null
-    _min: ThemeMinAggregateOutputType | null
-    _max: ThemeMaxAggregateOutputType | null
-  }
-
-  export type ThemeMinAggregateOutputType = {
-    id: string | null
-    hideSitename: boolean | null
-    hideLogo: boolean | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type ThemeMaxAggregateOutputType = {
-    id: string | null
-    hideSitename: boolean | null
-    hideLogo: boolean | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type ThemeCountAggregateOutputType = {
-    id: number
-    hideSitename: number
-    hideLogo: number
-    theme: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type ThemeMinAggregateInputType = {
-    id?: true
-    hideSitename?: true
-    hideLogo?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type ThemeMaxAggregateInputType = {
-    id?: true
-    hideSitename?: true
-    hideLogo?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type ThemeCountAggregateInputType = {
-    id?: true
-    hideSitename?: true
-    hideLogo?: true
-    theme?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type ThemeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Theme to aggregate.
-     */
-    where?: ThemeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Themes to fetch.
-     */
-    orderBy?: ThemeOrderByWithRelationInput | ThemeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: ThemeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Themes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Themes.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Themes
-    **/
-    _count?: true | ThemeCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: ThemeMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: ThemeMaxAggregateInputType
-  }
-
-  export type GetThemeAggregateType<T extends ThemeAggregateArgs> = {
-        [P in keyof T & keyof AggregateTheme]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateTheme[P]>
-      : GetScalarType<T[P], AggregateTheme[P]>
-  }
-
-
-
-
-  export type ThemeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ThemeWhereInput
-    orderBy?: ThemeOrderByWithAggregationInput | ThemeOrderByWithAggregationInput[]
-    by: ThemeScalarFieldEnum[] | ThemeScalarFieldEnum
-    having?: ThemeScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: ThemeCountAggregateInputType | true
-    _min?: ThemeMinAggregateInputType
-    _max?: ThemeMaxAggregateInputType
-  }
-
-  export type ThemeGroupByOutputType = {
-    id: string
-    hideSitename: boolean
-    hideLogo: boolean
-    theme: JsonValue | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    _count: ThemeCountAggregateOutputType | null
-    _min: ThemeMinAggregateOutputType | null
-    _max: ThemeMaxAggregateOutputType | null
-  }
-
-  type GetThemeGroupByPayload<T extends ThemeGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<ThemeGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof ThemeGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], ThemeGroupByOutputType[P]>
-            : GetScalarType<T[P], ThemeGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type ThemeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["theme"]>
-
-  export type ThemeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["theme"]>
-
-  export type ThemeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["theme"]>
-
-  export type ThemeSelectScalar = {
-    id?: boolean
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type ThemeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "hideSitename" | "hideLogo" | "theme" | "createdAt" | "updatedAt", ExtArgs["result"]["theme"]>
-  export type ThemeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }
-  export type ThemeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }
-  export type ThemeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
-  }
-
-  export type $ThemePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Theme"
-    objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      hideSitename: boolean
-      hideLogo: boolean
-      theme: Prisma.JsonValue | null
-      createdAt: Date | null
-      updatedAt: Date | null
-    }, ExtArgs["result"]["theme"]>
-    composites: {}
-  }
-
-  type ThemeGetPayload<S extends boolean | null | undefined | ThemeDefaultArgs> = $Result.GetResult<Prisma.$ThemePayload, S>
-
-  type ThemeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ThemeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ThemeCountAggregateInputType | true
-    }
-
-  export interface ThemeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Theme'], meta: { name: 'Theme' } }
-    /**
-     * Find zero or one Theme that matches the filter.
-     * @param {ThemeFindUniqueArgs} args - Arguments to find a Theme
-     * @example
-     * // Get one Theme
-     * const theme = await prisma.theme.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends ThemeFindUniqueArgs>(args: SelectSubset<T, ThemeFindUniqueArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Theme that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {ThemeFindUniqueOrThrowArgs} args - Arguments to find a Theme
-     * @example
-     * // Get one Theme
-     * const theme = await prisma.theme.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends ThemeFindUniqueOrThrowArgs>(args: SelectSubset<T, ThemeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Theme that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ThemeFindFirstArgs} args - Arguments to find a Theme
-     * @example
-     * // Get one Theme
-     * const theme = await prisma.theme.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends ThemeFindFirstArgs>(args?: SelectSubset<T, ThemeFindFirstArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Theme that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ThemeFindFirstOrThrowArgs} args - Arguments to find a Theme
-     * @example
-     * // Get one Theme
-     * const theme = await prisma.theme.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends ThemeFindFirstOrThrowArgs>(args?: SelectSubset<T, ThemeFindFirstOrThrowArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Themes that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ThemeFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Themes
-     * const themes = await prisma.theme.findMany()
-     * 
-     * // Get first 10 Themes
-     * const themes = await prisma.theme.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const themeWithIdOnly = await prisma.theme.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends ThemeFindManyArgs>(args?: SelectSubset<T, ThemeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Theme.
-     * @param {ThemeCreateArgs} args - Arguments to create a Theme.
-     * @example
-     * // Create one Theme
-     * const Theme = await prisma.theme.create({
-     *   data: {
-     *     // ... data to create a Theme
-     *   }
-     * })
-     * 
-     */
-    create<T extends ThemeCreateArgs>(args: SelectSubset<T, ThemeCreateArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Themes.
-     * @param {ThemeCreateManyArgs} args - Arguments to create many Themes.
-     * @example
-     * // Create many Themes
-     * const theme = await prisma.theme.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends ThemeCreateManyArgs>(args?: SelectSubset<T, ThemeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Themes and returns the data saved in the database.
-     * @param {ThemeCreateManyAndReturnArgs} args - Arguments to create many Themes.
-     * @example
-     * // Create many Themes
-     * const theme = await prisma.theme.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Themes and only return the `id`
-     * const themeWithIdOnly = await prisma.theme.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends ThemeCreateManyAndReturnArgs>(args?: SelectSubset<T, ThemeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Theme.
-     * @param {ThemeDeleteArgs} args - Arguments to delete one Theme.
-     * @example
-     * // Delete one Theme
-     * const Theme = await prisma.theme.delete({
-     *   where: {
-     *     // ... filter to delete one Theme
-     *   }
-     * })
-     * 
-     */
-    delete<T extends ThemeDeleteArgs>(args: SelectSubset<T, ThemeDeleteArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Theme.
-     * @param {ThemeUpdateArgs} args - Arguments to update one Theme.
-     * @example
-     * // Update one Theme
-     * const theme = await prisma.theme.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends ThemeUpdateArgs>(args: SelectSubset<T, ThemeUpdateArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Themes.
-     * @param {ThemeDeleteManyArgs} args - Arguments to filter Themes to delete.
-     * @example
-     * // Delete a few Themes
-     * const { count } = await prisma.theme.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends ThemeDeleteManyArgs>(args?: SelectSubset<T, ThemeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Themes.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ThemeUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Themes
-     * const theme = await prisma.theme.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends ThemeUpdateManyArgs>(args: SelectSubset<T, ThemeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Themes and returns the data updated in the database.
-     * @param {ThemeUpdateManyAndReturnArgs} args - Arguments to update many Themes.
-     * @example
-     * // Update many Themes
-     * const theme = await prisma.theme.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Themes and only return the `id`
-     * const themeWithIdOnly = await prisma.theme.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends ThemeUpdateManyAndReturnArgs>(args: SelectSubset<T, ThemeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Theme.
-     * @param {ThemeUpsertArgs} args - Arguments to update or create a Theme.
-     * @example
-     * // Update or create a Theme
-     * const theme = await prisma.theme.upsert({
-     *   create: {
-     *     // ... data to create a Theme
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Theme we want to update
-     *   }
-     * })
-     */
-    upsert<T extends ThemeUpsertArgs>(args: SelectSubset<T, ThemeUpsertArgs<ExtArgs>>): Prisma__ThemeClient<$Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Themes.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ThemeCountArgs} args - Arguments to filter Themes to count.
-     * @example
-     * // Count the number of Themes
-     * const count = await prisma.theme.count({
-     *   where: {
-     *     // ... the filter for the Themes we want to count
-     *   }
-     * })
-    **/
-    count<T extends ThemeCountArgs>(
-      args?: Subset<T, ThemeCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ThemeCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Theme.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ThemeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends ThemeAggregateArgs>(args: Subset<T, ThemeAggregateArgs>): Prisma.PrismaPromise<GetThemeAggregateType<T>>
-
-    /**
-     * Group by Theme.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ThemeGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends ThemeGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ThemeGroupByArgs['orderBy'] }
-        : { orderBy?: ThemeGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, ThemeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetThemeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Theme model
-   */
-  readonly fields: ThemeFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Theme.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__ThemeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Theme model
-   */
-  interface ThemeFieldRefs {
-    readonly id: FieldRef<"Theme", 'String'>
-    readonly hideSitename: FieldRef<"Theme", 'Boolean'>
-    readonly hideLogo: FieldRef<"Theme", 'Boolean'>
-    readonly theme: FieldRef<"Theme", 'Json'>
-    readonly createdAt: FieldRef<"Theme", 'DateTime'>
-    readonly updatedAt: FieldRef<"Theme", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Theme findUnique
-   */
-  export type ThemeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * Filter, which Theme to fetch.
-     */
-    where: ThemeWhereUniqueInput
-  }
-
-  /**
-   * Theme findUniqueOrThrow
-   */
-  export type ThemeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * Filter, which Theme to fetch.
-     */
-    where: ThemeWhereUniqueInput
-  }
-
-  /**
-   * Theme findFirst
-   */
-  export type ThemeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * Filter, which Theme to fetch.
-     */
-    where?: ThemeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Themes to fetch.
-     */
-    orderBy?: ThemeOrderByWithRelationInput | ThemeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Themes.
-     */
-    cursor?: ThemeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Themes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Themes.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Themes.
-     */
-    distinct?: ThemeScalarFieldEnum | ThemeScalarFieldEnum[]
-  }
-
-  /**
-   * Theme findFirstOrThrow
-   */
-  export type ThemeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * Filter, which Theme to fetch.
-     */
-    where?: ThemeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Themes to fetch.
-     */
-    orderBy?: ThemeOrderByWithRelationInput | ThemeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Themes.
-     */
-    cursor?: ThemeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Themes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Themes.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Themes.
-     */
-    distinct?: ThemeScalarFieldEnum | ThemeScalarFieldEnum[]
-  }
-
-  /**
-   * Theme findMany
-   */
-  export type ThemeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * Filter, which Themes to fetch.
-     */
-    where?: ThemeWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Themes to fetch.
-     */
-    orderBy?: ThemeOrderByWithRelationInput | ThemeOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Themes.
-     */
-    cursor?: ThemeWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Themes from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Themes.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Themes.
-     */
-    distinct?: ThemeScalarFieldEnum | ThemeScalarFieldEnum[]
-  }
-
-  /**
-   * Theme create
-   */
-  export type ThemeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Theme.
-     */
-    data: XOR<ThemeCreateInput, ThemeUncheckedCreateInput>
-  }
-
-  /**
-   * Theme createMany
-   */
-  export type ThemeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Themes.
-     */
-    data: ThemeCreateManyInput | ThemeCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Theme createManyAndReturn
-   */
-  export type ThemeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * The data used to create many Themes.
-     */
-    data: ThemeCreateManyInput | ThemeCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Theme update
-   */
-  export type ThemeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Theme.
-     */
-    data: XOR<ThemeUpdateInput, ThemeUncheckedUpdateInput>
-    /**
-     * Choose, which Theme to update.
-     */
-    where: ThemeWhereUniqueInput
-  }
-
-  /**
-   * Theme updateMany
-   */
-  export type ThemeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Themes.
-     */
-    data: XOR<ThemeUpdateManyMutationInput, ThemeUncheckedUpdateManyInput>
-    /**
-     * Filter which Themes to update
-     */
-    where?: ThemeWhereInput
-    /**
-     * Limit how many Themes to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Theme updateManyAndReturn
-   */
-  export type ThemeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * The data used to update Themes.
-     */
-    data: XOR<ThemeUpdateManyMutationInput, ThemeUncheckedUpdateManyInput>
-    /**
-     * Filter which Themes to update
-     */
-    where?: ThemeWhereInput
-    /**
-     * Limit how many Themes to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * Theme upsert
-   */
-  export type ThemeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Theme to update in case it exists.
-     */
-    where: ThemeWhereUniqueInput
-    /**
-     * In case the Theme found by the `where` argument doesn't exist, create a new Theme with this data.
-     */
-    create: XOR<ThemeCreateInput, ThemeUncheckedCreateInput>
-    /**
-     * In case the Theme was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<ThemeUpdateInput, ThemeUncheckedUpdateInput>
-  }
-
-  /**
-   * Theme delete
-   */
-  export type ThemeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
-    /**
-     * Filter which Theme to delete.
-     */
-    where: ThemeWhereUniqueInput
-  }
-
-  /**
-   * Theme deleteMany
-   */
-  export type ThemeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Themes to delete
-     */
-    where?: ThemeWhereInput
-    /**
-     * Limit how many Themes to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Theme without action
-   */
-  export type ThemeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Theme
-     */
-    select?: ThemeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Theme
-     */
-    omit?: ThemeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ThemeInclude<ExtArgs> | null
   }
 
 
@@ -42215,6 +41047,8 @@ export namespace Prisma {
     modules: 'modules',
     icons: 'icons',
     domains: 'domains',
+    design: 'design',
+    features: 'features',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     ownerAccountId: 'ownerAccountId',
@@ -42233,18 +41067,6 @@ export namespace Prisma {
   };
 
   export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
-
-
-  export const ThemeScalarFieldEnum: {
-    id: 'id',
-    hideSitename: 'hideSitename',
-    hideLogo: 'hideLogo',
-    theme: 'theme',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type ThemeScalarFieldEnum = (typeof ThemeScalarFieldEnum)[keyof typeof ThemeScalarFieldEnum]
 
 
   export const PageScalarFieldEnum: {
@@ -42978,12 +41800,13 @@ export namespace Prisma {
     modules?: JsonNullableFilter<"Asset">
     icons?: JsonNullableFilter<"Asset">
     domains?: JsonNullableFilter<"Asset">
+    design?: JsonNullableFilter<"Asset">
+    features?: JsonNullableFilter<"Asset">
     createdAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
     ownerAccountId?: StringNullableFilter<"Asset"> | string | null
     status?: StringNullableFilter<"Asset"> | string | null
     type?: StringNullableFilter<"Asset"> | string | null
-    themeEntry?: XOR<ThemeNullableScalarRelationFilter, ThemeWhereInput> | null
     roles?: RoleListRelationFilter
     domainEntries?: DomainListRelationFilter
     profiles?: ProfileListRelationFilter
@@ -43012,12 +41835,13 @@ export namespace Prisma {
     modules?: SortOrderInput | SortOrder
     icons?: SortOrderInput | SortOrder
     domains?: SortOrderInput | SortOrder
+    design?: SortOrderInput | SortOrder
+    features?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
     ownerAccountId?: SortOrderInput | SortOrder
     status?: SortOrderInput | SortOrder
     type?: SortOrderInput | SortOrder
-    themeEntry?: ThemeOrderByWithRelationInput
     roles?: RoleOrderByRelationAggregateInput
     domainEntries?: DomainOrderByRelationAggregateInput
     profiles?: ProfileOrderByRelationAggregateInput
@@ -43049,12 +41873,13 @@ export namespace Prisma {
     modules?: JsonNullableFilter<"Asset">
     icons?: JsonNullableFilter<"Asset">
     domains?: JsonNullableFilter<"Asset">
+    design?: JsonNullableFilter<"Asset">
+    features?: JsonNullableFilter<"Asset">
     createdAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
     ownerAccountId?: StringNullableFilter<"Asset"> | string | null
     status?: StringNullableFilter<"Asset"> | string | null
     type?: StringNullableFilter<"Asset"> | string | null
-    themeEntry?: XOR<ThemeNullableScalarRelationFilter, ThemeWhereInput> | null
     roles?: RoleListRelationFilter
     domainEntries?: DomainListRelationFilter
     profiles?: ProfileListRelationFilter
@@ -43083,6 +41908,8 @@ export namespace Prisma {
     modules?: SortOrderInput | SortOrder
     icons?: SortOrderInput | SortOrder
     domains?: SortOrderInput | SortOrder
+    design?: SortOrderInput | SortOrder
+    features?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
     ownerAccountId?: SortOrderInput | SortOrder
@@ -43104,6 +41931,8 @@ export namespace Prisma {
     modules?: JsonNullableWithAggregatesFilter<"Asset">
     icons?: JsonNullableWithAggregatesFilter<"Asset">
     domains?: JsonNullableWithAggregatesFilter<"Asset">
+    design?: JsonNullableWithAggregatesFilter<"Asset">
+    features?: JsonNullableWithAggregatesFilter<"Asset">
     createdAt?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
     ownerAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
@@ -43159,66 +41988,6 @@ export namespace Prisma {
     assetId?: StringWithAggregatesFilter<"Profile"> | string
     subject?: StringWithAggregatesFilter<"Profile"> | string
     value?: StringWithAggregatesFilter<"Profile"> | string
-  }
-
-  export type ThemeWhereInput = {
-    AND?: ThemeWhereInput | ThemeWhereInput[]
-    OR?: ThemeWhereInput[]
-    NOT?: ThemeWhereInput | ThemeWhereInput[]
-    id?: StringFilter<"Theme"> | string
-    hideSitename?: BoolFilter<"Theme"> | boolean
-    hideLogo?: BoolFilter<"Theme"> | boolean
-    theme?: JsonNullableFilter<"Theme">
-    createdAt?: DateTimeNullableFilter<"Theme"> | Date | string | null
-    updatedAt?: DateTimeNullableFilter<"Theme"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
-  }
-
-  export type ThemeOrderByWithRelationInput = {
-    id?: SortOrder
-    hideSitename?: SortOrder
-    hideLogo?: SortOrder
-    theme?: SortOrderInput | SortOrder
-    createdAt?: SortOrderInput | SortOrder
-    updatedAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
-  }
-
-  export type ThemeWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: ThemeWhereInput | ThemeWhereInput[]
-    OR?: ThemeWhereInput[]
-    NOT?: ThemeWhereInput | ThemeWhereInput[]
-    hideSitename?: BoolFilter<"Theme"> | boolean
-    hideLogo?: BoolFilter<"Theme"> | boolean
-    theme?: JsonNullableFilter<"Theme">
-    createdAt?: DateTimeNullableFilter<"Theme"> | Date | string | null
-    updatedAt?: DateTimeNullableFilter<"Theme"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
-  }, "id">
-
-  export type ThemeOrderByWithAggregationInput = {
-    id?: SortOrder
-    hideSitename?: SortOrder
-    hideLogo?: SortOrder
-    theme?: SortOrderInput | SortOrder
-    createdAt?: SortOrderInput | SortOrder
-    updatedAt?: SortOrderInput | SortOrder
-    _count?: ThemeCountOrderByAggregateInput
-    _max?: ThemeMaxOrderByAggregateInput
-    _min?: ThemeMinOrderByAggregateInput
-  }
-
-  export type ThemeScalarWhereWithAggregatesInput = {
-    AND?: ThemeScalarWhereWithAggregatesInput | ThemeScalarWhereWithAggregatesInput[]
-    OR?: ThemeScalarWhereWithAggregatesInput[]
-    NOT?: ThemeScalarWhereWithAggregatesInput | ThemeScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Theme"> | string
-    hideSitename?: BoolWithAggregatesFilter<"Theme"> | boolean
-    hideLogo?: BoolWithAggregatesFilter<"Theme"> | boolean
-    theme?: JsonNullableWithAggregatesFilter<"Theme">
-    createdAt?: DateTimeNullableWithAggregatesFilter<"Theme"> | Date | string | null
-    updatedAt?: DateTimeNullableWithAggregatesFilter<"Theme"> | Date | string | null
   }
 
   export type PageWhereInput = {
@@ -45474,12 +44243,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -45508,12 +44278,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -45542,12 +44313,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -45576,12 +44348,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -45610,6 +44383,8 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
@@ -45625,6 +44400,8 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45640,6 +44417,8 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45693,68 +44472,6 @@ export namespace Prisma {
     assetId?: StringFieldUpdateOperationsInput | string
     subject?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type ThemeCreateInput = {
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutThemeEntryInput
-  }
-
-  export type ThemeUncheckedCreateInput = {
-    id: string
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-  }
-
-  export type ThemeUpdateInput = {
-    hideSitename?: BoolFieldUpdateOperationsInput | boolean
-    hideLogo?: BoolFieldUpdateOperationsInput | boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutThemeEntryNestedInput
-  }
-
-  export type ThemeUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    hideSitename?: BoolFieldUpdateOperationsInput | boolean
-    hideLogo?: BoolFieldUpdateOperationsInput | boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type ThemeCreateManyInput = {
-    id: string
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-  }
-
-  export type ThemeUpdateManyMutationInput = {
-    hideSitename?: BoolFieldUpdateOperationsInput | boolean
-    hideLogo?: BoolFieldUpdateOperationsInput | boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type ThemeUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    hideSitename?: BoolFieldUpdateOperationsInput | boolean
-    hideLogo?: BoolFieldUpdateOperationsInput | boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type PageCreateInput = {
@@ -48303,11 +47020,6 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type ThemeNullableScalarRelationFilter = {
-    is?: ThemeWhereInput | null
-    isNot?: ThemeWhereInput | null
-  }
-
   export type DomainListRelationFilter = {
     every?: DomainWhereInput
     some?: DomainWhereInput
@@ -48486,6 +47198,8 @@ export namespace Prisma {
     modules?: SortOrder
     icons?: SortOrder
     domains?: SortOrder
+    design?: SortOrder
+    features?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     ownerAccountId?: SortOrder
@@ -48550,31 +47264,6 @@ export namespace Prisma {
     assetId?: SortOrder
     subject?: SortOrder
     value?: SortOrder
-  }
-
-  export type ThemeCountOrderByAggregateInput = {
-    id?: SortOrder
-    hideSitename?: SortOrder
-    hideLogo?: SortOrder
-    theme?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type ThemeMaxOrderByAggregateInput = {
-    id?: SortOrder
-    hideSitename?: SortOrder
-    hideLogo?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type ThemeMinOrderByAggregateInput = {
-    id?: SortOrder
-    hideSitename?: SortOrder
-    hideLogo?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
   export type PageDataSourceBindingListRelationFilter = {
@@ -49850,12 +48539,6 @@ export namespace Prisma {
     update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutDomainEntriesInput, AssetUpdateWithoutDomainEntriesInput>, AssetUncheckedUpdateWithoutDomainEntriesInput>
   }
 
-  export type ThemeCreateNestedOneWithoutAssetInput = {
-    create?: XOR<ThemeCreateWithoutAssetInput, ThemeUncheckedCreateWithoutAssetInput>
-    connectOrCreate?: ThemeCreateOrConnectWithoutAssetInput
-    connect?: ThemeWhereUniqueInput
-  }
-
   export type RoleCreateNestedManyWithoutAssetInput = {
     create?: XOR<RoleCreateWithoutAssetInput, RoleUncheckedCreateWithoutAssetInput> | RoleCreateWithoutAssetInput[] | RoleUncheckedCreateWithoutAssetInput[]
     connectOrCreate?: RoleCreateOrConnectWithoutAssetInput | RoleCreateOrConnectWithoutAssetInput[]
@@ -49980,12 +48663,6 @@ export namespace Prisma {
     connectOrCreate?: MemberCreateOrConnectWithoutAssetInput | MemberCreateOrConnectWithoutAssetInput[]
     createMany?: MemberCreateManyAssetInputEnvelope
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-  }
-
-  export type ThemeUncheckedCreateNestedOneWithoutAssetInput = {
-    create?: XOR<ThemeCreateWithoutAssetInput, ThemeUncheckedCreateWithoutAssetInput>
-    connectOrCreate?: ThemeCreateOrConnectWithoutAssetInput
-    connect?: ThemeWhereUniqueInput
   }
 
   export type RoleUncheckedCreateNestedManyWithoutAssetInput = {
@@ -50116,16 +48793,6 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
-  }
-
-  export type ThemeUpdateOneWithoutAssetNestedInput = {
-    create?: XOR<ThemeCreateWithoutAssetInput, ThemeUncheckedCreateWithoutAssetInput>
-    connectOrCreate?: ThemeCreateOrConnectWithoutAssetInput
-    upsert?: ThemeUpsertWithoutAssetInput
-    disconnect?: ThemeWhereInput | boolean
-    delete?: ThemeWhereInput | boolean
-    connect?: ThemeWhereUniqueInput
-    update?: XOR<XOR<ThemeUpdateToOneWithWhereWithoutAssetInput, ThemeUpdateWithoutAssetInput>, ThemeUncheckedUpdateWithoutAssetInput>
   }
 
   export type RoleUpdateManyWithoutAssetNestedInput = {
@@ -50378,16 +49045,6 @@ export namespace Prisma {
     update?: MemberUpdateWithWhereUniqueWithoutAssetInput | MemberUpdateWithWhereUniqueWithoutAssetInput[]
     updateMany?: MemberUpdateManyWithWhereWithoutAssetInput | MemberUpdateManyWithWhereWithoutAssetInput[]
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
-  }
-
-  export type ThemeUncheckedUpdateOneWithoutAssetNestedInput = {
-    create?: XOR<ThemeCreateWithoutAssetInput, ThemeUncheckedCreateWithoutAssetInput>
-    connectOrCreate?: ThemeCreateOrConnectWithoutAssetInput
-    upsert?: ThemeUpsertWithoutAssetInput
-    disconnect?: ThemeWhereInput | boolean
-    delete?: ThemeWhereInput | boolean
-    connect?: ThemeWhereUniqueInput
-    update?: XOR<XOR<ThemeUpdateToOneWithWhereWithoutAssetInput, ThemeUpdateWithoutAssetInput>, ThemeUncheckedUpdateWithoutAssetInput>
   }
 
   export type RoleUncheckedUpdateManyWithoutAssetNestedInput = {
@@ -50654,20 +49311,6 @@ export namespace Prisma {
     upsert?: AssetUpsertWithoutProfilesInput
     connect?: AssetWhereUniqueInput
     update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutProfilesInput, AssetUpdateWithoutProfilesInput>, AssetUncheckedUpdateWithoutProfilesInput>
-  }
-
-  export type AssetCreateNestedOneWithoutThemeEntryInput = {
-    create?: XOR<AssetCreateWithoutThemeEntryInput, AssetUncheckedCreateWithoutThemeEntryInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutThemeEntryInput
-    connect?: AssetWhereUniqueInput
-  }
-
-  export type AssetUpdateOneRequiredWithoutThemeEntryNestedInput = {
-    create?: XOR<AssetCreateWithoutThemeEntryInput, AssetUncheckedCreateWithoutThemeEntryInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutThemeEntryInput
-    upsert?: AssetUpsertWithoutThemeEntryInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutThemeEntryInput, AssetUpdateWithoutThemeEntryInput>, AssetUncheckedUpdateWithoutThemeEntryInput>
   }
 
   export type AssetCreateNestedOneWithoutPagesInput = {
@@ -51613,12 +50256,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
     pages?: PageCreateNestedManyWithoutAssetInput
@@ -51646,12 +50290,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
     pages?: PageUncheckedCreateNestedManyWithoutAssetInput
@@ -51722,12 +50367,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
     pages?: PageUpdateManyWithoutAssetNestedInput
@@ -51755,12 +50401,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
     pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
@@ -51821,12 +50468,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
     pages?: PageCreateNestedManyWithoutAssetInput
@@ -51854,12 +50502,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
     pages?: PageUncheckedCreateNestedManyWithoutAssetInput
@@ -51903,12 +50552,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
     pages?: PageUpdateManyWithoutAssetNestedInput
@@ -51936,12 +50586,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
     pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
@@ -51959,27 +50610,6 @@ export namespace Prisma {
     assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
-  }
-
-  export type ThemeCreateWithoutAssetInput = {
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-  }
-
-  export type ThemeUncheckedCreateWithoutAssetInput = {
-    hideSitename?: boolean
-    hideLogo?: boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-  }
-
-  export type ThemeCreateOrConnectWithoutAssetInput = {
-    where: ThemeWhereUniqueInput
-    create: XOR<ThemeCreateWithoutAssetInput, ThemeUncheckedCreateWithoutAssetInput>
   }
 
   export type RoleCreateWithoutAssetInput = {
@@ -52500,33 +51130,6 @@ export namespace Prisma {
   export type MemberCreateManyAssetInputEnvelope = {
     data: MemberCreateManyAssetInput | MemberCreateManyAssetInput[]
     skipDuplicates?: boolean
-  }
-
-  export type ThemeUpsertWithoutAssetInput = {
-    update: XOR<ThemeUpdateWithoutAssetInput, ThemeUncheckedUpdateWithoutAssetInput>
-    create: XOR<ThemeCreateWithoutAssetInput, ThemeUncheckedCreateWithoutAssetInput>
-    where?: ThemeWhereInput
-  }
-
-  export type ThemeUpdateToOneWithWhereWithoutAssetInput = {
-    where?: ThemeWhereInput
-    data: XOR<ThemeUpdateWithoutAssetInput, ThemeUncheckedUpdateWithoutAssetInput>
-  }
-
-  export type ThemeUpdateWithoutAssetInput = {
-    hideSitename?: BoolFieldUpdateOperationsInput | boolean
-    hideLogo?: BoolFieldUpdateOperationsInput | boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type ThemeUncheckedUpdateWithoutAssetInput = {
-    hideSitename?: BoolFieldUpdateOperationsInput | boolean
-    hideLogo?: BoolFieldUpdateOperationsInput | boolean
-    theme?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type RoleUpsertWithWhereUniqueWithoutAssetInput = {
@@ -53052,12 +51655,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     pages?: PageCreateNestedManyWithoutAssetInput
@@ -53085,12 +51689,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     pages?: PageUncheckedCreateNestedManyWithoutAssetInput
@@ -53134,12 +51739,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     pages?: PageUpdateManyWithoutAssetNestedInput
@@ -53167,154 +51773,8 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
-    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
-    domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
-    pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
-    paths?: PagePathUncheckedUpdateManyWithoutAssetNestedInput
-    sections?: SectionUncheckedUpdateManyWithoutAssetNestedInput
-    datalists?: DatalistUncheckedUpdateManyWithoutAssetNestedInput
-    sources?: DataSourceUncheckedUpdateManyWithoutAssetNestedInput
-    environments?: EnvironmentVariableUncheckedUpdateManyWithoutAssetNestedInput
-    redirects?: RedirectUncheckedUpdateManyWithoutAssetNestedInput
-    codeFiles?: CodeFileUncheckedUpdateManyWithoutAssetNestedInput
-    allocations?: AllocationUncheckedUpdateManyWithoutAssetNestedInput
-    structures?: SiteStructureUncheckedUpdateManyWithoutAssetNestedInput
-    deployments?: DeploymentUncheckedUpdateManyWithoutAssetNestedInput
-    appBaseBackups?: AppBaseBackupUncheckedUpdateManyWithoutAssetNestedInput
-    assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
-    teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
-    members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
-  }
-
-  export type AssetCreateWithoutThemeEntryInput = {
-    id: string
-    name?: string
-    url?: string | null
-    tier?: string
-    modules?: NullableJsonNullValueInput | InputJsonValue
-    icons?: NullableJsonNullValueInput | InputJsonValue
-    domains?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    ownerAccountId?: string | null
-    status?: string | null
-    type?: string | null
-    roles?: RoleCreateNestedManyWithoutAssetInput
-    domainEntries?: DomainCreateNestedManyWithoutAssetInput
-    profiles?: ProfileCreateNestedManyWithoutAssetInput
-    pages?: PageCreateNestedManyWithoutAssetInput
-    paths?: PagePathCreateNestedManyWithoutAssetInput
-    sections?: SectionCreateNestedManyWithoutAssetInput
-    datalists?: DatalistCreateNestedManyWithoutAssetInput
-    sources?: DataSourceCreateNestedManyWithoutAssetInput
-    environments?: EnvironmentVariableCreateNestedManyWithoutAssetInput
-    redirects?: RedirectCreateNestedManyWithoutAssetInput
-    codeFiles?: CodeFileCreateNestedManyWithoutAssetInput
-    allocations?: AllocationCreateNestedManyWithoutAssetInput
-    structures?: SiteStructureCreateNestedManyWithoutAssetInput
-    deployments?: DeploymentCreateNestedManyWithoutAssetInput
-    appBaseBackups?: AppBaseBackupCreateNestedManyWithoutAssetInput
-    assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
-    teams?: TeamCreateNestedManyWithoutAssetInput
-    members?: MemberCreateNestedManyWithoutAssetInput
-  }
-
-  export type AssetUncheckedCreateWithoutThemeEntryInput = {
-    id: string
-    name?: string
-    url?: string | null
-    tier?: string
-    modules?: NullableJsonNullValueInput | InputJsonValue
-    icons?: NullableJsonNullValueInput | InputJsonValue
-    domains?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    ownerAccountId?: string | null
-    status?: string | null
-    type?: string | null
-    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
-    domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
-    profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
-    pages?: PageUncheckedCreateNestedManyWithoutAssetInput
-    paths?: PagePathUncheckedCreateNestedManyWithoutAssetInput
-    sections?: SectionUncheckedCreateNestedManyWithoutAssetInput
-    datalists?: DatalistUncheckedCreateNestedManyWithoutAssetInput
-    sources?: DataSourceUncheckedCreateNestedManyWithoutAssetInput
-    environments?: EnvironmentVariableUncheckedCreateNestedManyWithoutAssetInput
-    redirects?: RedirectUncheckedCreateNestedManyWithoutAssetInput
-    codeFiles?: CodeFileUncheckedCreateNestedManyWithoutAssetInput
-    allocations?: AllocationUncheckedCreateNestedManyWithoutAssetInput
-    structures?: SiteStructureUncheckedCreateNestedManyWithoutAssetInput
-    deployments?: DeploymentUncheckedCreateNestedManyWithoutAssetInput
-    appBaseBackups?: AppBaseBackupUncheckedCreateNestedManyWithoutAssetInput
-    assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
-    teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
-    members?: MemberUncheckedCreateNestedManyWithoutAssetInput
-  }
-
-  export type AssetCreateOrConnectWithoutThemeEntryInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutThemeEntryInput, AssetUncheckedCreateWithoutThemeEntryInput>
-  }
-
-  export type AssetUpsertWithoutThemeEntryInput = {
-    update: XOR<AssetUpdateWithoutThemeEntryInput, AssetUncheckedUpdateWithoutThemeEntryInput>
-    create: XOR<AssetCreateWithoutThemeEntryInput, AssetUncheckedCreateWithoutThemeEntryInput>
-    where?: AssetWhereInput
-  }
-
-  export type AssetUpdateToOneWithWhereWithoutThemeEntryInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutThemeEntryInput, AssetUncheckedUpdateWithoutThemeEntryInput>
-  }
-
-  export type AssetUpdateWithoutThemeEntryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    tier?: StringFieldUpdateOperationsInput | string
-    modules?: NullableJsonNullValueInput | InputJsonValue
-    icons?: NullableJsonNullValueInput | InputJsonValue
-    domains?: NullableJsonNullValueInput | InputJsonValue
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableStringFieldUpdateOperationsInput | string | null
-    roles?: RoleUpdateManyWithoutAssetNestedInput
-    domainEntries?: DomainUpdateManyWithoutAssetNestedInput
-    profiles?: ProfileUpdateManyWithoutAssetNestedInput
-    pages?: PageUpdateManyWithoutAssetNestedInput
-    paths?: PagePathUpdateManyWithoutAssetNestedInput
-    sections?: SectionUpdateManyWithoutAssetNestedInput
-    datalists?: DatalistUpdateManyWithoutAssetNestedInput
-    sources?: DataSourceUpdateManyWithoutAssetNestedInput
-    environments?: EnvironmentVariableUpdateManyWithoutAssetNestedInput
-    redirects?: RedirectUpdateManyWithoutAssetNestedInput
-    codeFiles?: CodeFileUpdateManyWithoutAssetNestedInput
-    allocations?: AllocationUpdateManyWithoutAssetNestedInput
-    structures?: SiteStructureUpdateManyWithoutAssetNestedInput
-    deployments?: DeploymentUpdateManyWithoutAssetNestedInput
-    appBaseBackups?: AppBaseBackupUpdateManyWithoutAssetNestedInput
-    assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
-    teams?: TeamUpdateManyWithoutAssetNestedInput
-    members?: MemberUpdateManyWithoutAssetNestedInput
-  }
-
-  export type AssetUncheckedUpdateWithoutThemeEntryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    url?: NullableStringFieldUpdateOperationsInput | string | null
-    tier?: StringFieldUpdateOperationsInput | string
-    modules?: NullableJsonNullValueInput | InputJsonValue
-    icons?: NullableJsonNullValueInput | InputJsonValue
-    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53322,7 +51782,6 @@ export namespace Prisma {
     type?: NullableStringFieldUpdateOperationsInput | string | null
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
-    profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
     pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
     paths?: PagePathUncheckedUpdateManyWithoutAssetNestedInput
     sections?: SectionUncheckedUpdateManyWithoutAssetNestedInput
@@ -53348,12 +51807,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -53381,12 +51841,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -53478,12 +51939,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -53511,12 +51973,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -53587,12 +52050,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -53620,12 +52084,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -53700,12 +52165,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -53733,12 +52199,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -53803,12 +52270,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -53836,12 +52304,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -53885,12 +52354,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -53918,12 +52388,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -53951,12 +52422,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -53984,12 +52456,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -54057,12 +52530,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -54090,12 +52564,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -54279,12 +52754,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -54312,12 +52788,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -54361,12 +52838,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -54394,12 +52872,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -54427,12 +52906,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -54460,12 +52940,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -54509,12 +52990,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -54542,12 +53024,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -54575,12 +53058,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -54608,12 +53092,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -54657,12 +53142,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -54690,12 +53176,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -54723,12 +53210,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -54756,12 +53244,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -54805,12 +53294,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -54838,12 +53328,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -54871,12 +53362,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -54904,12 +53396,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -54953,12 +53446,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -54986,12 +53480,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -55188,12 +53683,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -55221,12 +53717,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -55329,12 +53826,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -55362,12 +53860,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -55507,12 +54006,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -55540,12 +54040,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -55589,12 +54090,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -55622,12 +54124,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -55655,12 +54158,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -55688,12 +54192,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -55771,12 +54276,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -55804,12 +54310,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -55853,12 +54360,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -55886,12 +54394,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -55958,12 +54467,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -55991,12 +54501,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -56185,12 +54696,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -56218,12 +54730,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -56267,12 +54780,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -56300,12 +54814,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
@@ -56333,12 +54848,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeCreateNestedOneWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     domainEntries?: DomainCreateNestedManyWithoutAssetInput
     profiles?: ProfileCreateNestedManyWithoutAssetInput
@@ -56366,12 +54882,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     ownerAccountId?: string | null
     status?: string | null
     type?: string | null
-    themeEntry?: ThemeUncheckedCreateNestedOneWithoutAssetInput
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
     domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
     profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
@@ -56415,12 +54932,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUpdateOneWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUpdateManyWithoutAssetNestedInput
@@ -56448,12 +54966,13 @@ export namespace Prisma {
     modules?: NullableJsonNullValueInput | InputJsonValue
     icons?: NullableJsonNullValueInput | InputJsonValue
     domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
-    themeEntry?: ThemeUncheckedUpdateOneWithoutAssetNestedInput
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
     domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
     profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput

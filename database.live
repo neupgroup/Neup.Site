@@ -1,0 +1,17 @@
+Table: projects, Model: Asset
+Fields:
+> id: string, primary key;
+> name: string, default: "";
+> url: string, nullable;
+> tier: string, default: "free";
+> modules: jsonb, nullable;
+> icons: jsonb, nullable;
+> domains: jsonb, nullable;
+> design: jsonb, nullable;
+> features: jsonb, nullable;
+> createdAt: timestamp, nullable;
+> updatedAt: timestamp, nullable;
+> ownerAccountId: string, nullable, indexed;
+> status: string, nullable;
+> type: string, nullable;
+.. references pages, paths, sections, datalists, sources, environments, redirects, codeFiles, allocations, structures, deployments, appBaseBackups, assetModules, teams, members, roles, profiles;

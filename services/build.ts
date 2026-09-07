@@ -1,6 +1,7 @@
 import { prisma as db } from '#/core/database/prisma';
 import { logger } from '#/logica/logger';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
+import { createDefaultAssetTheme } from '@/services/themes';
 
 const CODEBASE_FOLDER_MARKER = '.neup-folder';
 
@@ -184,9 +185,9 @@ export async function getBuildFile(siteId: string, requestedPath: string): Promi
             where: { id: pagePath.pageId },
             select: { elements: true },
           }),
-          db.theme.findUnique({
+          db.asset.findUnique({
             where: { id: siteId },
-            select: { theme: true },
+            select: { design: true },
           }),
         ]);
 
@@ -196,7 +197,7 @@ export async function getBuildFile(siteId: string, requestedPath: string): Promi
 
         return {
           success: true,
-          content: convertJsonToHtml(page.elements as any, theme?.theme as any),
+          content: convertJsonToHtml(page.elements as any, ((theme?.design as any)?.theme || createDefaultAssetTheme()) as any),
           contentType: 'text/html; charset=utf-8',
         };
       }

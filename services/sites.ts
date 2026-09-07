@@ -20,7 +20,6 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
     const records = await db.asset.findMany({
       where: { ownerAccountId: accountId },
       include: {
-        themeEntry: true,
         profiles: { select: { subject: true, value: true } },
       },
     });
@@ -46,7 +45,8 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
       const description = subjectToValues.get('brand.description')?.[0];
       const contactEmail = subjectToValues.get('contact.email')?.map((value) => ({ value })) ?? [];
       const contactPhone = subjectToValues.get('contact.phone')?.map((value) => ({ value })) ?? [];
-      const theme = (record.themeEntry?.theme as Asset['theme']) ?? undefined;
+      const design = (record.design as any) || {};
+      const theme = (design.theme as Asset['theme']) ?? undefined;
 
       return {
         id: record.id,
@@ -57,8 +57,8 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
         tier: (record.tier as Asset['tier']) || 'free',
         logoUrl: resolveAssetLogoUrl(logoUrl, theme),
         icons: (record.icons as Asset['icons']) ?? {},
-        hideSitename: record.themeEntry?.hideSitename ?? false,
-        hideLogo: record.themeEntry?.hideLogo ?? false,
+        hideSitename: design.hideSitename ?? false,
+        hideLogo: design.hideLogo ?? false,
         description: description ?? undefined,
         socialProfiles,
         contactEmail,

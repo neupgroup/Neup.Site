@@ -27,9 +27,6 @@ export async function getAssetsForAccount(): Promise<{ assets?: AssetSummary[]; 
       include: {
         asset: {
           include: {
-            themeEntry: {
-              select: { theme: true },
-            },
             profiles: {
               where: { subject: { in: ['brand.logo', 'brand.description'] } },
               select: { subject: true, value: true },
@@ -47,7 +44,7 @@ export async function getAssetsForAccount(): Promise<{ assets?: AssetSummary[]; 
         const logoUrl = role.asset.profiles.find((entry) => entry.subject === 'brand.logo')?.value ?? null;
         const description =
           role.asset.profiles.find((entry) => entry.subject === 'brand.description')?.value ?? null;
-        const theme = role.asset.themeEntry?.theme as any;
+        const theme = ((role.asset.design as any)?.theme || createDefaultAssetTheme()) as any;
 
         assetsById.set(role.asset.id, {
           id: role.asset.id,
@@ -98,14 +95,7 @@ export async function createAssetForAccount(input: {
 
     await db.$transaction([
       db.asset.create({ data: assetData }),
-      db.theme.create({
-        data: {
-          id: assetId,
-          theme: defaultTheme as any,
-          createdAt: now,
-          updatedAt: now,
-        },
-      }),
+      db.asset.update({ where: { id: assetId }, data: { design: { theme: defaultTheme } as any } }),
       db.profile.createMany({
         data: [
           ...(input.logoUrl?.trim()

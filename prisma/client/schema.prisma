@@ -51,9 +51,10 @@ model Asset {
   modules        Json?
   icons          Json?
   domains        Json?
+  design         Json?
+  features       Json?
   createdAt      DateTime?
   updatedAt      DateTime?
-  themeEntry     Theme?
   roles          Role[]
   domainEntries  Domain[]
   profiles       Profile[]
@@ -90,18 +91,6 @@ model Profile {
   @@index([assetId])
   @@index([assetId, subject])
   @@map("profile")
-}
-
-model Theme {
-  id           String    @id
-  hideSitename Boolean   @default(false)
-  hideLogo     Boolean   @default(false)
-  theme        Json?
-  createdAt    DateTime?
-  updatedAt    DateTime?
-  asset        Asset     @relation(fields: [id], references: [id], onDelete: Cascade)
-
-  @@map("theme")
 }
 
 model Page {

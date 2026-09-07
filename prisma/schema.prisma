@@ -8,52 +8,53 @@ datasource db {
 }
 
 model Account {
-  id          String   @id
-  displayName String   @default("")
-  displayImage String  @default("")
-  neupId      String?  @unique
-  type        String   @default("individual")
-  createdOn   DateTime @default(now())
-  status      String   @default("active")
-  moreDetails Json?
-  roles       Role[]
+  id           String   @id
+  displayName  String   @default("")
+  displayImage String   @default("")
+  neupId       String?  @unique
+  type         String   @default("individual")
+  createdOn    DateTime @default(now())
+  status       String   @default("active")
+  moreDetails  Json?
+  roles        Role[]
 
   @@map("accounts")
 }
 
 model Role {
-  id         String   @id
-  assetId String
+  id          String  @id
+  assetId     String
   portfolioId String
-  accountId  String
-  role       String
-  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId   String
+  role        String
+  asset       Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  account     Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@map("role")
 }
 
 model Domain {
-  id         String   @id
-  assetId String
-  domain     String
-  isPrimary  Boolean
-  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  id        String  @id
+  assetId   String
+  domain    String
+  isPrimary Boolean
+  asset     Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@map("domain")
 }
 
 model Asset {
-  id             String                 @id
-  name           String                 @default("")
+  id             String                @id
+  name           String                @default("")
   url            String?
-  tier           String                 @default("free")
+  tier           String                @default("free")
   modules        Json?
   icons          Json?
   domains        Json?
+  design         Json?
+  features       Json?
   createdAt      DateTime?
   updatedAt      DateTime?
-  themeEntry     Theme?
   roles          Role[]
   domainEntries  Domain[]
   profiles       Profile[]
@@ -72,7 +73,7 @@ model Asset {
   structures     SiteStructure[]
   deployments    Deployment[]
   appBaseBackups AppBaseBackup[]
-  assetModules  AssetModule[]
+  assetModules   AssetModule[]
   teams          Team[]
   members        Member[]
 
@@ -81,32 +82,20 @@ model Asset {
 }
 
 model Profile {
-  id         String   @id @default(cuid())
+  id      String @id @default(cuid())
   assetId String
-  subject    String
-  value      String   @db.VarChar(512)
-  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  subject String
+  value   String @db.VarChar(512)
+  asset   Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@index([assetId, subject])
   @@map("profile")
 }
 
-model Theme {
-  id           String  @id
-  hideSitename Boolean @default(false)
-  hideLogo     Boolean @default(false)
-  theme        Json?
-  createdAt    DateTime?
-  updatedAt    DateTime?
-  asset     Asset @relation(fields: [id], references: [id], onDelete: Cascade)
-
-  @@map("theme")
-}
-
 model Page {
   id                 String                  @id @default(cuid())
-  assetId         String
+  assetId            String
   name               String                  @default("")
   description        String?
   elements           Json?
@@ -114,7 +103,7 @@ model Page {
   type               String                  @default("editor")
   createdAt          DateTime?
   updatedAt          DateTime?
-  asset           Asset                @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset              Asset                   @relation(fields: [assetId], references: [id], onDelete: Cascade)
   paths              PagePath[]
   dataSourceBindings PageDataSourceBinding[]
 
@@ -123,13 +112,13 @@ model Page {
 }
 
 model PagePath {
-  id        String   @id @default(cuid())
-  assetId String
+  id        String    @id @default(cuid())
+  assetId   String
   pageId    String
   path      String
   createdAt DateTime?
-  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  page      Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([assetId, path])
   @@index([pageId])
@@ -137,51 +126,51 @@ model PagePath {
 }
 
 model Section {
-  id        String   @id @default(cuid())
-  assetId String
+  id        String    @id @default(cuid())
+  assetId   String
   name      String
   type      String
   content   String
-  source    String   @default("json")
+  source    String    @default("json")
   createdBy String
   createdAt DateTime?
-  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@map("sections")
 }
 
 model Template {
-  id         String   @id @default(cuid())
-  name       String
+  id          String    @id @default(cuid())
+  name        String
   description String?
-  imageUrl   String?
-  previewUrl String?
-  category   String?
-  type       String   @default("section")
-  status     String   @default("draft")
-  usableOn   Json?
-  content    Json?
-  createdBy  String   @default("user")
-  createdAt  DateTime?
+  imageUrl    String?
+  previewUrl  String?
+  category    String?
+  type        String    @default("section")
+  status      String    @default("draft")
+  usableOn    Json?
+  content     Json?
+  createdBy   String    @default("user")
+  createdAt   DateTime?
 
   @@map("templates")
 }
 
 model DataSource {
-  id        String                  @id @default(cuid())
-  assetId String
-  name      String
-  type      String
-  methods   Json?
-  url       String?
-  headers   Json?
+  id         String                  @id @default(cuid())
+  assetId    String
+  name       String
+  type       String
+  methods    Json?
+  url        String?
+  headers    Json?
   connection String?
-  data      Json?
+  data       Json?
   datalistId String?
-  createdAt DateTime?
-  asset  Asset                @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  bindings  PageDataSourceBinding[]
+  createdAt  DateTime?
+  asset      Asset                   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  bindings   PageDataSourceBinding[]
 
   @@index([assetId])
   @@map("sources")
@@ -189,7 +178,7 @@ model DataSource {
 
 model PageDataSourceBinding {
   id         String     @id
-  assetId String
+  assetId    String
   pageId     String
   sourceId   String
   methodName String
@@ -201,74 +190,74 @@ model PageDataSourceBinding {
 }
 
 model Datalist {
-  id        String   @id @default(cuid())
-  assetId String
+  id        String    @id @default(cuid())
+  assetId   String
   name      String
   data      String
   createdAt DateTime?
   updatedAt DateTime?
-  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@map("datalists")
 }
 
 model Redirect {
-  id         String   @id @default(cuid())
-  assetId String
+  id         String    @id @default(cuid())
+  assetId    String
   from       String
   to         String
   type       String
   created_by String
   created_on DateTime?
-  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset      Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, created_on])
   @@map("redirects")
 }
 
 model EnvironmentVariable {
-  id        String   @id @default(cuid())
-  assetId String
+  id        String    @id @default(cuid())
+  assetId   String
   name      String
   value     String
   dataType  String
-  isPrivate Boolean  @default(false)
+  isPrivate Boolean   @default(false)
   createdBy String
   createdOn DateTime?
-  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, createdOn])
   @@map("environments")
 }
 
 model SiteStructure {
-  id                  String   @id
-  assetId         String   @unique
+  id                  String    @id
+  assetId             String    @unique
   structure           Json?
   status              String
-  themeChanged        Boolean  @default(false)
-  redirectsChanged    Boolean  @default(false)
-  assetsChanged       Boolean  @default(false)
-  appBaseChanged      Boolean  @default(false)
-  environmentsChanged Boolean  @default(false)
+  themeChanged        Boolean   @default(false)
+  redirectsChanged    Boolean   @default(false)
+  assetsChanged       Boolean   @default(false)
+  appBaseChanged      Boolean   @default(false)
+  environmentsChanged Boolean   @default(false)
   updatedAt           DateTime?
-  asset            Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset               Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@map("structure")
 }
 
 model Deployment {
-  id          String   @id @default(cuid())
-  assetId  String
-  structure   Json?
-  status      String
-  theme       Json?
-  redirects   Json?
-  siteProfile Json?
+  id           String    @id @default(cuid())
+  assetId      String
+  structure    Json?
+  status       String
+  theme        Json?
+  redirects    Json?
+  siteProfile  Json?
   environments Json?
-  attemptedOn DateTime?
-  asset    Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  attemptedOn  DateTime?
+  asset        Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, status, attemptedOn])
   @@map("deployments")
@@ -302,25 +291,25 @@ model Server {
 }
 
 model Allocation {
-  id               String   @id @default(cuid())
-  serverId         String
-  assetId       String
-  username         String?
-  deploymentPath   String?
+  id                String    @id @default(cuid())
+  serverId          String
+  assetId           String
+  username          String?
+  deploymentPath    String?
   storageAllocation String?
-  port             Int?
-  allocatedStorage Int?
-  allocatedOn      DateTime?
-  status           String   @default("active")
-  server           Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  asset         Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  port              Int?
+  allocatedStorage  Int?
+  allocatedOn       DateTime?
+  status            String    @default("active")
+  server            Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  asset             Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, serverId])
   @@map("allocations")
 }
 
 model ServerLog {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   serverId    String
   commandId   String?
   commandName String?
@@ -330,45 +319,45 @@ model ServerLog {
   initiatedBy String
   initiatedAt DateTime?
   completedAt DateTime?
-  server      Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  server      Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
   @@index([serverId, initiatedAt])
   @@map("serverLogs")
 }
 
 model ServerCommand {
-  id                String   @id @default(cuid())
-  name              String
-  description       String?
-  commandTemplate   String
-  parameters        Json?
+  id                 String    @id @default(cuid())
+  name               String
+  description        String?
+  commandTemplate    String
+  parameters         Json?
   preExecutionScript String?
-  allocatesPort     Boolean  @default(false)
-  portToReserve     String?
-  type              String   @default("view")
-  danger            String   @default("low")
-  nextCommands      Json?
-  createdAt         DateTime?
+  allocatesPort      Boolean   @default(false)
+  portToReserve      String?
+  type               String    @default("view")
+  danger             String    @default("low")
+  nextCommands       Json?
+  createdAt          DateTime?
 
   @@map("serverCommands")
 }
 
 model CodeFile {
-  id        String   @id @default(cuid())
-  assetId String
+  id        String    @id @default(cuid())
+  assetId   String
   fileName  String
   filePath  String
   content   String
-  size      Int      @default(0)
+  size      Int       @default(0)
   createdAt DateTime?
-  asset  Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, createdAt])
   @@map("codeFiles")
 }
 
 model LinkedAccount {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   account_id       String
   platform         String
   accessToken      String
@@ -378,13 +367,13 @@ model LinkedAccount {
   providerUsername String
   authorized_on    DateTime?
 
-  @@index([account_id, platform])
   @@unique([account_id, platform, providerUserId])
+  @@index([account_id, platform])
   @@map("linked_accounts")
 }
 
 model ApiToken {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   accountId   String
   name        String
   tokenHash   String
@@ -406,24 +395,24 @@ model Team {
   asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
   members     Member[]
 
-  @@index([assetId, order])
   @@unique([assetId, slug])
+  @@index([assetId, order])
   @@map("teams")
 }
 
 model Member {
-  id          String   @id @default(cuid())
-  assetId     String   @map("asset_id")
+  id          String  @id @default(cuid())
+  assetId     String  @map("asset_id")
   slug        String
   name        String
   email       String
   role        String
   imageUrl    String?
   order       Int?
-  teamId      String?  @map("team_id")
+  teamId      String? @map("team_id")
   permissions Json?
-  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  team        Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  asset       Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  team        Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
 
   @@unique([assetId, slug])
   @@index([assetId, teamId, order])
@@ -477,21 +466,21 @@ model ErrorLog {
 }
 
 model AppBaseBackup {
-  id         String   @id @default(cuid())
-  assetId String
+  id         String    @id @default(cuid())
+  assetId    String
   fileName   String
   fileType   String
   content    String
   backedUpAt DateTime?
   backedUpBy String
-  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset      Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, backedUpAt])
   @@map("appBaseBackups")
 }
 
 model NewsArticle {
-  id          String   @id
+  id          String    @id
   slug        String?
   title       String
   content     String
@@ -505,36 +494,36 @@ model NewsArticle {
 }
 
 model SyncRequest {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   source      String
   destination String
   data        Json
-  status      String   @default("pending")
-  requestedOn DateTime @default(now())
+  status      String    @default("pending")
+  requestedOn DateTime  @default(now())
   attemptOn   DateTime?
 
   @@map("sync_request")
 }
 
 model AssetModule {
-  id         String   @id @default(cuid())
+  id      String @id @default(cuid())
   assetId String
-  title      String
-  status     String
-  asset   Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  title   String
+  status  String
+  asset   Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@map("modules")
 }
 
 model SyncerLog {
-  id         String   @id @default(cuid())
-  appId      String?  @map("app_id")
-  clientId   String?  @map("client_id")
-  type       String
-  content    String
-  createdOn  DateTime? @map("created_on")
-  status     String?
+  id        String    @id @default(cuid())
+  appId     String?   @map("app_id")
+  clientId  String?   @map("client_id")
+  type      String
+  content   String
+  createdOn DateTime? @map("created_on")
+  status    String?
 
   @@index([appId, clientId, type, createdOn])
   @@map("syncer_log")
