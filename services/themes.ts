@@ -18,7 +18,7 @@ based on a random primary color.
 export function createDefaultAssetTheme(): AssetTheme {
   // Keep the fallback stable across requests so an empty design does not
   // change the site's appearance on every refresh.
-  const colors = ['#64C5CF'];
+  const colors = ['#374B87'];
 
   return {
     mode: 'light',

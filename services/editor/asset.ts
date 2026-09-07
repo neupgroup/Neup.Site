@@ -137,12 +137,6 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
     if (data.name !== existing?.name || hideSitenameChanged || hideLogoChanged) await markAssetsAsPending(assetId);
     if (socialProfiles) await markAssetsAsPending(assetId);
 
-    await db.asset.upsert({
-      where: { id: assetId },
-      create: { id: assetId, ...assetData },
-      update: assetData,
-    });
-
     if (nextTheme) {
       const designData = { ...existingDesign, theme: { ...nextTheme } };
       if (nextTheme.colors && nextTheme.colors.length > 0) {
@@ -159,6 +153,12 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
         ...(typeof nextHideLogo === 'boolean' ? { hideLogo: nextHideLogo } : {}),
       };
     }
+
+    await db.asset.upsert({
+      where: { id: assetId },
+      create: { id: assetId, ...assetData },
+      update: assetData,
+    });
 
     const profileSync = await syncAssetProfileSubjects({
       assetId,
