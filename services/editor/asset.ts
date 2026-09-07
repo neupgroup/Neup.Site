@@ -77,6 +77,7 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
       contactEmail: contactEmailFromDb.length ? contactEmailFromDb : (data.contactEmail || []),
       contactPhone: contactPhoneFromDb.length ? contactPhoneFromDb : (data.contactPhone || []),
       modules: data.modules || {},
+      features: data.features || {},
       theme,
       createdAt: record.createdAt ? record.createdAt.toISOString() : null,
       updatedAt: record.updatedAt ? record.updatedAt.toISOString() : null,

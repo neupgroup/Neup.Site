@@ -21,6 +21,17 @@ export interface AssetTheme {
   generated?: GeneratedTheme;
 }
 
+export interface AssetFeatures {
+  database?: {
+    isRequired: boolean;
+    requiredType?: string;
+  };
+  accountSupport?: {
+    isRequired: boolean;
+    interactionType?: 'remote' | 'local';
+  };
+}
+
 export interface AssetIcons {
   favicon?: string;
   favicon16?: string;
@@ -66,6 +77,7 @@ export interface Asset {
   contactPhone?: { value: string; }[];
   modules?: { [key: string]: any };
   theme?: Partial<AssetTheme>;
+  features?: AssetFeatures;
   ownerAccountId?: string;
   status?: string;
   type?: string;

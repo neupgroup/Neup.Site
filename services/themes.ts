@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import type { AssetTheme } from '@/services/asset/type';
 import { generateThemeFromColor } from '#/core/helpers/color';
 
@@ -16,12 +15,10 @@ based on a random primary color.
 ::end
 */
 
-function createRandomHexColor(): string {
-  return `#${crypto.randomInt(0, 0x1000000).toString(16).padStart(6, '0').toUpperCase()}`;
-}
-
 export function createDefaultAssetTheme(): AssetTheme {
-  const colors = [createRandomHexColor()];
+  // Keep the fallback stable across requests so an empty design does not
+  // change the site's appearance on every refresh.
+  const colors = ['#64C5CF'];
 
   return {
     mode: 'light',

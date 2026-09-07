@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '#/components/ui/button';
+import { useProfile } from '@/inapp/context/ProfileContext';
+import { saveAsset } from '@/services/editor/asset';
+import type { AssetFeatures } from '@/services/asset/type';
 
 const databaseOptions = [
   { value: 'postgresql', label: 'Postgre SQL', description: 'Slow, concurrent' },
@@ -10,10 +13,35 @@ const databaseOptions = [
 ];
 
 export default function FeaturesSettingsPage() {
+  const { asset, setAsset, loading } = useProfile();
   const [needsDatabase, setNeedsDatabase] = useState<string>('');
   const [database, setDatabase] = useState<string>('');
   const [needsAccount, setNeedsAccount] = useState<string>('');
   const [interactsLocally, setInteractsLocally] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    const features = asset?.features;
+    setNeedsDatabase(features?.database?.isRequired ? 'yes' : 'no');
+    setDatabase(features?.database?.requiredType || '');
+    setNeedsAccount(features?.accountSupport?.isRequired ? 'yes' : 'no');
+    setInteractsLocally(features?.accountSupport?.interactionType || '');
+  }, [asset, loading]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const features: AssetFeatures = {
+      database: { isRequired: needsDatabase === 'yes', requiredType: needsDatabase === 'yes' ? database : undefined },
+      accountSupport: {
+        isRequired: needsAccount === 'yes',
+        interactionType: needsAccount === 'yes' ? (interactsLocally === 'yes' ? 'local' : 'remote') : undefined,
+      },
+    };
+    const result = await saveAsset({ features });
+    if (result.success && asset) setAsset({ ...asset, features });
+    setIsSaving(false);
+  };
 
   return (
     <div className="w-full space-y-8">
@@ -132,14 +160,10 @@ export default function FeaturesSettingsPage() {
 
       <Button
         type="button"
-        disabled={
-          !needsDatabase ||
-          (needsDatabase === 'yes' && !database) ||
-          !needsAccount ||
-          (needsAccount === 'yes' && !interactsLocally)
-        }
+        onClick={handleSave}
+        disabled={isSaving || !needsDatabase || (needsDatabase === 'yes' && !database) || !needsAccount || (needsAccount === 'yes' && !interactsLocally)}
       >
-        Done
+        {isSaving ? 'Saving...' : 'Done'}
       </Button>
     </div>
   );
