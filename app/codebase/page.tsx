@@ -157,7 +157,7 @@ export default function CodebasePage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Manage Codebase</h1>
             <p className="text-muted-foreground">Upload your codebase files and manage deployments to your custom host.</p>
         </div>
-         <Button type="solid" onClick={handleDeploy} disabled={isDeploying || totalCount === 0}>
+         <Button variant="solid" onClick={handleDeploy} disabled={isDeploying || totalCount === 0}>
             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2" />}
             {isDeploying ? 'Deploying...' : 'Deploy Assets'}
         </Button>
@@ -190,7 +190,7 @@ export default function CodebasePage() {
                   </span>
                 </div>
               ))}
-              <Button type="solid" onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
+              <Button variant="solid" onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
                 Upload {uploadingFiles.length} file(s)
               </Button>
             </div>
@@ -231,7 +231,7 @@ export default function CodebasePage() {
                                             <TableCell>{(file.size / 1024).toFixed(2)}</TableCell>
                                             <TableCell>{file.createdAt ? format(new Date(file.createdAt), 'PPpp') : 'N/A'}</TableCell>
                                             <TableCell className="text-right">
-                                                <Button type="plain" size="icon" onClick={() => handleDelete(file.id)}>
+                                                <Button variant="plain" size="icon" onClick={() => handleDelete(file.id)}>
                                                     <Trash2 className="h-4 w-4 text-destructive" />
                                                 </Button>
                                             </TableCell>
@@ -250,7 +250,7 @@ export default function CodebasePage() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Button
-                            type="outlined"
+                            variant="outlined"
                             size="sm"
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage <= 1}
@@ -259,7 +259,7 @@ export default function CodebasePage() {
                             Previous
                         </Button>
                         <Button
-                            type="outlined"
+                            variant="outlined"
                             size="sm"
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage >= totalPages}

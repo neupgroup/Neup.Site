@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getJobPostings, type JobPosting } from '@/services/hiring';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import {
   Card,
   CardContent,
@@ -52,11 +53,9 @@ export default function HiringDashboardPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Hiring</h1>
-        <Button type="solid" asChild>
-          <Link href="/manage/hiring/create">
+        <LinkButton variant="solid" href="/manage/hiring/create">
             <Plus className="mr-2 h-4 w-4" /> Create Job Posting
-          </Link>
-        </Button>
+          </LinkButton>
       </header>
       <Card>
         <CardHeader>
@@ -102,11 +101,9 @@ export default function HiringDashboardPage() {
                     <TableCell><Badge variant={posting.status === 'Open' ? 'default' : 'secondary'}>{posting.status}</Badge></TableCell>
                     <TableCell>{posting.createdAt ? format(new Date(posting.createdAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild type="plain" size="icon">
-                        <Link href={`/manage/hiring/${posting.id}`}>
+                      <LinkButton variant="plain" size="icon" href={`/manage/hiring/${posting.id}>
                           <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </Button>
+                        </LinkButton>
                     </TableCell>
                   </TableRow>
                 ))}

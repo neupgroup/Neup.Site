@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import Link from 'next/link';
@@ -60,12 +61,10 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     return (
       <div className="w-full space-y-6">
         <div className="mb-4">
-            <Button asChild type="outlined">
-            <Link href="/root/servers">
+            <LinkButton variant="outlined" href="/root/servers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Servers
-            </Link>
-            </Button>
+            </LinkButton>
         </div>
         <ServerInfoCard.Skeleton />
         <ServerManagement.Skeleton />
@@ -78,11 +77,9 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     return (
       <div className="w-full">
         <div className="mb-4">
-          <Button asChild type="outlined">
-            <Link href="/root/servers">
+          <LinkButton variant="outlined" href="/root/servers">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Servers
-            </Link>
-          </Button>
+            </LinkButton>
         </div>
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -96,12 +93,10 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   return (
     <div className="w-full space-y-6">
       <div className="mb-4">
-        <Button asChild type="outlined">
-          <Link href="/root/servers">
+        <LinkButton variant="outlined" href="/root/servers">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Servers
-          </Link>
-        </Button>
+          </LinkButton>
       </div>
 
       <ServerInfoCard 

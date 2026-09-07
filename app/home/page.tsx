@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import Link from 'next/link';
 import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
 import { generatePageMetadata } from '#/core/helpers/metadata';
@@ -76,16 +77,12 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4">
-            <Button asChild className="w-full sm:w-auto">
-              <Link href={appendSelectedProject('/news/create', selectedProject)}>
+            <LinkButton className="w-full sm:w-auto" href={appendSelectedProject('/news/create', selectedProject)}>
                 <Newspaper className="mr-2" /> New Article
-              </Link>
-            </Button>
-            <Button asChild type="tinted" className="w-full sm:w-auto">
-              <Link href={appendSelectedProject('/news', selectedProject)}>
+              </LinkButton>
+            <LinkButton variant="tinted" className="w-full sm:w-auto" href={appendSelectedProject('/news', selectedProject)}>
                 <Newspaper className="mr-2" /> View News
-              </Link>
-            </Button>
+              </LinkButton>
           </CardContent>
         </Card>
         <Card>
@@ -96,12 +93,10 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild>
-              <Link href={appendSelectedProject('/site/theme', selectedProject)}>
+            <LinkButton href={appendSelectedProject('/site/theme', selectedProject)}>
                 <Palette className="mr-2" />
                 Edit Theme
-              </Link>
-            </Button>
+              </LinkButton>
           </CardContent>
         </Card>
       </div>

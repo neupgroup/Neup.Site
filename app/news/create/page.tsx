@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
@@ -58,11 +59,9 @@ export default function CreateNewsArticlePage() {
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex items-center gap-4">
-            <Button type="plain" size="icon" asChild>
-                <Link href="/news">
+            <LinkButton variant="plain" size="icon" href="/news">
                 <ArrowLeft />
-                </Link>
-            </Button>
+                </LinkButton>
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Create New Article</h1>
             </div>
             <Card>
@@ -76,7 +75,7 @@ export default function CreateNewsArticlePage() {
                 )} />
             </CardContent>
             <CardFooter>
-                <Button type="solid" htmlType="submit" disabled={isSaving} className="w-full">
+                <Button variant="solid" htmlType="submit" disabled={isSaving} className="w-full">
                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 {isSaving ? 'Saving...' : 'Save and Continue'}
                 </Button>

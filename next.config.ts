@@ -27,6 +27,7 @@ function getConfiguredBasePath(): string | undefined {
 
 const nextConfig: NextConfig = {
   /* config options here */
+  allowedDevOrigins: ['dev.neupgroup.com'],
   typescript: {
     ignoreBuildErrors: true,
   },

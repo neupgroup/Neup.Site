@@ -175,7 +175,7 @@ export default function EditBasicsPage({ params }: { params: Promise<{ id: strin
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
+            <Button variant="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

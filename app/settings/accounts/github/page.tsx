@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Github } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '#/core/hooks/useToast';
@@ -41,11 +42,9 @@ export default function LinkGitHubPage() {
         <CardContent>
           <div className="text-center p-12">
             <Github className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <Button type="solid" asChild>
-              <Link href={appendSelectedProject('/bridge/api/v1/github/start', selectedProject)}>
+            <LinkButton variant="solid" href={appendSelectedProject('/bridge/api/v1/github/start', selectedProject)}>
                 <Github className="mr-2 h-4 w-4" /> Connect with GitHub
-              </Link>
-            </Button>
+              </LinkButton>
           </div>
         </CardContent>
       </Card>

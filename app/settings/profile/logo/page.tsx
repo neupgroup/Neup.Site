@@ -3,6 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -57,11 +58,9 @@ export default function LogoUploadPage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
-        <Button type="outlined" asChild>
-            <Link href={appendSelectedProject('/settings/profile', selectedProject)}>
+        <LinkButton variant="outlined" href={appendSelectedProject('/settings/profile', selectedProject)}>
                 <ArrowLeft className="mr-2" /> Back to Profile
-            </Link>
-        </Button>
+            </LinkButton>
       </header>
 
       <Card>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getDatalist, deleteDatalist } from '@/services/datalists';
 import { Datalist } from '@/services/datalist/type';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
@@ -69,12 +70,10 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <Button asChild type="plain" className="pl-0">
-          <Link href="/site/datalists">
+       <LinkButton variant="plain" className="pl-0" href="/site/datalists">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Datalists
-          </Link>
-        </Button>
+          </LinkButton>
       <Card>
         <CardHeader>
           <CardTitle>{datalist.name}</CardTitle>
@@ -100,14 +99,12 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
           </div>
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-            <Button type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
+            <Button variant="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete
             </Button>
-            <Button asChild>
-                <Link href={`/site/datalists/${datalist.id}/edit`}>
+            <LinkButton href={`/site/datalists/${datalist.id}>
                     <Pencil className="mr-2 h-4 w-4" /> Edit Datalist
-                </Link>
-            </Button>
+                </LinkButton>
         </CardFooter>
       </Card>
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>

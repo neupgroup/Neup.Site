@@ -4,6 +4,7 @@ import { ArrowLeft, Mail } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getMember } from '@/services/members';
@@ -50,12 +51,10 @@ export default async function ViewMemberPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button type="outlined" asChild>
-          <Link href="/manage/member">
+        <LinkButton variant="outlined" href="/manage/member">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
-          </Link>
-        </Button>
+          </LinkButton>
       </div>
       <Card>
         <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center">

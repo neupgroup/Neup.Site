@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X, Play, Eraser } from 'lucide-react';
@@ -59,7 +60,7 @@ const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourc
                         />
                     </div>
                 ))}
-                    <Button type="solid" size="sm" onClick={handleTest} className="mt-2">
+                    <Button variant="solid" size="sm" onClick={handleTest} className="mt-2">
                     <Play className="mr-2" /> Run Test
                 </Button>
             </div>
@@ -147,7 +148,7 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
                         {method.methodName}
                     </CardTitle>
                     {!isEditing && (
-                        <Button type="plain" size="icon" className="h-7 w-7" onClick={toggleTester}>
+                        <Button variant="plain" size="icon" className="h-7 w-7" onClick={toggleTester}>
                             <Play className="h-4 w-4" />
                         </Button>
                     )}
@@ -231,20 +232,20 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                             Save
                         </Button>
-                         <Button htmlType="button" type="plain" size="sm" onClick={cancelEditing}>
+                         <Button htmlType="button" variant="plain" size="sm" onClick={cancelEditing}>
                              <X className="mr-2" /> Cancel
                         </Button>
-                         <Button htmlType="button" type="solid" convey="danger" size="sm" onClick={handleRemove}>
+                         <Button htmlType="button" variant="solid" convey="danger" size="sm" onClick={handleRemove}>
                             <Trash2 className="mr-2" /> Remove
                         </Button>
                     </>
                 ) : (
                     <>
-                        <Button htmlType="button" type="outlined" size="sm" onClick={startEditing}>
+                        <Button htmlType="button" variant="outlined" size="sm" onClick={startEditing}>
                             <Edit className="mr-2" /> Edit
                         </Button>
                         {testResult && (
-                            <Button htmlType="button" type="outlined" size="sm" onClick={handleClearTest}>
+                            <Button htmlType="button" variant="outlined" size="sm" onClick={handleClearTest}>
                                 <Eraser className="mr-2"/> Clear
                             </Button>
                         )}
@@ -292,7 +293,7 @@ const AddNewMethodCard = ({ onAdd, existingMethodNames }: { onAdd: (name: string
                             onChange={(e) => setNewMethodName(e.target.value)}
                             placeholder="e.g., getUserProfile"
                         />
-                        <Button type="solid" htmlType="button" onClick={handleAddClick} disabled={!newMethodName}>
+                        <Button variant="solid" htmlType="button" onClick={handleAddClick} disabled={!newMethodName}>
                             <Plus className="mr-2"/> Add Method
                         </Button>
                     </div>
@@ -408,12 +409,10 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
             <div>
                 <p className="text-muted-foreground">Editing methods for: <span className="font-semibold">{source?.name}</span></p>
             </div>
-            <Button type="plain" asChild>
-                <Link href={`/site/sources/${id}/edit`}>
+            <LinkButton variant="plain" href={`/site/sources/${id}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Settings
-                </Link>
-            </Button>
+                </LinkButton>
         </div>
         
         {methods.map((method) => (

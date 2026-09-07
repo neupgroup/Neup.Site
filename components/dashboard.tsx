@@ -67,7 +67,8 @@ import { Skeleton } from '#/components/ui/skeleton';
 import type { Asset, AssetTheme } from '@/services/asset/type';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '#/components/ui/collapsible';
 import { Button } from '#/components/ui/button';
-import { NavButton } from '#/components/ui/navbutton';
+import { NavLink as SidebarNavLink } from '#/components/ui/nav-link';
+import { Sidebar } from '#/components/ui/sidebar';
 import { ChevronRight } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
 import { useState, useEffect } from 'react';
@@ -78,18 +79,24 @@ import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/account
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 const navLinkClassName = (isActive: boolean) => cn(
-  'flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
+  'flex w-full items-center justify-start gap-2 rounded-md border border-transparent px-3 py-2 text-left text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
   isActive && 'bg-primary/25 text-primary hover:bg-primary/30 active:bg-primary/40'
 );
 
-function NavLink({ href, children, currentPath, selectedProject, onClick }: { href: string; children: React.ReactNode; currentPath: string, selectedProject: string | null, onClick?: () => void }) {
+function SidebarNavItem({ href, children, currentPath, selectedProject, onClick }: { href: string; children: React.ReactNode; currentPath: string, selectedProject: string | null, onClick?: () => void }) {
   const isActive = href === '/' ? currentPath === href : currentPath.startsWith(href);
   return (
-    <NavButton asChild active={isActive} className={navLinkClassName(isActive)}>
-      <Link href={appendSelectedProject(href, selectedProject)} onClick={onClick}>
+    <div className="block w-full">
+      <SidebarNavLink
+        href={appendSelectedProject(href, selectedProject)}
+        active={isActive}
+        alignment="left"
+        className={navLinkClassName(isActive)}
+        onClick={onClick}
+      >
         {children}
-      </Link>
-    </NavButton>
+      </SidebarNavLink>
+    </div>
   );
 }
 
@@ -105,9 +112,11 @@ function buildAnalyticsUrl(propertyId: string | null, currentUrl: string) {
 
 function ExternalAnalyticsNavLink({ propertyId, currentUrl, children, onClick }: { propertyId: string | null; currentUrl: string; children: React.ReactNode; onClick?: () => void }) {
   return (
-    <NavButton asChild className={navLinkClassName(false)}>
-      <a
+    <div className="block w-full">
+      <SidebarNavLink
         href={buildAnalyticsUrl(propertyId, currentUrl)}
+        alignment="left"
+        className={navLinkClassName(false)}
         onClick={(event) => {
           event.preventDefault();
           onClick?.();
@@ -115,17 +124,17 @@ function ExternalAnalyticsNavLink({ propertyId, currentUrl, children, onClick }:
         }}
       >
         {children}
-      </a>
-    </NavButton>
+      </SidebarNavLink>
+    </div>
   );
 }
 
 function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, selectedProject, onLinkClick }: { currentPath: string, currentUrl: string, isAuthenticated: boolean, propertyId: string | null, selectedProject: string | null, onLinkClick?: () => void }) {
   return (
-    <nav className="flex flex-col gap-2">
-      <NavLink href="/" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></NavLink>
-      <NavLink href="/settings" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></NavLink>
-      <NavLink href="/status" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></NavLink>
+    <nav className="flex w-full flex-col items-stretch gap-2">
+      <SidebarNavItem href="/home" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></SidebarNavItem>
+      <SidebarNavItem href="/settings" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></SidebarNavItem>
+      <SidebarNavItem href="/status" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></SidebarNavItem>
 
       {/* TODO: Add permission-based filtering when permissions are implemented */}
       {/* For now, showing all navigation items regardless of authentication status */}
@@ -133,38 +142,38 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-sm font-semibold text-muted-foreground">
           Manage
         </div>
-        <NavLink href="/manage/member" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></NavLink>
-        <NavLink href="/manage/accounts" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></NavLink>
-        <NavLink href="/manage/projects" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></NavLink>
-        <NavLink href="/manage/hiring" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></NavLink>
-        <NavLink href="/manage/billing" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
-        <NavLink href="/manage/access" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></NavLink>
-        <NavLink href="/manage/permissions" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></NavLink>
-        <NavLink href="/manage/redirects" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></NavLink>
-        <NavLink href="/manage/contacts" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></NavLink>
+        <SidebarNavItem href="/manage/member" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/accounts" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/projects" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/hiring" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/billing" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/access" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/permissions" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/redirects" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/contacts" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></SidebarNavItem>
         <ExternalAnalyticsNavLink propertyId={propertyId} currentUrl={currentUrl} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span><ExternalLink className="h-3.5 w-3.5" aria-label="Opens external page" /></ExternalAnalyticsNavLink>
-        <NavLink href="/manage/products" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></NavLink>
-        <NavLink href="/manage/syncer" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></NavLink>
-        <NavLink href="/manage/articles" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></NavLink>
-        <NavLink href="/manage/referrals" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></NavLink>
+        <SidebarNavItem href="/manage/products" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/syncer" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/articles" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/referrals" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           News
         </div>
-        <NavLink href="/news" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>All Articles</span></NavLink>
-        <NavLink href="/news/create" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></NavLink>
-        <NavLink href="/news/category" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></NavLink>
-        <NavLink href="/news/featured" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></NavLink>
+        <SidebarNavItem href="/news" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>All Articles</span></SidebarNavItem>
+        <SidebarNavItem href="/news/create" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></SidebarNavItem>
+        <SidebarNavItem href="/news/category" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></SidebarNavItem>
+        <SidebarNavItem href="/news/featured" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Tourio
         </div>
-        <NavLink href="/tourio/experience" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></NavLink>
-        <NavLink href="/tourio/dish" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></NavLink>
+        <SidebarNavItem href="/tourio/experience" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></SidebarNavItem>
+        <SidebarNavItem href="/tourio/dish" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></SidebarNavItem>
       </div>
 
       {/* Asset Section */}
@@ -172,24 +181,24 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Asset
         </div>
-        <NavLink href="/site/sources" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></NavLink>
-        <NavLink href="/site/datalists" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></NavLink>
-        <NavLink href="/site/servers" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
-        <NavLink href="/site/modules" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
-        <NavLink href="/site/uploads" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></NavLink>
-        <NavLink href="/site/appbase" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></NavLink>
-        <NavLink href="/site/environment" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></NavLink>
-        <NavLink href="/analytics" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></NavLink>
-        <NavLink href="/site/deploy" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></NavLink>
-        <NavLink href="/site/advanced" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></NavLink>
+        <SidebarNavItem href="/site/sources" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></SidebarNavItem>
+        <SidebarNavItem href="/site/datalists" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></SidebarNavItem>
+        <SidebarNavItem href="/site/servers" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></SidebarNavItem>
+        <SidebarNavItem href="/site/modules" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
+        <SidebarNavItem href="/site/uploads" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></SidebarNavItem>
+        <SidebarNavItem href="/site/appbase" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></SidebarNavItem>
+        <SidebarNavItem href="/site/environment" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></SidebarNavItem>
+        <SidebarNavItem href="/analytics" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></SidebarNavItem>
+        <SidebarNavItem href="/site/deploy" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></SidebarNavItem>
+        <SidebarNavItem href="/site/advanced" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Site
         </div>
-        <NavLink href="/site/codebase" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></NavLink>
-        <NavLink href="/site/theme" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></NavLink>
+        <SidebarNavItem href="/site/codebase" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></SidebarNavItem>
+        <SidebarNavItem href="/site/theme" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Palette className="h-4 w-4" /><span>Theme</span></SidebarNavItem>
       </div>
 
       {/* Root Section */}
@@ -197,14 +206,14 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Root
         </div>
-        <NavLink href="/root/pages" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></NavLink>
-        <NavLink href="/root/templates" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><LayoutTemplate className="h-4 w-4" /><span>Templates</span></NavLink>
-        <NavLink href="/root/servers" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></NavLink>
-        <NavLink href="/root/servers/allocations" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Allocations</span></NavLink>
-        <NavLink href="/root/storage" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><HardDrive className="h-4 w-4" /><span>Storage</span></NavLink>
-        <NavLink href="/root/billing" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></NavLink>
-        <NavLink href="/root/modules" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></NavLink>
-        <NavLink href="/root/errors" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Bug className="h-4 w-4" /><span>Errors</span></NavLink>
+        <SidebarNavItem href="/root/pages" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></SidebarNavItem>
+        <SidebarNavItem href="/root/templates" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><LayoutTemplate className="h-4 w-4" /><span>Templates</span></SidebarNavItem>
+        <SidebarNavItem href="/root/servers" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></SidebarNavItem>
+        <SidebarNavItem href="/root/servers/allocations" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Allocations</span></SidebarNavItem>
+        <SidebarNavItem href="/root/storage" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><HardDrive className="h-4 w-4" /><span>Storage</span></SidebarNavItem>
+        <SidebarNavItem href="/root/billing" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
+        <SidebarNavItem href="/root/modules" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
+        <SidebarNavItem href="/root/errors" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Bug className="h-4 w-4" /><span>Errors</span></SidebarNavItem>
       </div>
 
       <div className="mt-auto pt-8">
@@ -212,7 +221,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
           <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
             Account
           </div>
-          <NavLink href="/switch" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></NavLink>
+          <SidebarNavItem href="/switch" currentPath={currentPath} selectedProject={selectedProject} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></SidebarNavItem>
         </div>
       </div>
     </nav>
@@ -311,7 +320,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, selectedProject }: { isMob
             </Avatar>
           </Link>
           <div className="md:hidden">
-          <Button type="plain" size="icon" onClick={toggleMobileMenu}>
+          <Button variant="plain" size="icon" onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           </div>
@@ -366,16 +375,19 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
         </ScrollArea>
       </div>
 
-      <div className="mx-auto grid w-full max-w-[1440px] lg:grid-cols-[280px_1fr]">
+      <div className="mx-auto grid w-full max-w-[1440px] lg:grid-cols-[280px_minmax(0,1fr)]">
         {/* Sidebar */}
-        <aside className="hidden h-[calc(100vh-4rem)] flex-col border-r bg-background lg:sticky lg:top-16 lg:flex">
+        <Sidebar
+          collapsible="none"
+          className="hidden h-[calc(100vh-4rem)] w-[280px] min-w-[280px] shrink-0 flex-col border-r bg-background lg:sticky lg:top-16 lg:flex"
+        >
           <div className="flex flex-1 flex-col overflow-y-auto p-4 custom-scrollbar">
             <MainNavContent currentPath={pathname} currentUrl={currentUrl} isAuthenticated={isAuthenticated} propertyId={propertyId} selectedProject={selectedProject} />
           </div>
-        </aside>
+        </Sidebar>
 
         {/* Main Content */}
-        <main className="min-h-[calc(100vh-4rem)] p-6 lg:p-8">
+        <main className="min-w-0 min-h-[calc(100vh-4rem)] p-6 lg:p-8">
           <div className="w-full">{children}</div>
         </main>
       </div>

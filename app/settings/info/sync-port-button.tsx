@@ -47,7 +47,7 @@ export function SyncPortButton({ assetId, serverId }: SyncPortButtonProps) {
 
     return (
         <Button
-            type="outlined"
+            variant="outlined"
             size="sm"
             onClick={handleSync}
             disabled={loading}

@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Input } from '#/components/ui/input';
 import { Label } from '#/components/ui/label';
 import { Save, ArrowLeft, Loader2, Code, Settings } from 'lucide-react';
@@ -141,12 +142,10 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
       <form onSubmit={methods.handleSubmit(handleUpdateSource)} className="w-full max-w-2xl space-y-6">
           <div className="flex justify-between items-center">
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Edit Data Source</h1>
-            <Button type="plain" asChild>
-                <Link href={`/site/sources/${id}`}>
+            <LinkButton variant="plain" href={`/site/sources/${id}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Source
-                </Link>
-            </Button>
+                </LinkButton>
         </div>
         <Card>
           <CardHeader>
@@ -187,7 +186,7 @@ export default function EditSourcePage({ params }: { params: Promise<{ id: strin
         </Card>
 
         <div className="flex justify-end">
-          <Button type="solid" htmlType="submit" disabled={isSubmitting}>
+          <Button variant="solid" htmlType="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             {isSubmitting ? 'Saving...' : 'Save and Continue'}
           </Button>

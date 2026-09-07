@@ -38,7 +38,7 @@ export default function GlobalError({
                 </p>
             </CardContent>
             <CardFooter>
-                <Button type="solid" onClick={() => reset()}>Try again</Button>
+                <Button variant="solid" onClick={() => reset()}>Try again</Button>
             </CardFooter>
         </Card>
     </div>

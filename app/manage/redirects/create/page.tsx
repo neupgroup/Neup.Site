@@ -13,6 +13,7 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Input } from '#/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
@@ -60,12 +61,10 @@ export default function CreateRedirectPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button type="plain" asChild>
-          <Link href="/manage/redirects">
+        <LinkButton variant="plain" href="/manage/redirects">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Redirects
-          </Link>
-        </Button>
+          </LinkButton>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -115,7 +114,7 @@ export default function CreateRedirectPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="solid" htmlType="submit" disabled={isSubmitting}>
+              <Button variant="solid" htmlType="submit" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="mr-2 animate-spin" /> : <Save className="mr-2" />}
                 Save Redirect
               </Button>

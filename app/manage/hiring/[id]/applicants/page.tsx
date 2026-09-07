@@ -5,6 +5,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { getApplicantsForJob, type Applicant } from '@/services/applicants';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import {
   Card,
   CardContent,
@@ -52,23 +53,19 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="w-full">
         <div className="mb-4">
-            <Button type="outlined" asChild>
-            <Link href={`/manage/hiring/${id}`}>
+            <LinkButton variant="outlined" href={`/manage/hiring/${id}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Job Posting
-            </Link>
-            </Button>
+            </LinkButton>
         </div>
       <header className="flex items-center justify-between mb-8">
         <div>
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Applicants</h1>
             <p className="text-muted-foreground">Review candidates for this job posting.</p>
         </div>
-        <Button type="solid" asChild>
-          <Link href={`/manage/hiring/${id}/applicants/add`}>
+        <LinkButton variant="solid" href={`/manage/hiring/${id}>
             <Plus className="mr-2 h-4 w-4" /> Add Applicant
-          </Link>
-        </Button>
+          </LinkButton>
       </header>
       <Card>
         <CardHeader>
@@ -112,11 +109,9 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
                     <TableCell><Badge variant="secondary">{applicant.status}</Badge></TableCell>
                     <TableCell>{applicant.appliedAt ? format(new Date(applicant.appliedAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild type="plain" size="icon">
-                        <Link href={`/manage/hiring/${id}/applicants/${applicant.id}`}>
+                      <LinkButton variant="plain" size="icon" href={`/manage/hiring/${id}>
                           <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </Button>
+                        </LinkButton>
                     </TableCell>
                   </TableRow>
                 ))}

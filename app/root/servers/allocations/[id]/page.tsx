@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -101,11 +102,9 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error || 'Allocation not found.'}</AlertDescription>
          <div className="mt-4">
-            <Button asChild type="outlined">
-              <Link href="/root/servers/allocations">
+            <LinkButton variant="outlined" href="/root/servers/allocations">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Allocations
-              </Link>
-            </Button>
+              </LinkButton>
         </div>
       </Alert>
     );
@@ -114,12 +113,10 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
         <div className="mb-4">
-            <Button type="plain" asChild>
-                <Link href="/root/servers/allocations">
+            <LinkButton variant="plain" href="/root/servers/allocations">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Allocations
-                </Link>
-            </Button>
+                </LinkButton>
         </div>
         <Card>
             <CardHeader>
@@ -158,14 +155,12 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
                 </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
-                <Button type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
+                <Button variant="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete
                 </Button>
-                <Button asChild>
-                    <Link href={`/root/servers/allocations/${id}/edit`}>
+                <LinkButton href={`/root/servers/allocations/${id}>
                         <Pencil className="mr-2 h-4 w-4"/> Edit
-                    </Link>
-                </Button>
+                    </LinkButton>
             </CardFooter>
         </Card>
 

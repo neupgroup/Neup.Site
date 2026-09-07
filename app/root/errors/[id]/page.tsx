@@ -8,6 +8,7 @@ import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';
 import { getErrorLogById, type ErrorLog } from '@/services/errors';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import Link from 'next/link';
 import { Separator } from '#/components/ui/separator';
 import { usePageTitle } from '#/core/hooks/use-page-title';
@@ -53,12 +54,10 @@ export default function ErrorDetailPage({ params }: { params: Promise<{ id: stri
   if (error || !log) {
     return (
         <div className="w-full max-w-4xl mx-auto space-y-4">
-             <Button asChild type="plain" className="mb-4">
-                <Link href="/root/errors">
+             <LinkButton variant="plain" className="mb-4" href="/root/errors">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Errors
-                </Link>
-            </Button>
+                </LinkButton>
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Error Fetching Log</AlertTitle>
@@ -70,12 +69,10 @@ export default function ErrorDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4">
-        <Button asChild type="plain">
-            <Link href="/root/errors">
+        <LinkButton variant="plain" href="/root/errors">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Errors
-            </Link>
-        </Button>
+            </LinkButton>
       <Card>
         <CardHeader>
           <CardTitle>Error Details</CardTitle>

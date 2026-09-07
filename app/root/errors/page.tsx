@@ -179,7 +179,7 @@ const ErrorsPage = () => {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button
-                        type="outlined"
+                        variant="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1}
@@ -188,7 +188,7 @@ const ErrorsPage = () => {
                         Previous
                     </Button>
                     <Button
-                        type="outlined"
+                        variant="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages}

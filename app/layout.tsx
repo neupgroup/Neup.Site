@@ -1,10 +1,8 @@
 
 import type { Metadata } from 'next';
-import { Toaster } from "#/components/ui/toast"
 import './globals.css';
 import { SidebarProvider } from '#/components/ui/sidebar';
-import { Suspense } from 'react';
-import { ProgressBar } from '#/components/element/progressbar';
+import BaseRootLayout from '#/components/layout/RootLayout';
 import { getAsset } from '@/services/editor/asset';
 import { initializeUserAccount } from '@/services/auth/initialize';
 import { cn } from '#/core/utils';
@@ -107,13 +105,11 @@ export default async function RootLayout({
         )}
       </head>
       <body className={cn("font-body antialiased")}>
-        <Suspense fallback={null}>
-          <ProgressBar />
-        </Suspense>
-        <SidebarProvider>
-          <AppLayoutClient currentAccountId={accountId}>{children}</AppLayoutClient>
-        </SidebarProvider>
-        <Toaster />
+        <BaseRootLayout>
+          <SidebarProvider>
+            <AppLayoutClient currentAccountId={accountId}>{children}</AppLayoutClient>
+          </SidebarProvider>
+        </BaseRootLayout>
       </body>
     </html>
   );

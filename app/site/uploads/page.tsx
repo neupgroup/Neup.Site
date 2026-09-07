@@ -244,7 +244,7 @@ export default function SiteUploadsPage() {
                 </div>
               ))}
               {pendingCount > 0 && (
-                <Button type="solid" onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
+                <Button variant="solid" onClick={handleUpload} disabled={uploadingFiles.some(f => f.status === 'uploading')}>
                   Upload {pendingCount} file(s)
                 </Button>
               )}

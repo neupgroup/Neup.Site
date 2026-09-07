@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import { cn } from '#/core/utils';
 import { useToast } from '#/core/hooks/useToast';
@@ -287,11 +288,9 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                 <p className="text-sm text-muted-foreground">{group.description || 'No description'}</p>
               </div>
               {group.teamId ? (
-                <Button asChild type="plain" size="icon">
-                  <Link href={appendSelectedProject(`/manage/team/${group.teamId}/edit`, selectedProject)} aria-label={`Edit ${group.name}`}>
+                <LinkButton variant="plain" size="icon" href={appendSelectedProject(`/manage/team/${group.teamId}>
                     <Pencil className="h-4 w-4" />
-                  </Link>
-                </Button>
+                  </LinkButton>
               ) : null}
             </div>
 

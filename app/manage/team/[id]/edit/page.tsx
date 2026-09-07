@@ -3,6 +3,7 @@
 
 import { getTeam, updateTeam, deleteTeam } from '@/services/teams';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
 import { Input } from '#/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
@@ -90,12 +91,10 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
          <>
             <div className="w-full max-w-2xl">
                 <div className="mb-4">
-                    <Button type="outlined" asChild>
-                        <Link href={`/manage/team/${id}`}>
+                    <LinkButton variant="outlined" href={`/manage/team/${id}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Team
-                        </Link>
-                    </Button>
+                        </LinkButton>
                 </div>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -119,10 +118,10 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
                             </CardContent>
                         </Card>
                         <div className="flex justify-between">
-                             <Button htmlType="button" type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
+                             <Button htmlType="button" variant="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                                 <Trash2 className="mr-2"/> Delete Team
                             </Button>
-                            <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
+                            <Button variant="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                                 {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2"/>}
                                 Save Changes
                             </Button>

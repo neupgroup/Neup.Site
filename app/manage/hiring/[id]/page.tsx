@@ -4,6 +4,7 @@
 import { getJobPostingById, updateJobPosting, type JobPosting } from '@/services/hiring';
 import { getApplicantsForJob, type Applicant } from '@/services/applicants';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertCircle, ArrowLeft, Pencil, Users, Save, X, Loader2, Plus, Trash2, Send, DollarSign, UserPlus } from 'lucide-react';
@@ -96,10 +97,10 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
                 </CardHeader>
                 <CardContent className="space-y-6">
                      <div className="space-y-4">
-                        {!showSalaryField && <Button htmlType="button" type="outlined" size="sm" onClick={() => setShowSalaryField(true)}><DollarSign className="mr-2"/>Add Salary</Button>}
+                        {!showSalaryField && <Button htmlType="button" variant="outlined" size="sm" onClick={() => setShowSalaryField(true)}><DollarSign className="mr-2"/>Add Salary</Button>}
                         {showSalaryField && <FormField control={form.control} name="salary" render={({ field }) => (<FormItem><FormLabel>Salary</FormLabel><FormControl><Input {...field} placeholder="e.g., Competitive, NRs. 50,000/month" /></FormControl><FormMessage /></FormItem>)} />}
 
-                        {!showOpeningsField && <Button htmlType="button" type="outlined" size="sm" onClick={() => setShowOpeningsField(true)}><UserPlus className="mr-2"/>Add Number of Openings</Button>}
+                        {!showOpeningsField && <Button htmlType="button" variant="outlined" size="sm" onClick={() => setShowOpeningsField(true)}><UserPlus className="mr-2"/>Add Number of Openings</Button>}
                         {showOpeningsField && <FormField control={form.control} name="openings" render={({ field }) => (<FormItem><FormLabel>Number of Openings</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} /></FormControl><FormMessage /></FormItem>)} />}
                     </div>
 
@@ -114,18 +115,18 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
                                     <FormItem>
                                         <div className="flex items-center gap-2">
                                             <FormControl><Input {...field} /></FormControl>
-                                            <Button htmlType="button" type="solid" convey="danger" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>
+                                            <Button htmlType="button" variant="solid" convey="danger" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /></Button>
                                         </div><FormMessage />
                                     </FormItem>
                                 )} />
                             ))}
-                            <Button htmlType="button" type="outlined" className="w-full" onClick={() => append({ value: '' })}><Plus className="mr-2 h-4 w-4" /> Add Qualification</Button>
+                            <Button htmlType="button" variant="outlined" className="w-full" onClick={() => append({ value: '' })}><Plus className="mr-2 h-4 w-4" /> Add Qualification</Button>
                         </div>
                     </div>
                 </CardContent>
                 <div className="flex justify-end gap-2 p-6 pt-0">
-                    <Button htmlType="button" type="plain" onClick={onCancel}>Cancel</Button>
-                    <Button type="solid" htmlType="submit" disabled={isSubmitting}>
+                    <Button htmlType="button" variant="plain" onClick={onCancel}>Cancel</Button>
+                    <Button variant="solid" htmlType="submit" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save Changes
                     </Button>
@@ -227,8 +228,8 @@ function EditPostingForm({ posting, onCancel, onSave }: { posting: JobPosting, o
 
                 </CardContent>
                 <div className="flex justify-end gap-2 px-6 pb-6">
-                    <Button htmlType="button" type="plain" onClick={onCancel}>Cancel</Button>
-                    <Button type="solid" htmlType="submit" disabled={isSubmitting}>
+                    <Button htmlType="button" variant="plain" onClick={onCancel}>Cancel</Button>
+                    <Button variant="solid" htmlType="submit" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
                         Save Posting
                     </Button>
@@ -312,7 +313,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   if (error || !posting) {
     return (
       <div className="w-full max-w-2xl mx-auto space-y-4">
-        <Button type="outlined" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <LinkButton variant="outlined" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
         <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'Job posting not found'}</AlertDescription></Alert>
       </div>
     );
@@ -321,7 +322,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <Button type="outlined" asChild><Link href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</Link></Button>
+        <LinkButton variant="outlined" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
       </div>
 
       <div className="space-y-6">
@@ -341,7 +342,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
                                {posting.openings && <Badge variant="outline">{posting.openings} opening(s)</Badge>}
                             </CardDescription>
                         </div>
-                        <Button type="outlined" onClick={() => setIsEditingDetails(true)}>
+                        <Button variant="outlined" onClick={() => setIsEditingDetails(true)}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                         </Button>
                     </div>
@@ -370,7 +371,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <CardTitle>Posting & Visibility</CardTitle>
-                         <Button type="outlined" size="sm" onClick={() => setIsEditingPosting(true)}>
+                         <Button variant="outlined" size="sm" onClick={() => setIsEditingPosting(true)}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                         </Button>
                     </div>
@@ -391,7 +392,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<Button asChild type="outlined" size="sm"><Link href={`/manage/hiring/${params.id}/applicants`}>View All</Link></Button></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<LinkButton variant="outlined" size="sm" href={`/manage/hiring/${params.id}>View All</LinkButton></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

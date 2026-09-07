@@ -62,7 +62,7 @@ function ProjectRow({
                     </div>
                 ) : (
                     <div className="flex items-center gap-3">
-                        <Button type="tinted" onClick={() => onSelect?.(asset.id)} size="sm" disabled={isLoading}>
+                        <Button variant="tinted" onClick={() => onSelect?.(asset.id)} size="sm" disabled={isLoading}>
                             {isLoading ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
@@ -207,7 +207,7 @@ function AssetList() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button type="solid" onClick={handleCreateAsset} disabled={isCreating}>
+                    <Button variant="solid" onClick={handleCreateAsset} disabled={isCreating}>
                         {isCreating ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (

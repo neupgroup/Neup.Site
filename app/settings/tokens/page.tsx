@@ -119,11 +119,11 @@ export default function TokensPage() {
             <p>Please copy this token now. You won't be able to see it again.</p>
             <div className="flex items-center gap-2 mt-2 p-2 bg-muted rounded-md font-mono text-sm">
                 <span className="flex-1 truncate">{generatedToken}</span>
-                 <Button type="plain" size="icon" onClick={() => copyToClipboard(generatedToken)}>
+                 <Button variant="plain" size="icon" onClick={() => copyToClipboard(generatedToken)}>
                     {copiedToken ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                 </Button>
             </div>
-            <Button type="outlined" size="sm" className="mt-2" onClick={closeGeneratedTokenDialog}>Close</Button>
+            <Button variant="outlined" size="sm" className="mt-2" onClick={closeGeneratedTokenDialog}>Close</Button>
           </AlertDescription>
         </Alert>
       )}
@@ -143,7 +143,7 @@ export default function TokensPage() {
                     disabled={isCreating}
                 />
             </div>
-            <Button type="solid" onClick={handleCreateToken} disabled={isCreating}>
+            <Button variant="solid" onClick={handleCreateToken} disabled={isCreating}>
                 {isCreating ? <Loader2 className="animate-spin mr-2"/> : <Plus className="mr-2"/>}
                 Generate Token
             </Button>
@@ -187,7 +187,7 @@ export default function TokensPage() {
                                     <TableCell className="font-mono">{token.token}</TableCell>
                                     <TableCell>{token.createdAt ? format(new Date(token.createdAt), 'PPP') : 'N/A'}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button type="plain" size="icon" onClick={() => setTokenToDelete(token)}>
+                                        <Button variant="plain" size="icon" onClick={() => setTokenToDelete(token)}>
                                             <Trash2 className="h-4 w-4 text-destructive" />
                                         </Button>
                                     </TableCell>

@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { Input } from '#/components/ui/input';
@@ -67,12 +68,10 @@ export default function AddTeamPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button type="outlined" asChild>
-          <Link href={appendSelectedProject('/manage/member', selectedProject)}>
+        <LinkButton variant="outlined" href={appendSelectedProject('/manage/member', selectedProject)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
-          </Link>
-        </Button>
+          </LinkButton>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -98,7 +97,7 @@ export default function AddTeamPage() {
               )} />
             </CardContent>
             <CardFooter>
-              <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
+              <Button variant="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? <Loader2 className="mr-2 animate-spin" /> : <Save className="mr-2" />}
                 Save Team
               </Button>

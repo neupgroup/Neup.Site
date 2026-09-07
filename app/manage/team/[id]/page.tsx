@@ -2,6 +2,7 @@
 import { getTeam } from '@/services/teams';
 import { getMembers } from '@/services/members';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import Link from 'next/link';
@@ -48,12 +49,10 @@ export default async function ViewTeamPage({ params }: { params: { id: string } 
     return (
         <div className="w-full max-w-2xl">
             <div className="mb-4">
-                <Button type="outlined" asChild>
-                    <Link href="/manage/member">
+                <LinkButton variant="outlined" href="/manage/member">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Members
-                    </Link>
-                </Button>
+                    </LinkButton>
             </div>
             <Card>
                 <CardHeader>
@@ -78,11 +77,9 @@ export default async function ViewTeamPage({ params }: { params: { id: string } 
                     </div>
                 </CardContent>
                 <CardFooter>
-                     <Button asChild>
-                        <Link href={`/manage/team/${params.id}/edit`}>
+                     <LinkButton href={`/manage/team/${params.id}>
                             <Pencil className="mr-2" /> Edit Team
-                        </Link>
-                    </Button>
+                        </LinkButton>
                 </CardFooter>
             </Card>
         </div>

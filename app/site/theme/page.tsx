@@ -122,7 +122,7 @@ export default function ThemePage() {
                   </div>
                   {colors.length > 1 && (
                     <Button
-                      type="solid" convey="danger"
+                      variant="solid" convey="danger"
                       size="sm"
                       onClick={() => removeColor(index)}
                       className="w-fit"
@@ -133,7 +133,7 @@ export default function ThemePage() {
                 </div>
               ))}
               {colors.length < 3 && (
-                <Button type="outlined" onClick={addColor}>
+                <Button variant="outlined" onClick={addColor}>
                   <Plus className="mr-2" /> Add Color
                 </Button>
               )}
@@ -220,7 +220,7 @@ export default function ThemePage() {
       </Card>
 
       <div className="flex justify-end sticky bottom-0 bg-background/95 p-4 rounded-lg border shadow-sm">
-        <Button type="solid" onClick={handleSaveTheme} disabled={isSaving || loading}>
+        <Button variant="solid" onClick={handleSaveTheme} disabled={isSaving || loading}>
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Theme
         </Button>

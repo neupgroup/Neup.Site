@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from '#/components/ui/form';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Input } from '#/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
 import { Switch } from '#/components/ui/switch';
@@ -77,12 +78,10 @@ export default function CreateEnvironmentVariablePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <Button type="plain" asChild>
-          <Link href="/site/environment">
+        <LinkButton variant="plain" href="/site/environment">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Environments
-          </Link>
-        </Button>
+          </LinkButton>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -124,7 +123,7 @@ export default function CreateEnvironmentVariablePage() {
             </div>
             </CardContent>
             <CardFooter>
-                <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
+                <Button variant="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? <Loader2 className="mr-2 animate-spin" /> : <Plus className="mr-2" />}
                     Add Variable
                 </Button>

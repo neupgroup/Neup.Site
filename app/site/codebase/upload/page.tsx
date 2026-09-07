@@ -113,7 +113,7 @@ export default function CodebaseUploadPage() {
   return (
     <div className="w-full space-y-6">
       <header className="flex items-center gap-3">
-        <Button type="outlined" size="sm" onClick={() => router.push(codebaseHref)}>
+        <Button variant="outlined" size="sm" onClick={() => router.push(codebaseHref)}>
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
@@ -170,7 +170,7 @@ export default function CodebaseUploadPage() {
                 </div>
               ))}
 
-              <Button type="solid" onClick={handleUpload} disabled={isUploading}>
+              <Button variant="solid" onClick={handleUpload} disabled={isUploading}>
                 {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
                 Upload {uploadingFiles.length} file(s)
               </Button>

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createDatalist } from '@/services/datalists';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
 import { Input } from '#/components/ui/input';
 import { Textarea } from '#/components/ui/textarea';
@@ -58,12 +59,10 @@ export default function CreateDatalistPage() {
   return (
     <Form {...form}>
       <div className="flex justify-start mb-4">
-        <Button type="plain" asChild>
-          <Link href="/site/datalists">
+        <LinkButton variant="plain" href="/site/datalists">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Datalists
-          </Link>
-        </Button>
+          </LinkButton>
       </div>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl space-y-6">
         <Card>
@@ -102,7 +101,7 @@ export default function CreateDatalistPage() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
+            <Button variant="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               {form.formState.isSubmitting ? 'Saving...' : 'Save Datalist'}
             </Button>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
@@ -42,11 +43,9 @@ export default function ServersPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Your Servers</h1>
             <p className="text-muted-foreground">A list of servers you have created to deploy sites.</p>
         </div>
-        <Button type="solid" asChild>
-          <Link href="/root/servers/create">
+        <LinkButton variant="solid" href="/root/servers/create">
             <Plus className="mr-2 h-4 w-4" /> Create Server
-          </Link>
-        </Button>
+          </LinkButton>
       </header>
         <div className="space-y-4">
           {loading ? (
@@ -84,11 +83,9 @@ export default function ServersPage() {
                              <div className="flex items-center gap-2">
                                 {server.provider && <Badge variant="secondary">{server.provider}</Badge>}
                                 {server.platform && <Badge variant="outline" className="capitalize">{server.platform}</Badge>}
-                                <Button asChild type="plain" size="icon">
-                                    <Link href={`/root/servers/${server.id}`}>
+                                <LinkButton variant="plain" size="icon" href={`/root/servers/${server.id}>
                                         <ArrowRight className="h-4 w-4" />
-                                    </Link>
-                                </Button>
+                                    </LinkButton>
                             </div>
                         </div>
                     </CardHeader>

@@ -156,7 +156,7 @@ function FileCard({
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Button
-            type="plain"
+            variant="plain"
             size="icon"
             onClick={(event) => {
               event.stopPropagation();
@@ -370,7 +370,7 @@ export default function CodebasePage() {
           <p className="text-muted-foreground">Browse folders, open files, and edit. Currently at {currentLocation}</p>
           <Breadcrumbs breadcrumbs={breadcrumbs} onOpen={navigateToPath} />
         </div>
-        <Button type="solid" onClick={handleDeploy} disabled={isDeploying || !browserData?.totalFileCount}>
+        <Button variant="solid" onClick={handleDeploy} disabled={isDeploying || !browserData?.totalFileCount}>
           {isDeploying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
           {isDeploying ? 'Deploying...' : 'Deploy Assets'}
         </Button>
@@ -396,7 +396,7 @@ export default function CodebasePage() {
                 <CardTitle className="break-all text-xl">{selectedFile.name}</CardTitle>
                 <CardDescription className="break-all">{selectedFile.path}</CardDescription>
               </div>
-              <Button type="plain" size="icon" onClick={() => handleDelete(selectedFile.id)} aria-label={`Delete ${selectedFile.name}`}>
+              <Button variant="plain" size="icon" onClick={() => handleDelete(selectedFile.id)} aria-label={`Delete ${selectedFile.name}`}>
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </CardHeader>
@@ -472,7 +472,7 @@ export default function CodebasePage() {
           </div>
           <DialogFooter>
             <Button
-              type="outlined"
+              variant="outlined"
               onClick={() => {
                 setIsCreateFolderDialogOpen(false);
                 setNewFolderName('');
@@ -481,7 +481,7 @@ export default function CodebasePage() {
             >
               Cancel
             </Button>
-            <Button type="tinted" onClick={handleCreateFolder} disabled={isCreatingFolder}>
+            <Button variant="tinted" onClick={handleCreateFolder} disabled={isCreatingFolder}>
               {isCreatingFolder ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderPlus className="h-4 w-4" />}
               Create Folder
             </Button>

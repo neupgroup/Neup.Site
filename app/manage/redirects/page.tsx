@@ -9,6 +9,7 @@ import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redire
 import type { Redirect } from '@/services/redirect/type';
 
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
@@ -100,15 +101,13 @@ export default function RedirectsPage() {
             <p className="text-muted-foreground">Create and manage URL redirects for your site.</p>
         </div>
         <div className="flex gap-2">
-            <Button type="outlined" onClick={handleUpdateOnServer} disabled={isDeploying}>
+            <Button variant="outlined" onClick={handleUpdateOnServer} disabled={isDeploying}>
                 <UploadCloud className="mr-2 h-4 w-4" />
                 {isDeploying ? 'Updating...' : 'Update on Server'}
             </Button>
-            <Button type="solid" asChild>
-                <Link href="/manage/redirects/create">
+            <LinkButton variant="solid" href="/manage/redirects/create">
                     <Plus className="mr-2 h-4 w-4" /> Create Redirect
-                </Link>
-            </Button>
+                </LinkButton>
         </div>
       </header>
       
@@ -131,7 +130,7 @@ export default function RedirectsPage() {
                     </div>
                     <div className="flex items-center gap-4 self-end sm:self-center">
                         <Badge variant={redirect.type === 'permanent' ? 'default' : 'secondary'}>{redirect.type === 'permanent' ? '301' : '302'}</Badge>
-                         <Button type="plain" size="icon" onClick={() => handleDelete(redirect.id)}>
+                         <Button variant="plain" size="icon" onClick={() => handleDelete(redirect.id)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                     </div>
@@ -147,7 +146,7 @@ export default function RedirectsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Button
-                        type="outlined"
+                        variant="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1 || isPending}
@@ -156,7 +155,7 @@ export default function RedirectsPage() {
                         Previous
                     </Button>
                     <Button
-                        type="outlined"
+                        variant="outlined"
                         size="sm"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages || isPending}

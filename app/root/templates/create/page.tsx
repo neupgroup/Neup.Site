@@ -118,7 +118,7 @@ export default function CreateTemplatePage() {
                     />
                 </CardContent>
                 <CardFooter>
-                  <Button type="solid" htmlType="submit" disabled={form.formState.isSubmitting} className="w-full">
+                  <Button variant="solid" htmlType="submit" disabled={form.formState.isSubmitting} className="w-full">
                     {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                     {form.formState.isSubmitting ? 'Saving...' : 'Save and Continue'}
                   </Button>

@@ -3,6 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { usePageTitle } from '#/core/hooks/use-page-title';
@@ -12,12 +13,10 @@ export default function ViewExperiencePage({ params }: { params: { id: string } 
   return (
     <div className="w-full">
         <div className="mb-4">
-            <Button type="outlined" asChild>
-                <Link href="/tourio/experience">
+            <LinkButton variant="outlined" href="/tourio/experience">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Experiences
-                </Link>
-            </Button>
+                </LinkButton>
         </div>
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">View Experience</h1>

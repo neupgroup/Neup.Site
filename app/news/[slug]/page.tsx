@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import Link from 'next/link';
@@ -34,11 +35,9 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error || 'Article not found.'}</AlertDescription>
           <div className="mt-4">
-            <Button asChild type="outlined">
-              <Link href="/news">
+            <LinkButton variant="outlined" href="/news">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to News
-              </Link>
-            </Button>
+              </LinkButton>
           </div>
         </Alert>
       </div>
@@ -48,12 +47,10 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="mb-4">
-        <Button type="plain" asChild>
-          <Link href="/news">
+        <LinkButton variant="plain" href="/news">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to News
-          </Link>
-        </Button>
+          </LinkButton>
       </div>
       <Card>
         <CardHeader>
@@ -71,16 +68,12 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-           <Button asChild type="outlined">
-            <Link href={`/news/${article.id}/edit`}>
+           <LinkButton variant="outlined" href={`/news/${article.id}>
               <Settings className="mr-2 h-4 w-4" /> Settings
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href={`/news/${article.id}/edit/content`}>
+            </LinkButton>
+          <LinkButton href={`/news/${article.id}>
               <Pencil className="mr-2 h-4 w-4" /> Edit Content
-            </Link>
-          </Button>
+            </LinkButton>
         </CardFooter>
       </Card>
     </div>

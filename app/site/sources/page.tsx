@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import {
   Table,
   TableBody,
@@ -57,11 +58,9 @@ export default function SourcesPage() {
             <h1 className="text-2xl font-bold font-headline">Data Sources</h1>
             <p className="text-muted-foreground">Manage your API and data sources.</p>
         </div>
-        <Button type="solid" asChild>
-          <Link href="/site/sources/create">
+        <LinkButton variant="solid" href="/site/sources/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Source
-          </Link>
-        </Button>
+          </LinkButton>
       </header>
 
       <Card>
@@ -104,11 +103,9 @@ export default function SourcesPage() {
                      <TableCell className="font-medium">{source.name}</TableCell>
                     <TableCell><Badge variant="outline">{source.type}</Badge></TableCell>
                     <TableCell className="text-right">
-                        <Button asChild type="plain" size="icon">
-                            <Link href={`/site/sources/${source.id}`}>
+                        <LinkButton variant="plain" size="icon" href={`/site/sources/${source.id}>
                                 <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        </Button>
+                            </LinkButton>
                     </TableCell>
                   </TableRow>
                 ))}

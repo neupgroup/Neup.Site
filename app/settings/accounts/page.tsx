@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import Link from 'next/link';
 import { Github, Trash2 } from 'lucide-react';
 import { useToast } from '#/core/hooks/useToast';
@@ -37,7 +38,7 @@ function LinkedAccountCard({ account, onDisconnect }: { account: LinkedAccount, 
                         </CardDescription>
                     </div>
                 </div>
-                 <Button type="solid" convey="danger" size="sm" onClick={() => setShowDeleteConfirm(true)}>
+                 <Button variant="solid" convey="danger" size="sm" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4" /> Disconnect
                 </Button>
             </CardHeader>
@@ -135,11 +136,9 @@ export default function AccountsPage() {
              <Card className="border-dashed">
                 <CardContent className="p-6 text-center">
                     <p className="text-muted-foreground mb-4">No accounts linked yet.</p>
-                     <Button asChild>
-                        <Link href={appendSelectedProject('/settings/accounts/github', selectedProject)}>
+                     <LinkButton href={appendSelectedProject('/settings/accounts/github', selectedProject)}>
                             <Github className="mr-2 h-4 w-4" /> Link GitHub Account
-                        </Link>
-                    </Button>
+                        </LinkButton>
                 </CardContent>
             </Card>
         )}

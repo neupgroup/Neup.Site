@@ -426,7 +426,7 @@ const DeploymentStatusChecker = ({ server, allocation, asset, isProduction }: { 
                         <p className="text-muted-foreground mb-4">
                             Configure your {isProduction ? 'production' : 'development'} domain to check your app's status.
                         </p>
-                        <Button type="outlined" onClick={() => window.location.href = '/settings/domain'}>
+                        <Button variant="outlined" onClick={() => window.location.href = '/settings/domain'}>
                             Configure Domain
                         </Button>
                     </div>

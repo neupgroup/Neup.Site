@@ -75,7 +75,7 @@ export function ProjectDeleteButton({
 
   return (
     <>
-      <Button htmlType="button" type="outlined" convey="danger" size="sm" onClick={() => setShowConfirm(true)} disabled={isPending}>
+      <Button htmlType="button" variant="outlined" convey="danger" size="sm" onClick={() => setShowConfirm(true)} disabled={isPending}>
         {isPending ? <Loader2 className="animate-spin" /> : <Trash2 />}
         Delete this project
       </Button>

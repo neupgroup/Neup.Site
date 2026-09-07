@@ -29,7 +29,7 @@ const StatusCard = ({ title, description, status, icon: Icon, onDeploy }: { titl
                     <p className="text-sm text-muted-foreground">{description}</p>
                 </div>
                  {status === 'deployed' && (
-                    <Button type="text" size="sm" className="p-0 h-auto text-xs mt-1" onClick={onDeploy}>
+                    <Button variant="text" size="sm" className="p-0 h-auto text-xs mt-1" onClick={onDeploy}>
                         Deploy again?
                     </Button>
                 )}
@@ -193,14 +193,14 @@ export default function DeployPage() {
             <div className="mt-8">
                 {hasServer ? (
                     hasAnyPendingChanges ? (
-                        <Button type="solid" onClick={handleDeploy} disabled={isDeploying || loading}>
+                        <Button variant="solid" onClick={handleDeploy} disabled={isDeploying || loading}>
                             {isDeploying ? <Loader2 className="animate-spin mr-2" /> : <Rocket className="mr-2 h-4 w-4" />}
                             {isDeploying ? 'Deploying...' : 'Deploy All Changes'}
                         </Button>
                     ) : (
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Up to date</span>
-                            <Button type="text" className="p-0 h-auto" onClick={handleDeploy} disabled={isDeploying || loading}>
+                            <Button variant="text" className="p-0 h-auto" onClick={handleDeploy} disabled={isDeploying || loading}>
                                 {isDeploying ? 'Deploying...' : 'Deploy again?'}
                             </Button>
                         </div>

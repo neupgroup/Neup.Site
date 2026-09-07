@@ -3,6 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { UtensilsCrossed, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { usePageTitle } from '#/core/hooks/use-page-title';
@@ -13,11 +14,9 @@ export default function DishListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Tourio Dishes</h1>
-        <Button type="solid" asChild>
-            <Link href="/tourio/dish/create">
+        <LinkButton variant="solid" href="/tourio/dish/create">
                 <Plus className="mr-2 h-4 w-4" /> Create Dish
-            </Link>
-        </Button>
+            </LinkButton>
       </header>
       <Card>
         <CardHeader>

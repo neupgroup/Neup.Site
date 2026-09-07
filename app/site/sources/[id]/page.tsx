@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -111,12 +112,10 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
   return (
     <div className="w-full max-w-4xl space-y-6">
         <div className="mb-4">
-            <Button type="plain" asChild>
-                <Link href="/site/sources">
+            <LinkButton variant="plain" href="/site/sources">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Sources
-                </Link>
-            </Button>
+                </LinkButton>
         </div>
         <Card>
             <CardHeader>
@@ -127,11 +126,9 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge variant="outline">{source.type}</Badge>
-                         <Button asChild type="outlined" size="sm">
-                            <Link href={`/site/sources/${id}/edit`}>
+                         <LinkButton variant="outlined" size="sm" href={`/site/sources/${id}>
                                 <Pencil className="mr-2 h-4 w-4"/> Edit
-                            </Link>
-                        </Button>
+                            </LinkButton>
                     </div>
                 </div>
             </CardHeader>
@@ -198,15 +195,13 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                 </Table>
             </CardContent>
              <CardFooter className="flex justify-end gap-2">
-                <Button type="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
+                <Button variant="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete Source
                 </Button>
                 {source.type === 'api' && (
-                     <Button asChild>
-                        <Link href={`/site/sources/${id}/edit/methods`}>
+                     <LinkButton href={`/site/sources/${id}>
                             <Code className="mr-2 h-4 w-4"/> Edit Methods
-                        </Link>
-                    </Button>
+                        </LinkButton>
                 )}
             </CardFooter>
         </Card>

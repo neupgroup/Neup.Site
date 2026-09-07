@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getDatalists } from '@/services/datalists';
 import { Datalist } from '@/services/datalist/type';
 import { Button } from '#/components/ui/button';
+import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/components/ui/table';
 import { Skeleton } from '#/components/ui/skeleton';
@@ -38,11 +39,9 @@ export default function DatalistsPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Datalists</h1>
-        <Button type="solid" asChild>
-          <Link href="/site/datalists/create">
+        <LinkButton variant="solid" href="/site/datalists/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Datalist
-          </Link>
-        </Button>
+          </LinkButton>
       </header>
       <Card>
         <CardHeader>
@@ -81,11 +80,9 @@ export default function DatalistsPage() {
                     <TableCell className="font-medium">{datalist.name}</TableCell>
                     <TableCell>{datalist.createdAt ? new Date(datalist.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild type="plain" size="icon">
-                        <Link href={`/site/datalists/${datalist.id}`}>
+                      <LinkButton variant="plain" size="icon" href={`/site/datalists/${datalist.id}>
                           <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </Button>
+                        </LinkButton>
                     </TableCell>
                   </TableRow>
                 ))}
