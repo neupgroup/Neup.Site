@@ -230,7 +230,7 @@ export default function ViewJobPostingPage({ params }: { params: Promise<{ id: s
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<LinkButton variant="outlined" size="sm" href={`/manage/hiring/${id}>View All</LinkButton></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<LinkButton variant="outlined" size="sm" href={`/manage/hiring/${id}`}>View All</LinkButton></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

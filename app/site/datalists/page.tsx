@@ -80,7 +80,7 @@ export default function DatalistsPage() {
                     <TableCell className="font-medium">{datalist.name}</TableCell>
                     <TableCell>{datalist.createdAt ? new Date(datalist.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <LinkButton variant="plain" size="icon" href={`/site/datalists/${datalist.id}>
+                      <LinkButton variant="plain" size="icon" href={`/site/datalists/${datalist.id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </LinkButton>
                     </TableCell>

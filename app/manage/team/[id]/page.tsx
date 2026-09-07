@@ -77,7 +77,7 @@ export default async function ViewTeamPage({ params }: { params: { id: string } 
                     </div>
                 </CardContent>
                 <CardFooter>
-                     <LinkButton href={`/manage/team/${params.id}>
+                     <LinkButton href={`/manage/team/${params.id}`}>
                             <Pencil className="mr-2" /> Edit Team
                         </LinkButton>
                 </CardFooter>

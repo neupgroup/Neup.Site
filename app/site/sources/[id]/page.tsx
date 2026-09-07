@@ -126,7 +126,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge variant="outline">{source.type}</Badge>
-                         <LinkButton variant="outlined" size="sm" href={`/site/sources/${id}>
+                         <LinkButton variant="outlined" size="sm" href={`/site/sources/${id}`}>
                                 <Pencil className="mr-2 h-4 w-4"/> Edit
                             </LinkButton>
                     </div>
@@ -199,7 +199,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
                     <Trash2 className="mr-2 h-4 w-4"/> Delete Source
                 </Button>
                 {source.type === 'api' && (
-                     <LinkButton href={`/site/sources/${id}>
+                     <LinkButton href={`/site/sources/${id}`}>
                             <Code className="mr-2 h-4 w-4"/> Edit Methods
                         </LinkButton>
                 )}

@@ -53,7 +53,7 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="w-full">
         <div className="mb-4">
-            <LinkButton variant="outlined" href={`/manage/hiring/${id}>
+            <LinkButton variant="outlined" href={`/manage/hiring/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Job Posting
             </LinkButton>
@@ -63,7 +63,7 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Applicants</h1>
             <p className="text-muted-foreground">Review candidates for this job posting.</p>
         </div>
-        <LinkButton variant="solid" href={`/manage/hiring/${id}>
+        <LinkButton variant="solid" href={`/manage/hiring/${id}`}>
             <Plus className="mr-2 h-4 w-4" /> Add Applicant
           </LinkButton>
       </header>
@@ -109,7 +109,7 @@ export default function ApplicantsPage({ params }: { params: Promise<{ id: strin
                     <TableCell><Badge variant="secondary">{applicant.status}</Badge></TableCell>
                     <TableCell>{applicant.appliedAt ? format(new Date(applicant.appliedAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <LinkButton variant="plain" size="icon" href={`/manage/hiring/${id}>
+                      <LinkButton variant="plain" size="icon" href={`/manage/hiring/${id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </LinkButton>
                     </TableCell>

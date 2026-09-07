@@ -102,7 +102,7 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
             <Button variant="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete
             </Button>
-            <LinkButton href={`/site/datalists/${datalist.id}>
+            <LinkButton href={`/site/datalists/${datalist.id}`}>
                     <Pencil className="mr-2 h-4 w-4" /> Edit Datalist
                 </LinkButton>
         </CardFooter>

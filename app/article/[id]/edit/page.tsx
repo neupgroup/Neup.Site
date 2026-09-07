@@ -13,7 +13,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   return (
     <div className="w-full">
         <div className="mb-4">
-            <LinkButton variant="outlined" href={`/article/${id}>
+            <LinkButton variant="outlined" href={`/article/${id}`}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Article
                 </LinkButton>

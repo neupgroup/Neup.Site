@@ -91,7 +91,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
          <>
             <div className="w-full max-w-2xl">
                 <div className="mb-4">
-                    <LinkButton variant="outlined" href={`/manage/team/${id}>
+                    <LinkButton variant="outlined" href={`/manage/team/${id}`}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Team
                         </LinkButton>

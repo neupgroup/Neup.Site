@@ -101,7 +101,7 @@ export default function HiringDashboardPage() {
                     <TableCell><Badge variant={posting.status === 'Open' ? 'default' : 'secondary'}>{posting.status}</Badge></TableCell>
                     <TableCell>{posting.createdAt ? format(new Date(posting.createdAt), 'PPP') : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                      <LinkButton variant="plain" size="icon" href={`/manage/hiring/${posting.id}>
+                      <LinkButton variant="plain" size="icon" href={`/manage/hiring/${posting.id}`}>
                           <ArrowRight className="h-4 w-4" />
                         </LinkButton>
                     </TableCell>

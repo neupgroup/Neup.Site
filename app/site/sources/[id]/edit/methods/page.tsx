@@ -409,7 +409,7 @@ export default function EditSourceMethodsPage({ params }: { params: Promise<{ id
             <div>
                 <p className="text-muted-foreground">Editing methods for: <span className="font-semibold">{source?.name}</span></p>
             </div>
-            <LinkButton variant="plain" href={`/site/sources/${id}>
+            <LinkButton variant="plain" href={`/site/sources/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Settings
                 </LinkButton>

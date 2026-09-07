@@ -110,7 +110,7 @@ export default function EditDatalistPage({ params }: { params: Promise<{ id: str
   return (
     <Form {...form}>
       <div className="flex justify-start mb-4">
-        <LinkButton variant="plain" href={`/site/datalists/${id}>
+        <LinkButton variant="plain" href={`/site/datalists/${id}`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Datalist
             </LinkButton>

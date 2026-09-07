@@ -106,7 +106,7 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
             <Button variant="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete
             </Button>
-            <LinkButton href={`/root/templates/${template.id}>
+            <LinkButton href={`/root/templates/${template.id}`}>
                     <Pencil className="mr-2 h-4 w-4" /> Edit Template
                 </LinkButton>
         </CardFooter>

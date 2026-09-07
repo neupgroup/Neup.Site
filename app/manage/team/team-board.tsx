@@ -242,7 +242,7 @@ export function TeamBoard({ teams, members }: TeamBoardProps) {
                 {group.description ? <p className="text-sm text-muted-foreground">{group.description}</p> : null}
               </div>
               {group.teamId ? (
-                <LinkButton variant="plain" size="icon" href={`/manage/team/${group.teamId}>
+                <LinkButton variant="plain" size="icon" href={`/manage/team/${group.teamId}`}>
                     <Pencil className="h-4 w-4" />
                   </LinkButton>
               ) : null}

@@ -83,7 +83,7 @@ export default function ServersPage() {
                              <div className="flex items-center gap-2">
                                 {server.provider && <Badge variant="secondary">{server.provider}</Badge>}
                                 {server.platform && <Badge variant="outline" className="capitalize">{server.platform}</Badge>}
-                                <LinkButton variant="plain" size="icon" href={`/root/servers/${server.id}>
+                                <LinkButton variant="plain" size="icon" href={`/root/servers/${server.id}`}>
                                         <ArrowRight className="h-4 w-4" />
                                     </LinkButton>
                             </div>

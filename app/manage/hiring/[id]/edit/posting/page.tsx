@@ -27,7 +27,7 @@ export default function JobPostingOptionsPage({ params }: { params: Promise<{ id
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={`/manage/hiring/${id}>
+        <LinkButton variant="outlined" href={`/manage/hiring/${id}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Job Posting
           </LinkButton>

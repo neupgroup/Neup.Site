@@ -103,7 +103,7 @@ export default function SourcesPage() {
                      <TableCell className="font-medium">{source.name}</TableCell>
                     <TableCell><Badge variant="outline">{source.type}</Badge></TableCell>
                     <TableCell className="text-right">
-                        <LinkButton variant="plain" size="icon" href={`/site/sources/${source.id}>
+                        <LinkButton variant="plain" size="icon" href={`/site/sources/${source.id}`}>
                                 <ArrowRight className="h-4 w-4" />
                             </LinkButton>
                     </TableCell>

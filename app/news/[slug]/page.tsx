@@ -68,10 +68,10 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-           <LinkButton variant="outlined" href={`/news/${article.id}>
+           <LinkButton variant="outlined" href={`/news/${article.id}`}>
               <Settings className="mr-2 h-4 w-4" /> Settings
             </LinkButton>
-          <LinkButton href={`/news/${article.id}>
+          <LinkButton href={`/news/${article.id}`}>
               <Pencil className="mr-2 h-4 w-4" /> Edit Content
             </LinkButton>
         </CardFooter>

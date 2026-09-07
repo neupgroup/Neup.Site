@@ -103,7 +103,7 @@ export default function AllocationsPage() {
                     </TableCell>
                     <TableCell>{alloc.allocatedOn ? new Date(alloc.allocatedOn).toLocaleDateString() : 'N/A'}</TableCell>
                     <TableCell className="text-right">
-                         <LinkButton variant="plain" size="icon" href={`/root/servers/allocations/${alloc.id}>
+                         <LinkButton variant="plain" size="icon" href={`/root/servers/allocations/${alloc.id}`}>
                                 <ArrowRight className="h-4 w-4" />
                             </LinkButton>
                     </TableCell>

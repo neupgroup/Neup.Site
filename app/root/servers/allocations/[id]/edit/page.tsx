@@ -109,7 +109,7 @@ export default function EditAllocationPage({ params }: { params: { id: string } 
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleUpdateAllocation)} className="w-full max-w-2xl space-y-6">
         <div className="mb-4">
-          <LinkButton variant="plain" href={`/root/servers/allocations/${id}>
+          <LinkButton variant="plain" href={`/root/servers/allocations/${id}`}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Allocation
               </LinkButton>

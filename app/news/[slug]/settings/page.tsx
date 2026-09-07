@@ -131,7 +131,7 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <LinkButton variant="plain" size="icon" href={`/news/${slug}>
+            <LinkButton variant="plain" size="icon" href={`/news/${slug}`}>
                 <ArrowLeft />
               </LinkButton>
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Article Settings</h1>

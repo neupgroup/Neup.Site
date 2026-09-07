@@ -112,7 +112,7 @@ export default function EditNewsContentPage({ params }: { params: Promise<{ slug
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-                <LinkButton variant="plain" size="icon" href={`/news/${slug}>
+                <LinkButton variant="plain" size="icon" href={`/news/${slug}`}>
                     <ArrowLeft />
                 </LinkButton>
                 <div>
@@ -120,7 +120,7 @@ export default function EditNewsContentPage({ params }: { params: Promise<{ slug
                     <p className="text-muted-foreground">{article?.title}</p>
                 </div>
             </div>
-            <LinkButton variant="outlined" href={`/news/${slug}>
+                <LinkButton variant="outlined" href={`/news/${slug}`}>
                     <Settings className="mr-2 h-4 w-4" /> Article Settings
                 </LinkButton>
             </div>

@@ -158,7 +158,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
                 <Button variant="solid" convey="danger" onClick={() => setShowDeleteConfirm(true)}>
                     <Trash2 className="mr-2 h-4 w-4"/> Delete
                 </Button>
-                <LinkButton href={`/root/servers/allocations/${id}>
+                <LinkButton href={`/root/servers/allocations/${id}`}>
                         <Pencil className="mr-2 h-4 w-4"/> Edit
                     </LinkButton>
             </CardFooter>

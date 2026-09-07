@@ -288,7 +288,11 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                 <p className="text-sm text-muted-foreground">{group.description || 'No description'}</p>
               </div>
               {group.teamId ? (
-                <LinkButton variant="plain" size="icon" href={appendSelectedProject(`/manage/team/${group.teamId}>
+                <LinkButton
+                  variant="plain"
+                  size="icon"
+                  href={appendSelectedProject(`/manage/team/${group.teamId}`, selectedProject)}
+                >
                     <Pencil className="h-4 w-4" />
                   </LinkButton>
               ) : null}
