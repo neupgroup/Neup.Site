@@ -15,8 +15,8 @@ export interface AssetSummary {
   description: string | null;
 }
 
-export async function getAssetsForAccount(): Promise<{ assets?: AssetSummary[]; error?: string }> {
-  const accountId = await getAccountId();
+export async function getAssetsForAccount(authToken?: string | null): Promise<{ assets?: AssetSummary[]; error?: string }> {
+  const accountId = await getAccountId(authToken);
   if (!accountId) {
     return { error: 'User account not found.' };
   }

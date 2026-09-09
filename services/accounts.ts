@@ -63,8 +63,8 @@ export interface PlatformAccountDetail {
     sites: PlatformAccountSiteAccess[];
 }
 
-export async function getAccountId(): Promise<string> {
-    const account = await ensureRecord();
+export async function getAccountId(authToken?: string | null): Promise<string> {
+    const account = await ensureRecord(authToken);
     if (!account?.id) {
         throw new Error('Authenticated account not found.');
     }
