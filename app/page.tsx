@@ -1,5 +1,6 @@
 
 import { redirect } from 'next/navigation';
+import { makeAppPath } from '#/core/appconfig';
 
 export default async function Page({
   searchParams,
@@ -10,8 +11,8 @@ export default async function Page({
   const selectedProject = params.selectedProject?.trim();
 
   if (selectedProject) {
-    redirect(`/home?selectedProject=${encodeURIComponent(selectedProject)}`);
+    redirect(makeAppPath(`/home?selectedProject=${encodeURIComponent(selectedProject)}`));
   }
 
-  redirect('/home');
+  redirect(makeAppPath('/home'));
 }
