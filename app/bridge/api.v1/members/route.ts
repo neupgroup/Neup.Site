@@ -13,7 +13,10 @@ export async function GET(request: Request) {
       select: { id: true, displayName: true, displayImage: true, status: true, type: true },
       orderBy: { displayName: 'asc' },
     });
-    return NextResponse.json({ ...result, members: result.members?.filter((member) => member.status !== 'hidden'), accounts });
+    const members = validation.isAdmin
+      ? result.members
+      : result.members?.filter((member) => member.status !== 'hidden');
+    return NextResponse.json({ ...result, members, accounts });
   } catch (error) {
     await logApiError('bridge.members.get', error);
     return NextResponse.json({ success: false, error: 'Unable to load members right now.' }, { status: 500 });

@@ -28,13 +28,22 @@ export async function requireProject(request: Request) {
         { roles: { some: { accountId } } },
       ],
     },
-    select: { id: true },
+    select: {
+      id: true,
+      ownerAccountId: true,
+      roles: { where: { accountId }, select: { role: true } },
+    },
   });
   if (!project) {
     return NextResponse.json({ success: false, error: 'Project not found or the token has no access to it.' }, { status: 403 });
   }
 
-  return { projectId };
+  return {
+    projectId,
+    accountId,
+    isAdmin: project.ownerAccountId === accountId
+      || project.roles.some((role) => ['owner', 'admin'].includes(role.role.toLowerCase())),
+  };
 }
 
 export async function logApiError(source: string, error: unknown, context?: Record<string, unknown>) {
