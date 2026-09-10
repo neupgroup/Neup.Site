@@ -6,6 +6,7 @@ import { generatePageMetadata } from '#/core/helpers/metadata';
 import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
+import { logger } from '#/logica/logger';
 import { MemberCards } from './member-cards';
 
 /*
@@ -39,6 +40,19 @@ export default async function ManageMemberPage({
   ]);
 
   const error = teamsError ?? membersError;
+
+  if (error) {
+    console.error('[manage.member] Unable to load members page data.', { error, selectedProject });
+    try {
+      await logger.error({
+        message: error,
+        source: 'ManageMemberPage',
+        context: { selectedProject, teamsError, membersError },
+      });
+    } catch (loggingError) {
+      console.error('[manage.member] Failed to persist page error log.', loggingError);
+    }
+  }
 
   return (
     <div className="w-full space-y-8">
