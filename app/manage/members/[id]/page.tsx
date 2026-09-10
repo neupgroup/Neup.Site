@@ -8,6 +8,7 @@ import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getMember } from '@/services/members';
+import { appendSelectedProject } from '@/inapp/helpers/application-mode';
 
 /*
 ::neup.documentation::manage-member-detail-page
@@ -31,8 +32,9 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const { member } = await getMember(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const { member } = await getMember(id);
   return generatePageMetadata({
     title: member?.name || 'Member',
     prefix: 'Member',
@@ -41,8 +43,16 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   });
 }
 
-export default async function ViewMemberPage({ params }: { params: { id: string } }) {
-  const { member, error } = await getMember(params.id);
+export default async function ViewMemberPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ selectedProject?: string }>;
+}) {
+  const [{ id }, query] = await Promise.all([params, searchParams]);
+  const selectedProject = query.selectedProject?.trim() || null;
+  const { member, error } = await getMember(id);
 
   if (error || !member) {
     notFound();
@@ -51,7 +61,7 @@ export default async function ViewMemberPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href="/manage/member">
+        <LinkButton variant="outlined" href={appendSelectedProject('/manage/member', selectedProject)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </LinkButton>
