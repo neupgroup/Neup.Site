@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { deleteMember, getMember, updateMember } from '@/services/members';
+import { requireProject } from '../_helpers';
 
 type Context = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, context: Context) {
+  const validation = await requireProject(_request);
+  if (validation instanceof Response) return validation;
   const result = await getMember((await context.params).id);
-  if (result.success && result.member?.status === 'hidden') {
-    return NextResponse.json({ success: false, error: 'Member not found.' }, { status: 404 });
-  }
   return NextResponse.json(result, { status: result.success ? 200 : 404 });
 }
 
