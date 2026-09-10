@@ -15,3 +15,17 @@ Fields:
 > status: string, nullable;
 > type: string, nullable;
 .. references pages, paths, sections, datalists, sources, environments, redirects, codeFiles, allocations, structures, deployments, appBaseBackups, assetModules, teams, members, roles, profiles;
+
+Table: members, Model: Member
+Fields:
+> id: string, primary key, auto generated;
+> assetId: string, references projects.id;
+> slug: string;
+> name: string;
+> email: string;
+> role: string;
+> status: string, default: "active"; values: active, paused, hidden;
+> imageUrl: string, nullable;
+> order: int, nullable;
+> teamId: string, nullable, references teams.id;
+> permissions: jsonb, nullable;

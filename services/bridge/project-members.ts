@@ -18,6 +18,7 @@ export interface BridgeProjectMemberDirectoryItem {
   id: string;
   displayName: string;
   position: string;
+  status: string;
   displayImage: string | null;
   slug: string;
   socials: Array<{ platformName: string; url: string }>;
@@ -61,6 +62,7 @@ function mapDirectoryItem(record: {
   slug: string;
   name: string;
   role: string;
+  status: string;
   imageUrl: string | null;
   teamId: string | null;
   team: {
@@ -74,6 +76,7 @@ function mapDirectoryItem(record: {
     id: record.id,
     displayName: record.name,
     position: record.role,
+    status: record.status,
     displayImage: record.imageUrl,
     slug: record.slug,
     socials: [],
@@ -100,13 +103,14 @@ export async function getProjectMembers(projectId: string) {
   }
 
   const records = await db.member.findMany({
-    where: { assetId: projectId },
+    where: { assetId: projectId, status: { not: 'hidden' } },
     orderBy: [{ order: 'asc' }, { name: 'asc' }, { id: 'asc' }],
     select: {
       id: true,
       slug: true,
       name: true,
       role: true,
+      status: true,
       imageUrl: true,
       teamId: true,
       team: {
@@ -139,8 +143,8 @@ export async function getProjectMember(projectId: string, rawLookup: string) {
 
   const where =
     lookup.kind === 'slug'
-      ? { assetId: projectId, slug: lookup.value }
-      : { assetId: projectId, id: lookup.value };
+      ? { assetId: projectId, slug: lookup.value, status: { not: 'hidden' } }
+      : { assetId: projectId, id: lookup.value, status: { not: 'hidden' } };
 
   const record = await db.member.findFirst({
     where,
@@ -149,6 +153,7 @@ export async function getProjectMember(projectId: string, rawLookup: string) {
       slug: true,
       name: true,
       role: true,
+      status: true,
       imageUrl: true,
       teamId: true,
       team: {

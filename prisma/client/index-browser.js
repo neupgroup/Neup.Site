@@ -136,7 +136,8 @@ exports.Prisma.RoleScalarFieldEnum = {
   assetId: 'assetId',
   portfolioId: 'portfolioId',
   accountId: 'accountId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 };
 
 exports.Prisma.DomainScalarFieldEnum = {
@@ -405,6 +406,7 @@ exports.Prisma.MemberScalarFieldEnum = {
   name: 'name',
   email: 'email',
   role: 'role',
+  status: 'status',
   imageUrl: 'imageUrl',
   order: 'order',
   teamId: 'teamId',

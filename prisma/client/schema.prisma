@@ -27,6 +27,7 @@ model Role {
   portfolioId String
   accountId   String
   role        String
+  status      String  @default("active")
   asset       Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
   account     Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
@@ -407,6 +408,7 @@ model Member {
   name        String
   email       String
   role        String
+  status      String  @default("active")
   imageUrl    String?
   order       Int?
   teamId      String? @map("team_id")

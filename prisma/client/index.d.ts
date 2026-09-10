@@ -5291,6 +5291,7 @@ export namespace Prisma {
     portfolioId: string | null
     accountId: string | null
     role: string | null
+    status: string | null
   }
 
   export type RoleMaxAggregateOutputType = {
@@ -5299,6 +5300,7 @@ export namespace Prisma {
     portfolioId: string | null
     accountId: string | null
     role: string | null
+    status: string | null
   }
 
   export type RoleCountAggregateOutputType = {
@@ -5307,6 +5309,7 @@ export namespace Prisma {
     portfolioId: number
     accountId: number
     role: number
+    status: number
     _all: number
   }
 
@@ -5317,6 +5320,7 @@ export namespace Prisma {
     portfolioId?: true
     accountId?: true
     role?: true
+    status?: true
   }
 
   export type RoleMaxAggregateInputType = {
@@ -5325,6 +5329,7 @@ export namespace Prisma {
     portfolioId?: true
     accountId?: true
     role?: true
+    status?: true
   }
 
   export type RoleCountAggregateInputType = {
@@ -5333,6 +5338,7 @@ export namespace Prisma {
     portfolioId?: true
     accountId?: true
     role?: true
+    status?: true
     _all?: true
   }
 
@@ -5414,6 +5420,7 @@ export namespace Prisma {
     portfolioId: string
     accountId: string
     role: string
+    status: string
     _count: RoleCountAggregateOutputType | null
     _min: RoleMinAggregateOutputType | null
     _max: RoleMaxAggregateOutputType | null
@@ -5439,6 +5446,7 @@ export namespace Prisma {
     portfolioId?: boolean
     accountId?: boolean
     role?: boolean
+    status?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["role"]>
@@ -5449,6 +5457,7 @@ export namespace Prisma {
     portfolioId?: boolean
     accountId?: boolean
     role?: boolean
+    status?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["role"]>
@@ -5459,6 +5468,7 @@ export namespace Prisma {
     portfolioId?: boolean
     accountId?: boolean
     role?: boolean
+    status?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["role"]>
@@ -5469,9 +5479,10 @@ export namespace Prisma {
     portfolioId?: boolean
     accountId?: boolean
     role?: boolean
+    status?: boolean
   }
 
-  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "portfolioId" | "accountId" | "role", ExtArgs["result"]["role"]>
+  export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "portfolioId" | "accountId" | "role" | "status", ExtArgs["result"]["role"]>
   export type RoleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
@@ -5497,6 +5508,7 @@ export namespace Prisma {
       portfolioId: string
       accountId: string
       role: string
+      status: string
     }, ExtArgs["result"]["role"]>
     composites: {}
   }
@@ -5927,6 +5939,7 @@ export namespace Prisma {
     readonly portfolioId: FieldRef<"Role", 'String'>
     readonly accountId: FieldRef<"Role", 'String'>
     readonly role: FieldRef<"Role", 'String'>
+    readonly status: FieldRef<"Role", 'String'>
   }
     
 
@@ -31282,6 +31295,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     role: string | null
+    status: string | null
     imageUrl: string | null
     order: number | null
     teamId: string | null
@@ -31294,6 +31308,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     role: string | null
+    status: string | null
     imageUrl: string | null
     order: number | null
     teamId: string | null
@@ -31306,6 +31321,7 @@ export namespace Prisma {
     name: number
     email: number
     role: number
+    status: number
     imageUrl: number
     order: number
     teamId: number
@@ -31329,6 +31345,7 @@ export namespace Prisma {
     name?: true
     email?: true
     role?: true
+    status?: true
     imageUrl?: true
     order?: true
     teamId?: true
@@ -31341,6 +31358,7 @@ export namespace Prisma {
     name?: true
     email?: true
     role?: true
+    status?: true
     imageUrl?: true
     order?: true
     teamId?: true
@@ -31353,6 +31371,7 @@ export namespace Prisma {
     name?: true
     email?: true
     role?: true
+    status?: true
     imageUrl?: true
     order?: true
     teamId?: true
@@ -31453,6 +31472,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status: string
     imageUrl: string | null
     order: number | null
     teamId: string | null
@@ -31485,6 +31505,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     role?: boolean
+    status?: boolean
     imageUrl?: boolean
     order?: boolean
     teamId?: boolean
@@ -31500,6 +31521,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     role?: boolean
+    status?: boolean
     imageUrl?: boolean
     order?: boolean
     teamId?: boolean
@@ -31515,6 +31537,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     role?: boolean
+    status?: boolean
     imageUrl?: boolean
     order?: boolean
     teamId?: boolean
@@ -31530,13 +31553,14 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     role?: boolean
+    status?: boolean
     imageUrl?: boolean
     order?: boolean
     teamId?: boolean
     permissions?: boolean
   }
 
-  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "slug" | "name" | "email" | "role" | "imageUrl" | "order" | "teamId" | "permissions", ExtArgs["result"]["member"]>
+  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "slug" | "name" | "email" | "role" | "status" | "imageUrl" | "order" | "teamId" | "permissions", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
@@ -31563,6 +31587,7 @@ export namespace Prisma {
       name: string
       email: string
       role: string
+      status: string
       imageUrl: string | null
       order: number | null
       teamId: string | null
@@ -31998,6 +32023,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Member", 'String'>
     readonly email: FieldRef<"Member", 'String'>
     readonly role: FieldRef<"Member", 'String'>
+    readonly status: FieldRef<"Member", 'String'>
     readonly imageUrl: FieldRef<"Member", 'String'>
     readonly order: FieldRef<"Member", 'Int'>
     readonly teamId: FieldRef<"Member", 'String'>
@@ -41023,7 +41049,8 @@ export namespace Prisma {
     assetId: 'assetId',
     portfolioId: 'portfolioId',
     accountId: 'accountId',
-    role: 'role'
+    role: 'role',
+    status: 'status'
   };
 
   export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
@@ -41361,6 +41388,7 @@ export namespace Prisma {
     name: 'name',
     email: 'email',
     role: 'role',
+    status: 'status',
     imageUrl: 'imageUrl',
     order: 'order',
     teamId: 'teamId',
@@ -41690,6 +41718,7 @@ export namespace Prisma {
     portfolioId?: StringFilter<"Role"> | string
     accountId?: StringFilter<"Role"> | string
     role?: StringFilter<"Role"> | string
+    status?: StringFilter<"Role"> | string
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
   }
@@ -41700,6 +41729,7 @@ export namespace Prisma {
     portfolioId?: SortOrder
     accountId?: SortOrder
     role?: SortOrder
+    status?: SortOrder
     asset?: AssetOrderByWithRelationInput
     account?: AccountOrderByWithRelationInput
   }
@@ -41713,6 +41743,7 @@ export namespace Prisma {
     portfolioId?: StringFilter<"Role"> | string
     accountId?: StringFilter<"Role"> | string
     role?: StringFilter<"Role"> | string
+    status?: StringFilter<"Role"> | string
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
   }, "id">
@@ -41723,6 +41754,7 @@ export namespace Prisma {
     portfolioId?: SortOrder
     accountId?: SortOrder
     role?: SortOrder
+    status?: SortOrder
     _count?: RoleCountOrderByAggregateInput
     _max?: RoleMaxOrderByAggregateInput
     _min?: RoleMinOrderByAggregateInput
@@ -41737,6 +41769,7 @@ export namespace Prisma {
     portfolioId?: StringWithAggregatesFilter<"Role"> | string
     accountId?: StringWithAggregatesFilter<"Role"> | string
     role?: StringWithAggregatesFilter<"Role"> | string
+    status?: StringWithAggregatesFilter<"Role"> | string
   }
 
   export type DomainWhereInput = {
@@ -43446,6 +43479,7 @@ export namespace Prisma {
     name?: StringFilter<"Member"> | string
     email?: StringFilter<"Member"> | string
     role?: StringFilter<"Member"> | string
+    status?: StringFilter<"Member"> | string
     imageUrl?: StringNullableFilter<"Member"> | string | null
     order?: IntNullableFilter<"Member"> | number | null
     teamId?: StringNullableFilter<"Member"> | string | null
@@ -43461,6 +43495,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
+    status?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
     order?: SortOrderInput | SortOrder
     teamId?: SortOrderInput | SortOrder
@@ -43480,6 +43515,7 @@ export namespace Prisma {
     name?: StringFilter<"Member"> | string
     email?: StringFilter<"Member"> | string
     role?: StringFilter<"Member"> | string
+    status?: StringFilter<"Member"> | string
     imageUrl?: StringNullableFilter<"Member"> | string | null
     order?: IntNullableFilter<"Member"> | number | null
     teamId?: StringNullableFilter<"Member"> | string | null
@@ -43495,6 +43531,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
+    status?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
     order?: SortOrderInput | SortOrder
     teamId?: SortOrderInput | SortOrder
@@ -43516,6 +43553,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Member"> | string
     email?: StringWithAggregatesFilter<"Member"> | string
     role?: StringWithAggregatesFilter<"Member"> | string
+    status?: StringWithAggregatesFilter<"Member"> | string
     imageUrl?: StringNullableWithAggregatesFilter<"Member"> | string | null
     order?: IntNullableWithAggregatesFilter<"Member"> | number | null
     teamId?: StringNullableWithAggregatesFilter<"Member"> | string | null
@@ -44137,6 +44175,7 @@ export namespace Prisma {
     id: string
     portfolioId: string
     role: string
+    status?: string
     asset: AssetCreateNestedOneWithoutRolesInput
     account: AccountCreateNestedOneWithoutRolesInput
   }
@@ -44147,12 +44186,14 @@ export namespace Prisma {
     portfolioId: string
     accountId: string
     role: string
+    status?: string
   }
 
   export type RoleUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     asset?: AssetUpdateOneRequiredWithoutRolesNestedInput
     account?: AccountUpdateOneRequiredWithoutRolesNestedInput
   }
@@ -44163,6 +44204,7 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type RoleCreateManyInput = {
@@ -44171,12 +44213,14 @@ export namespace Prisma {
     portfolioId: string
     accountId: string
     role: string
+    status?: string
   }
 
   export type RoleUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type RoleUncheckedUpdateManyInput = {
@@ -44185,6 +44229,7 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type DomainCreateInput = {
@@ -46083,6 +46128,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -46097,6 +46143,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     teamId?: string | null
@@ -46109,6 +46156,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -46123,6 +46171,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46136,6 +46185,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     teamId?: string | null
@@ -46148,6 +46198,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -46160,6 +46211,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46957,6 +47009,7 @@ export namespace Prisma {
     portfolioId?: SortOrder
     accountId?: SortOrder
     role?: SortOrder
+    status?: SortOrder
   }
 
   export type RoleMaxOrderByAggregateInput = {
@@ -46965,6 +47018,7 @@ export namespace Prisma {
     portfolioId?: SortOrder
     accountId?: SortOrder
     role?: SortOrder
+    status?: SortOrder
   }
 
   export type RoleMinOrderByAggregateInput = {
@@ -46973,6 +47027,7 @@ export namespace Prisma {
     portfolioId?: SortOrder
     accountId?: SortOrder
     role?: SortOrder
+    status?: SortOrder
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -48081,6 +48136,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
+    status?: SortOrder
     imageUrl?: SortOrder
     order?: SortOrder
     teamId?: SortOrder
@@ -48098,6 +48154,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
+    status?: SortOrder
     imageUrl?: SortOrder
     order?: SortOrder
     teamId?: SortOrder
@@ -48110,6 +48167,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     role?: SortOrder
+    status?: SortOrder
     imageUrl?: SortOrder
     order?: SortOrder
     teamId?: SortOrder
@@ -50201,6 +50259,7 @@ export namespace Prisma {
     id: string
     portfolioId: string
     role: string
+    status?: string
     asset: AssetCreateNestedOneWithoutRolesInput
   }
 
@@ -50209,6 +50268,7 @@ export namespace Prisma {
     assetId: string
     portfolioId: string
     role: string
+    status?: string
   }
 
   export type RoleCreateOrConnectWithoutAccountInput = {
@@ -50246,6 +50306,7 @@ export namespace Prisma {
     portfolioId?: StringFilter<"Role"> | string
     accountId?: StringFilter<"Role"> | string
     role?: StringFilter<"Role"> | string
+    status?: StringFilter<"Role"> | string
   }
 
   export type AssetCreateWithoutRolesInput = {
@@ -50616,6 +50677,7 @@ export namespace Prisma {
     id: string
     portfolioId: string
     role: string
+    status?: string
     account: AccountCreateNestedOneWithoutRolesInput
   }
 
@@ -50624,6 +50686,7 @@ export namespace Prisma {
     portfolioId: string
     accountId: string
     role: string
+    status?: string
   }
 
   export type RoleCreateOrConnectWithoutAssetInput = {
@@ -51104,6 +51167,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -51116,6 +51180,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     teamId?: string | null
@@ -51641,6 +51706,7 @@ export namespace Prisma {
     name?: StringFilter<"Member"> | string
     email?: StringFilter<"Member"> | string
     role?: StringFilter<"Member"> | string
+    status?: StringFilter<"Member"> | string
     imageUrl?: StringNullableFilter<"Member"> | string | null
     order?: IntNullableFilter<"Member"> | number | null
     teamId?: StringNullableFilter<"Member"> | string | null
@@ -54229,6 +54295,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -54242,6 +54309,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -54997,12 +55065,14 @@ export namespace Prisma {
     assetId: string
     portfolioId: string
     role: string
+    status?: string
   }
 
   export type RoleUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     asset?: AssetUpdateOneRequiredWithoutRolesNestedInput
   }
 
@@ -55011,6 +55081,7 @@ export namespace Prisma {
     assetId?: StringFieldUpdateOperationsInput | string
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type RoleUncheckedUpdateManyWithoutAccountInput = {
@@ -55018,6 +55089,7 @@ export namespace Prisma {
     assetId?: StringFieldUpdateOperationsInput | string
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type RoleCreateManyAssetInput = {
@@ -55025,6 +55097,7 @@ export namespace Prisma {
     portfolioId: string
     accountId: string
     role: string
+    status?: string
   }
 
   export type DomainCreateManyAssetInput = {
@@ -55180,6 +55253,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     teamId?: string | null
@@ -55190,6 +55264,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     account?: AccountUpdateOneRequiredWithoutRolesNestedInput
   }
 
@@ -55198,6 +55273,7 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type RoleUncheckedUpdateManyWithoutAssetInput = {
@@ -55205,6 +55281,7 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type DomainUpdateWithoutAssetInput = {
@@ -55662,6 +55739,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -55674,6 +55752,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55686,6 +55765,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     teamId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55879,6 +55959,7 @@ export namespace Prisma {
     name: string
     email: string
     role: string
+    status?: string
     imageUrl?: string | null
     order?: number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -55890,6 +55971,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -55903,6 +55985,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
@@ -55915,6 +55998,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
