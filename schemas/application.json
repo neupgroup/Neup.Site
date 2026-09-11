@@ -6,7 +6,9 @@
     "description": "Application's main description for the Search Engines",
     "@comment:name": "Pass the description for the application, this is only for the application owner to use.",
     "version": "1.0.0.02",
-    "@comment:version": "This is the version of the application that has been published, this is primarily used for the neup system to make an updates and so more. This follows the usual versioning system, with 1.0.0 and then final counter is for the number of updates pushed with a prefix 0 to it."
+    "@comment:version": "This is the version of the application that has been published, this is primarily used for the neup system to make an updates and so more. This follows the usual versioning system, with 1.0.0 and then final counter is for the number of updates pushed with a prefix 0 to it.",
+    "applicationId": "neupgroup",
+    "@comment:applicationId": "Unique identifier for the application. Used for internal tracking and management."
   },
   "design": {
     "color": {
@@ -131,7 +133,11 @@
   "platforms": {
     "web": {
       "exists": true,
-      "location": "https://domainname.com"
+      "@comment:exists" : "This defines if the web application exists or not, it is only for that, nothing more.",
+      "location": "https://domainname.com",
+      "@comment:location": "This is where the webapplication will be hosted, any domains not configured will not run, so as to protect from attacts and for reputation management",
+      "basepath": "/application",
+      "@comment:basepath": "If the web application is to be running on a specific basepath, keep it undefined or keep it empty so the app knows that the basepath does not exists and its to run on the main domain itself."
     },
     "android": {
       "exists": true,
@@ -142,6 +148,7 @@
       "bundleIdentifier": "com.domainname.app"
     }
   },
+  "@comment:platforms": "As of now it only supports 1 platform per site, or per webapplication. Bringing support to multiple application or multi domiain support soon."
   "assets": {
     "logo": {
       "main": "/assets/logo.png",
