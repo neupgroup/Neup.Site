@@ -140,8 +140,15 @@
       "basepath": "/application",
       "@comment:basepath": "If the web application is to be running on a specific basepath, keep it undefined or keep it empty so the app knows that the basepath does not exists and its to run on the main domain itself."
     },
+    "api": {
+      "exists": true,
+      "@comment:exists": "This only defines if the api exists or not.",
+      "basepath": "https://neupgroup.com/account/bridge/",
+      "@comment:basepath": "This defines the basepath of the API path, the full url of the API path will be generated using (basepath + endpoint) path. This is the main endpoint for any endpoint other than of the application itself for applications and more, define it custom in the application codebase or via the connector.",
+    },
     "android": {
       "exists": true,
+      "@comment:exists": "This only defines if the application on the android exists or not.",
       "packageName": "com.domainname.app"
     },
     "ios": {
