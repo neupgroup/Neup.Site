@@ -2,6 +2,7 @@
 
 import crypto from 'crypto';
 import { prisma as db } from '#/core/database/prisma';
+import { logger } from '#/logica/logger';
 import { getAccountId } from './accounts';
 import { normalizeUrl } from '#/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
@@ -57,6 +58,25 @@ export async function getAssetsForAccount(authToken?: string | null): Promise<{ 
 
     return { assets: Array.from(assetsById.values()) };
   } catch (error: any) {
+    const errorDetails = {
+      message: error?.message || 'Unknown error',
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack,
+      accountId,
+    };
+
+    if (process.env.NODE_ENV === 'development') {
+      console.error('getAssetsForAccount failed:', errorDetails);
+    } else {
+      await logger.error({
+        message: errorDetails.message,
+        stack: errorDetails.stack,
+        source: 'getAssetsForAccount',
+        details: JSON.stringify(errorDetails),
+      });
+    }
+
     return { error: 'Failed to retrieve assets.' };
   }
 }

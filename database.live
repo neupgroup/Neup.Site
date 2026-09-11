@@ -16,6 +16,15 @@ Fields:
 > type: string, nullable;
 .. references pages, paths, sections, datalists, sources, environments, redirects, codeFiles, allocations, structures, deployments, appBaseBackups, assetModules, teams, members, roles, profiles;
 
+Table: role, Model: Role
+Fields:
+> id: string, primary key;
+> assetId: string, references projects.id;
+> portfolioId: string;
+> accountId: string, references accounts.id;
+> role: string;
+> status: string, default: "active";
+
 Table: members, Model: Member
 Fields:
 > id: string, primary key, auto generated;
