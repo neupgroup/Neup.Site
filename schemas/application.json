@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/neupgroup/neup.sites/main/schemas/application.json",
   "identity": {
     "name": "Application Name",
     "@comment:name": "This is the name of the applicationn to be used for identification",
