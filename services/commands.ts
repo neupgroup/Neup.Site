@@ -2,10 +2,10 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { ServerCommand, serverCommandSchema } from '@/services/server/command/type';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import { getConfigureNginxCommand } from './server/management/configure-nginx';
 import { getInstallCertbotNginxCommand } from './server/management/install-certbot-nginx';
 
@@ -22,7 +22,7 @@ set -e
 echo "--- Starting Application Deployment ---"
 
 APP_NAME="{{universal.site_id}}"
-APP_PATH="/home/$(whoami)/{{universal.site_id}}"
+APP_PATH="@neup/home/$(whoami)/{{universal.site_id}}"
 
 echo "--- Step 1: Navigating to application directory $APP_PATH ---"
 cd $APP_PATH
@@ -219,7 +219,7 @@ pm2 save
                         description: 'The path on the domain to proxy (e.g., / or /api).',
                         type: 'text',
                         required: true,
-                        defaultValue: '/'
+                        defaultValue: '@neup/'
                     },
                     {
                         key: 'serverIp',

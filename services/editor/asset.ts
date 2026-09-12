@@ -3,12 +3,12 @@
 
 import { getActiveProjectId } from '@/services/projects';
 import { Asset, AssetTheme, AssetIcons } from '@/services/asset/type';
-import { generateThemeFromColor } from '#/core/helpers/color';
+import { generateThemeFromColor } from '@neup/core/helpers/color';
 import { createDefaultAssetTheme } from '@/services/themes';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
 import { markAssetsAsPending, markThemeAsPending } from '@/services/structure';
 import { revalidatePath } from 'next/cache';
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { syncAssetProfileSubjects } from '@/services/profiles';
 
 /*
@@ -173,7 +173,7 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
     });
     if (!profileSync.success) return { success: false, error: profileSync.error || 'Failed to sync profile subjects.' };
 
-    revalidatePath('/', 'layout');
+    revalidatePath('@neup/', 'layout');
     return { success: true, id: assetId };
   } catch (error: any) {
     return { success: false, error: `Failed to save asset config for ${assetId}. An error has been logged.` };

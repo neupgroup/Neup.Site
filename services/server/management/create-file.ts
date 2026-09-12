@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 export async function createFile(serverId: string, filePath: string): Promise<{ success: boolean; error?: string }> {
   const ssh = new NodeSSH();
@@ -20,9 +20,9 @@ export async function createFile(serverId: string, filePath: string): Promise<{ 
     });
 
     // Determine if sudo is needed based on path
-    const userHome = server.username === 'root' ? '/root' : `/home/${server.username}`;
+    const userHome = server.username === 'root' ? '@neup/root' : `/home/${server.username}`;
     const useSudo = !filePath.startsWith(userHome);
-    const sanitizedFilePath = `'${filePath.replace(/'/g, "'\\''")}'`;
+    const sanitizedFilePath = `'${filePath.replace(/'@neup/g, "'\\''")}'`;
 
     const command = useSudo ? `sudo touch ${sanitizedFilePath}` : `touch ${sanitizedFilePath}`;
     

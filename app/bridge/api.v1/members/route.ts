@@ -12,7 +12,7 @@ export async function GET(request: Request) {
       const members = result.members?.filter((member) => member.status !== 'hidden');
       return NextResponse.json({ success: true, members });
     }
-    const accounts = await (await import('#/core/database/prisma')).prisma.account.findMany({
+    const accounts = await (await import('@neup/core/database/prisma')).prisma.account.findMany({
       where: { roles: { some: { assetId: validation.projectId } } },
       select: { id: true, displayName: true, displayImage: true, status: true, type: true },
       orderBy: { displayName: 'asc' },

@@ -1,17 +1,17 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Label } from '#/components/ui/label';
-import { Switch } from '#/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Label } from '@neup/components/ui/label';
+import { Switch } from '@neup/components/ui/switch';
 import { useState, useEffect } from 'react';
-import { Separator } from '#/components/ui/separator';
+import { Separator } from '@neup/components/ui/separator';
 import { getSiteModules, updateSiteModule, type SiteModules } from '@/services/modules';
-import { Skeleton } from '#/components/ui/skeleton';
-import { useToast } from '#/core/hooks/useToast';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import allPossibleModules from '@/services/site/modules/list.json';
 
 export default function SiteModulesPage() {

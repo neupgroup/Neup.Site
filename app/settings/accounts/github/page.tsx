@@ -3,12 +3,12 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { Github } from 'lucide-react';
 import Link from 'next/link';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
 export default function LinkGitHubPage() {
@@ -42,7 +42,7 @@ export default function LinkGitHubPage() {
         <CardContent>
           <div className="text-center p-12">
             <Github className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <LinkButton variant="solid" href={appendProject('/bridge/api/v1/github/start', project)}>
+            <LinkButton variant="solid" href={appendProject('@neup/bridge/api/v1/github/start', project)}>
                 <Github className="mr-2 h-4 w-4" /> Connect with GitHub
               </LinkButton>
           </div>

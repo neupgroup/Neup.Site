@@ -11,9 +11,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,14 +23,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '#/components/ui/alert-dialog';
+} from '@neup/components/ui/alert-dialog';
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import Link from 'next/link';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Badge } from '#/components/ui/badge';
-import { cn } from '#/core/utils';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Badge } from '@neup/components/ui/badge';
+import { cn } from '@neup/core/utils';
 
 export default function AllocationDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -61,7 +61,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
     const result = await deleteAllocation(id);
     if(result.success) {
         toast({ title: 'Allocation Deleted', description: 'The server allocation has been removed.'});
-        router.push('/root/servers/allocations');
+        router.push('@neup/root/servers/allocations');
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -102,7 +102,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error || 'Allocation not found.'}</AlertDescription>
          <div className="mt-4">
-            <LinkButton variant="outlined" href="/root/servers/allocations">
+            <LinkButton variant="outlined" href="@neup/root/servers/allocations">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Allocations
               </LinkButton>
         </div>
@@ -113,7 +113,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
         <div className="mb-4">
-            <LinkButton variant="plain" href="/root/servers/allocations">
+            <LinkButton variant="plain" href="@neup/root/servers/allocations">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Allocations
                 </LinkButton>

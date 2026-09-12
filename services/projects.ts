@@ -3,7 +3,7 @@
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { getAccountId } from '@/services/accounts';
 
 /*
@@ -291,9 +291,9 @@ export async function deleteManagedProject(projectId: string): Promise<{ success
       return { success: false, error: 'Project not found or you do not have permission to delete it.' };
     }
 
-    revalidatePath('/manage/projects');
-    revalidatePath('/manage/access');
-    revalidatePath('/switch');
+    revalidatePath('@neup/manage/projects');
+    revalidatePath('@neup/manage/access');
+    revalidatePath('@neup/switch');
 
     return { success: true };
   } catch {

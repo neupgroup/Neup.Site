@@ -2,16 +2,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '#/components/ui/radio-group';
-import { Label } from '#/components/ui/label';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@neup/components/ui/radio-group';
+import { Label } from '@neup/components/ui/label';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
 import { Sun, Moon, Loader2, Save, Plus, Trash2, Contrast } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { saveAsset } from '@/services/editor/asset';
 import type { AssetTheme } from '@/services/asset/type';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
 const colorLabels = ['Primary', 'Accent', 'Tertiary'];

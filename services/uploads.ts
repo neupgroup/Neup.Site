@@ -7,7 +7,7 @@ import { NodeSSH } from 'node-ssh';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import { getAsset } from './editor/asset';
 
 export interface PublicFile {
@@ -53,7 +53,7 @@ async function getRemoteServerConnection(assetId: string) {
 /**
  * Gets the list of files and directories within a given path inside the public folder on the remote server.
  */
-export async function getPublicFiles(directoryPath: string = '/'): Promise<{ success: boolean; files?: PublicFile[]; error?: string }> {
+export async function getPublicFiles(directoryPath: string = '@neup/'): Promise<{ success: boolean; files?: PublicFile[]; error?: string }> {
     let ssh: NodeSSH | undefined;
     const assetId = 'current-site'; // Placeholder, as getRemoteServerConnection will use the cookie
 

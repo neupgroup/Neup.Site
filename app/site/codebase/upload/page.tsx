@@ -4,11 +4,11 @@ import { useCallback, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 import { ArrowLeft, AlertCircle, FileText, Loader2, UploadCloud } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { useToast } from '#/core/hooks/useToast';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { useToast } from '@neup/core/hooks/useToast';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error';
 
@@ -31,7 +31,7 @@ function joinCodebasePath(basePath: string | null, filePath: string) {
     return normalizedFilePath;
   }
 
-  return `${basePath.replace(/\/+$/, '')}/${normalizedFilePath}`;
+  return `${basePath.replace(/\/+/, '')}/${normalizedFilePath}`;
 }
 
 function getUploadRelativePath(file: File) {
@@ -51,7 +51,7 @@ export default function CodebaseUploadPage() {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const currentPath = searchParams.get('path');
-  const codebaseHref = currentPath ? `/codebase?path=${encodeURIComponent(currentPath)}` : '/codebase';
+  const codebaseHref = currentPath ? `/codebase?path=${encodeURIComponent(currentPath)}` : '@neup/codebase';
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const nextFiles = acceptedFiles.map((file, index) => ({

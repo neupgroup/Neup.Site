@@ -7,14 +7,14 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
-import { Input } from '#/components/ui/input';
-import { Textarea } from '#/components/ui/textarea';
-import { useToast } from '#/core/hooks/useToast';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
+import { Input } from '@neup/components/ui/input';
+import { Textarea } from '@neup/components/ui/textarea';
+import { useToast } from '@neup/core/hooks/useToast';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
 import { createTeam } from '@/services/teams';
 
@@ -62,13 +62,13 @@ export default function AddTeamPage() {
     }
 
     toast({ title: 'Team Created' });
-    router.push(appendProject('/manage/member', project));
+    router.push(appendProject('@neup/manage/member', project));
   };
 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendProject('/manage/member', project)}>
+        <LinkButton variant="outlined" href={appendProject('@neup/manage/member', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </LinkButton>

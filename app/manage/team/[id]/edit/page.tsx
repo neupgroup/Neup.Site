@@ -2,13 +2,13 @@
 'use client';
 
 import { getTeam, updateTeam, deleteTeam } from '@/services/teams';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
-import { Input } from '#/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
-import { Textarea } from '#/components/ui/textarea';
-import { useToast } from '#/core/hooks/useToast';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Input } from '@neup/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
+import { Textarea } from '@neup/components/ui/textarea';
+import { useToast } from '@neup/core/hooks/useToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -16,8 +16,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@neup/components/ui/alert-dialog';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 /*
 ::neup.documentation::manage-team-edit-page
@@ -55,7 +55,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
         getTeam(id).then(({ team, error }) => {
             if (error || !team) {
                 toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch team data.'});
-                router.push('/manage/member');
+                router.push('@neup/manage/member');
             } else {
                 form.reset({
                     name: team.name,
@@ -81,7 +81,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
         const result = await deleteTeam(id);
         if (result.success) {
             toast({ title: 'Team Deleted'});
-            router.push('/manage/member');
+            router.push('@neup/manage/member');
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }

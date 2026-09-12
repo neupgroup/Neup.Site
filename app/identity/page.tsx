@@ -8,22 +8,22 @@ import { z } from 'zod';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset } from '@/services/asset/type';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
-import { Textarea } from '#/components/ui/textarea';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
-import { useToast } from '#/core/hooks/useToast';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Label } from '@neup/components/ui/label';
+import { Textarea } from '@neup/components/ui/textarea';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
+import { useToast } from '@neup/core/hooks/useToast';
 import { Save, Loader2, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
 import { useProfile } from '@/inapp/context/ProfileContext';
-import { Skeleton } from '#/components/ui/skeleton';
-import { cn } from '#/core/utils';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { cn } from '@neup/core/utils';
 import { useSearchParams } from 'next/navigation';
-import { Switch } from '#/components/ui/switch';
+import { Switch } from '@neup/components/ui/switch';
 import Link from 'next/link';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
 export const SocialProfileSchema = z.object({
@@ -162,7 +162,7 @@ export default function ProfilePage() {
                                 <CardTitle>Asset Information</CardTitle>
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
-                            <LinkButton variant="outlined" href={appendProject('/settings/identity/logo', project)}>
+                            <LinkButton variant="outlined" href={appendProject('@neup/settings/identity/logo', project)}>
                                     <ImageIcon className="mr-2" /> Manage Logos
                                 </LinkButton>
                         </div>

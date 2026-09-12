@@ -9,24 +9,24 @@ import { z } from 'zod';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset } from '@/services/asset/type';
 
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Checkbox } from '#/components/ui/checkbox';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '#/components/ui/form';
-import { useToast } from '#/core/hooks/useToast';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
+import { Checkbox } from '@neup/components/ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@neup/components/ui/form';
+import { useToast } from '@neup/core/hooks/useToast';
 import { Save, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useProfile } from '@/inapp/context/ProfileContext';
-import { Skeleton } from '#/components/ui/skeleton';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const ProxySchema = z.object({
-    path: z.string().min(1, 'Path is required').refine(p => p.startsWith('/'), 'Path must start with /'),
+    path: z.string().min(1, 'Path is required').refine(p => p.startsWith('@neup/'), 'Path must start with /'),
     ip: z.string().min(1, 'IP is required'),
     port: z.string().min(1, 'Port is required'),
 });
 
 const IgnoredPathSchema = z.object({
-    value: z.string().min(1, 'Path is required').refine(p => p.startsWith('/'), 'Path must start with /'),
+    value: z.string().min(1, 'Path is required').refine(p => p.startsWith('@neup/'), 'Path must start with /'),
 });
 
 export const DomainSettingsSchema = z.object({
@@ -64,7 +64,7 @@ const IgnoredPathsFields = ({ nestIndex, control }: { nestIndex: "domains.produc
                         control={control}
                         name={`${nestIndex}.${k}.value`}
                         render={({ field }) => (
-                            <FormItem className="flex-1"><FormControl><Input {...field} placeholder="/path/to/ignore" /></FormControl><FormMessage /></FormItem>
+                            <FormItem className="flex-1"><FormControl><Input {...field} placeholder="@neup/path/to/ignore" /></FormControl><FormMessage /></FormItem>
                         )}
                     />
                     <Button htmlType="button" variant="solid" convey="danger" size="icon" onClick={() => remove(k)}><Trash2 className="h-4 w-4" /></Button>
@@ -93,7 +93,7 @@ const ProxyFields = ({ nestIndex, control }: { nestIndex: "domains.production.pr
                         control={control}
                         name={`${nestIndex}.${k}.path`}
                         render={({ field }) => (
-                            <FormItem><FormLabel>Path</FormLabel><FormControl><Input {...field} placeholder="/api" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Path</FormLabel><FormControl><Input {...field} placeholder="@neup/api" /></FormControl><FormMessage /></FormItem>
                         )}
                     />
                     <FormField

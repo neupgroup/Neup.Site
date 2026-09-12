@@ -4,17 +4,17 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
-import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
+import { Label } from '@neup/components/ui/label';
+import { Alert, AlertTitle, AlertDescription } from '@neup/components/ui/alert';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
-import { cn } from '#/core/utils';
+import { useToast } from '@neup/core/hooks/useToast';
+import { cn } from '@neup/core/utils';
 import { deletePublicFile, type PublicFile, getPublicFiles } from '@/services/uploads';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@neup/components/ui/alert-dialog';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
 
@@ -30,7 +30,7 @@ const FileManager = () => {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const currentPath = searchParams.get('path') || '/';
+  const currentPath = searchParams.get('path') || '@neup/';
 
   const [files, setFiles] = useState<PublicFile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,10 +72,10 @@ const FileManager = () => {
   };
 
   const goUp = () => {
-    if (currentPath === '/') return;
-    const pathParts = currentPath.split('/').filter(p => p);
+    if (currentPath === '@neup/') return;
+    const pathParts = currentPath.split('@neup/').filter(p => p);
     pathParts.pop();
-    const newPath = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';
+    const newPath = pathParts.length > 0 ? `/${pathParts.join('@neup/')}` : '@neup/';
     navigate(newPath);
   };
 
@@ -130,7 +130,7 @@ export default function SiteUploadsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const currentPath = searchParams.get('path') || '/';
+  const currentPath = searchParams.get('path') || '@neup/';
 
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [uploadPath, setUploadPath] = useState(currentPath);
@@ -223,7 +223,7 @@ export default function SiteUploadsPage() {
                 id="upload-path"
                 value={uploadPath}
                 onChange={(e) => setUploadPath(e.target.value)}
-                placeholder="/"
+                placeholder="@neup/"
                 className="rounded-l-none"
               />
             </div>

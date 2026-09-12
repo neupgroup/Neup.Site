@@ -1,6 +1,6 @@
 
 import { redirect } from 'next/navigation';
-import { makeAppPath } from '#/core/appconfig';
+import { makeAppPath } from '@neup/core/appconfig';
 
 export default async function Page({
   searchParams,
@@ -14,5 +14,5 @@ export default async function Page({
     redirect(makeAppPath(`/home?project=${encodeURIComponent(project)}`));
   }
 
-  redirect(makeAppPath('/home'));
+  redirect(makeAppPath('@neup/home'));
 }

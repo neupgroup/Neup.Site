@@ -1,12 +1,12 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@neup/components/ui/tabs';
 import { Code, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 
 const CodeBlock = ({ children }: { children: React.ReactNode }) => (
   <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto">
@@ -17,7 +17,7 @@ const CodeBlock = ({ children }: { children: React.ReactNode }) => (
 export default function TemplatesGuidePage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
-       <LinkButton variant="plain" className="pl-0" href="/root/templates">
+       <LinkButton variant="plain" className="pl-0" href="@neup/root/templates">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Templates
           </LinkButton>

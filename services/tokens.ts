@@ -1,8 +1,8 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import { ApiToken } from '@/services/token/type';
@@ -25,7 +25,7 @@ export async function createToken(name: string, tokenHash: string, tokenPrefix: 
       },
       select: { id: true },
     });
-    revalidatePath('/settings/tokens');
+    revalidatePath('@neup/settings/tokens');
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({
@@ -79,7 +79,7 @@ export async function revokeToken(id: string): Promise<{ success: boolean; error
     if (result.count === 0) {
       return { success: false, error: 'Unauthorized or token not found.' };
     }
-    revalidatePath('/settings/tokens');
+    revalidatePath('@neup/settings/tokens');
     return { success: true };
   } catch (e: any) {
     await logger.error({

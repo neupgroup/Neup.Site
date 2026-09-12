@@ -1,17 +1,17 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { FileUploader } from '#/components/ui/file-uploader';
+import { FileUploader } from '@neup/components/ui/file-uploader';
 import { useProfile } from '@/inapp/context/ProfileContext';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset, AssetIcons } from '@/services/asset/type';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
 export default function LogoUploadPage() {
@@ -47,18 +47,18 @@ export default function LogoUploadPage() {
   };
 
   const iconUploads: { label: string; path: string; acceptedTypes: string; iconKey: keyof AssetIcons }[] = [
-    { label: 'Favicon (favicon.ico)', path: '/favicon.ico', acceptedTypes: 'image/x-icon', iconKey: 'favicon' },
-    { label: 'Apple Touch Icon (apple-touch-icon.png)', path: '/apple-touch-icon.png', acceptedTypes: 'image/png', iconKey: 'appleTouch' },
-    { label: 'Favicon 16x16 (favicon-16x16.png)', path: '/favicon-16x16.png', acceptedTypes: 'image/png', iconKey: 'favicon16' },
-    { label: 'Favicon 32x32 (favicon-32x32.png)', path: '/favicon-32x32.png', acceptedTypes: 'image/png', iconKey: 'favicon32' },
-    { label: 'Android Chrome 192x192', path: '/android-chrome-192x192.png', acceptedTypes: 'image/png', iconKey: 'android192' },
-    { label: 'Android Chrome 512x512', path: '/android-chrome-512x512.png', acceptedTypes: 'image/png', iconKey: 'android512' },
+    { label: 'Favicon (favicon.ico)', path: '@neup/favicon.ico', acceptedTypes: 'image/x-icon', iconKey: 'favicon' },
+    { label: 'Apple Touch Icon (apple-touch-icon.png)', path: '@neup/apple-touch-icon.png', acceptedTypes: 'image/png', iconKey: 'appleTouch' },
+    { label: 'Favicon 16x16 (favicon-16x16.png)', path: '@neup/favicon-16x16.png', acceptedTypes: 'image/png', iconKey: 'favicon16' },
+    { label: 'Favicon 32x32 (favicon-32x32.png)', path: '@neup/favicon-32x32.png', acceptedTypes: 'image/png', iconKey: 'favicon32' },
+    { label: 'Android Chrome 192x192', path: '@neup/android-chrome-192x192.png', acceptedTypes: 'image/png', iconKey: 'android192' },
+    { label: 'Android Chrome 512x512', path: '@neup/android-chrome-512x512.png', acceptedTypes: 'image/png', iconKey: 'android512' },
   ];
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
-        <LinkButton variant="outlined" href={appendProject('/settings/identity', project)}>
+        <LinkButton variant="outlined" href={appendProject('@neup/settings/identity', project)}>
                 <ArrowLeft className="mr-2" /> Back to Profile
             </LinkButton>
       </header>
@@ -72,7 +72,7 @@ export default function LogoUploadPage() {
         </CardHeader>
         <CardContent>
             <FileUploader 
-                uploadPath="/logo.png"
+                uploadPath="@neup/logo.png"
                 acceptedFileTypes="image/*"
                 onUploadSuccess={handleLogoUploadSuccess}
                 currentImageUrl={asset?.logoUrl}

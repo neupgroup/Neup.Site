@@ -3,7 +3,7 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 export interface FileInfo {
   type: 'd' | '-' | 'l'; // directory, file, link
@@ -24,7 +24,7 @@ function parseLsOutput(output: string, currentPath: string): FileInfo[] {
     for (const line of lines) {
         // Example line: -rw-r--r-- 1 root root 4096 2024-07-31 10:00:00.000000000 +0000 my-file.txt
         // Symlink: lrwxrwxrwx 1 root root 23 2024-07-31 10:00:00.000000000 +0000 htdocs -> /opt/bitnami/apache/htdocs
-        const parts = line.match(/^([dl-])([rwx-]{9})\s+\d+\s+([\w-]+)\s+([\w-]+)\s+([\w\d\.]+)\s+([\d-]{10}\s[\d:]{8}\.[\d]+)\s[+\d-]+\s+(.*)$/);
+        const parts = line.match(/^([dl-])([rwx-]{9})\s+\d+\s+([\w-]+)\s+([\w-]+)\s+([\w\d\.]+)\s+([\d-]{10}\s[\d:]{8}\.[\d]+)\s[+\d-]+\s+(.*)/);
 
         if (!parts) continue;
 
@@ -62,7 +62,7 @@ function parseLsOutput(output: string, currentPath: string): FileInfo[] {
     });
 }
 
-export async function getFileList(serverId: string, path: string = '/'): Promise<{ success: boolean; files?: FileInfo[]; error?: string }> {
+export async function getFileList(serverId: string, path: string = '@neup/'): Promise<{ success: boolean; files?: FileInfo[]; error?: string }> {
   const ssh = new NodeSSH();
   try {
     const { server, error: serverError } = await getPrivateServerDetails(serverId);
@@ -77,7 +77,7 @@ export async function getFileList(serverId: string, path: string = '/'): Promise
     });
     
     // Sanitize path for shell command by wrapping in single quotes
-    const sanitizedPath = `'${path.replace(/'/g, "'\\''")}'`;
+    const sanitizedPath = `'${path.replace(/'@neup/g, "'\\''")}'`;
 
     // This command is more complex. It gets a detailed list, then iterates through directories
     // to get their total size with `du -sh`.

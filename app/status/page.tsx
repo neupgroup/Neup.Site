@@ -4,13 +4,13 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getSiteServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
 import { Loader2, Server as ServerIcon, CheckCircle, XCircle, AlertCircle, Rocket, Globe } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { runCommand } from '@/services/runner';
-import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '@neup/components/ui/alert';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
 import type { ServerAllocation } from '@/services/server/type';
 import type { Asset, Structure } from '@/services/asset/type';
@@ -18,7 +18,7 @@ import { getPm2Processes } from '@/services/server/management/get-pm2-processes'
 import { checkPathExists, rebuildApplication } from '@/services/server/management/check-build';
 import { useProfile, type CoreAssetProfile } from '@/inapp/context/ProfileContext';
 import { getStructure, createDeployment } from '@/services/structure';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 interface DeploymentStep {
     name: string;
@@ -426,7 +426,7 @@ const DeploymentStatusChecker = ({ server, allocation, asset, isProduction }: { 
                         <p className="text-muted-foreground mb-4">
                             Configure your {isProduction ? 'production' : 'development'} domain to check your app's status.
                         </p>
-                        <Button variant="outlined" onClick={() => window.location.href = '/settings/domain'}>
+                        <Button variant="outlined" onClick={() => window.location.href = '@neup/settings/domain'}>
                             Configure Domain
                         </Button>
                     </div>

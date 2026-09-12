@@ -1,12 +1,12 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { UtensilsCrossed, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function DishListPage() {
   usePageTitle('Dishes');
@@ -14,7 +14,7 @@ export default function DishListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Tourio Dishes</h1>
-        <LinkButton variant="solid" href="/tourio/dish/create">
+        <LinkButton variant="solid" href="@neup/tourio/dish/create">
                 <Plus className="mr-2 h-4 w-4" /> Create Dish
             </LinkButton>
       </header>

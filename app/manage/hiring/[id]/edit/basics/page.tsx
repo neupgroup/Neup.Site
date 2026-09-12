@@ -3,24 +3,24 @@
 
 import { getJobPostingById, updateJobPosting, type JobPosting } from '@/services/hiring';
 import { getApplicantsForJob, type Applicant } from '@/services/applicants';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, ArrowLeft, Pencil, Users, Save, X, Loader2, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { Badge } from '#/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Badge } from '@neup/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { use, useEffect, useState } from 'react';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
-import { Input } from '#/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
-import { Textarea } from '#/components/ui/textarea';
-import { useToast } from '#/core/hooks/useToast';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
+import { Input } from '@neup/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
+import { Textarea } from '@neup/components/ui/textarea';
+import { useToast } from '@neup/core/hooks/useToast';
 
 function getInitials(name: string) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -178,7 +178,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   if (error || !posting) {
     return (
       <div className="w-full max-w-4xl mx-auto space-y-4">
-        <LinkButton variant="outlined" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
+        <LinkButton variant="outlined" href="@neup/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
         <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'Job posting not found'}</AlertDescription></Alert>
       </div>
     );
@@ -187,7 +187,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   return (
     <div className="w-full max-w-4xl space-y-6">
       <div className="mb-4">
-        <LinkButton variant="outlined" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
+        <LinkButton variant="outlined" href="@neup/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
       </div>
 
       <div className="space-y-6">

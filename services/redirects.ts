@@ -1,9 +1,9 @@
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import type { Redirect } from '@/services/redirect/type';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import { getAccountId } from '@/services/accounts';
 import { getActiveProjectId } from '@/services/projects';
 import { markRedirectsAsPending } from './structure';
@@ -37,7 +37,7 @@ export async function createRedirect(data: Omit<Redirect, 'id' | 'assetId' | 'cr
 
     await markRedirectsAsPending(assetId);
 
-    revalidatePath('/manage/redirects');
+    revalidatePath('@neup/manage/redirects');
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({ message: `Failed to create redirect: ${e.message}`, stack: e.stack, source: 'createRedirect' });
@@ -90,7 +90,7 @@ export async function deleteRedirect(id: string): Promise<{ success: boolean; er
 
     await markRedirectsAsPending(assetId);
 
-    revalidatePath('/manage/redirects');
+    revalidatePath('@neup/manage/redirects');
     return { success: true };
   } catch (e: any) {
     await logger.error({ message: `Failed to delete redirect ${id}: ${e.message}`, stack: e.stack, source: 'deleteRedirect' });

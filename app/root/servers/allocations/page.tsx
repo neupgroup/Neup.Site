@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getAllocations } from '@/services/allocations';
 import { Allocation } from '@/services/server/allocation/type';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   Table,
   TableBody,
@@ -14,12 +14,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '#/components/ui/table';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+} from '@neup/components/ui/table';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus, Share2, ArrowRight } from 'lucide-react';
-import { Badge } from '#/components/ui/badge';
-import { cn } from '#/core/utils';
+import { Badge } from '@neup/components/ui/badge';
+import { cn } from '@neup/core/utils';
 
 export default function AllocationsPage() {
   const [allocations, setAllocations] = useState<Allocation[]>([]);
@@ -57,7 +57,7 @@ export default function AllocationsPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Server Allocations</h1>
             <p className="text-muted-foreground">Manage which sites are deployed to which servers.</p>
         </div>
-        <LinkButton variant="solid" href="/root/servers/allocations/create">
+        <LinkButton variant="solid" href="@neup/root/servers/allocations/create">
             <Plus className="mr-2 h-4 w-4" /> Create Allocation
           </LinkButton>
       </header>

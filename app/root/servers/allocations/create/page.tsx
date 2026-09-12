@@ -12,13 +12,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createAllocation } from '@/services/allocations';
 import Link from 'next/link';
 
@@ -52,7 +52,7 @@ export default function CreateAllocationPage() {
 
     if (result.success) {
       toast({ title: 'Allocation Created!', description: `Successfully allocated server.` });
-      router.push('/root/servers/allocations');
+      router.push('@neup/root/servers/allocations');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -62,7 +62,7 @@ export default function CreateAllocationPage() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateAllocation)} className="w-full max-w-2xl space-y-6">
         <div className="mb-4">
-          <LinkButton variant="plain" href="/root/servers/allocations">
+          <LinkButton variant="plain" href="@neup/root/servers/allocations">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Allocations
               </LinkButton>

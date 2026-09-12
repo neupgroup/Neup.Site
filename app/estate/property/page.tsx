@@ -1,9 +1,9 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { Building, Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -12,7 +12,7 @@ export default function PropertyListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Properties</h1>
-        <LinkButton variant="solid" href="/estate/property/create">
+        <LinkButton variant="solid" href="@neup/estate/property/create">
                 <Plus className="mr-2 h-4 w-4" /> Add Property
             </LinkButton>
       </header>

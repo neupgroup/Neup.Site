@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ShieldAlert } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Badge } from '#/components/ui/badge';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Badge } from '@neup/components/ui/badge';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { appendProject } from '@/inapp/helpers/application-mode';
 import { getManagedProject } from '@/services/projects';
 import { ProjectDeleteButton } from '../project-delete-button';
@@ -79,7 +79,7 @@ export default async function ManageProjectDetailPage({
   return (
     <div className="w-full space-y-8">
       <div>
-        <LinkButton variant="outlined" href={appendProject('/manage/projects', projectIdForContext)}>
+        <LinkButton variant="outlined" href={appendProject('@neup/manage/projects', projectIdForContext)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Projects
           </LinkButton>

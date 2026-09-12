@@ -6,18 +6,18 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createAppBaseFile } from '@/services/app-base';
 import { getSiteServers } from '@/services/servers';
 import Link from 'next/link';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
@@ -47,7 +47,7 @@ export default function CreateAppBaseFilePage() {
     const result = await createAppBaseFile(serverId, data.name, data.type);
     if (result.success) {
       toast({ title: 'File Created' });
-      router.push('/site/appbase');
+      router.push('@neup/site/appbase');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -56,7 +56,7 @@ export default function CreateAppBaseFilePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="/site/appbase">
+        <LinkButton variant="plain" href="@neup/site/appbase">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to App Base
           </LinkButton>

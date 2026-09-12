@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import crypto from 'crypto';
 
 const getAccountId = async () => {
@@ -9,7 +9,7 @@ const getAccountId = async () => {
   let accountId = cookieStore.get('account_id')?.value;
   if (!accountId) {
     accountId = `user_${crypto.randomBytes(8).toString('hex')}`;
-    cookieStore.set('account_id', accountId, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 60 * 60 * 24 * 365, path: '/' });
+    cookieStore.set('account_id', accountId, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 60 * 60 * 24 * 365, path: '@neup/' });
   }
   return accountId;
 };
@@ -67,12 +67,12 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const redirectUrl = new URL('/settings/accounts', req.nextUrl.origin);
+    const redirectUrl = new URL('@neup/settings/accounts', req.nextUrl.origin);
     redirectUrl.searchParams.set('success', 'true');
     return NextResponse.redirect(redirectUrl);
   } catch (error: any) {
     console.error('GitHub callback error:', error);
-    const redirectUrl = new URL('/settings/accounts/github', req.nextUrl.origin);
+    const redirectUrl = new URL('@neup/settings/accounts/github', req.nextUrl.origin);
     redirectUrl.searchParams.set('error', encodeURIComponent(error.message || 'An unknown error occurred during GitHub authentication.'));
     return NextResponse.redirect(redirectUrl);
   }

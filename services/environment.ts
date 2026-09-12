@@ -2,8 +2,8 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
 import { getAccountId } from './accounts';
 import { revalidatePath } from 'next/cache';
 import type { EnvironmentVariable } from '@/services/environment/type';
@@ -35,7 +35,7 @@ export async function createEnvironmentVariable(data: Omit<EnvironmentVariable, 
 
     await markEnvironmentsAsPending(assetId);
 
-    revalidatePath('/site/environment');
+    revalidatePath('@neup/site/environment');
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({ message: `Failed to create environment variable: ${e.message}`, stack: e.stack, source: 'createEnvironmentVariable' });
@@ -86,7 +86,7 @@ export async function deleteEnvironmentVariable(id: string): Promise<{ success: 
       return { success: false, error: 'Environment variable not found.' };
     }
     await markEnvironmentsAsPending(assetId);
-    revalidatePath('/site/environment');
+    revalidatePath('@neup/site/environment');
     return { success: true };
   } catch (e: any) {
     await logger.error({ message: `Failed to delete environment variable ${id}: ${e.message}`, stack: e.stack, source: 'deleteEnvironmentVariable' });

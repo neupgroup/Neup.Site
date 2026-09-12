@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '#/components/ui/button';
+import { Button } from '@neup/components/ui/button';
 import { useProfile } from '@/inapp/context/ProfileContext';
 import { saveAsset } from '@/services/editor/asset';
 import type { AssetFeatures } from '@/services/asset/type';

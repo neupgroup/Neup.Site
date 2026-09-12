@@ -4,7 +4,7 @@ import { createServerLog, updateServerLog } from '@/services/server-logs';
 import { getPrivateServerDetails, updateServer } from '@/services/servers'; // Make sure updateServer is imported
 import { revalidatePath } from 'next/cache';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import vm from 'vm';
 import { getServerCommand } from './commands';
 import { getLinkedAccounts, getAccountId } from './accounts';
@@ -203,7 +203,7 @@ export async function runCommand(
                     // Only add if not strictly using DB, or if DB is empty
                     if (proxies.length === 0) {
                         proxies.push({
-                            path: String(manualPath || '/'),
+                            path: String(manualPath || '@neup/'),
                             ip: String(manualIp),
                             port: String(manualPort)
                         });
@@ -259,7 +259,7 @@ export async function runCommand(
         const finalCommand = `
 set -e
 export PATH=$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/bitnami/node/bin:/opt/bitnami/bg
-SWAP_FILE="/command_swapfile"
+SWAP_FILE="@neup/command_swapfile"
 
 cleanup() {
     if [ -f "$SWAP_FILE" ]; then

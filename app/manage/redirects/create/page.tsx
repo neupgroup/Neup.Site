@@ -7,22 +7,22 @@ import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createRedirect } from '@/services/redirects';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({
-  from: z.string().min(1, 'From path is required.').refine(p => p.startsWith('/'), "Path must start with a '/'"),
-  to: z.string().min(1, 'Destination is required.').refine(val => val.startsWith('/') || /^(https?:\/\/)/.test(val), {
+  from: z.string().min(1, 'From path is required.').refine(p => p.startsWith('@neup/'), "Path must start with a '@neup/'"),
+  to: z.string().min(1, 'Destination is required.').refine(val => val.startsWith('@neup/') || /^(https?:\/\/)/.test(val), {
     message: 'Must be a relative path (starting with /) or a full URL (starting with http:// or https://).'
   }),
   type: z.enum(['temporary', 'permanent']),
@@ -40,7 +40,7 @@ export default function CreateRedirectPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      from: '/',
+      from: '@neup/',
       to: '',
       type: 'permanent',
     },
@@ -52,7 +52,7 @@ export default function CreateRedirectPage() {
     const result = await createRedirect(data);
     if (result.success) {
       toast({ title: 'Redirect Created' });
-      router.push('/manage/redirects');
+      router.push('@neup/manage/redirects');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -61,7 +61,7 @@ export default function CreateRedirectPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="/manage/redirects">
+        <LinkButton variant="plain" href="@neup/manage/redirects">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Redirects
           </LinkButton>
@@ -85,7 +85,7 @@ export default function CreateRedirectPage() {
                         {displayDomain}
                       </span>
                       <FormControl>
-                        <Input {...field} placeholder="/old-page" className="rounded-l-none" />
+                        <Input {...field} placeholder="@neup/old-page" className="rounded-l-none" />
                       </FormControl>
                     </div>
                     <FormMessage />
@@ -94,7 +94,7 @@ export default function CreateRedirectPage() {
                 <FormField control={form.control} name="to" render={({ field }) => (
                   <FormItem>
                     <FormLabel>To</FormLabel>
-                    <FormControl><Input {...field} placeholder="/new-page or https://example.com" /></FormControl>
+                    <FormControl><Input {...field} placeholder="@neup/new-page or https://example.com" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

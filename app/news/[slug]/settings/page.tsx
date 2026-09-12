@@ -9,20 +9,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { Save, ArrowLeft, Loader2, AlertCircle, Trash2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getNewsArticleById, updateNewsArticle, deleteNewsArticle, type NewsArticle } from '@/services/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@neup/components/ui/alert-dialog';
 
 
 const formSchema = z.object({
@@ -93,7 +93,7 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
       const result = await deleteNewsArticle(article.id);
       if (result.success) {
         toast({ title: "Article Deleted", description: "The article has been removed."});
-        router.push('/news');
+        router.push('@neup/news');
       } else {
         toast({ variant: "destructive", title: "Error", description: result.error });
       }

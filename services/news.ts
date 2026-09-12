@@ -1,9 +1,9 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 export interface NewsArticle {
     id: string;
@@ -23,7 +23,7 @@ function slugify(text: string) {
         .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
         .replace(/\-\-+/g, '-')         // Replace multiple - with single -
         .replace(/^-+/, '')             // Trim - from start of text
-        .replace(/-+$/, '');            // Trim - from end of text
+        .replace(/-+/, '');            // Trim - from end of text
 }
 
 export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | 'publishedAt' | 'createdAt' | 'updatedAt'>> & { title: string }): Promise<{ success: boolean; id?: string; error?: string }> {
@@ -47,7 +47,7 @@ export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | '
       },
     });
 
-    revalidatePath('/news');
+    revalidatePath('@neup/news');
     revalidatePath(`/news/${id}`);
     return { success: true, id: id };
   } catch (e: any) {
@@ -116,7 +116,7 @@ export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArtic
         updatedAt: new Date(),
       },
     });
-    revalidatePath('/news');
+    revalidatePath('@neup/news');
     revalidatePath(`/news/${id}`);
     
     return { success: true };
@@ -129,7 +129,7 @@ export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArtic
 export async function deleteNewsArticle(id: string): Promise<{ success: boolean; error?: string }> {
     try {
         await db.newsArticle.delete({ where: { id } });
-        revalidatePath('/news');
+        revalidatePath('@neup/news');
         return { success: true };
     } catch (e: any) {
         await logger.error({ message: `Failed to delete news article ${id}: ${e.message}`, stack: e.stack, source: 'deleteNewsArticle' });

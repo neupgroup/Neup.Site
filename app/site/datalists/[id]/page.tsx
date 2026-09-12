@@ -6,17 +6,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getDatalist, deleteDatalist } from '@/services/datalists';
 import { Datalist } from '@/services/datalist/type';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@neup/components/ui/card';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@neup/components/ui/alert-dialog';
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
-import { Textarea } from '#/components/ui/textarea';
-import { Label } from '#/components/ui/label';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Textarea } from '@neup/components/ui/textarea';
+import { Label } from '@neup/components/ui/label';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function ViewDatalistPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -48,7 +48,7 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
     const result = await deleteDatalist(id);
     if (result.success) {
       toast({ title: 'Datalist Deleted', description: 'The datalist has been permanently removed.' });
-      router.push('/site/datalists');
+      router.push('@neup/site/datalists');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -70,7 +70,7 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <LinkButton variant="plain" className="pl-0" href="/site/datalists">
+       <LinkButton variant="plain" className="pl-0" href="@neup/site/datalists">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Datalists
           </LinkButton>

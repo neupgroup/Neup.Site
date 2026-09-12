@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { Download } from 'lucide-react';
-import { Button } from '#/components/ui/button';
+import { Button } from '@neup/components/ui/button';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
 function createApplicationExport(asset: any) {

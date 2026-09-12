@@ -21,7 +21,7 @@ Non-SVG responses are proxied unchanged.
 
 import type { NextRequest } from 'next/server';
 
-const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
+const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}/;
 const SOURCE_DARK_HEX = '#292D32';
 const SOURCE_TINT_HEX = '#2F2F2F';
 

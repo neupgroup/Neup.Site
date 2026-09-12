@@ -1,10 +1,10 @@
 'use server';
 
 import { getActiveProjectId } from '@/services/projects';
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import type { Structure, PathStructure, Deployment, Asset } from '@/services/asset/type';
 import type { EnvironmentVariable } from '@/services/environment/type';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import { getPages } from './editor/pages';
 import { getAsset } from './editor/asset';
 import { getPrivateServerDetails } from '@/services/servers';
@@ -202,10 +202,10 @@ async function uploadStructureToServer(assetId: string, structure: Structure, as
 
       if (environments.length > 0) {
         const envContent = environments.map(env => {
-          if (env.dataType === 'string' && /\s/.test(env.value)) return `${env.name}="${env.value.replace(/"/g, '\\"')}"`;
+          if (env.dataType === 'string' && /\s/.test(env.value)) return `${env.name}="${env.value.replace(/"@neup/g, '\\"')}"`;
           return `${env.name}=${env.value}`;
         }).join('\n');
-        const escapedEnvContent = envContent.replace(/\\/g, '\\\\').replace(/'/g, "'\\''").replace(/`/g, '\\`');
+        const escapedEnvContent = envContent.replace(/\\/g, '\\\\').replace(/'@neup/g, "'\\''").replace(/`/g, '\\`');
         const createCmd = `sudo bash -c "cat > ${envPath}" <<'EOF'\n${escapedEnvContent}\nEOF`;
         outputLog += `> Writing ${environments.length} variables to ${envPath}...\n`;
         if (logId) await updateServerLog(logId, { output: outputLog });

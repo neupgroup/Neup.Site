@@ -1,9 +1,9 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 export interface JobPosting {
   id: string;
@@ -37,7 +37,7 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
       },
       select: { id: true },
     });
-    revalidatePath('/manage/hiring');
+    revalidatePath('@neup/manage/hiring');
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
@@ -122,7 +122,7 @@ export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting
 export async function deleteJobPosting(id: string): Promise<{ success: boolean; error?: string }> {
     try {
         await db.jobPosting.delete({ where: { id } });
-        revalidatePath('/manage/hiring');
+        revalidatePath('@neup/manage/hiring');
         return { success: true };
     } catch (e: any) {
         await logger.error({ message: `Failed to delete job posting ${id}: ${e.message}`, stack: e.stack, source: 'deleteJobPosting' });

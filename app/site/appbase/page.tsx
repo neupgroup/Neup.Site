@@ -4,20 +4,20 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
-import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Label } from '@neup/components/ui/label';
+import { Alert, AlertTitle, AlertDescription } from '@neup/components/ui/alert';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus, Upload } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
-import { cn } from '#/core/utils';
+import { useToast } from '@neup/core/hooks/useToast';
+import { cn } from '@neup/core/utils';
 import { getSiteServers } from '@/services/servers';
 import { getAppBaseFiles, getAppBaseFileContent, saveAppBaseFileContent, backupAppBaseFile, createAppBaseFile } from '@/services/app-base';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '#/components/ui/dialog';
-import { Textarea } from '#/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@neup/components/ui/dialog';
+import { Textarea } from '@neup/components/ui/textarea';
 import Link from 'next/link';
 import {
   Table,
@@ -26,10 +26,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '#/components/ui/table';
-import { Badge } from '#/components/ui/badge';
+} from '@neup/components/ui/table';
+import { Badge } from '@neup/components/ui/badge';
 import type { AppBaseFile } from '@/services/app-base/type';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 
 export default function AppBasePage() {
@@ -167,10 +167,10 @@ export default function AppBasePage() {
           <p className="text-muted-foreground">Manage JSON configuration files in your application's base directories.</p>
         </div>
         <div className="flex gap-2">
-           <LinkButton variant="outlined" href="/site/appbase/backups">
+           <LinkButton variant="outlined" href="@neup/site/appbase/backups">
                   <RotateCcw className="mr-2 h-4 w-4" /> View Backups
               </LinkButton>
-            <LinkButton variant="solid" href="/site/appbase/create">
+            <LinkButton variant="solid" href="@neup/site/appbase/create">
                     <Plus className="mr-2 h-4 w-4" /> Create File
                 </LinkButton>
         </div>

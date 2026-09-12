@@ -11,19 +11,19 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '#/components/ui/alert-dialog';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { useToast } from '#/core/hooks/useToast';
+} from '@neup/components/ui/alert-dialog';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getEnvironmentVariables, deleteEnvironmentVariable } from '@/services/environment';
 import { EnvironmentVariable } from '@/services/environment/type';
 import { FileLock, Plus, Trash2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { CardFooter } from '#/components/ui/card';
+import { CardFooter } from '@neup/components/ui/card';
 
 export default function EnvironmentPage() {
   usePageTitle('Environments');

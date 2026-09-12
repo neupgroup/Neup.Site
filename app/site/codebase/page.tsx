@@ -14,14 +14,14 @@ import {
   UploadCloud,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Button } from '#/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '#/components/ui/dialog';
-import { Input } from '#/components/ui/input';
-import { Skeleton } from '#/components/ui/skeleton';
-import { usePageTitle } from '#/core/hooks/use-page-title';
-import { useToast } from '#/core/hooks/useToast';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Button } from '@neup/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@neup/components/ui/dialog';
+import { Input } from '@neup/components/ui/input';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createCodeFolder, deleteCodeFile, getCodebaseBrowser } from '@/services/codebase';
 import { deployCodebaseFromStorage } from '@/services/deploy';
 import type { CodebaseBrowserData, CodebaseBreadcrumb, CodebaseDirectoryEntry, CodebaseFileEntry } from '@/services/codebase/type';
@@ -33,7 +33,7 @@ function formatFileSize(size: number) {
 }
 
 function formatCurrentPath(path: string | null) {
-  return path ? `/${path}` : '/';
+  return path ? `/${path}` : '@neup/';
 }
 
 function Breadcrumbs({
@@ -268,7 +268,7 @@ export default function CodebasePage() {
       }
 
       const query = params.toString();
-      router.push(query ? `/codebase?${query}` : '/codebase');
+      router.push(query ? `/codebase?${query}` : '@neup/codebase');
     },
     [router, searchParams],
   );
@@ -332,7 +332,7 @@ export default function CodebasePage() {
       return;
     }
 
-    if (trimmedName.includes('/')) {
+    if (trimmedName.includes('@neup/')) {
       toast({ variant: 'destructive', title: 'Invalid folder name', description: 'Use a single folder name without slashes.' });
       return;
     }
@@ -355,7 +355,7 @@ export default function CodebasePage() {
     await fetchCodebase();
   };
 
-  const uploadHref = currentPath ? `/codebase/upload?path=${encodeURIComponent(currentPath)}` : '/codebase/upload';
+  const uploadHref = currentPath ? `/codebase/upload?path=${encodeURIComponent(currentPath)}` : '@neup/codebase/upload';
   const selectedFile = browserData?.selectedFile;
   const directories = browserData?.directories ?? [];
   const files = browserData?.files ?? [];

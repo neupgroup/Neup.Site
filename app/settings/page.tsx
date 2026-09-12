@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ChevronRight, Users, Network, User, KeyRound, Terminal, RefreshCw, Palette, Home, Upload, Download, Sparkles } from 'lucide-react';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
 export default function SettingsPage() {
@@ -16,31 +16,31 @@ export default function SettingsPage() {
       title: 'Accounts',
       description: 'Manage your linked accounts like GitHub.',
       icon: <Users className="h-6 w-6 text-primary" />,
-      href: '/settings/accounts',
+      href: '@neup/settings/accounts',
     },
     {
       title: 'API Tokens',
       description: 'Generate and manage tokens for API access.',
       icon: <KeyRound className="h-6 w-6 text-primary" />,
-      href: '/settings/tokens',
+      href: '@neup/settings/tokens',
     },
     {
       title: 'Domains and Proxy',
       description: 'Manage your site domains and reverse proxy settings.',
       icon: <Network className="h-6 w-6 text-primary" />,
-      href: '/settings/domain',
+      href: '@neup/settings/domain',
     },
     {
       title: 'Development Info',
       description: 'View technical details, server allocation, and ports.',
       icon: <Terminal className="h-6 w-6 text-primary" />,
-      href: '/settings/info',
+      href: '@neup/settings/info',
     },
     {
       title: 'Syncer',
       description: 'Manage synchronization workflows and sync-related controls.',
       icon: <RefreshCw className="h-6 w-6 text-primary" />,
-      href: '/settings/syncer',
+      href: '@neup/settings/syncer',
     },
   ];
 
@@ -57,7 +57,7 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">Manage your site profile, identity, and visual design.</p>
         </div>
         <div className="space-y-0">
-          <Link href={appendProject('/home', project)} className="block w-full rounded-t-md border p-4 transition-colors hover:bg-muted/30">
+          <Link href={appendProject('@neup/home', project)} className="block w-full rounded-t-md border p-4 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted"><Home className="h-6 w-6 text-primary" /></div>
@@ -66,7 +66,7 @@ export default function SettingsPage() {
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </div>
           </Link>
-          <Link href={appendProject('/settings/identity', project)} className="block w-full border-x border-b-0 p-4 transition-colors hover:bg-muted/30">
+          <Link href={appendProject('@neup/settings/identity', project)} className="block w-full border-x border-b-0 p-4 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted"><User className="h-6 w-6 text-primary" /></div>
@@ -75,7 +75,7 @@ export default function SettingsPage() {
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </div>
           </Link>
-          <Link href={appendProject('/settings/design', project)} className="block w-full border-x border-b-0 p-4 transition-colors hover:bg-muted/30">
+          <Link href={appendProject('@neup/settings/design', project)} className="block w-full border-x border-b-0 p-4 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted"><Palette className="h-6 w-6 text-primary" /></div>
@@ -84,7 +84,7 @@ export default function SettingsPage() {
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </div>
           </Link>
-          <Link href={appendProject('/settings/features', project)} className="block w-full rounded-b-md border-x border-b p-4 transition-colors hover:bg-muted/30">
+          <Link href={appendProject('@neup/settings/features', project)} className="block w-full rounded-b-md border-x border-b p-4 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted"><Sparkles className="h-6 w-6 text-primary" /></div>
@@ -102,7 +102,7 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">Move configuration and content into or out of your site.</p>
         </div>
         <div className="space-y-0">
-          <Link href={appendProject('/settings/import', project)} className="block w-full rounded-t-md border p-4 transition-colors hover:bg-muted/30">
+          <Link href={appendProject('@neup/settings/import', project)} className="block w-full rounded-t-md border p-4 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted"><Upload className="h-6 w-6 text-primary" /></div>
@@ -111,7 +111,7 @@ export default function SettingsPage() {
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </div>
           </Link>
-          <Link href={appendProject('/settings/export', project)} className="block w-full rounded-b-md border-x border-b p-4 transition-colors hover:bg-muted/30">
+          <Link href={appendProject('@neup/settings/export', project)} className="block w-full rounded-b-md border-x border-b p-4 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted"><Download className="h-6 w-6 text-primary" /></div>

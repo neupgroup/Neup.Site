@@ -14,8 +14,8 @@ header, sidebar, theme, and spacing.
 
 import Link from 'next/link';
 import { Home } from 'lucide-react';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 
 export default function NotFound() {
   return (
@@ -35,7 +35,7 @@ export default function NotFound() {
           </div>
         </div>
 
-        <LinkButton variant="tinted" size="lg" className="px-6" href="/">
+        <LinkButton variant="tinted" size="lg" className="px-6" href="@neup/">
             <Home />
             Return home
           </LinkButton>

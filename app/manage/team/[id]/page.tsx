@@ -1,12 +1,12 @@
 
 import { getTeam } from '@/services/teams';
 import { getMembers } from '@/services/members';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@neup/components/ui/card';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import Link from 'next/link';
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { notFound } from 'next/navigation';
 
 /*
@@ -49,7 +49,7 @@ export default async function ViewTeamPage({ params }: { params: { id: string } 
     return (
         <div className="w-full max-w-2xl">
             <div className="mb-4">
-                <LinkButton variant="outlined" href="/manage/member">
+                <LinkButton variant="outlined" href="@neup/manage/member">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Members
                     </LinkButton>

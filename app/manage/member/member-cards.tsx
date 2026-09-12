@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { GripVertical, Pencil, Users } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { appendProject } from '@/inapp/helpers/application-mode';
-import { cn } from '#/core/utils';
-import { useToast } from '#/core/hooks/useToast';
+import { cn } from '@neup/core/utils';
+import { useToast } from '@neup/core/hooks/useToast';
 import type { Member } from '@/services/member/type';
 import type { Team } from '@/services/team/type';
 import { saveTeamBoardOrder } from '@/services/teams';

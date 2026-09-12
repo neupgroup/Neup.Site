@@ -2,11 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ChevronRight, Globe } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Badge } from '#/components/ui/badge';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Badge } from '@neup/components/ui/badge';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { getPlatformAccount } from '@/services/accounts';
 
 /*
@@ -79,7 +79,7 @@ export default async function ManageAccountDetailPage({ params }: { params: Prom
   return (
     <div className="w-full space-y-8">
       <div>
-        <LinkButton variant="outlined" href="/accounts">
+        <LinkButton variant="outlined" href="@neup/accounts">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Accounts
           </LinkButton>

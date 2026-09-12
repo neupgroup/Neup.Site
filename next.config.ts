@@ -19,7 +19,7 @@ function getConfiguredBasePath(): string | undefined {
     return trimmed;
   })();
 
-  const withoutTrailingSlash = normalizedValue.replace(/\/+$/, '');
+  const withoutTrailingSlash = normalizedValue.replace(/\/+/, '');
   if (!withoutTrailingSlash || withoutTrailingSlash === '/') return undefined;
 
   return withoutTrailingSlash.startsWith('/') ? withoutTrailingSlash : `/${withoutTrailingSlash}`;

@@ -3,16 +3,16 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { runCommand } from '@/services/runner';
 import { useRouter } from 'next/navigation';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Textarea } from '#/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Textarea } from '@neup/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertTitle, AlertDescription } from '#/components/ui/alert';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '@neup/components/ui/alert';
 import { Info } from 'lucide-react';
 
 const ServerManagement = ({ serverId }: { serverId: string }) => {

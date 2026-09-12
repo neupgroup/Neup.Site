@@ -1,9 +1,9 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { use } from 'react';
@@ -13,7 +13,7 @@ export default function ViewCollectionPage({ params }: { params: Promise<{ id: s
   return (
     <div className="w-full">
         <div className="mb-4">
-            <LinkButton variant="outlined" href="/estate/collection">
+            <LinkButton variant="outlined" href="@neup/estate/collection">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Collections
                 </LinkButton>

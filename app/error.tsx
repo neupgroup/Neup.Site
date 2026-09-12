@@ -2,8 +2,8 @@
 'use client'
 
 import { useEffect } from 'react';
-import { Button } from '#/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '#/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@neup/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 
 

@@ -4,12 +4,12 @@ import { useMemo, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { GripVertical, Pencil } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardHeader } from '#/components/ui/card';
-import { cn } from '#/core/utils';
-import { useToast } from '#/core/hooks/useToast';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardHeader } from '@neup/components/ui/card';
+import { cn } from '@neup/core/utils';
+import { useToast } from '@neup/core/hooks/useToast';
 import type { Member } from '@/services/member/type';
 import type { Team } from '@/services/team/type';
 import { saveTeamBoardOrder } from '@/services/teams';

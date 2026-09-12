@@ -9,16 +9,16 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Label } from '@neup/components/ui/label';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createSource, SourceType } from '@/services/editor/sources';
 import Link from 'next/link';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
 
 export default function CreateSourcePage() {
   const [name, setName] = useState('');
@@ -60,7 +60,7 @@ export default function CreateSourcePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="/site/sources">
+        <LinkButton variant="plain" href="@neup/site/sources">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Sources
             </LinkButton>

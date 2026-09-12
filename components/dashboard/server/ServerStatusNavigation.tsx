@@ -1,7 +1,7 @@
 
 'use client';
 import { HardDrive, Wifi, ListTree } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@neup/components/ui/card';
 import Link from 'next/link';
 
 const statusSections = [

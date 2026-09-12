@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
 
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { appendProject } from '@/inapp/helpers/application-mode';
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import { MemberCards } from './member-cards';
 
 /*
@@ -73,7 +73,7 @@ export default async function ManageMemberPage({
       {!members?.length && !teams?.length ? (
         <div className="grid gap-4">
           <Link
-            href={appendProject('/manage/member/addMember', project)}
+            href={appendProject('@neup/manage/member/addMember', project)}
             className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
@@ -93,7 +93,7 @@ export default async function ManageMemberPage({
       ) : (
         <div className="grid gap-4">
           <Link
-            href={appendProject('/manage/member/addMember', project)}
+            href={appendProject('@neup/manage/member/addMember', project)}
             className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">

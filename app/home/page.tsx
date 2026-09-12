@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import Link from 'next/link';
 import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
 export async function generateMetadata() {
@@ -77,10 +77,10 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4">
-            <LinkButton className="w-full sm:w-auto" href={appendProject('/news/create', project)}>
+            <LinkButton className="w-full sm:w-auto" href={appendProject('@neup/news/create', project)}>
                 <Newspaper className="mr-2" /> New Article
               </LinkButton>
-            <LinkButton variant="tinted" className="w-full sm:w-auto" href={appendProject('/news', project)}>
+            <LinkButton variant="tinted" className="w-full sm:w-auto" href={appendProject('@neup/news', project)}>
                 <Newspaper className="mr-2" /> View News
               </LinkButton>
           </CardContent>
@@ -93,7 +93,7 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LinkButton href={appendProject('/settings/design', project)}>
+            <LinkButton href={appendProject('@neup/settings/design', project)}>
                 <Palette className="mr-2" />
                 Edit Theme
               </LinkButton>

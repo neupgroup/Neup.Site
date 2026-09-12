@@ -4,19 +4,19 @@
 import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redirects';
 import type { Redirect } from '@/services/redirect/type';
 
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
-import { Badge } from '#/components/ui/badge';
+import { Badge } from '@neup/components/ui/badge';
 import { format } from 'date-fns';
-import { CardFooter } from '#/components/ui/card';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { CardFooter } from '@neup/components/ui/card';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function RedirectsPage() {
   const { toast } = useToast();
@@ -105,7 +105,7 @@ export default function RedirectsPage() {
                 <UploadCloud className="mr-2 h-4 w-4" />
                 {isDeploying ? 'Updating...' : 'Update on Server'}
             </Button>
-            <LinkButton variant="solid" href="/manage/redirects/create">
+            <LinkButton variant="solid" href="@neup/manage/redirects/create">
                     <Plus className="mr-2 h-4 w-4" /> Create Redirect
                 </LinkButton>
         </div>

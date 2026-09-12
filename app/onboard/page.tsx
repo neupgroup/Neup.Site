@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { useState } from 'react';
 
 // This is a placeholder for a real check against your site's status in Firestore
@@ -32,7 +32,7 @@ export default function OnboardingPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <LinkButton href="/">Go to Dashboard</LinkButton>
+                        <LinkButton href="@neup/">Go to Dashboard</LinkButton>
                     </CardContent>
                 </Card>
             </div>

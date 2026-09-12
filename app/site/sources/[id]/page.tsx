@@ -10,9 +10,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,15 +22,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '#/components/ui/alert-dialog';
+} from '@neup/components/ui/alert-dialog';
 import { AlertCircle, ArrowLeft, Pencil, Trash2, Code } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import Link from 'next/link';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Separator } from '#/components/ui/separator';
-import { Badge } from '#/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/components/ui/table';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Separator } from '@neup/components/ui/separator';
+import { Badge } from '@neup/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@neup/components/ui/table';
 
 const DetailItem = ({ label, value }: { label: string, value: string | undefined | null }) => {
     if (!value) return null;
@@ -71,7 +71,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
     const result = await deleteSource(id);
     if(result.success) {
         toast({ title: 'Source Deleted', description: 'The data source has been removed.'});
-        router.push('/site/sources');
+        router.push('@neup/site/sources');
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -112,7 +112,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
   return (
     <div className="w-full max-w-4xl space-y-6">
         <div className="mb-4">
-            <LinkButton variant="plain" href="/site/sources">
+            <LinkButton variant="plain" href="@neup/site/sources">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Sources
                 </LinkButton>

@@ -2,19 +2,19 @@
 'use client';
 import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@neup/components/ui/alert-dialog';
 import { Server as ServerIcon, Globe, Warehouse, User, Share2, ServerCrash, RefreshCw, Loader2, Clock } from 'lucide-react';
-import { Badge } from '#/components/ui/badge';
-import { useToast } from '#/core/hooks/useToast';
+import { Badge } from '@neup/components/ui/badge';
+import { useToast } from '@neup/core/hooks/useToast';
 import { useRouter } from 'next/navigation';
 
 import type { Server } from '@/services/server/type';
 import { runCommand } from '@/services/runner';
 import { getUptime } from '@/services/server/management/get-uptime';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Skeleton } from '@neup/components/ui/skeleton';
 
 interface ServerInfoCardProps {
     server: Server;

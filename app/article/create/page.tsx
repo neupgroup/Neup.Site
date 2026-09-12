@@ -1,9 +1,9 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -11,7 +11,7 @@ export default function CreateArticlePage() {
   return (
     <div className="w-full">
         <div className="mb-4">
-            <LinkButton variant="outlined" href="/article">
+            <LinkButton variant="outlined" href="@neup/article">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Articles
                 </LinkButton>

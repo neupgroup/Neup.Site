@@ -1,12 +1,12 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
-import { slugify } from '#/core/helpers/slug';
+import { prisma as db } from '@neup/core/database/prisma';
+import { slugify } from '@neup/core/helpers/slug';
 import { revalidatePath } from 'next/cache';
 import { getActiveProjectId } from '@/services/projects';
 import type { Team } from '@/services/team/type';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 /*
 ::neup.documentation::team-service
@@ -80,8 +80,8 @@ export async function createTeam(data: Omit<Team, 'id'>): Promise<{ success: boo
       },
       select: { id: true },
     });
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({ message: `Failed to create team: ${e.message}`, stack: e.stack, source: 'createTeam' });
@@ -162,8 +162,8 @@ export async function updateTeam(id: string, data: Partial<Omit<Team, 'id'>>): P
     if (result.count === 0) {
       return { success: false, error: 'Team not found.' };
     }
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     revalidatePath(`/manage/team/${id}`);
     return { success: true };
   } catch (e: any) {
@@ -184,8 +184,8 @@ export async function deleteTeam(id: string): Promise<{ success: boolean; error?
     if (result.count === 0) {
       return { success: false, error: 'Team not found.' };
     }
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     return { success: true };
   } catch (e: any) {
     await logger.error({ message: `Failed to delete team ${id}: ${e.message}`, stack: e.stack, source: 'deleteTeam' });
@@ -264,8 +264,8 @@ export async function saveTeamBoardOrder(input: TeamBoardOrderInput): Promise<{ 
       ),
     ]);
 
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     for (const teamId of teamIds) {
       revalidatePath(`/manage/team/${teamId}`);
     }

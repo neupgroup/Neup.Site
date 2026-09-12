@@ -1,5 +1,5 @@
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
 import { convertJsonToHtml } from '@/inapp/helpers/json-to-html';
 import { createDefaultAssetTheme } from '@/services/themes';
 
@@ -35,28 +35,28 @@ Resolves build manifests and site-scoped file content for public build endpoints
 */
 
 function normalizeCodeFilePath(input: string): string | null {
-  const trimmed = input.trim().replace(/\\/g, '/').replace(/^\/+/, '');
+  const trimmed = input.trim().replace(/\\/g, '@neup/').replace(/^\/+/, '');
   if (!trimmed || trimmed.includes('\0')) return null;
 
-  const segments = trimmed.split('/').filter(Boolean);
+  const segments = trimmed.split('@neup/').filter(Boolean);
   if (!segments.length || segments.some((segment) => segment === '.' || segment === '..')) {
     return null;
   }
 
-  return segments.join('/');
+  return segments.join('@neup/');
 }
 
 function normalizeRoutePath(input: string): string | null {
   const trimmed = input.trim();
   if (!trimmed || trimmed.includes('\0')) return null;
 
-  const prefixed = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
-  const segments = prefixed.split('/').filter(Boolean);
+  const prefixed = trimmed.startsWith('@neup/') ? trimmed : `/${trimmed}`;
+  const segments = prefixed.split('@neup/').filter(Boolean);
   if (segments.some((segment) => segment === '.' || segment === '..')) {
     return null;
   }
 
-  return segments.length ? `/${segments.join('/')}` : '/';
+  return segments.length ? `/${segments.join('@neup/')}` : '@neup/';
 }
 
 function isFolderMarkerPath(path: string) {

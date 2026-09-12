@@ -1,5 +1,5 @@
 
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import type { CanvasElementData } from '@/services/canvas/type';
 
 function propertiesToStyleObject(properties: Record<string, any>): React.CSSProperties {
@@ -89,7 +89,7 @@ ${childrenJsx}
                 if (dynamicVal.startsWith('{') && dynamicVal.endsWith('}')) {
                     return `${key}=${dynamicVal}`;
                 }
-                const escapedValue = value.replace(/"/g, '&quot;');
+                const escapedValue = value.replace(/"@neup/g, '&quot;');
                 return `${key}="${escapedValue}"`;
             }
             return `${key}={${JSON.stringify(value)}}`;
@@ -127,7 +127,7 @@ ${childrenJsx}
                          return `${key}=${dynamicVal}`;
                     }
                      if (typeof value === 'string') {
-                        const escapedValue = value.replace(/"/g, '&quot;');
+                        const escapedValue = value.replace(/"@neup/g, '&quot;');
                         return `${key}="${escapedValue}"`;
                     }
                     return `${key}={${JSON.stringify(value)}}`;

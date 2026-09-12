@@ -5,15 +5,15 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '#/components/ui/card';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@neup/components/ui/card';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus, Server as ServerIcon, ArrowRight } from 'lucide-react';
-import { Badge } from '#/components/ui/badge';
+import { Badge } from '@neup/components/ui/badge';
 import { format } from 'date-fns';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function ServersPage() {
   usePageTitle('Servers', 'NeupSites');
@@ -43,7 +43,7 @@ export default function ServersPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Your Servers</h1>
             <p className="text-muted-foreground">A list of servers you have created to deploy sites.</p>
         </div>
-        <LinkButton variant="solid" href="/root/servers/create">
+        <LinkButton variant="solid" href="@neup/root/servers/create">
             <Plus className="mr-2 h-4 w-4" /> Create Server
           </LinkButton>
       </header>

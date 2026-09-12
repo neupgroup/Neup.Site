@@ -2,9 +2,9 @@
 'use server';
 
 import { getActiveProjectId } from '@/services/projects';
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 export type SourceType = 'api' | 'database' | 'static' | 'datalist';
 
 export interface SourceMethod {

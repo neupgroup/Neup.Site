@@ -4,15 +4,15 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { getApplicantsForJob, type Applicant } from '@/services/applicants';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
+} from '@neup/components/ui/card';
 import {
   Table,
   TableBody,
@@ -20,13 +20,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '#/components/ui/table';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+} from '@neup/components/ui/table';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus, Users, ArrowLeft, ArrowRight } from 'lucide-react';
-import { Badge } from '#/components/ui/badge';
+import { Badge } from '@neup/components/ui/badge';
 import { format } from 'date-fns';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function ApplicantsPage({ params }: { params: Promise<{ id: string }> }) {
   usePageTitle('Applicants');

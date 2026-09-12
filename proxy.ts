@@ -1,14 +1,21 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { logica } from '#/logica'
-import baseJson from '#/logica/base.json'
-import { decodeNeupIdToken } from '#/logica/account/token/verify'
+import { logica } from '@neup/logica'
+import baseJson from '@base/base.json'
+import { decodeNeupIdToken } from '@neup/logica/account/token/verify'
 
 const AUTH_ME_PATH = '/bridge/api.v1/auth/me'
+
+type BaseConfig = {
+  bridgeBaseUrl: string
+  neupid: string
+}
+
+const configuredBase = baseJson as BaseConfig
 const PROJECT_QUERY_PARAM = 'project'
 
 function createAccountBridgeUrl(path: string): string {
-  const basePath = baseJson.neupid.replace(/\/+$/, '')
+  const basePath = configuredBase.bridgeBaseUrl.replace(/\/+$/, '')
   const normalizedPath = path.replace(/^\/+/, '')
   return `${basePath}/${normalizedPath}`
 }
@@ -86,7 +93,7 @@ export async function proxy(request: NextRequest) {
   const authenticated = await isAuthenticated(request)
 
   if (!authenticated) {
-    return NextResponse.redirect(baseJson.neupid)
+    return NextResponse.redirect(configuredBase.neupid)
   }
 
   const project =

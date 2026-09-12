@@ -1,10 +1,10 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import type { Allocation } from '@/services/server/allocation/type';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedOn' | 'status'>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
@@ -19,7 +19,7 @@ export async function createAllocation(data: Omit<Allocation, 'id' | 'allocatedO
       },
       select: { id: true },
     });
-    revalidatePath('/root/servers/allocations');
+    revalidatePath('@neup/root/servers/allocations');
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({ message: `Failed to create allocation: ${e.message}`, stack: e.stack, source: 'createAllocation' });
@@ -104,7 +104,7 @@ export async function updateAllocation(id: string, data: Partial<Omit<Allocation
         ...(data.status !== undefined ? { status: data.status } : {}),
       },
     });
-    revalidatePath('/root/servers/allocations');
+    revalidatePath('@neup/root/servers/allocations');
     revalidatePath(`/root/servers/allocations/${id}`);
     return { success: true };
   } catch (e: any) {
@@ -116,7 +116,7 @@ export async function updateAllocation(id: string, data: Partial<Omit<Allocation
 export async function deleteAllocation(id: string): Promise<{ success: boolean; error?: string }> {
   try {
     await db.allocation.delete({ where: { id } });
-    revalidatePath('/root/servers/allocations');
+    revalidatePath('@neup/root/servers/allocations');
     return { success: true };
   } catch (e: any) {
     await logger.error({ message: `Failed to delete allocation ${id}: ${e.message}`, stack: e.stack, source: 'deleteAllocation' });
@@ -136,8 +136,8 @@ export async function updateAllocationPort(assetId: string, serverId: string, po
     }
     await db.allocation.update({ where: { id: allocation.id }, data: { port } });
 
-    revalidatePath('/root/servers/allocations');
-    revalidatePath('/settings/info');
+    revalidatePath('@neup/root/servers/allocations');
+    revalidatePath('@neup/settings/info');
 
     return { success: true };
   } catch (e: any) {

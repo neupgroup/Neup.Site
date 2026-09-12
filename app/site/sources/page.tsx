@@ -9,9 +9,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   Table,
   TableBody,
@@ -19,12 +19,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '#/components/ui/table';
+} from '@neup/components/ui/table';
 import { AlertCircle, Plus, Database, ArrowRight } from 'lucide-react';
 import { getSources, type Source } from '@/services/editor/sources';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Badge } from '#/components/ui/badge';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Badge } from '@neup/components/ui/badge';
 
 export default function SourcesPage() {
   const [sources, setSources] = useState<Source[]>([]);
@@ -58,7 +58,7 @@ export default function SourcesPage() {
             <h1 className="text-2xl font-bold font-headline">Data Sources</h1>
             <p className="text-muted-foreground">Manage your API and data sources.</p>
         </div>
-        <LinkButton variant="solid" href="/site/sources/create">
+        <LinkButton variant="solid" href="@neup/site/sources/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Source
           </LinkButton>
       </header>

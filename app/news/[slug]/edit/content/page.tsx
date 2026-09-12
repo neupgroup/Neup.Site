@@ -10,20 +10,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Form, FormControl, FormField, FormItem, FormMessage } from '#/components/ui/form';
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@neup/components/ui/form';
 import { Save, ArrowLeft, Loader2, AlertCircle, Settings } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getNewsArticleById, updateNewsArticle, type NewsArticle } from '@/services/news';
 import Link from 'next/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { RichTextEditor } from '#/components/ui/rich-text-editor';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { RichTextEditor } from '@neup/components/ui/rich-text-editor';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({
   content: z.string().min(1, 'Content is required'),

@@ -1,11 +1,11 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { SidebarProvider } from '#/components/ui/sidebar';
-import BaseRootLayout from '#/components/layout/RootLayout';
+import { SidebarProvider } from '@neup/components/ui/sidebar';
+import BaseRootLayout from '@neup/components/layout/RootLayout';
 import { getAsset } from '@/services/editor/asset';
 import { initializeUserAccount } from '@/services/auth/initialize';
-import { cn } from '#/core/utils';
+import { cn } from '@neup/core/utils';
 import { AppLayoutClient } from './layout-client';
 
 

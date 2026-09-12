@@ -2,8 +2,8 @@
 'use server';
 
 import { getActiveProjectId } from '@/services/projects';
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
 import { markStructureAsPending } from './structure';
 
 export interface Path {
@@ -21,8 +21,8 @@ export async function addPath(pageId: string, path: string): Promise<{ success: 
   const assetId = await getActiveProjectId();
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
-  if (!path.startsWith('/')) {
-    return { success: false, error: 'Path must start with a "/"' };
+  if (!path.startsWith('@neup/')) {
+    return { success: false, error: 'Path must start with a "@neup/"' };
   }
 
   try {

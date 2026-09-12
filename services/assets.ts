@@ -1,13 +1,13 @@
 'use server';
 
 import crypto from 'crypto';
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
 import { getAccountId } from './accounts';
-import { normalizeUrl } from '#/core/helpers/link/url';
+import { normalizeUrl } from '@neup/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
-import { ensureRecord } from '#/logica/account/self';
+import { ensureRecord } from '@neup/logica/account/self';
 
 export interface AssetSummary {
   id: string;

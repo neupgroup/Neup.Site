@@ -3,18 +3,18 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import Link from 'next/link';
 import { Github, Trash2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getLinkedAccounts, deleteLinkedAccount } from '@/services/accounts';
 import type { LinkedAccount } from '@/services/accounts';
-import { Skeleton } from '#/components/ui/skeleton';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@neup/components/ui/alert-dialog';
 import { format } from 'date-fns';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
 function LinkedAccountCard({ account, onDisconnect }: { account: LinkedAccount, onDisconnect: (id: string) => void }) {
@@ -95,7 +95,7 @@ export default function AccountsPage() {
         title: 'Account Linked Successfully',
         description: 'Your GitHub account has been connected.',
       });
-      router.replace(appendProject('/settings/accounts', project));
+      router.replace(appendProject('@neup/settings/accounts', project));
     }
     const error = searchParams.get('error');
     if (error) {
@@ -104,7 +104,7 @@ export default function AccountsPage() {
         title: 'GitHub Authentication Failed',
         description: decodeURIComponent(error),
       });
-      router.replace(appendProject('/settings/accounts', project));
+      router.replace(appendProject('@neup/settings/accounts', project));
     }
   }, [searchParams, toast, router, project]);
   
@@ -136,7 +136,7 @@ export default function AccountsPage() {
              <Card className="border-dashed">
                 <CardContent className="p-6 text-center">
                     <p className="text-muted-foreground mb-4">No accounts linked yet.</p>
-                     <LinkButton href={appendProject('/settings/accounts/github', project)}>
+                     <LinkButton href={appendProject('@neup/settings/accounts/github', project)}>
                             <Github className="mr-2 h-4 w-4" /> Link GitHub Account
                         </LinkButton>
                 </CardContent>

@@ -11,19 +11,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
-import { Textarea } from '#/components/ui/textarea';
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Label } from '@neup/components/ui/label';
+import { Textarea } from '@neup/components/ui/textarea';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createServer } from '@/services/servers';
 import Link from 'next/link';
 import { Server } from '@/services/server/type';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
-import { Switch } from '#/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
+import { Switch } from '@neup/components/ui/switch';
 
 type FormValues = Omit<Server, 'id' | 'createdOn' | 'expiresOn' | 'portsOpen' | 'usedPorts'>;
 
@@ -42,8 +42,8 @@ export default function CreateServerPage() {
       provider: '',
       isPrivate: false,
       username: 'root',
-      basePath: '/home/{{username}}',
-      appPath: '/var/www/{{universal.site_id}}'
+      basePath: '@neup/home/{{username}}',
+      appPath: '@neup/var/www/{{universal.site_id}}'
     }
   });
 
@@ -57,7 +57,7 @@ export default function CreateServerPage() {
 
     if (result.success) {
       toast({ title: 'Server Created!', description: `Successfully created ${data.name}.` });
-      router.push('/root/servers');
+      router.push('@neup/root/servers');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -66,7 +66,7 @@ export default function CreateServerPage() {
   return (
     <form onSubmit={handleSubmit(handleCreateServer)} className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <LinkButton variant="plain" href="/root/servers">
+        <LinkButton variant="plain" href="@neup/root/servers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Servers
             </LinkButton>

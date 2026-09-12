@@ -9,20 +9,20 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Label } from '@neup/components/ui/label';
 import { Save, ArrowLeft, Loader2, Plus, Trash2, Edit, X, Play, Eraser } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getSource, updateSource, testApiMethod, type Source, type SourceMethod, ApiSource } from '@/services/editor/sources';
 import Link from 'next/link';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
-import { Textarea } from '#/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
+import { Textarea } from '@neup/components/ui/textarea';
 
 const MethodTester = ({ sourceId, method, onResult, onIsLoadingChange }: { sourceId: string; method: SourceMethod, onResult: (result: any) => void, onIsLoadingChange: (isLoading: boolean) => void }) => {
     const [params, setParams] = useState<Record<string, string>>({});
@@ -186,7 +186,7 @@ const MethodCard = ({ method, source, onUpdate, onRemove }: { method: SourceMeth
                         <Input 
                             value={currentMethodData.path} 
                             onChange={(e) => handleFieldChange('path', e.target.value)} 
-                            placeholder="/products/[productId]" 
+                            placeholder="@neup/products/[productId]"
                             disabled={!isEditing} 
                             className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                         />

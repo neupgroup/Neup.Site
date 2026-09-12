@@ -18,7 +18,7 @@ URLs that proxy an underlying SVG source.
 ::end
 */
 
-import { normalizeUrl } from '#/core/helpers/link/url';
+import { normalizeUrl } from '@neup/core/helpers/link/url';
 
 type GeneratedThemeSurface = {
   primary?: string;
@@ -35,14 +35,14 @@ type AssetLogoTheme = {
 
 type ThemeMode = NonNullable<AssetLogoTheme['mode']>;
 
-const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
+const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}/;
 
 function isHexColor(value: string | null | undefined): value is string {
   return !!value && HEX_COLOR_PATTERN.test(value);
 }
 
 function parseHslValue(value: string): { h: number; s: number; l: number } | null {
-  const match = value.trim().match(/^(-?\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)%\s+(\d+(?:\.\d+)?)%$/);
+  const match = value.trim().match(/^(-?\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)%\s+(\d+(?:\.\d+)?)%/);
   if (!match) return null;
 
   return {

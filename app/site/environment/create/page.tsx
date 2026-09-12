@@ -13,7 +13,7 @@ import {
   CardTitle,
   CardDescription,
   CardFooter
-} from '#/components/ui/card';
+} from '@neup/components/ui/card';
 import {
   Form,
   FormControl,
@@ -21,17 +21,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '#/components/ui/form';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Input } from '#/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
-import { Switch } from '#/components/ui/switch';
-import { useToast } from '#/core/hooks/useToast';
+} from '@neup/components/ui/form';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Input } from '@neup/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
+import { Switch } from '@neup/components/ui/switch';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createEnvironmentVariable } from '@/services/environment';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Variable name is required'),
@@ -69,7 +69,7 @@ export default function CreateEnvironmentVariablePage() {
     const result = await createEnvironmentVariable({ ...data, name: formattedName });
     if (result.success) {
       toast({ title: "Variable Added", description: `Variable ${formattedName} has been saved.`});
-      router.push('/site/environment');
+      router.push('@neup/site/environment');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -78,7 +78,7 @@ export default function CreateEnvironmentVariablePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="/site/environment">
+        <LinkButton variant="plain" href="@neup/site/environment">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Environments
           </LinkButton>

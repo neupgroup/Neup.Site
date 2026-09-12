@@ -1,15 +1,15 @@
 
 import Link from 'next/link';
 import { getNewsArticles, type NewsArticle } from '@/services/news';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
+} from '@neup/components/ui/card';
 import {
   Table,
   TableBody,
@@ -17,10 +17,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '#/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+} from '@neup/components/ui/table';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus, Newspaper } from 'lucide-react';
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 
 export async function generateMetadata() {
     return generatePageMetadata({
@@ -35,7 +35,7 @@ export default async function NewsListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">News Articles</h1>
-        <LinkButton variant="solid" href="/news/create">
+        <LinkButton variant="solid" href="@neup/news/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Article
           </LinkButton>
       </header>

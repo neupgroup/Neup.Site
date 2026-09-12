@@ -4,20 +4,20 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { makeAppPath } from '#/core/appconfig';
+import { makeAppPath } from '@neup/core/appconfig';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Input } from '#/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Input } from '@neup/components/ui/input';
 import { AlertCircle, Loader2, ArrowRight, CheckCircle, Plus, ChevronRight, Package } from 'lucide-react';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 function ProjectRow({
     asset,
@@ -46,7 +46,7 @@ function ProjectRow({
                         <Avatar className="h-12 w-12 rounded-[1rem]">
                             {asset.logoUrl ? <AvatarImage src={asset.logoUrl} alt={asset.name} /> : null}
                             <AvatarFallback className="rounded-[1rem] bg-muted">
-                                <Image src="/logo.svg" alt="Neup.Sites" width={24} height={24} className="h-6 w-6" />
+                                <Image src="@neup/logo.svg" alt="Neup.Sites" width={24} height={24} className="h-6 w-6" />
                             </AvatarFallback>
                         </Avatar>
                     </div>
@@ -92,7 +92,7 @@ function AssetList() {
 
     const { toast } = useToast();
     const projectId = searchParams.get('project');
-    const returnTo = searchParams.get('returnTo') || '/';
+    const returnTo = searchParams.get('returnTo') || '@neup/';
 
     useEffect(() => {
         const fetchAssets = async () => {
@@ -115,8 +115,8 @@ function AssetList() {
     const getProjectDestination = (assetId: string) => {
         const destination = new URL(makeAppPath(returnTo), window.location.origin);
 
-        if (destination.pathname === makeAppPath('/switch')) {
-            destination.pathname = makeAppPath('/');
+        if (destination.pathname === makeAppPath('@neup/switch')) {
+            destination.pathname = makeAppPath('@neup/');
             destination.search = '';
         }
 

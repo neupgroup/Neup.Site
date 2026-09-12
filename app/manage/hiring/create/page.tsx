@@ -14,9 +14,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   Form,
   FormControl,
@@ -24,20 +24,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '#/components/ui/form';
-import { Input } from '#/components/ui/input';
+} from '@neup/components/ui/form';
+import { Input } from '@neup/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '#/components/ui/select';
-import { Textarea } from '#/components/ui/textarea';
-import { useToast } from '#/core/hooks/useToast';
+} from '@neup/components/ui/select';
+import { Textarea } from '@neup/components/ui/textarea';
+import { useToast } from '@neup/core/hooks/useToast';
 import { createJobPosting } from '@/services/hiring';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
 const formSchema = z.object({
@@ -72,7 +72,7 @@ export default function CreateJobPostingPage() {
     const result = await createJobPosting(data);
     if (result.success) {
       toast({ title: 'Job Posting Created' });
-      router.push(appendProject('/manage/hiring', project));
+      router.push(appendProject('@neup/manage/hiring', project));
     } else {
       toast({
         variant: 'destructive',
@@ -86,7 +86,7 @@ export default function CreateJobPostingPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendProject('/manage/hiring', project)}>
+        <LinkButton variant="outlined" href={appendProject('@neup/manage/hiring', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Hiring
           </LinkButton>

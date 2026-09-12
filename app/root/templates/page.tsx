@@ -5,19 +5,19 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTemplates, deleteTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+} from '@neup/components/ui/card';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus, LayoutTemplate, ArrowRight, BookOpen } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { useToast } from '@neup/core/hooks/useToast';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function TemplatesPage() {
   usePageTitle('Templates', 'NeupSites');
@@ -76,10 +76,10 @@ export default function TemplatesPage() {
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Templates</h1>
         <div className="flex items-center gap-2">
-            <LinkButton variant="outlined" href="/root/templates/guide">
+            <LinkButton variant="outlined" href="@neup/root/templates/guide">
                 <BookOpen className="mr-2 h-4 w-4" /> View Guide
               </LinkButton>
-            <LinkButton variant="solid" href="/root/templates/create">
+            <LinkButton variant="solid" href="@neup/root/templates/create">
                 <Plus className="mr-2 h-4 w-4" /> Create New Template
               </LinkButton>
         </div>

@@ -1,9 +1,9 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
-import { ensureRecord, getBasics, isAuthenticated } from '#/logica/account/self';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
+import { ensureRecord, getBasics, isAuthenticated } from '@neup/logica/account/self';
 
 export interface LinkedAccount {
     id: string;

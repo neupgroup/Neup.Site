@@ -1,9 +1,9 @@
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { AlertCircle, UserPlus, Users } from 'lucide-react';
 import Link from 'next/link';
 import { TeamBoard } from './team-board';
@@ -44,11 +44,11 @@ export default async function TeamsPage() {
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    <LinkButton variant="outlined" href="/manage/member/addTeam">
+                    <LinkButton variant="outlined" href="@neup/manage/member/addTeam">
                             <Users className="mr-2 h-4 w-4" />
                             Create Group
                         </LinkButton>
-                    <LinkButton variant="solid" href="/manage/member/addMember">
+                    <LinkButton variant="solid" href="@neup/manage/member/addMember">
                             <UserPlus className="mr-2 h-4 w-4" />
                             Add Member
                         </LinkButton>

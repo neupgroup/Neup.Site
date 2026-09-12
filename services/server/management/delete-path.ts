@@ -3,15 +3,15 @@
 
 import { getPrivateServerDetails } from '@/services/servers';
 import { NodeSSH } from 'node-ssh';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 export async function deletePath(serverId: string, path: string): Promise<{ success: boolean; error?: string }> {
-  if (!path || path === '/') {
+  if (!path || path === '@neup/') {
     return { success: false, error: "Cannot delete the root directory." };
   }
   
   // Add more safety checks if needed, e.g., for system directories
-  if (['/etc', '/bin', '/usr', '/var'].includes(path)) {
+  if (['@neup/etc', '@neup/bin', '@neup/usr', '@neup/var'].includes(path)) {
       return { success: false, error: `Deleting system directory '${path}' is not allowed.`};
   }
 
@@ -29,7 +29,7 @@ export async function deletePath(serverId: string, path: string): Promise<{ succ
     });
     
     // Sanitize path to prevent command injection
-    const sanitizedPath = `'${path.replace(/'/g, "'\\''")}'`;
+    const sanitizedPath = `'${path.replace(/'@neup/g, "'\\''")}'`;
     const command = `rm -rf ${sanitizedPath}`;
     
     const result = await ssh.execCommand(command);

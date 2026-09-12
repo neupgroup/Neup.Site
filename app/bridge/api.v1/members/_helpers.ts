@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
 import { getAccountId } from '@/services/accounts';
 
 export async function requireProject(request: Request) {

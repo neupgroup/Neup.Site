@@ -1,9 +1,9 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { Newspaper, Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -12,7 +12,7 @@ export default function ArticleListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Articles</h1>
-        <LinkButton variant="solid" href="/article/create">
+        <LinkButton variant="solid" href="@neup/article/create">
                 <Plus className="mr-2 h-4 w-4" /> Create Article
             </LinkButton>
       </header>

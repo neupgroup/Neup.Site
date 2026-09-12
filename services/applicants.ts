@@ -1,9 +1,9 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
+import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 export interface Applicant {
   id: string;

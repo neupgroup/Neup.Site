@@ -6,17 +6,17 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createDatalist } from '@/services/datalists';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '#/components/ui/card';
-import { Input } from '#/components/ui/input';
-import { Textarea } from '#/components/ui/textarea';
-import { useToast } from '#/core/hooks/useToast';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@neup/components/ui/card';
+import { Input } from '@neup/components/ui/input';
+import { Textarea } from '@neup/components/ui/textarea';
+import { useToast } from '@neup/core/hooks/useToast';
 import { Save, Loader2, ArrowLeft } from 'lucide-react';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { z } from 'zod';
 import Link from 'next/link';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -59,7 +59,7 @@ export default function CreateDatalistPage() {
   return (
     <Form {...form}>
       <div className="flex justify-start mb-4">
-        <LinkButton variant="plain" href="/site/datalists">
+        <LinkButton variant="plain" href="@neup/site/datalists">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Datalists
           </LinkButton>

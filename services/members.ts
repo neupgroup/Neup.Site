@@ -1,12 +1,12 @@
 
 'use server';
 
-import { prisma as db } from '#/core/database/prisma';
-import { slugify } from '#/core/helpers/slug';
+import { prisma as db } from '@neup/core/database/prisma';
+import { slugify } from '@neup/core/helpers/slug';
 import { revalidatePath } from 'next/cache';
 import { getActiveProjectId } from '@/services/projects';
 import type { Member } from '@/services/member/type';
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 
 /*
 ::neup.documentation::member-service
@@ -93,8 +93,8 @@ export async function createMember(data: Omit<Member, 'id'>): Promise<{ success:
       },
       select: { id: true },
     });
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({ message: `Failed to create member: ${e.message}`, stack: e.stack, source: 'createMember' });
@@ -226,8 +226,8 @@ export async function updateMember(id: string, data: Partial<Omit<Member, 'id'>>
     if (result.count === 0) {
       return { success: false, error: 'Member not found.' };
     }
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     return { success: true };
   } catch (e: any) {
     await logger.error({ message: `Failed to update member ${id}: ${e.message}`, stack: e.stack, source: 'updateMember' });
@@ -247,8 +247,8 @@ export async function deleteMember(id: string): Promise<{ success: boolean; erro
     if (result.count === 0) {
       return { success: false, error: 'Member not found.' };
     }
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     return { success: true };
   } catch (e: any) {
     await logger.error({ message: `Failed to delete member ${id}: ${e.message}`, stack: e.stack, source: 'deleteMember' });
@@ -285,8 +285,8 @@ export async function saveMemberOrder(memberIds: string[]): Promise<{ success: b
       ),
     );
 
-    revalidatePath('/manage/member');
-    revalidatePath('/manage/team');
+    revalidatePath('@neup/manage/member');
+    revalidatePath('@neup/manage/team');
     return { success: true };
   } catch (e: any) {
     await logger.error({ message: `Failed to save member order: ${e.message}`, stack: e.stack, source: 'saveMemberOrder' });

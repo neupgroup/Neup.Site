@@ -7,14 +7,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
+} from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
 import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import Link from 'next/link';
 import Image from 'next/image';
-import { generatePageMetadata } from '#/core/helpers/metadata';
+import { generatePageMetadata } from '@neup/core/helpers/metadata';
 
 export async function generateMetadata({ params }: { params: { slug: string }}) {
     const { article } = await getNewsArticleById(params.slug);
@@ -35,7 +35,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error || 'Article not found.'}</AlertDescription>
           <div className="mt-4">
-            <LinkButton variant="outlined" href="/news">
+            <LinkButton variant="outlined" href="@neup/news">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to News
               </LinkButton>
           </div>
@@ -47,7 +47,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="mb-4">
-        <LinkButton variant="plain" href="/news">
+        <LinkButton variant="plain" href="@neup/news">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to News
           </LinkButton>

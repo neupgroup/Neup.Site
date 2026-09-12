@@ -9,7 +9,7 @@ Returns every project the authenticated account can access.
 
 import { NextRequest, NextResponse } from 'next/server';
 
-import { logger } from '#/logica/logger';
+import { logger } from '@neup/logica/logger';
 import { getAssetsForAccount } from '@/services/assets';
 
 function errorResponse(code: string, message: string, status: number) {

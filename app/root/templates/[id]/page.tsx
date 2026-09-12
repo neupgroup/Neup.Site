@@ -6,17 +6,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getTemplate, deleteTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '#/components/ui/card';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@neup/components/ui/card';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@neup/components/ui/alert-dialog';
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
-import { useToast } from '#/core/hooks/useToast';
-import { Badge } from '#/components/ui/badge';
-import { cn } from '#/core/utils';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Badge } from '@neup/components/ui/badge';
+import { cn } from '@neup/core/utils';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function ViewTemplatePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -48,7 +48,7 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
     const result = await deleteTemplate(id);
     if (result.success) {
       toast({ title: 'Template Deleted', description: 'The template has been permanently removed.' });
-      router.push('/root/templates');
+      router.push('@neup/root/templates');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
@@ -70,7 +70,7 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <LinkButton variant="plain" href="/root/templates">
+       <LinkButton variant="plain" href="@neup/root/templates">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Templates
           </LinkButton>

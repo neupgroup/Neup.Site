@@ -2,21 +2,21 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from '#/components/ui/button';
-import { LinkButton } from "#/components/ui/link-button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '#/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '#/components/ui/table';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Button } from '@neup/components/ui/button';
+import { LinkButton } from "@neup/components/ui/link-button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@neup/components/ui/table';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, RotateCcw, HardDrive } from 'lucide-react';
 import Link from 'next/link';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getAppBaseBackups, restoreAppBaseBackup } from '@/services/app-base';
 import { type AppBaseBackup } from '@/services/app-base/type';
 import { getSiteServers } from '@/services/servers';
 import { format } from 'date-fns';
-import { Badge } from '#/components/ui/badge';
-import { usePageTitle } from '#/core/hooks/use-page-title';
+import { Badge } from '@neup/components/ui/badge';
+import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 export default function BackupsPage() {
   usePageTitle('App Base Backups');
@@ -66,7 +66,7 @@ export default function BackupsPage() {
           <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Backups</h1>
           <p className="text-muted-foreground">View and restore backups of your base configuration files.</p>
         </div>
-        <LinkButton variant="outlined" href="/site/appbase">
+        <LinkButton variant="outlined" href="@neup/site/appbase">
             Back to App Base
           </LinkButton>
       </header>

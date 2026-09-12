@@ -1,5 +1,5 @@
 import type { AssetTheme } from '@/services/asset/type';
-import { generateThemeFromColor } from '#/core/helpers/color';
+import { generateThemeFromColor } from '@neup/core/helpers/color';
 
 /*
 ::neup.documentation::theme-service

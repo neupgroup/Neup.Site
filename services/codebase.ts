@@ -2,8 +2,8 @@
 'use server';
 
 import { getActiveProjectId } from '@/services/projects';
-import { prisma as db } from '#/core/database/prisma';
-import { logger } from '#/logica/logger';
+import { prisma as db } from '@neup/core/database/prisma';
+import { logger } from '@neup/logica/logger';
 import type {
   CodeFile,
   CodebaseBrowserData,
@@ -15,15 +15,15 @@ import type {
 const CODEBASE_FOLDER_MARKER = '.neup-folder';
 
 function normalizeCodeFilePath(input: string): string | null {
-  const trimmed = input.trim().replace(/\\/g, '/').replace(/^\/+/, '');
+  const trimmed = input.trim().replace(/\\/g, '@neup/').replace(/^\/+/, '');
   if (!trimmed || trimmed.includes('\0')) return null;
 
-  const segments = trimmed.split('/').filter(Boolean);
+  const segments = trimmed.split('@neup/').filter(Boolean);
   if (!segments.length || segments.some((segment) => segment === '.' || segment === '..')) {
     return null;
   }
 
-  return segments.join('/');
+  return segments.join('@neup/');
 }
 
 function isFolderMarkerPath(path: string) {
@@ -41,7 +41,7 @@ function getBreadcrumbs(path: string | null) {
     return breadcrumbs;
   }
 
-  const segments = path.split('/').filter(Boolean);
+  const segments = path.split('@neup/').filter(Boolean);
   let currentPath = '';
 
   for (const segment of segments) {
@@ -55,10 +55,10 @@ function getBreadcrumbs(path: string | null) {
 function getParentPath(path: string | null): string | null {
   if (!path) return null;
 
-  const segments = path.split('/').filter(Boolean);
+  const segments = path.split('@neup/').filter(Boolean);
   if (segments.length <= 1) return null;
 
-  return segments.slice(0, -1).join('/');
+  return segments.slice(0, -1).join('@neup/');
 }
 
 export async function uploadCodeFile(fileData: Omit<CodeFile, 'id' | 'createdAt' | 'assetId'>) {
@@ -91,7 +91,7 @@ export async function saveCodeFileByPath(params: {
   const normalizedPath = normalizeCodeFilePath(params.filePath);
   if (!normalizedPath) return { success: false, error: 'Invalid file path.' };
 
-  const fileName = params.fileName?.trim() || normalizedPath.split('/').pop() || normalizedPath;
+  const fileName = params.fileName?.trim() || normalizedPath.split('@neup/').pop() || normalizedPath;
   const size = Buffer.byteLength(params.content, 'utf-8');
   const encodedContent = Buffer.from(params.content, 'utf-8').toString('base64');
 
@@ -254,7 +254,7 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
     const uniqueFiles = Array.from(latestFilesByPath.values());
     const currentPath = normalizedPath;
     const currentPrefix = currentPath ? `${currentPath}/` : '';
-    const currentDepth = currentPath ? currentPath.split('/').filter(Boolean).length : 0;
+    const currentDepth = currentPath ? currentPath.split('@neup/').filter(Boolean).length : 0;
     const exactFile = currentPath ? latestFilesByPath.get(currentPath) : undefined;
     const exactVisibleFile = exactFile && !isFolderMarkerName(exactFile.fileName) ? exactFile : undefined;
     const folderChildren = uniqueFiles.filter((file) => {
@@ -286,7 +286,7 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
 
       const selectedFile: CodebaseSelectedFile = {
         id: record.id,
-        name: record.fileName || record.filePath.split('/').pop() || record.filePath,
+        name: record.fileName || record.filePath.split('@neup/').pop() || record.filePath,
         path: record.filePath,
         size: record.size,
         createdAt: record.createdAt ? record.createdAt.toISOString() : null,
@@ -312,7 +312,7 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
 
     for (const file of folderChildren) {
       const relativePath = currentPrefix ? file.filePath.slice(currentPrefix.length) : file.filePath;
-      const segments = relativePath.split('/').filter(Boolean);
+      const segments = relativePath.split('@neup/').filter(Boolean);
       if (!segments.length) continue;
       const isMarkerFile = isFolderMarkerPath(file.filePath);
 
@@ -351,7 +351,7 @@ export async function getCodebaseBrowser(path?: string | null): Promise<{ succes
 
     const directories = Array.from(directoriesByPath.values()).sort((left, right) => left.name.localeCompare(right.name));
     files.sort((left, right) => {
-      const depthDelta = left.path.split('/').length - right.path.split('/').length;
+      const depthDelta = left.path.split('@neup/').length - right.path.split('@neup/').length;
       if (depthDelta !== 0) return depthDelta;
       return left.name.localeCompare(right.name);
     });
