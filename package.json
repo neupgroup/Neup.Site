@@ -10,7 +10,7 @@
 
     "dev": "next dev --turbopack --experimental-https --hostname dev.neupgroup.com --port 443",
     "build": "npx prisma generate && npx next build",
-    "start": "next start --hostname dev.neupgroup.com --port 443",
+    "start": "next start",
     "postinstall": "patch-package && prisma generate",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
