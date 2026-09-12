@@ -15,7 +15,7 @@ import { Skeleton } from '#/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { usePageTitle } from '#/core/hooks/use-page-title';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 
 function LinkedAccountCard({ account, onDisconnect }: { account: LinkedAccount, onDisconnect: (id: string) => void }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -71,7 +71,7 @@ export default function AccountsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
-  const selectedProject = searchParams.get('selectedProject');
+  const project = searchParams.get('project');
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [loading, setLoading] = useState(true);
   usePageTitle('Account Management');
@@ -95,7 +95,7 @@ export default function AccountsPage() {
         title: 'Account Linked Successfully',
         description: 'Your GitHub account has been connected.',
       });
-      router.replace(appendSelectedProject('/settings/accounts', selectedProject));
+      router.replace(appendProject('/settings/accounts', project));
     }
     const error = searchParams.get('error');
     if (error) {
@@ -104,9 +104,9 @@ export default function AccountsPage() {
         title: 'GitHub Authentication Failed',
         description: decodeURIComponent(error),
       });
-      router.replace(appendSelectedProject('/settings/accounts', selectedProject));
+      router.replace(appendProject('/settings/accounts', project));
     }
-  }, [searchParams, toast, router, selectedProject]);
+  }, [searchParams, toast, router, project]);
   
   const handleDisconnect = async (id: string) => {
       const result = await deleteLinkedAccount(id);
@@ -136,7 +136,7 @@ export default function AccountsPage() {
              <Card className="border-dashed">
                 <CardContent className="p-6 text-center">
                     <p className="text-muted-foreground mb-4">No accounts linked yet.</p>
-                     <LinkButton href={appendSelectedProject('/settings/accounts/github', selectedProject)}>
+                     <LinkButton href={appendProject('/settings/accounts/github', project)}>
                             <Github className="mr-2 h-4 w-4" /> Link GitHub Account
                         </LinkButton>
                 </CardContent>

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
-import { clearSession, saveAccountSessionData, validateSession, getSelectedProjectIdFromLocation } from '@/inapp/helpers/session-manager';
+import { clearSession, saveAccountSessionData, validateSession, getProjectIdFromLocation } from '@/inapp/helpers/session-manager';
 
 const SESSION_STORAGE_KEY_ARTIFACT = 'assetProfileData';
 
@@ -68,9 +68,9 @@ export function ProfileProvider({
             }
 
             // Save session metadata
-            const selectedProject = getSelectedProjectIdFromLocation();
-            if (selectedProject) {
-              saveAccountSessionData(currentAccountId, selectedProject);
+            const project = getProjectIdFromLocation();
+            if (project) {
+              saveAccountSessionData(currentAccountId, project);
             }
           }
           setLoading(false);
@@ -100,9 +100,9 @@ export function ProfileProvider({
             }
 
             // Save session metadata
-            const selectedProject = getSelectedProjectIdFromLocation();
-            if (selectedProject) {
-              saveAccountSessionData(currentAccountId, selectedProject);
+            const project = getProjectIdFromLocation();
+            if (project) {
+              saveAccountSessionData(currentAccountId, project);
             }
           }
           setLoading(false);

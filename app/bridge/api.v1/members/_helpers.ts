@@ -4,10 +4,10 @@ import { logger } from '#/logica/logger';
 import { getAccountId } from '@/services/accounts';
 
 export async function requireProject(request: Request) {
-  const projectId = request.headers.get('x-selected-project')?.trim();
+  const projectId = request.headers.get('x-project')?.trim();
   if (!projectId) {
     return NextResponse.json(
-      { success: false, error: 'Project ID is required. Pass it in the x-selected-project header.' },
+      { success: false, error: 'Project ID is required. Pass it in the x-project header.' },
       { status: 400 },
     );
   }

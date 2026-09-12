@@ -8,7 +8,7 @@ import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
 import { getMember } from '@/services/members';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 
 /*
 ::neup.documentation::manage-member-detail-page
@@ -48,10 +48,10 @@ export default async function ViewMemberPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ selectedProject?: string }>;
+  searchParams: Promise<{ project?: string }>;
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const selectedProject = query.selectedProject?.trim() || null;
+  const project = query.project?.trim() || null;
   const { member, error } = await getMember(id);
 
   if (error || !member) {
@@ -61,7 +61,7 @@ export default async function ViewMemberPage({
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendSelectedProject('/manage/member', selectedProject)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/member', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </LinkButton>

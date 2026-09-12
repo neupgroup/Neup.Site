@@ -12,13 +12,13 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 import { saveAsset } from '@/services/editor/asset';
 import type { Asset, AssetIcons } from '@/services/asset/type';
 import { useToast } from '#/core/hooks/useToast';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 
 export default function LogoUploadPage() {
   const { asset, setAsset } = useProfile();
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const selectedProject = searchParams.get('selectedProject');
+  const project = searchParams.get('project');
 
   const handleUploadSuccess = async (iconType: keyof AssetIcons, url: string) => {
     const newIcons = { ...asset?.icons, [iconType]: url };
@@ -58,7 +58,7 @@ export default function LogoUploadPage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
-        <LinkButton variant="outlined" href={appendSelectedProject('/settings/identity', selectedProject)}>
+        <LinkButton variant="outlined" href={appendProject('/settings/identity', project)}>
                 <ArrowLeft className="mr-2" /> Back to Profile
             </LinkButton>
       </header>

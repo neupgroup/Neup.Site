@@ -4,7 +4,7 @@ import { LinkButton } from "#/components/ui/link-button";
 import Link from 'next/link';
 import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
 import { generatePageMetadata } from '#/core/helpers/metadata';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 
 export async function generateMetadata() {
   return generatePageMetadata({
@@ -35,10 +35,10 @@ const QuickStatCard = ({ title, value, icon: Icon, description }: { title: strin
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ selectedProject?: string }>;
+  searchParams: Promise<{ project?: string }>;
 }) {
   const params = await searchParams;
-  const selectedProject = params.selectedProject?.trim() || null;
+  const project = params.project?.trim() || null;
 
   return (
     <div className="w-full">
@@ -77,10 +77,10 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4">
-            <LinkButton className="w-full sm:w-auto" href={appendSelectedProject('/news/create', selectedProject)}>
+            <LinkButton className="w-full sm:w-auto" href={appendProject('/news/create', project)}>
                 <Newspaper className="mr-2" /> New Article
               </LinkButton>
-            <LinkButton variant="tinted" className="w-full sm:w-auto" href={appendSelectedProject('/news', selectedProject)}>
+            <LinkButton variant="tinted" className="w-full sm:w-auto" href={appendProject('/news', project)}>
                 <Newspaper className="mr-2" /> View News
               </LinkButton>
           </CardContent>
@@ -93,7 +93,7 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LinkButton href={appendSelectedProject('/settings/design', selectedProject)}>
+            <LinkButton href={appendProject('/settings/design', project)}>
                 <Palette className="mr-2" />
                 Edit Theme
               </LinkButton>

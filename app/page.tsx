@@ -5,13 +5,13 @@ import { makeAppPath } from '#/core/appconfig';
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ selectedProject?: string }>;
+  searchParams: Promise<{ project?: string }>;
 }) {
   const params = await searchParams;
-  const selectedProject = params.selectedProject?.trim();
+  const project = params.project?.trim();
 
-  if (selectedProject) {
-    redirect(makeAppPath(`/home?selectedProject=${encodeURIComponent(selectedProject)}`));
+  if (project) {
+    redirect(makeAppPath(`/home?project=${encodeURIComponent(project)}`));
   }
 
   redirect(makeAppPath('/home'));

@@ -35,16 +35,16 @@ export function appendApplicationRootMode(targetHref: string, mode: string | nul
   return query ? `${basePath}?${query}` : basePath;
 }
 
-export function appendSelectedProject(targetHref: string, selectedProject: string | null): string {
-  if (!selectedProject) {
+export function appendProject(targetHref: string, project: string | null): string {
+  if (!project) {
     return targetHref;
   }
 
   const [basePath, existingQuery = ''] = targetHref.split('?');
   const params = new URLSearchParams(existingQuery);
 
-  if (!params.has('selectedProject')) {
-    params.set('selectedProject', selectedProject);
+  if (!params.has('project')) {
+    params.set('project', project);
   }
 
   const query = params.toString();

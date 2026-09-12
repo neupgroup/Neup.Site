@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Button } from '#/components/ui/button';
 import { LinkButton } from "#/components/ui/link-button";
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 import { cn } from '#/core/utils';
 import { useToast } from '#/core/hooks/useToast';
 import type { Member } from '@/services/member/type';
@@ -152,7 +152,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
   const [dropMemberId, setDropMemberId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-  const selectedProject = searchParams.get('selectedProject');
+  const project = searchParams.get('project');
   const suppressClickRef = useRef(false);
   const dragOverTargetRef = useRef<string | null>(null);
 
@@ -291,7 +291,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                 <LinkButton
                   variant="plain"
                   size="icon"
-                  href={appendSelectedProject(`/manage/team/${group.teamId}`, selectedProject)}
+                  href={appendProject(`/manage/team/${group.teamId}`, project)}
                 >
                     <Pencil className="h-4 w-4" />
                   </LinkButton>
@@ -314,7 +314,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                         return;
                       }
 
-                      router.push(appendSelectedProject(`/manage/members/${member.id}`, selectedProject));
+                      router.push(appendProject(`/manage/members/${member.id}`, project));
                     }}
                     onKeyDown={(event) => {
                       if (event.key !== 'Enter' && event.key !== ' ') {
@@ -322,7 +322,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                       }
 
                       event.preventDefault();
-                      router.push(appendSelectedProject(`/manage/members/${member.id}`, selectedProject));
+                      router.push(appendProject(`/manage/members/${member.id}`, project));
                     }}
                     onDragStart={(event) => {
                       event.stopPropagation();

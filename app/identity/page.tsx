@@ -24,7 +24,7 @@ import { useSearchParams } from 'next/navigation';
 import { Switch } from '#/components/ui/switch';
 import Link from 'next/link';
 import { usePageTitle } from '#/core/hooks/use-page-title';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 
 export const SocialProfileSchema = z.object({
     platformName: z.string().min(1, 'Platform name is required'),
@@ -51,7 +51,7 @@ export default function ProfilePage() {
     const { toast } = useToast();
     usePageTitle('Profile Settings');
     const searchParams = useSearchParams();
-    const selectedProject = searchParams.get('selectedProject');
+    const project = searchParams.get('project');
 
     const form = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileFormSchema),
@@ -162,7 +162,7 @@ export default function ProfilePage() {
                                 <CardTitle>Asset Information</CardTitle>
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
-                            <LinkButton variant="outlined" href={appendSelectedProject('/settings/identity/logo', selectedProject)}>
+                            <LinkButton variant="outlined" href={appendProject('/settings/identity/logo', project)}>
                                     <ImageIcon className="mr-2" /> Manage Logos
                                 </LinkButton>
                         </div>

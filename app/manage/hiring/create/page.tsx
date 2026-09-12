@@ -38,7 +38,7 @@ import { useToast } from '#/core/hooks/useToast';
 import { createJobPosting } from '@/services/hiring';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import { usePageTitle } from '#/core/hooks/use-page-title';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Job title is required'),
@@ -53,7 +53,7 @@ export default function CreateJobPostingPage() {
   usePageTitle('Create Job Posting');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedProject = searchParams.get('selectedProject');
+  const project = searchParams.get('project');
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,7 +72,7 @@ export default function CreateJobPostingPage() {
     const result = await createJobPosting(data);
     if (result.success) {
       toast({ title: 'Job Posting Created' });
-      router.push(appendSelectedProject('/manage/hiring', selectedProject));
+      router.push(appendProject('/manage/hiring', project));
     } else {
       toast({
         variant: 'destructive',
@@ -86,7 +86,7 @@ export default function CreateJobPostingPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendSelectedProject('/manage/hiring', selectedProject)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/hiring', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Hiring
           </LinkButton>

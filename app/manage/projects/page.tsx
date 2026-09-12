@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Badge } from '#/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 import { getManagedProjectsOverview } from '@/services/projects';
 
 /*
@@ -30,10 +30,10 @@ export async function generateMetadata() {
 export default async function ManageProjectsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ selectedProject?: string }>;
+  searchParams: Promise<{ project?: string }>;
 }) {
   const params = await searchParams;
-  const selectedProject = params.selectedProject?.trim() || null;
+  const projectIdForContext = params.project?.trim() || null;
   const { success, projects, error } = await getManagedProjectsOverview();
   const managedProjects = projects ?? [];
   const totalProjects = managedProjects.length;
@@ -83,7 +83,7 @@ export default async function ManageProjectsPage({
             return (
               <Link
                 key={project.id}
-                href={appendSelectedProject(`/manage/projects/${project.id}`, selectedProject)}
+                href={appendProject(`/manage/projects/${project.id}`, projectIdForContext)}
                 className={[
                   'block w-full border p-4 transition-colors hover:bg-muted/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                   isFirst ? 'rounded-t-md' : 'rounded-t-none',

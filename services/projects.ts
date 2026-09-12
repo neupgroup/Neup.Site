@@ -14,8 +14,8 @@ Resolves the active project for the current request.
 ::end
 */
 
-const SELECTED_PROJECT_QUERY_PARAM = 'selectedProject';
-const SELECTED_PROJECT_HEADER = 'x-selected-project';
+const PROJECT_QUERY_PARAM = 'project';
+const PROJECT_HEADER = 'x-project';
 
 export interface ManagedProjectUser {
   accountId: string;
@@ -47,7 +47,7 @@ function readProjectIdFromUrl(rawUrl: string | null | undefined): string | null 
   if (!value) return null;
 
   try {
-    return normalizeProjectId(new URL(value, 'http://localhost').searchParams.get(SELECTED_PROJECT_QUERY_PARAM));
+    return normalizeProjectId(new URL(value, 'http://localhost').searchParams.get(PROJECT_QUERY_PARAM));
   } catch {
     return null;
   }
@@ -56,14 +56,14 @@ function readProjectIdFromUrl(rawUrl: string | null | undefined): string | null 
 export async function getActiveProjectId(options?: { required?: boolean }): Promise<string | null> {
   const headerStore = await headers();
 
-  const selectedProject =
-    normalizeProjectId(headerStore.get(SELECTED_PROJECT_HEADER)) ??
+  const project =
+    normalizeProjectId(headerStore.get(PROJECT_HEADER)) ??
     readProjectIdFromUrl(headerStore.get('referer')) ??
     readProjectIdFromUrl(headerStore.get('x-url')) ??
     readProjectIdFromUrl(headerStore.get('next-url'));
 
-  if (selectedProject) {
-    return selectedProject;
+  if (project) {
+    return project;
   }
 
   if (options?.required) {

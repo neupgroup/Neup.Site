@@ -3,7 +3,7 @@ import { Plus, Users } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { generatePageMetadata } from '#/core/helpers/metadata';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 import { getMembers } from '@/services/members';
 import { getTeams } from '@/services/teams';
 import { logger } from '#/logica/logger';
@@ -30,10 +30,10 @@ export async function generateMetadata() {
 export default async function ManageMemberPage({
   searchParams,
 }: {
-  searchParams: Promise<{ selectedProject?: string }>;
+  searchParams: Promise<{ project?: string }>;
 }) {
   const params = await searchParams;
-  const selectedProject = params.selectedProject?.trim() || null;
+  const project = params.project?.trim() || null;
   const [{ teams, error: teamsError }, { members, error: membersError }] = await Promise.all([
     getTeams(),
     getMembers(),
@@ -42,12 +42,12 @@ export default async function ManageMemberPage({
   const error = teamsError ?? membersError;
 
   if (error) {
-    console.error('[manage.member] Unable to load members page data.', { error, selectedProject });
+    console.error('[manage.member] Unable to load members page data.', { error, project });
     try {
       await logger.error({
         message: error,
         source: 'ManageMemberPage',
-        context: { selectedProject, teamsError, membersError },
+        context: { project, teamsError, membersError },
       });
     } catch (loggingError) {
       console.error('[manage.member] Failed to persist page error log.', loggingError);
@@ -73,7 +73,7 @@ export default async function ManageMemberPage({
       {!members?.length && !teams?.length ? (
         <div className="grid gap-4">
           <Link
-            href={appendSelectedProject('/manage/member/addMember', selectedProject)}
+            href={appendProject('/manage/member/addMember', project)}
             className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
@@ -93,7 +93,7 @@ export default async function ManageMemberPage({
       ) : (
         <div className="grid gap-4">
           <Link
-            href={appendSelectedProject('/manage/member/addMember', selectedProject)}
+            href={appendProject('/manage/member/addMember', project)}
             className="grid gap-4 rounded-lg border border-dashed bg-card px-5 py-4 transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">

@@ -8,7 +8,7 @@ import { Button } from '#/components/ui/button';
 import { LinkButton } from "#/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { generatePageMetadata } from '#/core/helpers/metadata';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 import { getManagedProject } from '@/services/projects';
 import { ProjectDeleteButton } from '../project-delete-button';
 
@@ -66,10 +66,10 @@ export default async function ManageProjectDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ selectedProject?: string }>;
+  searchParams: Promise<{ project?: string }>;
 }) {
   const [{ id }, rawSearchParams] = await Promise.all([params, searchParams]);
-  const selectedProject = rawSearchParams.selectedProject?.trim() || null;
+  const projectIdForContext = rawSearchParams.project?.trim() || null;
   const { success, project } = await getManagedProject(id);
 
   if (!success || !project) {
@@ -79,7 +79,7 @@ export default async function ManageProjectDetailPage({
   return (
     <div className="w-full space-y-8">
       <div>
-        <LinkButton variant="outlined" href={appendSelectedProject('/manage/projects', selectedProject)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/projects', projectIdForContext)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Projects
           </LinkButton>

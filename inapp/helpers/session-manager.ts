@@ -6,7 +6,7 @@ Synchronizes lightweight browser session metadata between the active URL and ses
 
 ::public
 
-Use these helpers from client-side code that needs to validate whether cached asset profile data still belongs to the active `selectedProject` URL parameter.
+Use these helpers from client-side code that needs to validate whether cached asset profile data still belongs to the active `project` URL parameter.
 
 ::public end
 
@@ -20,14 +20,14 @@ This module only reads browser-native `document.cookie` and `sessionStorage` so 
 */
 
 const COOKIE_LAST_FETCH = 'lastFetch';
-const SESSION_SELECTED_PROJECT = 'sessionSelectedProject';
+const SESSION_PROJECT = 'sessionProject';
 const SESSION_LAST_FETCH = 'lastFetch';
 const SESSION_ACCOUNT_ID = 'sessionAccountId';
 
-export function getSelectedProjectIdFromLocation(): string | null {
+export function getProjectIdFromLocation(): string | null {
     if (typeof window === 'undefined') return null;
 
-    const value = new URLSearchParams(window.location.search).get('selectedProject');
+    const value = new URLSearchParams(window.location.search).get('project');
     return value?.trim() || null;
 }
 
@@ -70,7 +70,7 @@ export function clearSession() {
 
     if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem(SESSION_ACCOUNT_ID);
-        sessionStorage.removeItem(SESSION_SELECTED_PROJECT);
+        sessionStorage.removeItem(SESSION_PROJECT);
         sessionStorage.removeItem(SESSION_LAST_FETCH);
         sessionStorage.removeItem('assetProfileData');
         sessionStorage.removeItem('neup_user');
@@ -89,11 +89,11 @@ export function validateSession(currentAccountId?: string | null): { valid: bool
         return { valid: false, reason: 'account mismatch' };
     }
 
-    const currentSelectedProject = getSelectedProjectIdFromLocation();
-    const sessionSelectedProject = sessionStorage.getItem(SESSION_SELECTED_PROJECT);
+    const currentProject = getProjectIdFromLocation();
+    const sessionProject = sessionStorage.getItem(SESSION_PROJECT);
 
-    if (currentSelectedProject !== sessionSelectedProject) {
-        return { valid: false, reason: 'selectedProject mismatch' };
+    if (currentProject !== sessionProject) {
+        return { valid: false, reason: 'project mismatch' };
     }
 
     const cookieLastFetch = getCookie(COOKIE_LAST_FETCH);
@@ -128,7 +128,7 @@ export function saveAccountSessionData(accountId: string | null | undefined, ass
         } else {
             sessionStorage.removeItem(SESSION_ACCOUNT_ID);
         }
-        sessionStorage.setItem(SESSION_SELECTED_PROJECT, assetId);
+        sessionStorage.setItem(SESSION_PROJECT, assetId);
         sessionStorage.setItem(SESSION_LAST_FETCH, timestamp);
     }
 }
@@ -136,9 +136,9 @@ export function saveAccountSessionData(accountId: string | null | undefined, ass
 export function getSessionMetadata() {
     return {
         sessionAccountId: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_ACCOUNT_ID) : null,
-        selectedProject: getSelectedProjectIdFromLocation(),
+        project: getProjectIdFromLocation(),
         cookieLastFetch: getCookie(COOKIE_LAST_FETCH),
-        sessionSelectedProject: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_SELECTED_PROJECT) : null,
+        sessionProject: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_PROJECT) : null,
         sessionLastFetch: typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_LAST_FETCH) : null,
     };
 }

@@ -15,7 +15,7 @@ import { Input } from '#/components/ui/input';
 import { Textarea } from '#/components/ui/textarea';
 import { useToast } from '#/core/hooks/useToast';
 import { usePageTitle } from '#/core/hooks/use-page-title';
-import { appendSelectedProject } from '@/inapp/helpers/application-mode';
+import { appendProject } from '@/inapp/helpers/application-mode';
 import { createTeam } from '@/services/teams';
 
 /*
@@ -41,7 +41,7 @@ export default function AddTeamPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const selectedProject = searchParams.get('selectedProject');
+  const project = searchParams.get('project');
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,13 +62,13 @@ export default function AddTeamPage() {
     }
 
     toast({ title: 'Team Created' });
-    router.push(appendSelectedProject('/manage/member', selectedProject));
+    router.push(appendProject('/manage/member', project));
   };
 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendSelectedProject('/manage/member', selectedProject)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/member', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </LinkButton>

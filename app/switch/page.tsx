@@ -91,7 +91,7 @@ function AssetList() {
     });
 
     const { toast } = useToast();
-    const selectedProjectId = searchParams.get('selectedProject');
+    const projectId = searchParams.get('project');
     const returnTo = searchParams.get('returnTo') || '/';
 
     useEffect(() => {
@@ -109,8 +109,8 @@ function AssetList() {
     }, []);
 
     useEffect(() => {
-        setActiveAssetId(selectedProjectId);
-    }, [selectedProjectId]);
+        setActiveAssetId(projectId);
+    }, [projectId]);
 
     const getProjectDestination = (assetId: string) => {
         const destination = new URL(makeAppPath(returnTo), window.location.origin);
@@ -120,7 +120,7 @@ function AssetList() {
             destination.search = '';
         }
 
-        destination.searchParams.set('selectedProject', assetId);
+        destination.searchParams.set('project', assetId);
         return `${destination.pathname}${destination.search}${destination.hash}`;
     };
 

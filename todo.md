@@ -19,4 +19,4 @@
 - [ ] Add Neup documentation blocks for metadata call sites reviewed during the metadata helper move, including `app/(manage)/page.tsx` and `core2/lib/metadata.ts`.
 - [ ] Add Neup documentation coverage for `tsconfig.json` path aliases and compiler options.
 - [ ] Add a Neup documentation block for `templates/footer.ts`.
-- [ ] Sweep route-local `Link` and `router.push()` call sites outside the dashboard shell so they preserve `?selectedProject=` during in-app navigation.
+- [ ] Sweep route-local `Link` and `router.push()` call sites outside the dashboard shell so they preserve `?project=` during in-app navigation.
