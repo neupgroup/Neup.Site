@@ -13,25 +13,26 @@ export async function requireProject(request: Request) {
   }
 
   const token = request.headers.get('token')?.trim() || null;
-  let accountId: string;
-  try {
-    accountId = await getAccountId(token);
-  } catch {
-    return NextResponse.json({ success: false, error: 'Authentication token is required or invalid.' }, { status: 401 });
+  let accountId: string | null = null;
+  if (token) {
+    try {
+      accountId = await getAccountId(token);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Authentication token is invalid.' }, { status: 401 });
+    }
   }
 
   const project = await db.asset.findFirst({
     where: {
       id: projectId,
-      OR: [
-        { ownerAccountId: accountId },
-        { roles: { some: { accountId } } },
-      ],
+      ...(accountId
+        ? { OR: [{ ownerAccountId: accountId }, { roles: { some: { accountId } } }] }
+        : {}),
     },
     select: {
       id: true,
       ownerAccountId: true,
-      roles: { where: { accountId }, select: { role: true } },
+      roles: { where: { accountId: accountId ?? undefined }, select: { role: true } },
     },
   });
   if (!project) {
@@ -41,8 +42,9 @@ export async function requireProject(request: Request) {
   return {
     projectId,
     accountId,
-    isAdmin: project.ownerAccountId === accountId
-      || project.roles.some((role) => ['owner', 'admin'].includes(role.role.toLowerCase())),
+    authenticated: Boolean(accountId),
+    isAdmin: Boolean(accountId) && (project.ownerAccountId === accountId
+      || project.roles.some((role) => ['owner', 'admin'].includes(role.role.toLowerCase()))),
   };
 }
 

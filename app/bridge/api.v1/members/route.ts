@@ -8,15 +8,16 @@ export async function GET(request: Request) {
   try {
     const result = await getMembers();
     if (!result.success) return NextResponse.json(result, { status: 500 });
+    if (!validation.authenticated) {
+      const members = result.members?.filter((member) => member.status !== 'hidden');
+      return NextResponse.json({ success: true, members });
+    }
     const accounts = await (await import('#/core/database/prisma')).prisma.account.findMany({
       where: { roles: { some: { assetId: validation.projectId } } },
       select: { id: true, displayName: true, displayImage: true, status: true, type: true },
       orderBy: { displayName: 'asc' },
     });
-    const members = validation.isAdmin
-      ? result.members
-      : result.members?.filter((member) => member.status !== 'hidden');
-    return NextResponse.json({ ...result, members, accounts });
+    return NextResponse.json({ ...result, accounts });
   } catch (error) {
     await logApiError('bridge.members.get', error);
     return NextResponse.json({ success: false, error: 'Unable to load members right now.' }, { status: 500 });
@@ -25,7 +26,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const validation = await requireProject(request);
-  if (validation) return validation;
+  if (validation instanceof Response) return validation;
+  if (!validation.authenticated) {
+    return NextResponse.json({ success: false, error: 'Authentication token is required.' }, { status: 401 });
+  }
   try {
     const body = await request.json();
     if (body.status !== undefined && !['active', 'paused', 'hidden'].includes(body.status)) {
