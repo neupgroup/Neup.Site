@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { makeAppPath } from '@neup/core/appconfig';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@neup/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
@@ -13,6 +12,7 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@neup/components/ui/card';
 import { Button } from '@neup/components/ui/button';
+import { LinkButton } from '@neup/components/ui/link-button';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Input } from '@neup/components/ui/input';
@@ -24,12 +24,14 @@ function ProjectRow({
     isSelected = false,
     isLoading = false,
     onSelect,
+    href,
     className = '',
 }: {
     asset: AssetSummary;
     isSelected?: boolean;
     isLoading?: boolean;
     onSelect?: (assetId: string) => void;
+    href?: string;
     className?: string;
 }) {
     return (
@@ -62,14 +64,21 @@ function ProjectRow({
                     </div>
                 ) : (
                     <div className="flex items-center gap-3">
-                        <Button variant="tinted" onClick={() => onSelect?.(asset.id)} size="sm" disabled={isLoading}>
+                        <LinkButton
+                            href={href ?? '#'}
+                            onClick={() => onSelect?.(asset.id)}
+                            aria-disabled={isLoading}
+                            variant="tinted"
+                            size="sm"
+                            className={isLoading ? 'pointer-events-none opacity-50' : undefined}
+                        >
                             {isLoading ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
                                 <ArrowRight className="mr-2 h-4 w-4" />
                             )}
                             Select
-                        </Button>
+                        </LinkButton>
                         <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
                     </div>
                 )}
@@ -113,10 +122,11 @@ function AssetList() {
     }, [projectId]);
 
     const getProjectDestination = (assetId: string) => {
-        const destination = new URL(makeAppPath(returnTo), window.location.origin);
+        const target = returnTo.replace(/^@neup\/?/, '/');
+        const destination = new URL(target.startsWith('/') ? target : `/${target}`, window.location.origin);
 
-        if (destination.pathname === makeAppPath('@neup/switch')) {
-            destination.pathname = makeAppPath('@neup/');
+        if (destination.pathname === '/switch') {
+            destination.pathname = '/';
             destination.search = '';
         }
 
@@ -124,7 +134,7 @@ function AssetList() {
         return `${destination.pathname}${destination.search}${destination.hash}`;
     };
 
-    const handleSelectAsset = async (assetId: string) => {
+    const prepareProjectSelection = (assetId: string) => {
         setIsSwitching(assetId);
         setActiveAssetId(assetId);
 
@@ -138,7 +148,10 @@ function AssetList() {
         });
 
         clearSession();
+    };
 
+    const handleSelectAsset = async (assetId: string) => {
+        prepareProjectSelection(assetId);
         window.setTimeout(() => {
             window.location.assign(getProjectDestination(assetId));
         }, 150);
@@ -238,7 +251,8 @@ function AssetList() {
                                     key={asset.id}
                                     asset={asset}
                                     isLoading={isSwitching === asset.id}
-                                    onSelect={handleSelectAsset}
+                                    href={getProjectDestination(asset.id)}
+                                    onSelect={prepareProjectSelection}
                                     className={[
                                         isFirst ? 'rounded-t-md' : 'rounded-t-none',
                                         isLast ? 'rounded-b-md' : 'rounded-b-none',

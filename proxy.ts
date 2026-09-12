@@ -5,19 +5,22 @@ import baseJson from '@base/base.json'
 import { decodeNeupIdToken } from '@neup/logica/account/token/verify'
 
 const AUTH_ME_PATH = '/bridge/api.v1/auth/me'
+const ACCOUNT_BASE_URL = 'https://neupgroup.com'
+const ACCOUNT_BRIDGE_BASE_URL = 'https://neupgroup.com/account'
 
 type BaseConfig = {
-  bridgeBaseUrl: string
-  neupid: string
+  basepath?: string
+  bridgeBaseUrl?: string
+  neupid?: string
 }
 
 const configuredBase = baseJson as BaseConfig
 const PROJECT_QUERY_PARAM = 'project'
 
 function createAccountBridgeUrl(path: string): string {
-  const basePath = configuredBase.bridgeBaseUrl.replace(/\/+$/, '')
+  const baseUrl = configuredBase.bridgeBaseUrl || process.env.ACCOUNT_BRIDGE_BASE_URL || ACCOUNT_BRIDGE_BASE_URL
   const normalizedPath = path.replace(/^\/+/, '')
-  return `${basePath}/${normalizedPath}`
+  return new URL(`${baseUrl.replace(/\/+$/, '')}/${normalizedPath}`, 'https://neupgroup.com').toString()
 }
 
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
@@ -93,7 +96,9 @@ export async function proxy(request: NextRequest) {
   const authenticated = await isAuthenticated(request)
 
   if (!authenticated) {
-    return NextResponse.redirect(configuredBase.neupid)
+    const authUrl = new URL('/account/auth/start', ACCOUNT_BASE_URL)
+    authUrl.searchParams.set('authenticatesTo', request.url)
+    return NextResponse.redirect(authUrl)
   }
 
   const project =

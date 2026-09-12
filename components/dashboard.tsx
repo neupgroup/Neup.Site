@@ -219,7 +219,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
           <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
             Account
           </div>
-          <SidebarNavItem href="@neup/switch" currentPath={currentPath} project={project} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></SidebarNavItem>
+          <SidebarNavItem href="/switch" currentPath={currentPath} project={project} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></SidebarNavItem>
           <SidebarNavItem href="@neup/accounts" currentPath={currentPath} project={project} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></SidebarNavItem>
         </div>
       </div>
@@ -268,7 +268,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, project }: { isMobileMenuO
     <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow-lg">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
-          <Link href={appendProject('@neup/', project)} className="flex items-center gap-4">
+          <Link href={appendProject('/home', project)} className="flex items-center gap-4">
             {(loading ? (
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
