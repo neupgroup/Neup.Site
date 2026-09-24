@@ -1,0 +1,11 @@
+{
+    "type": "ios",
+    "exists": false,
+    "bundleIdentifier": "com.neupgroup.app",
+    "permissions": [
+        "NSLocationWhenInUseUsageDescription",
+        "NSCameraUsageDescription",
+        "NSMicrophoneUsageDescription",
+        "NSPhotoLibraryUsageDescription"
+    ]
+}
