@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { logica } from '@neup/logica'
-import baseJson from '@base/base.json'
+import baseJson from '@base/application.json'
 import { decodeNeupIdToken } from '@neup/logica/account/token/verify'
 
 const AUTH_ME_PATH = '/bridge/api.v1/auth/me'
