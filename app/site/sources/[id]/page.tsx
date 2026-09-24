@@ -71,7 +71,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
     const result = await deleteSource(id);
     if(result.success) {
         toast({ title: 'Source Deleted', description: 'The data source has been removed.'});
-        router.push('@neup/site/sources');
+        router.push('/site/sources');
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

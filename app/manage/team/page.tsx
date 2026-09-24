@@ -8,6 +8,8 @@ import { AlertCircle, UserPlus, Users } from 'lucide-react';
 import Link from 'next/link';
 import { TeamBoard } from './team-board';
 
+export const dynamic = 'force-dynamic';
+
 /*
 ::neup.documentation::manage-team-list-page
 

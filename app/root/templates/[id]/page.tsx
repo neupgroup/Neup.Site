@@ -48,7 +48,7 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
     const result = await deleteTemplate(id);
     if (result.success) {
       toast({ title: 'Template Deleted', description: 'The template has been permanently removed.' });
-      router.push('@neup/root/templates');
+      router.push('/root/templates');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

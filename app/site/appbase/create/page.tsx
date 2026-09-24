@@ -47,7 +47,7 @@ export default function CreateAppBaseFilePage() {
     const result = await createAppBaseFile(serverId, data.name, data.type);
     if (result.success) {
       toast({ title: 'File Created' });
-      router.push('@neup/site/appbase');
+      router.push('/site/appbase');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

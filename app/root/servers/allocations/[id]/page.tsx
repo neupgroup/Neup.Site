@@ -61,7 +61,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
     const result = await deleteAllocation(id);
     if(result.success) {
         toast({ title: 'Allocation Deleted', description: 'The server allocation has been removed.'});
-        router.push('@neup/root/servers/allocations');
+        router.push('/root/servers/allocations');
     } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

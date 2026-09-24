@@ -57,7 +57,7 @@ export default function CreateServerPage() {
 
     if (result.success) {
       toast({ title: 'Server Created!', description: `Successfully created ${data.name}.` });
-      router.push('@neup/root/servers');
+      router.push('/root/servers');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

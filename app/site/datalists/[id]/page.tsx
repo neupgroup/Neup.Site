@@ -48,7 +48,7 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
     const result = await deleteDatalist(id);
     if (result.success) {
       toast({ title: 'Datalist Deleted', description: 'The datalist has been permanently removed.' });
-      router.push('@neup/site/datalists');
+      router.push('/site/datalists');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

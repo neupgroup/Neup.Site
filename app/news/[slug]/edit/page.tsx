@@ -96,7 +96,7 @@ export default function EditNewsSettingsPage({ params }: { params: Promise<{ slu
       const result = await deleteNewsArticle(article.id);
       if (result.success) {
         toast({ title: "Article Deleted", description: "The article has been removed."});
-        router.push('@neup/news');
+        router.push('/news');
       } else {
         toast({ variant: "destructive", title: "Error", description: result.error });
       }

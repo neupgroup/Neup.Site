@@ -52,7 +52,7 @@ export default function CreateRedirectPage() {
     const result = await createRedirect(data);
     if (result.success) {
       toast({ title: 'Redirect Created' });
-      router.push('@neup/manage/redirects');
+      router.push('/manage/redirects');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

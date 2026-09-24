@@ -55,7 +55,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
         getTeam(id).then(({ team, error }) => {
             if (error || !team) {
                 toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch team data.'});
-                router.push('@neup/manage/member');
+                router.push('/manage/member');
             } else {
                 form.reset({
                     name: team.name,
@@ -81,7 +81,7 @@ export default function EditTeamPage({ params }: { params: Promise<{ id: string 
         const result = await deleteTeam(id);
         if (result.success) {
             toast({ title: 'Team Deleted'});
-            router.push('@neup/manage/member');
+            router.push('/manage/member');
         } else {
             toast({ variant: 'destructive', title: 'Error', description: result.error });
         }

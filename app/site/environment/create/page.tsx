@@ -69,7 +69,7 @@ export default function CreateEnvironmentVariablePage() {
     const result = await createEnvironmentVariable({ ...data, name: formattedName });
     if (result.success) {
       toast({ title: "Variable Added", description: `Variable ${formattedName} has been saved.`});
-      router.push('@neup/site/environment');
+      router.push('/site/environment');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }

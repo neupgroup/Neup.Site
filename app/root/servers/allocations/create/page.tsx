@@ -52,7 +52,7 @@ export default function CreateAllocationPage() {
 
     if (result.success) {
       toast({ title: 'Allocation Created!', description: `Successfully allocated server.` });
-      router.push('@neup/root/servers/allocations');
+      router.push('/root/servers/allocations');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
     }
