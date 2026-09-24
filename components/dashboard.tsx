@@ -84,7 +84,13 @@ const navLinkClassName = (isActive: boolean) => cn(
 );
 
 function SidebarNavItem({ href, children, currentPath, project, onClick }: { href: string; children: React.ReactNode; currentPath: string, project: string | null, onClick?: () => void }) {
-  const isActive = href === '@neup/' ? currentPath === href : currentPath.startsWith(href);
+  // Navigation hrefs use the source alias in a few places, while Next's
+  // pathname is always a public URL path. Compare the same representation.
+  const publicHref = href.replace(/^@neup\//, '/');
+  const publicPath = currentPath.replace(/^@neup\//, '/');
+  const isActive = publicHref === '/'
+    ? publicPath === '/'
+    : publicPath === publicHref || publicPath.startsWith(`${publicHref}/`);
   return (
     <div className="block w-full">
       <SidebarNavLink
