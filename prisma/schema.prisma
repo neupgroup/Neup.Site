@@ -8,15 +8,17 @@ datasource db {
 }
 
 model Account {
-  id           String   @id
-  displayName  String   @default("")
-  displayImage String   @default("")
-  neupId       String?  @unique
-  type         String   @default("individual")
-  createdOn    DateTime @default(now())
-  status       String   @default("active")
-  moreDetails  Json?
-  roles        Role[]
+  id                  String   @id
+  displayName         String   @default("")
+  displayImage        String   @default("")
+  neupId              String?  @unique
+  type                String   @default("individual")
+  createdOn           DateTime @default(now())
+  status              String   @default("active")
+  moreDetails         Json?
+  defaultProject      String?
+  defaultProjectAsset Asset?   @relation("AccountDefaultProject", fields: [defaultProject], references: [id], onDelete: SetNull)
+  roles               Role[]
 
   @@map("accounts")
 }
@@ -27,7 +29,7 @@ model Role {
   portfolioId String
   accountId   String
   role        String
-  status      String   @default("active")
+  status      String  @default("active")
   asset       Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
   account     Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
@@ -45,38 +47,39 @@ model Domain {
 }
 
 model Asset {
-  id             String                @id
-  name           String                @default("")
-  url            String?
-  tier           String                @default("free")
-  modules        Json?
-  icons          Json?
-  domains        Json?
-  design         Json?
-  features       Json?
-  createdAt      DateTime?
-  updatedAt      DateTime?
-  roles          Role[]
-  domainEntries  Domain[]
-  profiles       Profile[]
-  ownerAccountId String?
-  status         String?
-  type           String?
-  pages          Page[]
-  paths          PagePath[]
-  sections       Section[]
-  datalists      Datalist[]
-  sources        DataSource[]
-  environments   EnvironmentVariable[]
-  redirects      Redirect[]
-  codeFiles      CodeFile[]
-  allocations    Allocation[]
-  structures     SiteStructure[]
-  deployments    Deployment[]
-  appBaseBackups AppBaseBackup[]
-  assetModules   AssetModule[]
-  teams          Team[]
-  members        Member[]
+  id                     String                @id
+  name                   String                @default("")
+  url                    String?
+  tier                   String                @default("free")
+  modules                Json?
+  icons                  Json?
+  domains                Json?
+  design                 Json?
+  features               Json?
+  createdAt              DateTime?
+  updatedAt              DateTime?
+  roles                  Role[]
+  domainEntries          Domain[]
+  profiles               Profile[]
+  ownerAccountId         String?
+  status                 String?
+  type                   String?
+  pages                  Page[]
+  paths                  PagePath[]
+  sections               Section[]
+  datalists              Datalist[]
+  sources                DataSource[]
+  environments           EnvironmentVariable[]
+  redirects              Redirect[]
+  codeFiles              CodeFile[]
+  allocations            Allocation[]
+  structures             SiteStructure[]
+  deployments            Deployment[]
+  appBaseBackups         AppBaseBackup[]
+  assetModules           AssetModule[]
+  teams                  Team[]
+  members                Member[]
+  defaultProjectAccounts Account[]             @relation("AccountDefaultProject")
 
   @@index([ownerAccountId])
   @@map("projects")
@@ -408,7 +411,7 @@ model Member {
   name        String
   email       String
   role        String
-  status      String   @default("active")
+  status      String  @default("active")
   imageUrl    String?
   order       Int?
   teamId      String? @map("team_id")

@@ -14,6 +14,20 @@ Fields:
 > ownerAccountId: string, nullable, indexed;
 > status: string, nullable;
 > type: string, nullable;
+.. referenced by accounts.defaultProject;
+
+Table: accounts, Model: Account
+Fields:
+> id: string, primary key;
+> displayName: string, default: "";
+> displayImage: string, default: "";
+> neupId: string, nullable, unique;
+> type: string, default: "individual";
+> createdOn: timestamp, default: current timestamp;
+> status: string, default: "active";
+> moreDetails: jsonb, nullable;
+> defaultProject: string, nullable, references projects.id, indexed;
+.. references roles;
 .. references pages, paths, sections, datalists, sources, environments, redirects, codeFiles, allocations, structures, deployments, appBaseBackups, assetModules, teams, members, roles, profiles;
 
 Table: role, Model: Role
