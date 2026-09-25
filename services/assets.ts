@@ -14,6 +14,7 @@ export interface AssetSummary {
   name: string;
   logoUrl: string | null;
   description: string | null;
+  isDefault: boolean;
 }
 
 export async function getAssetsForAccount(authToken?: string | null): Promise<{ assets?: AssetSummary[]; error?: string }> {
@@ -23,6 +24,11 @@ export async function getAssetsForAccount(authToken?: string | null): Promise<{ 
   }
 
   try {
+    const account = await db.account.findUnique({
+      where: { id: accountId },
+      select: { defaultProject: true },
+    });
+
     const roles = await db.role.findMany({
       where: { accountId },
       include: {
@@ -52,6 +58,7 @@ export async function getAssetsForAccount(authToken?: string | null): Promise<{ 
           name: role.asset.name,
           logoUrl: resolveAssetLogoUrl(logoUrl, theme),
           description,
+          isDefault: role.asset.id === account?.defaultProject,
         });
       }
     });
@@ -143,6 +150,7 @@ export async function createAssetForAccount(input: {
         ...assetData,
         logoUrl: resolveAssetLogoUrl(input.logoUrl, defaultTheme),
         description: input.description?.trim() || null,
+        isDefault: false,
       },
     };
   } catch (error: any) {

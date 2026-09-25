@@ -3,19 +3,17 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getAssetsForAccount, createAssetForAccount, setDefaultProjectForAccount, type AssetSummary } from '@/services/assets';
+import { getAssetsForAccount, setDefaultProjectForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@neup/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
 import { useProfile } from '@/inapp/context/ProfileContext';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@neup/components/ui/card';
-import { Button } from '@neup/components/ui/button';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
-import { Input } from '@neup/components/ui/input';
-import { AlertCircle, Loader2, Plus, Package } from 'lucide-react';
+import { AlertCircle, Plus } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 function ProjectRow({
@@ -59,6 +57,11 @@ function ProjectRow({
                                     Selected
                                 </div>
                             )}
+                            {asset.isDefault && (
+                                <div className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                    Default
+                                </div>
+                            )}
                         </div>
                         <p className="text-sm text-muted-foreground font-mono">{asset.id}</p>
                     </div>
@@ -74,11 +77,7 @@ function AssetList() {
     const [allAssets, setAllAssets] = useState<AssetSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isCreating, setIsCreating] = useState(false);
     const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
-    const [createForm, setCreateForm] = useState({
-        name: '',
-    });
 
     const { toast } = useToast();
     const projectId = searchParams.get('project');
@@ -123,8 +122,14 @@ function AssetList() {
     };
 
     const handleSelectAsset = async (assetId: string) => {
-        if (assetId === activeAssetId) {
+        if (assetId === projectId) {
             const result = await setDefaultProjectForAccount(assetId);
+            if (result.success) {
+                setAllAssets((prev) => prev.map((asset) => ({
+                    ...asset,
+                    isDefault: asset.id === assetId,
+                })));
+            }
             toast({
                 variant: result.success ? 'default' : 'destructive',
                 title: result.success ? 'Default project saved' : 'Unable to save default project',
@@ -135,28 +140,6 @@ function AssetList() {
 
         prepareProjectSelection(assetId);
         router.replace(getProjectDestination(assetId));
-    };
-
-    const handleCreateAsset = async () => {
-        if (!createForm.name.trim()) {
-            toast({ variant: 'destructive', title: 'Missing name', description: 'Project name is required.' });
-            return;
-        }
-
-        setIsCreating(true);
-        const result = await createAssetForAccount({
-            name: createForm.name,
-        });
-
-        if (result.success && result.asset) {
-            setAllAssets((prev) => [result.asset!, ...prev]);
-            setCreateForm({ name: '' });
-            await handleSelectAsset(result.asset.id);
-        } else {
-            toast({ variant: 'destructive', title: 'Error', description: result.error });
-        }
-
-        setIsCreating(false);
     };
 
     if (loading) {
@@ -181,39 +164,24 @@ function AssetList() {
     
     return (
         <div className="w-full space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Create Project</CardTitle>
-                    <CardDescription>Start a new project for your account.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Name</label>
-                        <Input
-                            value={createForm.name}
-                            onChange={(event) => setCreateForm((prev) => ({ ...prev, name: event.target.value }))}
-                            placeholder="Project name"
-                        />
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button variant="solid" onClick={handleCreateAsset} disabled={isCreating}>
-                        {isCreating ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Plus className="mr-2 h-4 w-4" />
-                        )}
-                        Create Project
-                    </Button>
-                </CardFooter>
-            </Card>
-
-            {allAssets.length > 0 && (
-                <div>
-                    <h2 className="text-lg font-semibold mb-2 mt-8">Available Projects</h2>
-                    <div className="space-y-0">
+            <div>
+                    <Link
+                        href="/switch/new"
+                        className={[
+                            'flex w-full items-center gap-3 border p-4 transition-colors hover:bg-muted/90',
+                            allAssets.length > 0 ? 'rounded-t-md border-b-0' : 'rounded-md',
+                        ].join(' ')}
+                    >
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
+                            <Plus className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="min-w-0 space-y-1">
+                            <h3 className="text-base font-semibold">New Project</h3>
+                            <p className="text-sm text-muted-foreground">Create a new project.</p>
+                        </div>
+                    </Link>
+                    {allAssets.length > 0 && <div className="space-y-0">
                         {allAssets.map((asset, index) => {
-                            const isFirst = index === 0;
                             const isLast = index === allAssets.length - 1;
 
                             return (
@@ -224,24 +192,15 @@ function AssetList() {
                                     href={getProjectDestination(asset.id)}
                                     onSelect={handleSelectAsset}
                                     className={[
-                                        isFirst ? 'rounded-t-md' : 'rounded-t-none',
+                                        'rounded-t-none',
                                         isLast ? 'rounded-b-md' : 'rounded-b-none',
                                         !isLast ? 'border-b-0' : '',
                                     ].join(' ')}
                                 />
                             );
                         })}
-                    </div>
-                </div>
-            )}
-             {allAssets.length === 0 && (
-                <Card>
-                    <CardContent className="p-6 text-center">
-                        <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground">No projects found for your account.</p>
-                    </CardContent>
-                </Card>
-            )}
+                    </div>}
+            </div>
         </div>
     );
 }
