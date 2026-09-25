@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@neup/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
@@ -12,11 +12,10 @@ import { useProfile } from '@/inapp/context/ProfileContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@neup/components/ui/card';
 import { Button } from '@neup/components/ui/button';
-import { LinkButton } from '@neup/components/ui/link-button';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Input } from '@neup/components/ui/input';
-import { AlertCircle, Loader2, ArrowRight, CheckCircle, Plus, ChevronRight, Package } from 'lucide-react';
+import { AlertCircle, Loader2, ArrowRight, Plus, ChevronRight, Package } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 function ProjectRow({
@@ -38,9 +37,12 @@ function ProjectRow({
         <div
             className={[
                 'block w-full border p-4 transition-colors',
-                isSelected ? 'border-primary bg-primary/10' : 'hover:bg-muted/90',
+                isSelected ? 'bg-primary/10' : 'cursor-pointer hover:bg-muted/90',
                 className,
             ].join(' ')}
+            onClick={() => !isSelected && onSelect?.(asset.id)}
+            role={!isSelected ? 'link' : undefined}
+            tabIndex={!isSelected ? 0 : undefined}
         >
             <div className="flex items-center justify-between gap-4">
                 <div className="flex min-w-0 items-start gap-3">
@@ -57,31 +59,20 @@ function ProjectRow({
                         <p className="text-sm text-muted-foreground font-mono">{asset.id}</p>
                     </div>
                 </div>
-                {isSelected ? (
-                    <div className="flex items-center gap-2 text-green-600">
-                        <CheckCircle className="h-5 w-5" />
-                        <span className="font-semibold">Selected</span>
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-3">
-                        <LinkButton
-                            href={href ?? '#'}
-                            onClick={() => onSelect?.(asset.id)}
-                            aria-disabled={isLoading}
-                            variant="tinted"
-                            size="sm"
-                            className={isLoading ? 'pointer-events-none opacity-50' : undefined}
-                        >
-                            {isLoading ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                                <ArrowRight className="mr-2 h-4 w-4" />
-                            )}
-                            Select
-                        </LinkButton>
-                        <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
-                    </div>
-                )}
+                <div className="flex items-center gap-3">
+                    {isSelected ? (
+                        <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                            Selected
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                            {!isLoading && <ArrowRight className="h-4 w-4" />}
+                            <span>Select</span>
+                        </div>
+                    )}
+                    <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                </div>
             </div>
         </div>
     );
@@ -89,6 +80,7 @@ function ProjectRow({
 
 function AssetList() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [allAssets, setAllAssets] = useState<AssetSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -101,7 +93,6 @@ function AssetList() {
 
     const { toast } = useToast();
     const projectId = searchParams.get('project');
-    const returnTo = searchParams.get('returnTo') || '@neup/';
 
     useEffect(() => {
         const fetchAssets = async () => {
@@ -122,16 +113,9 @@ function AssetList() {
     }, [projectId]);
 
     const getProjectDestination = (assetId: string) => {
-        const target = returnTo.replace(/^@neup\/?/, '/');
-        const destination = new URL(target.startsWith('/') ? target : `/${target}`, window.location.origin);
-
-        if (destination.pathname === '/switch') {
-            destination.pathname = '/';
-            destination.search = '';
-        }
-
+        const destination = new URL('/switch', window.location.origin);
         destination.searchParams.set('project', assetId);
-        return `${destination.pathname}${destination.search}${destination.hash}`;
+        return `${destination.pathname}${destination.search}`;
     };
 
     const prepareProjectSelection = (assetId: string) => {
@@ -152,9 +136,7 @@ function AssetList() {
 
     const handleSelectAsset = async (assetId: string) => {
         prepareProjectSelection(assetId);
-        window.setTimeout(() => {
-            window.location.assign(getProjectDestination(assetId));
-        }, 150);
+        router.replace(getProjectDestination(assetId));
     };
 
     const handleCreateAsset = async () => {
@@ -178,9 +160,6 @@ function AssetList() {
 
         setIsCreating(false);
     };
-
-    const otherAssets = allAssets.filter(asset => asset.id !== activeAssetId);
-    const currentAsset = allAssets.find(asset => asset.id === activeAssetId);
 
     if (loading) {
         return (
@@ -231,28 +210,22 @@ function AssetList() {
                 </CardFooter>
             </Card>
 
-            {currentAsset && (
+            {allAssets.length > 0 && (
                 <div>
-                    <h2 className="text-lg font-semibold mb-2">Current Project</h2>
-                    <ProjectRow asset={currentAsset} isSelected />
-                </div>
-            )}
-
-            {otherAssets.length > 0 && (
-                <div>
-                     <h2 className="text-lg font-semibold mb-2 mt-8">Available Projects</h2>
-                     <div className="space-y-0">
-                        {otherAssets.map((asset, index) => {
+                    <h2 className="text-lg font-semibold mb-2 mt-8">Available Projects</h2>
+                    <div className="space-y-0">
+                        {allAssets.map((asset, index) => {
                             const isFirst = index === 0;
-                            const isLast = index === otherAssets.length - 1;
+                            const isLast = index === allAssets.length - 1;
 
                             return (
                                 <ProjectRow
                                     key={asset.id}
                                     asset={asset}
+                                    isSelected={asset.id === activeAssetId}
                                     isLoading={isSwitching === asset.id}
                                     href={getProjectDestination(asset.id)}
-                                    onSelect={prepareProjectSelection}
+                                    onSelect={handleSelectAsset}
                                     className={[
                                         isFirst ? 'rounded-t-md' : 'rounded-t-none',
                                         isLast ? 'rounded-b-md' : 'rounded-b-none',
@@ -261,7 +234,7 @@ function AssetList() {
                                 />
                             );
                         })}
-                     </div>
+                    </div>
                 </div>
             )}
              {allAssets.length === 0 && (
