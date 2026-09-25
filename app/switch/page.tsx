@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getAssetsForAccount, createAssetForAccount, type AssetSummary } from '@/services/assets';
+import { getAssetsForAccount, createAssetForAccount, setDefaultProjectForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@neup/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
 import { useProfile } from '@/inapp/context/ProfileContext';
@@ -34,13 +34,12 @@ function ProjectRow({
     return (
         <div
             className={[
-                'block w-full border p-4 transition-colors',
-                isSelected ? 'bg-primary/10' : 'cursor-pointer hover:bg-muted/90',
+                'block w-full cursor-pointer border p-4 transition-colors hover:bg-muted/90',
                 className,
             ].join(' ')}
-            onClick={() => !isSelected && onSelect?.(asset.id)}
-            role={!isSelected ? 'link' : undefined}
-            tabIndex={!isSelected ? 0 : undefined}
+            onClick={() => onSelect?.(asset.id)}
+            role="link"
+            tabIndex={0}
         >
             <div className="flex items-center justify-between gap-4">
                 <div className="flex min-w-0 items-start gap-3">
@@ -124,6 +123,16 @@ function AssetList() {
     };
 
     const handleSelectAsset = async (assetId: string) => {
+        if (assetId === activeAssetId) {
+            const result = await setDefaultProjectForAccount(assetId);
+            toast({
+                variant: result.success ? 'default' : 'destructive',
+                title: result.success ? 'Default project saved' : 'Unable to save default project',
+                description: result.success ? 'This project will open by default.' : result.error,
+            });
+            return;
+        }
+
         prepareProjectSelection(assetId);
         router.replace(getProjectDestination(assetId));
     };

@@ -1,6 +1,8 @@
 
 import { redirect } from 'next/navigation';
 import { makeAppPath } from '@neup/core/appconfig';
+import { prisma as db } from '@neup/core/database/prisma';
+import { getAccountId } from '@/services/accounts';
 
 export default async function Page({
   searchParams,
@@ -14,5 +16,23 @@ export default async function Page({
     redirect(makeAppPath(`/home?project=${encodeURIComponent(project)}`));
   }
 
-  redirect(makeAppPath('@neup/home'));
+  let defaultProject: string | null = null;
+
+  try {
+    const accountId = await getAccountId();
+    const account = await db.account.findUnique({
+      where: { id: accountId },
+      select: { defaultProject: true },
+    });
+
+    defaultProject = account?.defaultProject?.trim() || null;
+  } catch {
+    // Unauthenticated visitors continue to the project switcher.
+  }
+
+  if (defaultProject) {
+    redirect(makeAppPath(`/home?project=${encodeURIComponent(defaultProject)}`));
+  }
+
+  redirect(makeAppPath('@neup/switch'));
 }

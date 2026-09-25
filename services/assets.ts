@@ -149,3 +149,33 @@ export async function createAssetForAccount(input: {
     return { success: false, error: 'Failed to create asset.' };
   }
 }
+
+export async function setDefaultProjectForAccount(projectId: string): Promise<{ success: boolean; error?: string }> {
+  const accountId = await getAccountId();
+
+  try {
+    const project = await db.asset.findFirst({
+      where: {
+        id: projectId,
+        roles: { some: { accountId } },
+      },
+      select: { id: true },
+    });
+
+    if (!project) {
+      return { success: false, error: 'Project not found or unavailable.' };
+    }
+
+    await db.account.update({
+      where: { id: accountId },
+      data: { defaultProject: project.id },
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('setDefaultProjectForAccount failed:', error);
+    }
+    return { success: false, error: 'Failed to set the default project.' };
+  }
+}

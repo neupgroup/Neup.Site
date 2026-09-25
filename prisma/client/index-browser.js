@@ -128,7 +128,8 @@ exports.Prisma.AccountScalarFieldEnum = {
   type: 'type',
   createdOn: 'createdOn',
   status: 'status',
-  moreDetails: 'moreDetails'
+  moreDetails: 'moreDetails',
+  defaultProject: 'defaultProject'
 };
 
 exports.Prisma.RoleScalarFieldEnum = {
