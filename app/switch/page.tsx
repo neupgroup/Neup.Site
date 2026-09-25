@@ -15,20 +15,18 @@ import { Button } from '@neup/components/ui/button';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Input } from '@neup/components/ui/input';
-import { AlertCircle, Loader2, ArrowRight, Plus, ChevronRight, Package } from 'lucide-react';
+import { AlertCircle, Loader2, Plus, Package } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 function ProjectRow({
     asset,
     isSelected = false,
-    isLoading = false,
     onSelect,
     href,
     className = '',
 }: {
     asset: AssetSummary;
     isSelected?: boolean;
-    isLoading?: boolean;
     onSelect?: (assetId: string) => void;
     href?: string;
     className?: string;
@@ -55,23 +53,16 @@ function ProjectRow({
                         </Avatar>
                     </div>
                     <div className="min-w-0 space-y-1">
-                        <h3 className="text-base font-semibold">{asset.name}</h3>
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-base font-semibold">{asset.name}</h3>
+                            {isSelected && (
+                                <div className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                                    Selected
+                                </div>
+                            )}
+                        </div>
                         <p className="text-sm text-muted-foreground font-mono">{asset.id}</p>
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    {isSelected ? (
-                        <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                            Selected
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-                            {!isLoading && <ArrowRight className="h-4 w-4" />}
-                            <span>Select</span>
-                        </div>
-                    )}
-                    <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
                 </div>
             </div>
         </div>
@@ -84,7 +75,6 @@ function AssetList() {
     const [allAssets, setAllAssets] = useState<AssetSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isSwitching, setIsSwitching] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
     const [createForm, setCreateForm] = useState({
@@ -119,7 +109,6 @@ function AssetList() {
     };
 
     const prepareProjectSelection = (assetId: string) => {
-        setIsSwitching(assetId);
         setActiveAssetId(assetId);
 
         toast({
@@ -223,7 +212,6 @@ function AssetList() {
                                     key={asset.id}
                                     asset={asset}
                                     isSelected={asset.id === activeAssetId}
-                                    isLoading={isSwitching === asset.id}
                                     href={getProjectDestination(asset.id)}
                                     onSelect={handleSelectAsset}
                                     className={[
