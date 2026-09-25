@@ -42,7 +42,7 @@ export default function LinkGitHubPage() {
         <CardContent>
           <div className="text-center p-12">
             <Github className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <LinkButton variant="solid" href={appendProject('@neup/bridge/api/v1/github/start', project)}>
+            <LinkButton variant="solid" href={appendProject('/bridge/api/v1/github/start', project)}>
                 <Github className="mr-2 h-4 w-4" /> Connect with GitHub
               </LinkButton>
           </div>

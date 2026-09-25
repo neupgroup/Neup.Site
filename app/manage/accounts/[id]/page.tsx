@@ -79,7 +79,7 @@ export default async function ManageAccountDetailPage({ params }: { params: Prom
   return (
     <div className="w-full space-y-8">
       <div>
-        <LinkButton variant="outlined" href="@neup/accounts">
+        <LinkButton variant="outlined" href="/accounts">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Accounts
           </LinkButton>

@@ -314,7 +314,7 @@ export default function ViewJobPostingPage({ params }: { params: Promise<{ id: s
   if (error || !posting) {
     return (
       <div className="w-full max-w-2xl mx-auto space-y-4">
-        <LinkButton variant="outlined" href="@neup/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
+        <LinkButton variant="outlined" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
         <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'Job posting not found'}</AlertDescription></Alert>
       </div>
     );
@@ -323,7 +323,7 @@ export default function ViewJobPostingPage({ params }: { params: Promise<{ id: s
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <LinkButton variant="outlined" href="@neup/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
+        <LinkButton variant="outlined" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
       </div>
 
       <div className="space-y-6">

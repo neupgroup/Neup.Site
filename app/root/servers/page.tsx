@@ -43,7 +43,7 @@ export default function ServersPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Your Servers</h1>
             <p className="text-muted-foreground">A list of servers you have created to deploy sites.</p>
         </div>
-        <LinkButton variant="solid" href="@neup/root/servers/create">
+        <LinkButton variant="solid" href="/root/servers/create">
             <Plus className="mr-2 h-4 w-4" /> Create Server
           </LinkButton>
       </header>

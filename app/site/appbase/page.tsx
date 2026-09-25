@@ -167,10 +167,10 @@ export default function AppBasePage() {
           <p className="text-muted-foreground">Manage JSON configuration files in your application's base directories.</p>
         </div>
         <div className="flex gap-2">
-           <LinkButton variant="outlined" href="@neup/site/appbase/backups">
+           <LinkButton variant="outlined" href="/site/appbase/backups">
                   <RotateCcw className="mr-2 h-4 w-4" /> View Backups
               </LinkButton>
-            <LinkButton variant="solid" href="@neup/site/appbase/create">
+            <LinkButton variant="solid" href="/site/appbase/create">
                     <Plus className="mr-2 h-4 w-4" /> Create File
                 </LinkButton>
         </div>

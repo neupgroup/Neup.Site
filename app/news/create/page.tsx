@@ -59,7 +59,7 @@ export default function CreateNewsArticlePage() {
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex items-center gap-4">
-            <LinkButton variant="plain" size="icon" href="@neup/news">
+            <LinkButton variant="plain" size="icon" href="/news">
                 <ArrowLeft />
                 </LinkButton>
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Create New Article</h1>

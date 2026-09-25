@@ -70,7 +70,7 @@ export default function ViewDatalistPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <LinkButton variant="plain" className="pl-0" href="@neup/site/datalists">
+       <LinkButton variant="plain" className="pl-0" href="/site/datalists">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Datalists
           </LinkButton>

@@ -56,7 +56,7 @@ export default function CreateAppBaseFilePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="@neup/site/appbase">
+        <LinkButton variant="plain" href="/site/appbase">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to App Base
           </LinkButton>

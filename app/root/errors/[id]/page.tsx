@@ -54,7 +54,7 @@ export default function ErrorDetailPage({ params }: { params: Promise<{ id: stri
   if (error || !log) {
     return (
         <div className="w-full max-w-4xl mx-auto space-y-4">
-             <LinkButton variant="plain" className="mb-4" href="@neup/root/errors">
+             <LinkButton variant="plain" className="mb-4" href="/root/errors">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Errors
                 </LinkButton>
@@ -69,7 +69,7 @@ export default function ErrorDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4">
-        <LinkButton variant="plain" href="@neup/root/errors">
+        <LinkButton variant="plain" href="/root/errors">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Errors
             </LinkButton>

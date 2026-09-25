@@ -61,7 +61,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     return (
       <div className="w-full space-y-6">
         <div className="mb-4">
-            <LinkButton variant="outlined" href="@neup/root/servers">
+            <LinkButton variant="outlined" href="/root/servers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Servers
             </LinkButton>
@@ -77,7 +77,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
     return (
       <div className="w-full">
         <div className="mb-4">
-          <LinkButton variant="outlined" href="@neup/root/servers">
+          <LinkButton variant="outlined" href="/root/servers">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Servers
             </LinkButton>
         </div>
@@ -93,7 +93,7 @@ export default function ServerDetailPage({ params }: { params: { id: string } })
   return (
     <div className="w-full space-y-6">
       <div className="mb-4">
-        <LinkButton variant="outlined" href="@neup/root/servers">
+        <LinkButton variant="outlined" href="/root/servers">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Servers
           </LinkButton>

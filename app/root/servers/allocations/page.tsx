@@ -57,7 +57,7 @@ export default function AllocationsPage() {
             <h1 className="font-headline text-2xl font-semibold tracking-tight">Server Allocations</h1>
             <p className="text-muted-foreground">Manage which sites are deployed to which servers.</p>
         </div>
-        <LinkButton variant="solid" href="@neup/root/servers/allocations/create">
+        <LinkButton variant="solid" href="/root/servers/allocations/create">
             <Plus className="mr-2 h-4 w-4" /> Create Allocation
           </LinkButton>
       </header>

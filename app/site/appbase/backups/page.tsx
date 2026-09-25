@@ -66,7 +66,7 @@ export default function BackupsPage() {
           <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Backups</h1>
           <p className="text-muted-foreground">View and restore backups of your base configuration files.</p>
         </div>
-        <LinkButton variant="outlined" href="@neup/site/appbase">
+        <LinkButton variant="outlined" href="/site/appbase">
             Back to App Base
           </LinkButton>
       </header>

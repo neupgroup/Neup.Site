@@ -102,7 +102,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error || 'Allocation not found.'}</AlertDescription>
          <div className="mt-4">
-            <LinkButton variant="outlined" href="@neup/root/servers/allocations">
+            <LinkButton variant="outlined" href="/root/servers/allocations">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Allocations
               </LinkButton>
         </div>
@@ -113,7 +113,7 @@ export default function AllocationDetailPage({ params }: { params: { id: string 
   return (
     <div className="w-full max-w-2xl">
         <div className="mb-4">
-            <LinkButton variant="plain" href="@neup/root/servers/allocations">
+            <LinkButton variant="plain" href="/root/servers/allocations">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Allocations
                 </LinkButton>

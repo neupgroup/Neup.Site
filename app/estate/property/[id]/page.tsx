@@ -13,7 +13,7 @@ export default function ViewPropertyPage({ params }: { params: Promise<{ id: str
   return (
     <div className="w-full">
         <div className="mb-4">
-            <LinkButton variant="outlined" href="@neup/estate/property">
+            <LinkButton variant="outlined" href="/estate/property">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Properties
                 </LinkButton>

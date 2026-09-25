@@ -95,7 +95,7 @@ export default function AccountsPage() {
         title: 'Account Linked Successfully',
         description: 'Your GitHub account has been connected.',
       });
-      router.replace(appendProject('@neup/settings/accounts', project));
+      router.replace(appendProject('/settings/accounts', project));
     }
     const error = searchParams.get('error');
     if (error) {
@@ -104,7 +104,7 @@ export default function AccountsPage() {
         title: 'GitHub Authentication Failed',
         description: decodeURIComponent(error),
       });
-      router.replace(appendProject('@neup/settings/accounts', project));
+      router.replace(appendProject('/settings/accounts', project));
     }
   }, [searchParams, toast, router, project]);
   
@@ -136,7 +136,7 @@ export default function AccountsPage() {
              <Card className="border-dashed">
                 <CardContent className="p-6 text-center">
                     <p className="text-muted-foreground mb-4">No accounts linked yet.</p>
-                     <LinkButton href={appendProject('@neup/settings/accounts/github', project)}>
+                     <LinkButton href={appendProject('/settings/accounts/github', project)}>
                             <Github className="mr-2 h-4 w-4" /> Link GitHub Account
                         </LinkButton>
                 </CardContent>

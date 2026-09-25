@@ -58,7 +58,7 @@ export default function LogoUploadPage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
-        <LinkButton variant="outlined" href={appendProject('@neup/settings/identity', project)}>
+        <LinkButton variant="outlined" href={appendProject('/settings/identity', project)}>
                 <ArrowLeft className="mr-2" /> Back to Profile
             </LinkButton>
       </header>

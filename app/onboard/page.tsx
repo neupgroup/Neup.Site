@@ -32,7 +32,7 @@ export default function OnboardingPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <LinkButton href="@neup/">Go to Dashboard</LinkButton>
+                        <LinkButton href="/">Go to Dashboard</LinkButton>
                     </CardContent>
                 </Card>
             </div>

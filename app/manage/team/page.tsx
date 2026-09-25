@@ -46,11 +46,11 @@ export default async function TeamsPage() {
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    <LinkButton variant="outlined" href="@neup/manage/member/addTeam">
+                    <LinkButton variant="outlined" href="/manage/member/addTeam">
                             <Users className="mr-2 h-4 w-4" />
                             Create Group
                         </LinkButton>
-                    <LinkButton variant="solid" href="@neup/manage/member/addMember">
+                    <LinkButton variant="solid" href="/manage/member/addMember">
                             <UserPlus className="mr-2 h-4 w-4" />
                             Add Member
                         </LinkButton>

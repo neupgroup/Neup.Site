@@ -76,10 +76,10 @@ export default function TemplatesPage() {
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Templates</h1>
         <div className="flex items-center gap-2">
-            <LinkButton variant="outlined" href="@neup/root/templates/guide">
+            <LinkButton variant="outlined" href="/root/templates/guide">
                 <BookOpen className="mr-2 h-4 w-4" /> View Guide
               </LinkButton>
-            <LinkButton variant="solid" href="@neup/root/templates/create">
+            <LinkButton variant="solid" href="/root/templates/create">
                 <Plus className="mr-2 h-4 w-4" /> Create New Template
               </LinkButton>
         </div>

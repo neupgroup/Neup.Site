@@ -138,8 +138,8 @@ function ExternalAnalyticsNavLink({ propertyId, currentUrl, children, onClick }:
 function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, project, onLinkClick }: { currentPath: string, currentUrl: string, isAuthenticated: boolean, propertyId: string | null, project: string | null, onLinkClick?: () => void }) {
   return (
     <nav className="flex w-full flex-col items-stretch gap-2">
-      <SidebarNavItem href="@neup/home" currentPath={currentPath} project={project} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></SidebarNavItem>
-      <SidebarNavItem href="@neup/status" currentPath={currentPath} project={project} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></SidebarNavItem>
+      <SidebarNavItem href="/home" currentPath={currentPath} project={project} onClick={onLinkClick}><Home className="h-4 w-4" /><span>Dashboard</span></SidebarNavItem>
+      <SidebarNavItem href="/status" currentPath={currentPath} project={project} onClick={onLinkClick}><Activity className="h-4 w-4" /><span>Status</span></SidebarNavItem>
 
       {/* TODO: Add permission-based filtering when permissions are implemented */}
       {/* For now, showing all navigation items regardless of authentication status */}
@@ -147,37 +147,37 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-sm font-semibold text-muted-foreground">
           Manage
         </div>
-        <SidebarNavItem href="@neup/manage/member" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/projects" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/hiring" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/billing" currentPath={currentPath} project={project} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/access" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/permissions" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/redirects" currentPath={currentPath} project={project} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/contacts" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/member" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/projects" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/hiring" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/billing" currentPath={currentPath} project={project} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/access" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/permissions" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/redirects" currentPath={currentPath} project={project} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/contacts" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></SidebarNavItem>
         <ExternalAnalyticsNavLink propertyId={propertyId} currentUrl={currentUrl} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span><ExternalLink className="h-3.5 w-3.5" aria-label="Opens external page" /></ExternalAnalyticsNavLink>
-        <SidebarNavItem href="@neup/manage/products" currentPath={currentPath} project={project} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/syncer" currentPath={currentPath} project={project} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/articles" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/manage/referrals" currentPath={currentPath} project={project} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/products" currentPath={currentPath} project={project} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/syncer" currentPath={currentPath} project={project} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/articles" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
+        <SidebarNavItem href="/manage/referrals" currentPath={currentPath} project={project} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           News
         </div>
-        <SidebarNavItem href="@neup/news" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>All Articles</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/news/create" currentPath={currentPath} project={project} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/news/category" currentPath={currentPath} project={project} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/news/featured" currentPath={currentPath} project={project} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></SidebarNavItem>
+        <SidebarNavItem href="/news" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>All Articles</span></SidebarNavItem>
+        <SidebarNavItem href="/news/create" currentPath={currentPath} project={project} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Create New</span></SidebarNavItem>
+        <SidebarNavItem href="/news/category" currentPath={currentPath} project={project} onClick={onLinkClick}><Tag className="h-4 w-4" /><span>Categories</span></SidebarNavItem>
+        <SidebarNavItem href="/news/featured" currentPath={currentPath} project={project} onClick={onLinkClick}><Star className="h-4 w-4" /><span>Featured</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Tourio
         </div>
-        <SidebarNavItem href="@neup/tourio/experience" currentPath={currentPath} project={project} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/tourio/dish" currentPath={currentPath} project={project} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></SidebarNavItem>
+        <SidebarNavItem href="/tourio/experience" currentPath={currentPath} project={project} onClick={onLinkClick}><Mountain className="h-4 w-4" /><span>Experiences</span></SidebarNavItem>
+        <SidebarNavItem href="/tourio/dish" currentPath={currentPath} project={project} onClick={onLinkClick}><UtensilsCrossed className="h-4 w-4" /><span>Dishes</span></SidebarNavItem>
       </div>
 
       {/* Asset Section */}
@@ -185,24 +185,24 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Asset
         </div>
-        <SidebarNavItem href="@neup/site/sources" currentPath={currentPath} project={project} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/datalists" currentPath={currentPath} project={project} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/servers" currentPath={currentPath} project={project} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/modules" currentPath={currentPath} project={project} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/uploads" currentPath={currentPath} project={project} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/appbase" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/environment" currentPath={currentPath} project={project} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/analytics" currentPath={currentPath} project={project} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/deploy" currentPath={currentPath} project={project} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/site/advanced" currentPath={currentPath} project={project} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></SidebarNavItem>
+        <SidebarNavItem href="/site/sources" currentPath={currentPath} project={project} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></SidebarNavItem>
+        <SidebarNavItem href="/site/datalists" currentPath={currentPath} project={project} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></SidebarNavItem>
+        <SidebarNavItem href="/site/servers" currentPath={currentPath} project={project} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></SidebarNavItem>
+        <SidebarNavItem href="/site/modules" currentPath={currentPath} project={project} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
+        <SidebarNavItem href="/site/uploads" currentPath={currentPath} project={project} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></SidebarNavItem>
+        <SidebarNavItem href="/site/appbase" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></SidebarNavItem>
+        <SidebarNavItem href="/site/environment" currentPath={currentPath} project={project} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></SidebarNavItem>
+        <SidebarNavItem href="/analytics" currentPath={currentPath} project={project} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></SidebarNavItem>
+        <SidebarNavItem href="/site/deploy" currentPath={currentPath} project={project} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></SidebarNavItem>
+        <SidebarNavItem href="/site/advanced" currentPath={currentPath} project={project} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Site
         </div>
-        <SidebarNavItem href="@neup/settings" currentPath={currentPath} project={project} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/codebase" currentPath={currentPath} project={project} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></SidebarNavItem>
+        <SidebarNavItem href="/settings" currentPath={currentPath} project={project} onClick={onLinkClick}><Settings className="h-4 w-4" /><span>Settings</span></SidebarNavItem>
+        <SidebarNavItem href="/codebase" currentPath={currentPath} project={project} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Codebase</span></SidebarNavItem>
       </div>
 
       {/* Root Section */}
@@ -210,14 +210,14 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-xs font-semibold uppercase text-muted-foreground">
           Root
         </div>
-        <SidebarNavItem href="@neup/root/pages" currentPath={currentPath} project={project} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/root/templates" currentPath={currentPath} project={project} onClick={onLinkClick}><LayoutTemplate className="h-4 w-4" /><span>Templates</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/root/servers" currentPath={currentPath} project={project} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/root/servers/allocations" currentPath={currentPath} project={project} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Allocations</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/root/storage" currentPath={currentPath} project={project} onClick={onLinkClick}><HardDrive className="h-4 w-4" /><span>Storage</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/root/billing" currentPath={currentPath} project={project} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/root/modules" currentPath={currentPath} project={project} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
-        <SidebarNavItem href="@neup/root/errors" currentPath={currentPath} project={project} onClick={onLinkClick}><Bug className="h-4 w-4" /><span>Errors</span></SidebarNavItem>
+        <SidebarNavItem href="/root/pages" currentPath={currentPath} project={project} onClick={onLinkClick}><Globe className="h-4 w-4" /><span>Pages</span></SidebarNavItem>
+        <SidebarNavItem href="/root/templates" currentPath={currentPath} project={project} onClick={onLinkClick}><LayoutTemplate className="h-4 w-4" /><span>Templates</span></SidebarNavItem>
+        <SidebarNavItem href="/root/servers" currentPath={currentPath} project={project} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></SidebarNavItem>
+        <SidebarNavItem href="/root/servers/allocations" currentPath={currentPath} project={project} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Allocations</span></SidebarNavItem>
+        <SidebarNavItem href="/root/storage" currentPath={currentPath} project={project} onClick={onLinkClick}><HardDrive className="h-4 w-4" /><span>Storage</span></SidebarNavItem>
+        <SidebarNavItem href="/root/billing" currentPath={currentPath} project={project} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
+        <SidebarNavItem href="/root/modules" currentPath={currentPath} project={project} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
+        <SidebarNavItem href="/root/errors" currentPath={currentPath} project={project} onClick={onLinkClick}><Bug className="h-4 w-4" /><span>Errors</span></SidebarNavItem>
       </div>
 
       <div className="mt-auto pt-8">
@@ -226,7 +226,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
             Account
           </div>
           <SidebarNavItem href="/switch" currentPath={currentPath} project={project} onClick={onLinkClick}><Replace className="h-4 w-4" /><span>Switch</span></SidebarNavItem>
-          <SidebarNavItem href="@neup/accounts" currentPath={currentPath} project={project} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></SidebarNavItem>
+          <SidebarNavItem href="/accounts" currentPath={currentPath} project={project} onClick={onLinkClick}><User className="h-4 w-4" /><span>Accounts</span></SidebarNavItem>
         </div>
       </div>
     </nav>
@@ -308,7 +308,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, project }: { isMobileMenuO
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href={appendProject('@neup/profile', project)}
+            href={appendProject('/profile', project)}
             className="hidden items-center gap-3 rounded-md px-1 py-1 transition-colors hover:bg-muted/60 md:flex"
           >
             <div className="text-right leading-tight">

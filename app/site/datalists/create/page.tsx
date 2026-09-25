@@ -59,7 +59,7 @@ export default function CreateDatalistPage() {
   return (
     <Form {...form}>
       <div className="flex justify-start mb-4">
-        <LinkButton variant="plain" href="@neup/site/datalists">
+        <LinkButton variant="plain" href="/site/datalists">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Datalists
           </LinkButton>

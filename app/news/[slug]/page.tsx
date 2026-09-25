@@ -35,7 +35,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error || 'Article not found.'}</AlertDescription>
           <div className="mt-4">
-            <LinkButton variant="outlined" href="@neup/news">
+            <LinkButton variant="outlined" href="/news">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to News
               </LinkButton>
           </div>
@@ -47,7 +47,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="mb-4">
-        <LinkButton variant="plain" href="@neup/news">
+        <LinkButton variant="plain" href="/news">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to News
           </LinkButton>

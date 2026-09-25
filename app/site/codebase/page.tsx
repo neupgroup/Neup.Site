@@ -268,7 +268,7 @@ export default function CodebasePage() {
       }
 
       const query = params.toString();
-      router.push(query ? `/codebase?${query}` : '@neup/codebase');
+      router.push(query ? `/codebase?${query}` : '/codebase');
     },
     [router, searchParams],
   );

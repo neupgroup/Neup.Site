@@ -162,7 +162,7 @@ export default function ProfilePage() {
                                 <CardTitle>Asset Information</CardTitle>
                                 <CardDescription>This information may be used across your site.</CardDescription>
                             </div>
-                            <LinkButton variant="outlined" href={appendProject('@neup/settings/identity/logo', project)}>
+                            <LinkButton variant="outlined" href={appendProject('/settings/identity/logo', project)}>
                                     <ImageIcon className="mr-2" /> Manage Logos
                                 </LinkButton>
                         </div>

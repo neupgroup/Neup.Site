@@ -57,7 +57,7 @@ export default function HiringDashboardPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Hiring</h1>
-        <LinkButton variant="solid" href={appendProject('@neup/manage/hiring/create', project)}>
+        <LinkButton variant="solid" href={appendProject('/manage/hiring/create', project)}>
             <Plus className="mr-2 h-4 w-4" /> Create Job Posting
           </LinkButton>
       </header>

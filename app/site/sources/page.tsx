@@ -58,7 +58,7 @@ export default function SourcesPage() {
             <h1 className="text-2xl font-bold font-headline">Data Sources</h1>
             <p className="text-muted-foreground">Manage your API and data sources.</p>
         </div>
-        <LinkButton variant="solid" href="@neup/site/sources/create">
+        <LinkButton variant="solid" href="/site/sources/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Source
           </LinkButton>
       </header>

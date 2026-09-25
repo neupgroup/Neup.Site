@@ -78,7 +78,7 @@ export default function CreateEnvironmentVariablePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="@neup/site/environment">
+        <LinkButton variant="plain" href="/site/environment">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Environments
           </LinkButton>

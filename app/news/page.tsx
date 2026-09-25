@@ -35,7 +35,7 @@ export default async function NewsListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">News Articles</h1>
-        <LinkButton variant="solid" href="@neup/news/create">
+        <LinkButton variant="solid" href="/news/create">
             <Plus className="mr-2 h-4 w-4" /> Create New Article
           </LinkButton>
       </header>

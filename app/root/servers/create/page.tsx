@@ -66,7 +66,7 @@ export default function CreateServerPage() {
   return (
     <form onSubmit={handleSubmit(handleCreateServer)} className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <LinkButton variant="plain" href="@neup/root/servers">
+        <LinkButton variant="plain" href="/root/servers">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Servers
             </LinkButton>

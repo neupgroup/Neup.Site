@@ -60,7 +60,7 @@ export default function CreateSourcePage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="@neup/site/sources">
+        <LinkButton variant="plain" href="/site/sources">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Sources
             </LinkButton>

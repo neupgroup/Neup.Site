@@ -112,7 +112,7 @@ export default function SourceDetailPage({ params }: { params: Promise<{ id: str
   return (
     <div className="w-full max-w-4xl space-y-6">
         <div className="mb-4">
-            <LinkButton variant="plain" href="@neup/site/sources">
+            <LinkButton variant="plain" href="/site/sources">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Sources
                 </LinkButton>

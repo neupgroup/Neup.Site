@@ -70,7 +70,7 @@ export default function ViewTemplatePage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="w-full max-w-2xl space-y-6">
-       <LinkButton variant="plain" href="@neup/root/templates">
+       <LinkButton variant="plain" href="/root/templates">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Templates
           </LinkButton>

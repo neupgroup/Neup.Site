@@ -61,7 +61,7 @@ export default function CreateRedirectPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="plain" href="@neup/manage/redirects">
+        <LinkButton variant="plain" href="/manage/redirects">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Redirects
           </LinkButton>

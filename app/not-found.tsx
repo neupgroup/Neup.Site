@@ -35,7 +35,7 @@ export default function NotFound() {
           </div>
         </div>
 
-        <LinkButton variant="tinted" size="lg" className="px-6" href="@neup/">
+        <LinkButton variant="tinted" size="lg" className="px-6" href="/">
             <Home />
             Return home
           </LinkButton>

@@ -105,7 +105,7 @@ export default function RedirectsPage() {
                 <UploadCloud className="mr-2 h-4 w-4" />
                 {isDeploying ? 'Updating...' : 'Update on Server'}
             </Button>
-            <LinkButton variant="solid" href="@neup/manage/redirects/create">
+            <LinkButton variant="solid" href="/manage/redirects/create">
                     <Plus className="mr-2 h-4 w-4" /> Create Redirect
                 </LinkButton>
         </div>

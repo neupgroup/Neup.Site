@@ -12,7 +12,7 @@ export default function ArticleListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Articles</h1>
-        <LinkButton variant="solid" href="@neup/article/create">
+        <LinkButton variant="solid" href="/article/create">
                 <Plus className="mr-2 h-4 w-4" /> Create Article
             </LinkButton>
       </header>

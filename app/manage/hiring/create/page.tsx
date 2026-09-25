@@ -72,7 +72,7 @@ export default function CreateJobPostingPage() {
     const result = await createJobPosting(data);
     if (result.success) {
       toast({ title: 'Job Posting Created' });
-      router.push(appendProject('@neup/manage/hiring', project));
+      router.push(appendProject('/manage/hiring', project));
     } else {
       toast({
         variant: 'destructive',
@@ -86,7 +86,7 @@ export default function CreateJobPostingPage() {
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendProject('@neup/manage/hiring', project)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/hiring', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Hiring
           </LinkButton>

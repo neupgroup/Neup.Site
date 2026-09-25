@@ -62,7 +62,7 @@ export default function CreateAllocationPage() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateAllocation)} className="w-full max-w-2xl space-y-6">
         <div className="mb-4">
-          <LinkButton variant="plain" href="@neup/root/servers/allocations">
+          <LinkButton variant="plain" href="/root/servers/allocations">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Allocations
               </LinkButton>

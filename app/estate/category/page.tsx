@@ -12,7 +12,7 @@ export default function CategoryListPage() {
     <div className="w-full">
       <header className="flex items-center justify-between mb-8">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Categories</h1>
-        <LinkButton variant="solid" href="@neup/estate/category/create">
+        <LinkButton variant="solid" href="/estate/category/create">
                 <Plus className="mr-2 h-4 w-4" /> Create Category
             </LinkButton>
       </header>

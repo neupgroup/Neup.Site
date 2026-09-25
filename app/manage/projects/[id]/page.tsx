@@ -79,7 +79,7 @@ export default async function ManageProjectDetailPage({
   return (
     <div className="w-full space-y-8">
       <div>
-        <LinkButton variant="outlined" href={appendProject('@neup/manage/projects', projectIdForContext)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/projects', projectIdForContext)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Projects
           </LinkButton>

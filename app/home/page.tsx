@@ -77,10 +77,10 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4">
-            <LinkButton className="w-full sm:w-auto" href={appendProject('@neup/news/create', project)}>
+            <LinkButton className="w-full sm:w-auto" href={appendProject('/news/create', project)}>
                 <Newspaper className="mr-2" /> New Article
               </LinkButton>
-            <LinkButton variant="tinted" className="w-full sm:w-auto" href={appendProject('@neup/news', project)}>
+            <LinkButton variant="tinted" className="w-full sm:w-auto" href={appendProject('/news', project)}>
                 <Newspaper className="mr-2" /> View News
               </LinkButton>
           </CardContent>
@@ -93,7 +93,7 @@ export default async function HomePage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LinkButton href={appendProject('@neup/settings/design', project)}>
+            <LinkButton href={appendProject('/settings/design', project)}>
                 <Palette className="mr-2" />
                 Edit Theme
               </LinkButton>
