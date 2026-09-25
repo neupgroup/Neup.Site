@@ -365,9 +365,9 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                     )}
                   >
                     <GripVertical className="h-4 w-4 text-muted-foreground" />
-                    <Avatar className="h-12 w-12">
-                      {member.imageUrl ? <AvatarImage src={member.imageUrl} alt={member.name} /> : null}
-                      <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+                    <Avatar className="h-12 w-12 bg-primary/10">
+                      {member.imageUrl ? <AvatarImage className="visible object-cover" src={member.imageUrl} alt={member.name} /> : null}
+                      {!member.imageUrl ? <AvatarFallback>{getInitials(member.name)}</AvatarFallback> : null}
                     </Avatar>
                     <div className="min-w-0">
                       <div className="font-medium">{member.name}</div>
