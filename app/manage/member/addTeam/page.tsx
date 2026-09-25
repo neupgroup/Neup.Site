@@ -62,13 +62,13 @@ export default function AddTeamPage() {
     }
 
     toast({ title: 'Team Created' });
-    router.push(appendProject('@neup/manage/member', project));
+    router.push(appendProject('/manage/member', project));
   };
 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendProject('@neup/manage/member', project)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/member', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </LinkButton>

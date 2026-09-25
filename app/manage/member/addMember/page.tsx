@@ -92,13 +92,13 @@ export default function AddMemberPage() {
     }
 
     toast({ title: 'Member Created' });
-    router.push(appendProject('@neup/manage/member', project));
+    router.push(appendProject('/manage/member', project));
   };
 
   return (
     <div className="w-full max-w-2xl">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={appendProject('@neup/manage/member', project)}>
+        <LinkButton variant="outlined" href={appendProject('/manage/member', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Members
           </LinkButton>
@@ -164,14 +164,14 @@ export default function AddMemberPage() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <LinkButton variant="outlined" className="w-full sm:w-auto" href={appendProject('@neup/manage/member/addTeam', project)}>
+                          <LinkButton variant="outlined" className="w-full sm:w-auto" href={appendProject('/manage/member/addTeam', project)}>
                               Add a new team as well
                             </LinkButton>
                         </>
                       ) : (
                         <div className="space-y-3">
                           <p className="text-sm text-muted-foreground">Create a team first before adding a member.</p>
-                          <LinkButton variant="outlined" className="w-full sm:w-auto" href={appendProject('@neup/manage/member/addTeam', project)}>
+                          <LinkButton variant="outlined" className="w-full sm:w-auto" href={appendProject('/manage/member/addTeam', project)}>
                               Add a new team as well
                             </LinkButton>
                         </div>

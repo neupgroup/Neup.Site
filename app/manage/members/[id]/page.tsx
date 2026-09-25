@@ -77,7 +77,10 @@ export default async function ViewMemberPage({
             <CardDescription>{member.role}</CardDescription>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+          <CardContent className="space-y-4">
+          <LinkButton variant="solid" href={appendProject(`/manage/members/${member.id}/edit`, project)}>
+            Edit Member
+          </LinkButton>
           <div className="rounded-md border px-3 py-2 text-sm">
             <div className="mb-1 flex items-center gap-2 font-medium">
               <Mail className="h-4 w-4 text-muted-foreground" />
