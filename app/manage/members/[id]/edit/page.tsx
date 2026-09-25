@@ -12,6 +12,7 @@ import { LinkButton } from '@neup/components/ui/link-button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@neup/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { Input } from '@neup/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { useToast } from '@neup/core/hooks/useToast';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
@@ -37,6 +38,16 @@ export default function EditMemberPage({ params }: { params: Promise<{ id: strin
     resolver: zodResolver(formSchema),
     defaultValues: { name: '', email: '', role: '', imageUrl: '' },
   });
+  const previewName = form.watch('name');
+  const previewImageUrl = form.watch('imageUrl');
+
+  const getInitials = (name: string) => name
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   useEffect(() => {
     let active = true;
@@ -70,7 +81,7 @@ export default function EditMemberPage({ params }: { params: Promise<{ id: strin
   };
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full">
       <div className="mb-4">
         <LinkButton variant="outlined" href={memberId ? appendProject(`/manage/members/${memberId}`, project) : '#'}>
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -81,6 +92,10 @@ export default function EditMemberPage({ params }: { params: Promise<{ id: strin
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card>
             <CardHeader>
+              <Avatar className="h-16 w-16 bg-primary/10">
+                {previewImageUrl ? <AvatarImage className="visible object-cover" src={previewImageUrl} alt={previewName} /> : null}
+                {!previewImageUrl ? <AvatarFallback>{getInitials(previewName)}</AvatarFallback> : null}
+              </Avatar>
               <CardTitle>Edit Member</CardTitle>
               <CardDescription>Update this member's profile information.</CardDescription>
             </CardHeader>

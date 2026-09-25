@@ -59,7 +59,7 @@ export default async function ViewMemberPage({
   }
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full">
       <div className="mb-4">
         <LinkButton variant="outlined" href={appendProject('/manage/member', project)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -68,9 +68,9 @@ export default async function ViewMemberPage({
       </div>
       <Card>
         <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Avatar className="h-16 w-16">
-            {member.imageUrl ? <AvatarImage src={member.imageUrl} alt={member.name} /> : null}
-            <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
+          <Avatar className="h-16 w-16 bg-primary/10">
+            {member.imageUrl ? <AvatarImage className="visible object-cover" src={member.imageUrl} alt={member.name} /> : null}
+            {!member.imageUrl ? <AvatarFallback>{getInitials(member.name)}</AvatarFallback> : null}
           </Avatar>
           <div className="min-w-0">
             <CardTitle>{member.name}</CardTitle>
