@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import { createMember, getMembers } from '@/services/members';
 import { logApiError, requireProject } from './_helpers';
 
+function apiMember(member: Record<string, unknown>) {
+  const { imageUrl, ...record } = member;
+  return { ...record, displayImage: imageUrl ?? null };
+}
+
 export async function GET(request: Request) {
   const validation = await requireProject(request);
   if (validation instanceof Response) return validation;
@@ -9,7 +14,9 @@ export async function GET(request: Request) {
     const result = await getMembers();
     if (!result.success) return NextResponse.json(result, { status: 500 });
     if (!validation.authenticated) {
-      const members = result.members?.filter((member) => member.status !== 'hidden');
+      const members = result.members
+        ?.filter((member) => member.status !== 'hidden')
+        .map((member) => apiMember(member as unknown as Record<string, unknown>));
       return NextResponse.json({ success: true, data: members });
     }
     const accounts = await (await import('@neup/core/database/prisma')).prisma.account.findMany({
@@ -17,7 +24,11 @@ export async function GET(request: Request) {
       select: { id: true, displayName: true, displayImage: true, status: true, type: true },
       orderBy: { displayName: 'asc' },
     });
-    return NextResponse.json({ success: true, data: result.members ?? [], accounts });
+    return NextResponse.json({
+      success: true,
+      data: (result.members ?? []).map((member) => apiMember(member as unknown as Record<string, unknown>)),
+      accounts,
+    });
   } catch (error) {
     await logApiError('bridge.members.get', error);
     return NextResponse.json({ success: false, error: 'Unable to load members right now.' }, { status: 500 });

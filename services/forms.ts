@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { getActiveProjectId } from '@/services/projects';
 import { slugify } from '@neup/core/helpers/slug';
 
-export type FormField = { name: string; label: string; type: string; required?: boolean };
+export type FormField = { name: string; label: string; hint?: string; type: string; required?: boolean };
 
 export async function getForms() {
   const projectId = await getActiveProjectId({ required: true });

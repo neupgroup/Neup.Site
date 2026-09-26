@@ -4,11 +4,20 @@ import { requireProject } from '../_helpers';
 
 type Context = { params: Promise<{ id: string }> };
 
+function apiMember(member: Record<string, unknown>) {
+  const { imageUrl, ...record } = member;
+  return { ...record, displayImage: imageUrl ?? null };
+}
+
 export async function GET(_request: Request, context: Context) {
   const validation = await requireProject(_request);
   if (validation instanceof Response) return validation;
   const result = await getMember((await context.params).id);
-  return NextResponse.json({ success: result.success, data: result.member, error: result.error }, { status: result.success ? 200 : 404 });
+  return NextResponse.json({
+    success: result.success,
+    data: result.member ? apiMember(result.member as unknown as Record<string, unknown>) : undefined,
+    error: result.error,
+  }, { status: result.success ? 200 : 404 });
 }
 
 export async function PATCH(request: Request, context: Context) {
