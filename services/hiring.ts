@@ -22,7 +22,7 @@ export interface JobPosting {
 
 export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'status'>>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const projectId = await getActiveProjectId({ required: true });
+    const projectId = (await getActiveProjectId({ required: true }))!;
     const now = new Date();
     const record = await db.jobPosting.create({
       data: {
@@ -50,7 +50,7 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
 
 export async function getJobPostings(): Promise<{ success: boolean; postings?: JobPosting[]; error?: string }> {
   try {
-    const projectId = await getActiveProjectId({ required: true });
+    const projectId = (await getActiveProjectId({ required: true }))!;
     const records = await db.jobPosting.findMany({
       where: { projectId },
       orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
@@ -73,7 +73,7 @@ export async function getJobPostings(): Promise<{ success: boolean; postings?: J
 
 export async function getJobPostingById(id: string): Promise<{ success: boolean; posting?: JobPosting; error?: string }> {
     try {
-        const projectId = await getActiveProjectId({ required: true });
+        const projectId = (await getActiveProjectId({ required: true }))!;
         const record = await db.jobPosting.findFirst({ where: { id, projectId } });
         if (!record) {
             return { success: false, error: 'Job posting not found.' };
@@ -102,7 +102,7 @@ export async function getJobPostingById(id: string): Promise<{ success: boolean;
 
 export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting, 'id'>>): Promise<{ success: boolean; error?: string }> {
     try {
-        const projectId = await getActiveProjectId({ required: true });
+        const projectId = (await getActiveProjectId({ required: true }))!;
         await db.jobPosting.update({
           where: { id, projectId },
           data: {
@@ -128,7 +128,7 @@ export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting
 
 export async function deleteJobPosting(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const projectId = await getActiveProjectId({ required: true });
+        const projectId = (await getActiveProjectId({ required: true }))!;
         await db.jobPosting.delete({ where: { id, projectId } });
         revalidatePath('@neup/manage/hiring');
         return { success: true };

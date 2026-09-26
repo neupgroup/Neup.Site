@@ -19,7 +19,7 @@ export interface Applicant {
 
 export async function createApplicant(jobId: string, data: Partial<Omit<Applicant, 'id' | 'jobId' | 'status' | 'appliedAt'>>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const projectId = await getActiveProjectId({ required: true });
+    const projectId = (await getActiveProjectId({ required: true }))!;
     const record = await db.applicant.create({
       data: {
         job: { connect: { id: jobId, projectId } },
@@ -42,7 +42,7 @@ export async function createApplicant(jobId: string, data: Partial<Omit<Applican
 
 export async function getApplicantsForJob(jobId: string): Promise<{ success: boolean; applicants?: Applicant[]; error?: string }> {
   try {
-    const projectId = await getActiveProjectId({ required: true });
+    const projectId = (await getActiveProjectId({ required: true }))!;
     const records = await db.applicant.findMany({
       where: { jobId, job: { projectId } },
       orderBy: [{ appliedAt: 'desc' }, { id: 'asc' }],

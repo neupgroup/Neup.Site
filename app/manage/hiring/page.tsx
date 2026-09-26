@@ -1,25 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { getJobPostings, type JobPosting } from '@/services/hiring';
-import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@neup/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@neup/components/ui/table';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus, Briefcase, ArrowRight } from 'lucide-react';
@@ -54,72 +37,73 @@ export default function HiringDashboardPage() {
   }, []);
 
   return (
-    <div className="w-full">
-      <header className="flex items-center justify-between mb-8">
+    <div className="w-full space-y-8">
+      <header className="space-y-2">
         <h1 className="font-headline text-2xl font-semibold tracking-tight">Hiring</h1>
-        <LinkButton variant="solid" href={appendProject('/manage/hiring/create', project)}>
-            <Plus className="mr-2 h-4 w-4" /> Create Job Posting
-          </LinkButton>
       </header>
-      <Card>
-        <CardHeader>
-          <CardTitle>Job Postings</CardTitle>
-          <CardDescription>A list of all job postings for your organization.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
+      {loading ? (
+        <div className="grid gap-4">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-28 w-full" />
+        </div>
+      ) : error ? (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : (
+        <div className="grid gap-4">
+          <LinkButton
+            variant="plain"
+            className="grid h-auto justify-start gap-4 rounded-lg border border-dashed bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
+            href={appendProject('/manage/hiring/create', project)}
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Plus className="h-5 w-5 text-muted-foreground" />
+            </span>
+            <span>
+              <span className="block font-medium">Create a new listing</span>
+              <span className="block text-sm text-muted-foreground">Add an open position to this project.</span>
+            </span>
+          </LinkButton>
+
+          {postings.map((posting) => (
+            <LinkButton
+              key={posting.id}
+              variant="plain"
+              className="grid h-auto justify-start gap-4 rounded-lg border bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr_auto] md:items-center"
+              href={appendProject(`/manage/hiring/${posting.id}`, project)}
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                <Briefcase className="h-5 w-5 text-muted-foreground" />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-medium">{posting.title}</span>
+                <span className="block text-sm text-muted-foreground">
+                  {[posting.location, posting.type].filter(Boolean).join(' · ') || 'Details coming soon'}
+                </span>
+                <span className="block text-sm text-muted-foreground">
+                  {posting.createdAt ? `Created ${format(new Date(posting.createdAt), 'PPP')}` : 'No date available'}
+                </span>
+              </span>
+              <span className="flex items-center gap-3">
+                <Badge variant={posting.status === 'Open' ? 'default' : 'secondary'}>{posting.status}</Badge>
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            </LinkButton>
+          ))}
+
+          {!postings.length ? (
+            <div className="rounded-lg border-2 border-dashed p-12 text-center text-muted-foreground">
+              <Briefcase className="mx-auto mb-4 h-12 w-12" />
+              <p className="font-medium text-foreground">No listings found.</p>
+              <p className="mt-1 text-sm">Create a new listing to show positions here.</p>
             </div>
-          ) : error ? (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          ) : postings.length === 0 ? (
-            <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-              <Briefcase className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold">No Job Postings Yet</h3>
-              <p>Click "Create Job Posting" to get started.</p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">View</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {postings.map((posting) => (
-                  <TableRow key={posting.id}>
-                    <TableCell className="font-medium">{posting.title}</TableCell>
-                    <TableCell>{posting.location || 'N/A'}</TableCell>
-                    <TableCell>{posting.type || 'N/A'}</TableCell>
-                    <TableCell><Badge variant={posting.status === 'Open' ? 'default' : 'secondary'}>{posting.status}</Badge></TableCell>
-                    <TableCell>{posting.createdAt ? format(new Date(posting.createdAt), 'PPP') : 'N/A'}</TableCell>
-                    <TableCell className="text-right">
-                      <LinkButton
-                        variant="plain"
-                        size="icon"
-                        href={appendProject(`/manage/hiring/${posting.id}`, project)}
-                      >
-                          <ArrowRight className="h-4 w-4" />
-                        </LinkButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }
