@@ -29,8 +29,8 @@ import { parseCareerReference } from '@/services/career-reference';
 import { requireProject } from '../../members/_helpers';
 
 function publicCareer<T extends { id: string }>(career: T) {
-  const { id: _id, ...withoutId } = career;
-  return withoutId;
+  const { id, slug, ...withoutId } = career as T & { slug: string };
+  return { ...withoutId, slug: `${slug}--${id}` };
 }
 
 type Context = { params: Promise<{ careerId: string }> };

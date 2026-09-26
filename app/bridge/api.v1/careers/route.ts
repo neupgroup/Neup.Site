@@ -23,8 +23,8 @@ import { getProjectHiring } from '@/services/bridge/project-hiring';
 import { logApiError, requireProject } from '../members/_helpers';
 
 function publicCareer<T extends { id: string }>(career: T) {
-  const { id: _id, ...withoutId } = career;
-  return withoutId;
+  const { id, slug, ...withoutId } = career as T & { slug: string };
+  return { ...withoutId, slug: `${slug}--${id}` };
 }
 
 export async function GET(request: Request) {
@@ -49,7 +49,11 @@ export async function POST(request: Request) {
   if (!validation.authenticated) return NextResponse.json({ success: false, error: 'Authentication token is required.' }, { status: 401 });
   try {
     const result = await createJobPosting(await request.json());
-    return NextResponse.json(result, { status: result.success ? 201 : 400 });
+    return NextResponse.json({
+      success: result.success,
+      data: result.success && result.id && result.slug ? { slug: `${result.slug}--${result.id}` } : undefined,
+      error: result.error,
+    }, { status: result.success ? 201 : 400 });
   } catch (error) {
     await logApiError('bridge.careers.post', error);
     return NextResponse.json({ success: false, error: 'Invalid request body.' }, { status: 400 });
