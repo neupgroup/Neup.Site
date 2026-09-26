@@ -417,6 +417,7 @@ exports.Prisma.MemberScalarFieldEnum = {
 exports.Prisma.JobPostingScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
+  slug: 'slug',
   title: 'title',
   location: 'location',
   type: 'type',

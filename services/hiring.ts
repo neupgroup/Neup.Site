@@ -5,9 +5,26 @@ import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { logger } from '@neup/logica/logger';
 import { getActiveProjectId } from '@/services/projects';
+import { slugify } from '@neup/core/helpers/slug';
+import { randomUUID } from 'node:crypto';
+
+function normalizeCareerSlug(value: string) {
+  return slugify(value, 'career').replace(/-{2,}/g, '-').toLowerCase();
+}
+
+export function careerReference(slug: string, id: string) {
+  return `${slug}--${id}`;
+}
+
+export function parseCareerReference(reference: string) {
+  const separatorIndex = reference.lastIndexOf('--');
+  if (separatorIndex <= 0 || separatorIndex === reference.length - 2) return null;
+  return { slug: reference.slice(0, separatorIndex), id: reference.slice(separatorIndex + 2) };
+}
 
 export interface JobPosting {
   id: string;
+  slug: string;
   title: string;
   location?: string;
   type?: 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
@@ -20,14 +37,18 @@ export interface JobPosting {
   updatedAt?: string | null;
 }
 
-export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'status'>>): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'status'>>): Promise<{ success: boolean; id?: string; slug?: string; error?: string }> {
   try {
     const projectId = (await getActiveProjectId({ required: true }))!;
     const now = new Date();
+    const id = randomUUID();
+    const slug = normalizeCareerSlug(data.slug ?? data.title ?? '');
     const record = await db.jobPosting.create({
       data: {
+        id,
         title: data.title ?? '',
         projectId,
+        slug,
         location: data.location ?? null,
         type: data.type ?? null,
         description: data.description ?? null,
@@ -41,7 +62,7 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
       select: { id: true },
     });
     revalidatePath('@neup/manage/hiring');
-    return { success: true, id: record.id };
+    return { success: true, id: record.id, slug };
   } catch (e: any) {
     await logger.error({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
     return { success: false, error: 'Failed to create job posting.' };
@@ -57,6 +78,7 @@ export async function getJobPostings(): Promise<{ success: boolean; postings?: J
     });
     const postings = records.map((record) => ({
       id: record.id,
+      slug: record.slug,
       title: record.title,
       location: record.location ?? undefined,
       type: (record.type as JobPosting['type']) ?? undefined,
@@ -71,16 +93,19 @@ export async function getJobPostings(): Promise<{ success: boolean; postings?: J
   }
 }
 
-export async function getJobPostingById(id: string): Promise<{ success: boolean; posting?: JobPosting; error?: string }> {
+export async function getJobPostingById(reference: string): Promise<{ success: boolean; posting?: JobPosting; error?: string }> {
     try {
         const projectId = (await getActiveProjectId({ required: true }))!;
-        const record = await db.jobPosting.findFirst({ where: { id, projectId } });
+        const parsed = parseCareerReference(reference);
+        if (!parsed) return { success: false, error: 'Career reference is invalid.' };
+        const record = await db.jobPosting.findFirst({ where: { id: parsed.id, slug: parsed.slug, projectId } });
         if (!record) {
             return { success: false, error: 'Job posting not found.' };
         }
 
         const posting: JobPosting = {
             id: record.id,
+            slug: record.slug,
             title: record.title,
             location: record.location ?? undefined,
             type: (record.type as JobPosting['type']) ?? undefined,
@@ -95,7 +120,7 @@ export async function getJobPostingById(id: string): Promise<{ success: boolean;
         return { success: true, posting };
 
     } catch (e: any) {
-        await logger.error({ message: `Failed to get job posting ${id}: ${e.message}`, stack: e.stack, source: 'getJobPostingById' });
+        await logger.error({ message: `Failed to get job posting ${reference}: ${e.message}`, stack: e.stack, source: 'getJobPostingById' });
         return { success: false, error: 'Failed to fetch job posting.' };
     }
 }
@@ -107,6 +132,7 @@ export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting
           where: { id, projectId },
           data: {
             ...(typeof data.title === 'string' ? { title: data.title } : {}),
+            ...(typeof data.slug === 'string' ? { slug: normalizeCareerSlug(data.slug) } : {}),
             ...(data.location !== undefined ? { location: data.location ?? null } : {}),
             ...(data.type !== undefined ? { type: data.type ?? null } : {}),
             ...(data.description !== undefined ? { description: data.description ?? null } : {}),

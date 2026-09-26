@@ -4,12 +4,12 @@ export async function getProjectHiring(projectId: string) {
   const project = await db.asset.findUnique({ where: { id: projectId }, select: { id: true } });
   if (!project) return { success: false as const, error: 'Project not found.' };
 
-  const postings = await db.jobPosting.findMany({
+  const records = await db.jobPosting.findMany({
     where: { projectId, status: 'Open' },
     orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
   });
 
-  return { success: true as const, postings };
+  return { success: true as const, postings: records };
 }
 
 export async function getProjectHiringPosting(projectId: string, id: string) {

@@ -74,7 +74,7 @@ export default function HiringDashboardPage() {
               key={posting.id}
               variant="plain"
               className="grid h-auto justify-start gap-4 rounded-lg border bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr_auto] md:items-center"
-              href={appendProject(`/manage/hiring/${posting.id}`, project)}
+                        href={appendProject(`/manage/hiring/${posting.slug}--${posting.id}`, project)}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                 <Briefcase className="h-5 w-5 text-muted-foreground" />

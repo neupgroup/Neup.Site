@@ -429,6 +429,7 @@ model Member {
 model JobPosting {
   id             String      @id @default(cuid())
   projectId      String
+  slug           String
   title          String
   location       String?
   type           String?

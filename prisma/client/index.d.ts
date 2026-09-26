@@ -32613,6 +32613,7 @@ export namespace Prisma {
   export type JobPostingMinAggregateOutputType = {
     id: string | null
     projectId: string | null
+    slug: string | null
     title: string | null
     location: string | null
     type: string | null
@@ -32627,6 +32628,7 @@ export namespace Prisma {
   export type JobPostingMaxAggregateOutputType = {
     id: string | null
     projectId: string | null
+    slug: string | null
     title: string | null
     location: string | null
     type: string | null
@@ -32641,6 +32643,7 @@ export namespace Prisma {
   export type JobPostingCountAggregateOutputType = {
     id: number
     projectId: number
+    slug: number
     title: number
     location: number
     type: number
@@ -32666,6 +32669,7 @@ export namespace Prisma {
   export type JobPostingMinAggregateInputType = {
     id?: true
     projectId?: true
+    slug?: true
     title?: true
     location?: true
     type?: true
@@ -32680,6 +32684,7 @@ export namespace Prisma {
   export type JobPostingMaxAggregateInputType = {
     id?: true
     projectId?: true
+    slug?: true
     title?: true
     location?: true
     type?: true
@@ -32694,6 +32699,7 @@ export namespace Prisma {
   export type JobPostingCountAggregateInputType = {
     id?: true
     projectId?: true
+    slug?: true
     title?: true
     location?: true
     type?: true
@@ -32796,6 +32802,7 @@ export namespace Prisma {
   export type JobPostingGroupByOutputType = {
     id: string
     projectId: string
+    slug: string
     title: string
     location: string | null
     type: string | null
@@ -32830,6 +32837,7 @@ export namespace Prisma {
   export type JobPostingSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    slug?: boolean
     title?: boolean
     location?: boolean
     type?: boolean
@@ -32848,6 +32856,7 @@ export namespace Prisma {
   export type JobPostingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    slug?: boolean
     title?: boolean
     location?: boolean
     type?: boolean
@@ -32864,6 +32873,7 @@ export namespace Prisma {
   export type JobPostingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    slug?: boolean
     title?: boolean
     location?: boolean
     type?: boolean
@@ -32880,6 +32890,7 @@ export namespace Prisma {
   export type JobPostingSelectScalar = {
     id?: boolean
     projectId?: boolean
+    slug?: boolean
     title?: boolean
     location?: boolean
     type?: boolean
@@ -32892,7 +32903,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type JobPostingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "title" | "location" | "type" | "description" | "status" | "qualifications" | "salary" | "openings" | "createdAt" | "updatedAt", ExtArgs["result"]["jobPosting"]>
+  export type JobPostingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "slug" | "title" | "location" | "type" | "description" | "status" | "qualifications" | "salary" | "openings" | "createdAt" | "updatedAt", ExtArgs["result"]["jobPosting"]>
   export type JobPostingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     applicants?: boolean | JobPosting$applicantsArgs<ExtArgs>
     asset?: boolean | AssetDefaultArgs<ExtArgs>
@@ -32914,6 +32925,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       projectId: string
+      slug: string
       title: string
       location: string | null
       type: string | null
@@ -33351,6 +33363,7 @@ export namespace Prisma {
   interface JobPostingFieldRefs {
     readonly id: FieldRef<"JobPosting", 'String'>
     readonly projectId: FieldRef<"JobPosting", 'String'>
+    readonly slug: FieldRef<"JobPosting", 'String'>
     readonly title: FieldRef<"JobPosting", 'String'>
     readonly location: FieldRef<"JobPosting", 'String'>
     readonly type: FieldRef<"JobPosting", 'String'>
@@ -41557,6 +41570,7 @@ export namespace Prisma {
   export const JobPostingScalarFieldEnum: {
     id: 'id',
     projectId: 'projectId',
+    slug: 'slug',
     title: 'title',
     location: 'location',
     type: 'type',
@@ -43737,6 +43751,7 @@ export namespace Prisma {
     NOT?: JobPostingWhereInput | JobPostingWhereInput[]
     id?: StringFilter<"JobPosting"> | string
     projectId?: StringFilter<"JobPosting"> | string
+    slug?: StringFilter<"JobPosting"> | string
     title?: StringFilter<"JobPosting"> | string
     location?: StringNullableFilter<"JobPosting"> | string | null
     type?: StringNullableFilter<"JobPosting"> | string | null
@@ -43754,6 +43769,7 @@ export namespace Prisma {
   export type JobPostingOrderByWithRelationInput = {
     id?: SortOrder
     projectId?: SortOrder
+    slug?: SortOrder
     title?: SortOrder
     location?: SortOrderInput | SortOrder
     type?: SortOrderInput | SortOrder
@@ -43774,6 +43790,7 @@ export namespace Prisma {
     OR?: JobPostingWhereInput[]
     NOT?: JobPostingWhereInput | JobPostingWhereInput[]
     projectId?: StringFilter<"JobPosting"> | string
+    slug?: StringFilter<"JobPosting"> | string
     title?: StringFilter<"JobPosting"> | string
     location?: StringNullableFilter<"JobPosting"> | string | null
     type?: StringNullableFilter<"JobPosting"> | string | null
@@ -43791,6 +43808,7 @@ export namespace Prisma {
   export type JobPostingOrderByWithAggregationInput = {
     id?: SortOrder
     projectId?: SortOrder
+    slug?: SortOrder
     title?: SortOrder
     location?: SortOrderInput | SortOrder
     type?: SortOrderInput | SortOrder
@@ -43814,6 +43832,7 @@ export namespace Prisma {
     NOT?: JobPostingScalarWhereWithAggregatesInput | JobPostingScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"JobPosting"> | string
     projectId?: StringWithAggregatesFilter<"JobPosting"> | string
+    slug?: StringWithAggregatesFilter<"JobPosting"> | string
     title?: StringWithAggregatesFilter<"JobPosting"> | string
     location?: StringNullableWithAggregatesFilter<"JobPosting"> | string | null
     type?: StringNullableWithAggregatesFilter<"JobPosting"> | string | null
@@ -46413,6 +46432,7 @@ export namespace Prisma {
 
   export type JobPostingCreateInput = {
     id?: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -46430,6 +46450,7 @@ export namespace Prisma {
   export type JobPostingUncheckedCreateInput = {
     id?: string
     projectId: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -46445,6 +46466,7 @@ export namespace Prisma {
 
   export type JobPostingUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46462,6 +46484,7 @@ export namespace Prisma {
   export type JobPostingUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46478,6 +46501,7 @@ export namespace Prisma {
   export type JobPostingCreateManyInput = {
     id?: string
     projectId: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -46492,6 +46516,7 @@ export namespace Prisma {
 
   export type JobPostingUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46507,6 +46532,7 @@ export namespace Prisma {
   export type JobPostingUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48417,6 +48443,7 @@ export namespace Prisma {
   export type JobPostingCountOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    slug?: SortOrder
     title?: SortOrder
     location?: SortOrder
     type?: SortOrder
@@ -48436,6 +48463,7 @@ export namespace Prisma {
   export type JobPostingMaxOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    slug?: SortOrder
     title?: SortOrder
     location?: SortOrder
     type?: SortOrder
@@ -48450,6 +48478,7 @@ export namespace Prisma {
   export type JobPostingMinOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    slug?: SortOrder
     title?: SortOrder
     location?: SortOrder
     type?: SortOrder
@@ -51723,6 +51752,7 @@ export namespace Prisma {
 
   export type JobPostingCreateWithoutAssetInput = {
     id?: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -51738,6 +51768,7 @@ export namespace Prisma {
 
   export type JobPostingUncheckedCreateWithoutAssetInput = {
     id?: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -52333,6 +52364,7 @@ export namespace Prisma {
     NOT?: JobPostingScalarWhereInput | JobPostingScalarWhereInput[]
     id?: StringFilter<"JobPosting"> | string
     projectId?: StringFilter<"JobPosting"> | string
+    slug?: StringFilter<"JobPosting"> | string
     title?: StringFilter<"JobPosting"> | string
     location?: StringNullableFilter<"JobPosting"> | string | null
     type?: StringNullableFilter<"JobPosting"> | string | null
@@ -55621,6 +55653,7 @@ export namespace Prisma {
 
   export type JobPostingCreateWithoutApplicantsInput = {
     id?: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -55637,6 +55670,7 @@ export namespace Prisma {
   export type JobPostingUncheckedCreateWithoutApplicantsInput = {
     id?: string
     projectId: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -55667,6 +55701,7 @@ export namespace Prisma {
 
   export type JobPostingUpdateWithoutApplicantsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55683,6 +55718,7 @@ export namespace Prisma {
   export type JobPostingUncheckedUpdateWithoutApplicantsInput = {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56217,6 +56253,7 @@ export namespace Prisma {
 
   export type JobPostingCreateManyAssetInput = {
     id?: string
+    slug: string
     title: string
     location?: string | null
     type?: string | null
@@ -56754,6 +56791,7 @@ export namespace Prisma {
 
   export type JobPostingUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56769,6 +56807,7 @@ export namespace Prisma {
 
   export type JobPostingUncheckedUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56784,6 +56823,7 @@ export namespace Prisma {
 
   export type JobPostingUncheckedUpdateManyWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null

@@ -57,6 +57,7 @@ Table: hiring, Model: JobPosting
 Fields:
 > id: string, primary key, auto generated;
 > projectId: string, references projects.id, indexed;
+> slug: string;
 > title: string;
 > location: string, nullable;
 > type: string, nullable;

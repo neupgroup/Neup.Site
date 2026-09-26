@@ -1,6 +1,8 @@
 ALTER TABLE "hiring" ADD COLUMN "projectId" TEXT;
+ALTER TABLE "hiring" ADD COLUMN "slug" TEXT;
 
 ALTER TABLE "hiring" ALTER COLUMN "projectId" SET NOT NULL;
+ALTER TABLE "hiring" ALTER COLUMN "slug" SET NOT NULL;
 
 CREATE INDEX "hiring_projectId_createdAt_idx" ON "hiring"("projectId", "createdAt");
 

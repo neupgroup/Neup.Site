@@ -22,16 +22,21 @@ import { createJobPosting, getJobPostings } from '@/services/hiring';
 import { getProjectHiring } from '@/services/bridge/project-hiring';
 import { logApiError, requireProject } from '../members/_helpers';
 
+function publicCareer<T extends { id: string }>(career: T) {
+  const { id: _id, ...withoutId } = career;
+  return withoutId;
+}
+
 export async function GET(request: Request) {
   const validation = await requireProject(request);
   if (validation instanceof Response) return validation;
   try {
     if (!validation.authenticated) {
       const result = await getProjectHiring(validation.projectId);
-      return NextResponse.json({ success: result.success, data: result.success ? result.postings : undefined, error: result.error }, { status: result.success ? 200 : 404 });
+      return NextResponse.json({ success: result.success, data: result.success ? result.postings.map(publicCareer) : undefined, error: result.error }, { status: result.success ? 200 : 404 });
     }
     const result = await getJobPostings();
-    return NextResponse.json({ success: result.success, data: result.postings, error: result.error }, { status: result.success ? 200 : 500 });
+    return NextResponse.json({ success: result.success, data: result.postings?.map(publicCareer), error: result.error }, { status: result.success ? 200 : 500 });
   } catch (error) {
     await logApiError('bridge.careers.get', error);
     return NextResponse.json({ success: false, error: 'Unable to load careers right now.' }, { status: 500 });
