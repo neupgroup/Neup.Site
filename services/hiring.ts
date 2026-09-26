@@ -4,6 +4,7 @@
 import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { logger } from '@neup/logica/logger';
+import { getActiveProjectId } from '@/services/projects';
 
 export interface JobPosting {
   id: string;
@@ -21,10 +22,12 @@ export interface JobPosting {
 
 export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'status'>>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
+    const projectId = await getActiveProjectId({ required: true });
     const now = new Date();
     const record = await db.jobPosting.create({
       data: {
         title: data.title ?? '',
+        projectId,
         location: data.location ?? null,
         type: data.type ?? null,
         description: data.description ?? null,
@@ -47,7 +50,9 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
 
 export async function getJobPostings(): Promise<{ success: boolean; postings?: JobPosting[]; error?: string }> {
   try {
+    const projectId = await getActiveProjectId({ required: true });
     const records = await db.jobPosting.findMany({
+      where: { projectId },
       orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     });
     const postings = records.map((record) => ({
@@ -68,7 +73,8 @@ export async function getJobPostings(): Promise<{ success: boolean; postings?: J
 
 export async function getJobPostingById(id: string): Promise<{ success: boolean; posting?: JobPosting; error?: string }> {
     try {
-        const record = await db.jobPosting.findUnique({ where: { id } });
+        const projectId = await getActiveProjectId({ required: true });
+        const record = await db.jobPosting.findFirst({ where: { id, projectId } });
         if (!record) {
             return { success: false, error: 'Job posting not found.' };
         }
@@ -96,8 +102,9 @@ export async function getJobPostingById(id: string): Promise<{ success: boolean;
 
 export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting, 'id'>>): Promise<{ success: boolean; error?: string }> {
     try {
+        const projectId = await getActiveProjectId({ required: true });
         await db.jobPosting.update({
-          where: { id },
+          where: { id, projectId },
           data: {
             ...(typeof data.title === 'string' ? { title: data.title } : {}),
             ...(data.location !== undefined ? { location: data.location ?? null } : {}),
@@ -121,7 +128,8 @@ export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting
 
 export async function deleteJobPosting(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        await db.jobPosting.delete({ where: { id } });
+        const projectId = await getActiveProjectId({ required: true });
+        await db.jobPosting.delete({ where: { id, projectId } });
         revalidatePath('@neup/manage/hiring');
         return { success: true };
     } catch (e: any) {

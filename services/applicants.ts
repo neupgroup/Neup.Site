@@ -4,6 +4,7 @@
 import { prisma as db } from '@neup/core/database/prisma';
 import { revalidatePath } from 'next/cache';
 import { logger } from '@neup/logica/logger';
+import { getActiveProjectId } from '@/services/projects';
 
 export interface Applicant {
   id: string;
@@ -18,9 +19,10 @@ export interface Applicant {
 
 export async function createApplicant(jobId: string, data: Partial<Omit<Applicant, 'id' | 'jobId' | 'status' | 'appliedAt'>>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
+    const projectId = await getActiveProjectId({ required: true });
     const record = await db.applicant.create({
       data: {
-        jobId,
+        job: { connect: { id: jobId, projectId } },
         name: data.name ?? '',
         email: data.email ?? '',
         resumeUrl: data.resumeUrl ?? null,
@@ -40,8 +42,9 @@ export async function createApplicant(jobId: string, data: Partial<Omit<Applican
 
 export async function getApplicantsForJob(jobId: string): Promise<{ success: boolean; applicants?: Applicant[]; error?: string }> {
   try {
+    const projectId = await getActiveProjectId({ required: true });
     const records = await db.applicant.findMany({
-      where: { jobId },
+      where: { jobId, job: { projectId } },
       orderBy: [{ appliedAt: 'desc' }, { id: 'asc' }],
     });
     const applicants = records.map((record) => ({

@@ -52,3 +52,30 @@ Fields:
 > order: int, nullable;
 > teamId: string, nullable, references teams.id;
 > permissions: jsonb, nullable;
+
+Table: hiring, Model: JobPosting
+Fields:
+> id: string, primary key, auto generated;
+> projectId: string, nullable, references projects.id, indexed;
+> title: string;
+> location: string, nullable;
+> type: string, nullable;
+> description: string, nullable;
+> status: string;
+> qualifications: jsonb, nullable;
+> salary: string, nullable;
+> openings: int, nullable;
+> createdAt: timestamp, nullable;
+> updatedAt: timestamp, nullable;
+.. references applicants;
+
+Table: applicants, Model: Applicant
+Fields:
+> id: string, primary key, auto generated;
+> jobId: string, references hiring.id, indexed;
+> name: string;
+> email: string;
+> resumeUrl: string, nullable;
+> coverLetter: string, nullable;
+> status: string;
+> appliedAt: timestamp, nullable;
