@@ -3,7 +3,7 @@
 
 import { prisma as db } from '@neup/core/database/prisma';
 import { logger } from '@neup/logica/logger';
-import { ensureRecord, getBasics, isAuthenticated } from '@neup/logica/account/self';
+import { ensureRecord, getBasics, isAuthenticated } from '@neup/shared/account/self';
 
 export interface LinkedAccount {
     id: string;

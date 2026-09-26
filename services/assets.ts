@@ -7,7 +7,7 @@ import { getAccountId } from './accounts';
 import { normalizeUrl } from '@neup/core/helpers/link/url';
 import { createDefaultAssetTheme } from '@/services/themes';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
-import { ensureRecord } from '@neup/logica/account/self';
+import { ensureRecord } from '@neup/shared/account/self';
 
 export interface AssetSummary {
   id: string;

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { ensureRecord } from '@neup/logica/account/self';
+import { ensureRecord } from '@neup/shared/account/self';
 
 /**
  * Ensures the authenticated account is synchronized into the local accounts table.

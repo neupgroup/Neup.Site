@@ -12,6 +12,11 @@ export async function getForms() {
   return db.form.findMany({ where: { projectId: projectId! }, orderBy: { createdOn: 'desc' } });
 }
 
+export async function getFormBySlug(slug: string) {
+  const projectId = await getActiveProjectId({ required: true });
+  return db.form.findFirst({ where: { projectId: projectId!, slug } });
+}
+
 export async function getFormSubmissions() {
   const projectId = await getActiveProjectId({ required: true });
   return db.formSubmission.findMany({ where: { projectId: projectId! }, include: { form: true }, orderBy: { postedOn: 'desc' } });
@@ -28,7 +33,7 @@ export async function createForm(input: { name: string; slug: string; fields: Fo
   if (!name || !Array.isArray(input.fields) || input.fields.length === 0) return { success: false, error: 'Name and at least one field are required.' };
   const slug = slugify(input.slug || name, 'form').toLowerCase();
   const form = await db.form.create({ data: { projectId: projectId!, name, slug, fields: input.fields } });
-  revalidatePath('/forms');
+  revalidatePath('/inbox/forms');
   revalidatePath('/inbox');
   return { success: true, id: form.id };
 }
@@ -43,4 +48,11 @@ export async function createFormSubmission(projectId: string, formId: string, re
     if (field.required && (response[field.name] === undefined || response[field.name] === null || String(response[field.name]).trim() === '')) throw new Error(`Missing required field: ${field.name}`);
   }
   return db.formSubmission.create({ data: { projectId, formId, response: response as any, status: 'new' }, select: { id: true, postedOn: true } });
+}
+
+export async function createActiveFormSubmission(formId: string, response: Record<string, unknown>) {
+  const projectId = await getActiveProjectId({ required: true });
+  const result = await createFormSubmission(projectId!, formId, response);
+  revalidatePath('/inbox');
+  return result;
 }
