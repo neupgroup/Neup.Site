@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@neup/components/ui/card';
 import { Button } from '@neup/components/ui/button';
-import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock } from 'lucide-react';
+import { GitBranch, CheckCircle, Clock, Loader2, AlertCircle, Rocket, Palette, Redo, Image as ImageIcon, FolderKanban, FileLock, Download } from 'lucide-react';
 import { getStructure, createDeployment, markAssetsAsPending, markRedirectsAsPending, markThemeAsPending, getLastDeployment } from '@/services/structure';
 import type { Structure, Deployment } from '@/services/asset/type';
 import { getSiteServers } from '@/services/servers';
@@ -45,6 +45,7 @@ export default function DeployPage() {
     const [lastDeployment, setLastDeployment] = useState<Deployment | null>(null);
     const [loading, setLoading] = useState(true);
     const [isDeploying, setIsDeploying] = useState(false);
+    const [isDownloadingBaseFiles, setIsDownloadingBaseFiles] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [hasServer, setHasServer] = useState(false);
     const { toast } = useToast();
@@ -110,6 +111,29 @@ export default function DeployPage() {
             setIsDeploying(false);
         }
     }
+
+    const handleDownloadBaseFiles = async () => {
+        setIsDownloadingBaseFiles(true);
+        try {
+            const appBasePath = process.env.NEXT_PUBLIC_APP_BASEPATH || '';
+            const response = await fetch(`${appBasePath}/bridge/api.v1/appbase/download${window.location.search}`);
+            if (!response.ok) {
+                const result = await response.json().catch(() => null);
+                throw new Error(result?.error || 'Could not create base files archive.');
+            }
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'basefile.zip';
+            link.click();
+            URL.revokeObjectURL(url);
+        } catch (downloadError: any) {
+            toast({ variant: 'destructive', title: 'Download Failed', description: downloadError.message });
+        } finally {
+            setIsDownloadingBaseFiles(false);
+        }
+    };
     
     const hasPendingStructure = structure?.structure.some(s => s.changesMade) || false;
     const hasPendingTheme = structure?.themeChanged || false;
@@ -214,6 +238,12 @@ export default function DeployPage() {
                         </AlertDescription>
                     </Alert>
                 )}
+            </div>
+            <div className="mt-8 border-t pt-6">
+                <Button variant="outlined" onClick={handleDownloadBaseFiles} disabled={isDownloadingBaseFiles || loading}>
+                    {isDownloadingBaseFiles ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                    {isDownloadingBaseFiles ? 'Preparing...' : 'Download Base Files'}
+                </Button>
             </div>
         </div >
     );
