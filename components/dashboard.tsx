@@ -195,7 +195,6 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <SidebarNavItem href="/appbase" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></SidebarNavItem>
         <SidebarNavItem href="/appbase/custom" currentPath={currentPath} project={project} onClick={onLinkClick}><FileText className="h-4 w-4" /><span>Custom Data</span></SidebarNavItem>
         <SidebarNavItem href="/site/environment" currentPath={currentPath} project={project} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></SidebarNavItem>
-        <SidebarNavItem href="/analytics" currentPath={currentPath} project={project} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></SidebarNavItem>
         <SidebarNavItem href="/site/advanced" currentPath={currentPath} project={project} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></SidebarNavItem>
       </div>
 
