@@ -428,7 +428,7 @@ model Member {
 
 model JobPosting {
   id             String      @id @default(cuid())
-  projectId      String?
+  projectId      String
   title          String
   location       String?
   type           String?
@@ -440,7 +440,7 @@ model JobPosting {
   createdAt      DateTime?
   updatedAt      DateTime?
   applicants     Applicant[]
-  asset          Asset?      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  asset          Asset       @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, createdAt])
 

@@ -32795,7 +32795,7 @@ export namespace Prisma {
 
   export type JobPostingGroupByOutputType = {
     id: string
-    projectId: string | null
+    projectId: string
     title: string
     location: string | null
     type: string | null
@@ -32841,7 +32841,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     applicants?: boolean | JobPosting$applicantsArgs<ExtArgs>
-    asset?: boolean | JobPosting$assetArgs<ExtArgs>
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
     _count?: boolean | JobPostingCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["jobPosting"]>
 
@@ -32858,7 +32858,7 @@ export namespace Prisma {
     openings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | JobPosting$assetArgs<ExtArgs>
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["jobPosting"]>
 
   export type JobPostingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -32874,7 +32874,7 @@ export namespace Prisma {
     openings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | JobPosting$assetArgs<ExtArgs>
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["jobPosting"]>
 
   export type JobPostingSelectScalar = {
@@ -32895,25 +32895,25 @@ export namespace Prisma {
   export type JobPostingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "title" | "location" | "type" | "description" | "status" | "qualifications" | "salary" | "openings" | "createdAt" | "updatedAt", ExtArgs["result"]["jobPosting"]>
   export type JobPostingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     applicants?: boolean | JobPosting$applicantsArgs<ExtArgs>
-    asset?: boolean | JobPosting$assetArgs<ExtArgs>
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
     _count?: boolean | JobPostingCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type JobPostingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | JobPosting$assetArgs<ExtArgs>
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
   }
   export type JobPostingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | JobPosting$assetArgs<ExtArgs>
+    asset?: boolean | AssetDefaultArgs<ExtArgs>
   }
 
   export type $JobPostingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "JobPosting"
     objects: {
       applicants: Prisma.$ApplicantPayload<ExtArgs>[]
-      asset: Prisma.$AssetPayload<ExtArgs> | null
+      asset: Prisma.$AssetPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      projectId: string | null
+      projectId: string
       title: string
       location: string | null
       type: string | null
@@ -33319,7 +33319,7 @@ export namespace Prisma {
   export interface Prisma__JobPostingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     applicants<T extends JobPosting$applicantsArgs<ExtArgs> = {}>(args?: Subset<T, JobPosting$applicantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    asset<T extends JobPosting$assetArgs<ExtArgs> = {}>(args?: Subset<T, JobPosting$assetArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -33783,25 +33783,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ApplicantScalarFieldEnum | ApplicantScalarFieldEnum[]
-  }
-
-  /**
-   * JobPosting.asset
-   */
-  export type JobPosting$assetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Asset
-     */
-    select?: AssetSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Asset
-     */
-    omit?: AssetOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AssetInclude<ExtArgs> | null
-    where?: AssetWhereInput
   }
 
   /**
@@ -43755,7 +43736,7 @@ export namespace Prisma {
     OR?: JobPostingWhereInput[]
     NOT?: JobPostingWhereInput | JobPostingWhereInput[]
     id?: StringFilter<"JobPosting"> | string
-    projectId?: StringNullableFilter<"JobPosting"> | string | null
+    projectId?: StringFilter<"JobPosting"> | string
     title?: StringFilter<"JobPosting"> | string
     location?: StringNullableFilter<"JobPosting"> | string | null
     type?: StringNullableFilter<"JobPosting"> | string | null
@@ -43767,12 +43748,12 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     applicants?: ApplicantListRelationFilter
-    asset?: XOR<AssetNullableScalarRelationFilter, AssetWhereInput> | null
+    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
   }
 
   export type JobPostingOrderByWithRelationInput = {
     id?: SortOrder
-    projectId?: SortOrderInput | SortOrder
+    projectId?: SortOrder
     title?: SortOrder
     location?: SortOrderInput | SortOrder
     type?: SortOrderInput | SortOrder
@@ -43792,7 +43773,7 @@ export namespace Prisma {
     AND?: JobPostingWhereInput | JobPostingWhereInput[]
     OR?: JobPostingWhereInput[]
     NOT?: JobPostingWhereInput | JobPostingWhereInput[]
-    projectId?: StringNullableFilter<"JobPosting"> | string | null
+    projectId?: StringFilter<"JobPosting"> | string
     title?: StringFilter<"JobPosting"> | string
     location?: StringNullableFilter<"JobPosting"> | string | null
     type?: StringNullableFilter<"JobPosting"> | string | null
@@ -43804,12 +43785,12 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     applicants?: ApplicantListRelationFilter
-    asset?: XOR<AssetNullableScalarRelationFilter, AssetWhereInput> | null
+    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
   }, "id">
 
   export type JobPostingOrderByWithAggregationInput = {
     id?: SortOrder
-    projectId?: SortOrderInput | SortOrder
+    projectId?: SortOrder
     title?: SortOrder
     location?: SortOrderInput | SortOrder
     type?: SortOrderInput | SortOrder
@@ -43832,7 +43813,7 @@ export namespace Prisma {
     OR?: JobPostingScalarWhereWithAggregatesInput[]
     NOT?: JobPostingScalarWhereWithAggregatesInput | JobPostingScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"JobPosting"> | string
-    projectId?: StringNullableWithAggregatesFilter<"JobPosting"> | string | null
+    projectId?: StringWithAggregatesFilter<"JobPosting"> | string
     title?: StringWithAggregatesFilter<"JobPosting"> | string
     location?: StringNullableWithAggregatesFilter<"JobPosting"> | string | null
     type?: StringNullableWithAggregatesFilter<"JobPosting"> | string | null
@@ -46443,12 +46424,12 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     applicants?: ApplicantCreateNestedManyWithoutJobInput
-    asset?: AssetCreateNestedOneWithoutJobPostingsInput
+    asset: AssetCreateNestedOneWithoutJobPostingsInput
   }
 
   export type JobPostingUncheckedCreateInput = {
     id?: string
-    projectId?: string | null
+    projectId: string
     title: string
     location?: string | null
     type?: string | null
@@ -46475,12 +46456,12 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     applicants?: ApplicantUpdateManyWithoutJobNestedInput
-    asset?: AssetUpdateOneWithoutJobPostingsNestedInput
+    asset?: AssetUpdateOneRequiredWithoutJobPostingsNestedInput
   }
 
   export type JobPostingUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46496,7 +46477,7 @@ export namespace Prisma {
 
   export type JobPostingCreateManyInput = {
     id?: string
-    projectId?: string | null
+    projectId: string
     title: string
     location?: string | null
     type?: string | null
@@ -46525,7 +46506,7 @@ export namespace Prisma {
 
   export type JobPostingUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50294,12 +50275,10 @@ export namespace Prisma {
     deleteMany?: ApplicantScalarWhereInput | ApplicantScalarWhereInput[]
   }
 
-  export type AssetUpdateOneWithoutJobPostingsNestedInput = {
+  export type AssetUpdateOneRequiredWithoutJobPostingsNestedInput = {
     create?: XOR<AssetCreateWithoutJobPostingsInput, AssetUncheckedCreateWithoutJobPostingsInput>
     connectOrCreate?: AssetCreateOrConnectWithoutJobPostingsInput
     upsert?: AssetUpsertWithoutJobPostingsInput
-    disconnect?: AssetWhereInput | boolean
-    delete?: AssetWhereInput | boolean
     connect?: AssetWhereUniqueInput
     update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutJobPostingsInput, AssetUpdateWithoutJobPostingsInput>, AssetUncheckedUpdateWithoutJobPostingsInput>
   }
@@ -52353,7 +52332,7 @@ export namespace Prisma {
     OR?: JobPostingScalarWhereInput[]
     NOT?: JobPostingScalarWhereInput | JobPostingScalarWhereInput[]
     id?: StringFilter<"JobPosting"> | string
-    projectId?: StringNullableFilter<"JobPosting"> | string | null
+    projectId?: StringFilter<"JobPosting"> | string
     title?: StringFilter<"JobPosting"> | string
     location?: StringNullableFilter<"JobPosting"> | string | null
     type?: StringNullableFilter<"JobPosting"> | string | null
@@ -55652,12 +55631,12 @@ export namespace Prisma {
     openings?: number | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    asset?: AssetCreateNestedOneWithoutJobPostingsInput
+    asset: AssetCreateNestedOneWithoutJobPostingsInput
   }
 
   export type JobPostingUncheckedCreateWithoutApplicantsInput = {
     id?: string
-    projectId?: string | null
+    projectId: string
     title: string
     location?: string | null
     type?: string | null
@@ -55698,12 +55677,12 @@ export namespace Prisma {
     openings?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneWithoutJobPostingsNestedInput
+    asset?: AssetUpdateOneRequiredWithoutJobPostingsNestedInput
   }
 
   export type JobPostingUncheckedUpdateWithoutApplicantsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
