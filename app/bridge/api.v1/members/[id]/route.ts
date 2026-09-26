@@ -8,7 +8,7 @@ export async function GET(_request: Request, context: Context) {
   const validation = await requireProject(_request);
   if (validation instanceof Response) return validation;
   const result = await getMember((await context.params).id);
-  return NextResponse.json(result, { status: result.success ? 200 : 404 });
+  return NextResponse.json({ success: result.success, data: result.member, error: result.error }, { status: result.success ? 200 : 404 });
 }
 
 export async function PATCH(request: Request, context: Context) {

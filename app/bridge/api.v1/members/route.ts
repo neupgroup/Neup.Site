@@ -10,14 +10,14 @@ export async function GET(request: Request) {
     if (!result.success) return NextResponse.json(result, { status: 500 });
     if (!validation.authenticated) {
       const members = result.members?.filter((member) => member.status !== 'hidden');
-      return NextResponse.json({ success: true, members });
+      return NextResponse.json({ success: true, data: members });
     }
     const accounts = await (await import('@neup/core/database/prisma')).prisma.account.findMany({
       where: { roles: { some: { assetId: validation.projectId } } },
       select: { id: true, displayName: true, displayImage: true, status: true, type: true },
       orderBy: { displayName: 'asc' },
     });
-    return NextResponse.json({ ...result, accounts });
+    return NextResponse.json({ success: true, data: result.members ?? [], accounts });
   } catch (error) {
     await logApiError('bridge.members.get', error);
     return NextResponse.json({ success: false, error: 'Unable to load members right now.' }, { status: 500 });
