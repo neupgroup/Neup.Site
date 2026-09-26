@@ -55,6 +55,7 @@ export async function GET() {
     await Promise.all([
       fs.writeFile(path.join(structureDirectory, 'structure.json'), JSON.stringify(structureResult.structure?.structure || [], null, 2)),
       fs.writeFile(path.join(temporaryDirectory, 'theme.json'), JSON.stringify(asset.theme || {}, null, 2)),
+      fs.copyFile(path.join(process.cwd(), '@base', 'modules.json'), path.join(temporaryDirectory, 'modules.json')),
       fs.writeFile(path.join(assetsDirectory, 'assets.json'), JSON.stringify({
         id: asset.id,
         name: asset.name,

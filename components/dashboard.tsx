@@ -19,6 +19,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   Rocket,
+  FileText,
   LayoutTemplate,
   Bug,
   Home,
@@ -188,12 +189,12 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <SidebarNavItem href="/site/sources" currentPath={currentPath} project={project} onClick={onLinkClick}><Database className="h-4 w-4" /><span>Sources</span></SidebarNavItem>
         <SidebarNavItem href="/site/datalists" currentPath={currentPath} project={project} onClick={onLinkClick}><List className="h-4 w-4" /><span>Datalists</span></SidebarNavItem>
         <SidebarNavItem href="/site/servers" currentPath={currentPath} project={project} onClick={onLinkClick}><Server className="h-4 w-4" /><span>Servers</span></SidebarNavItem>
-        <SidebarNavItem href="/site/modules" currentPath={currentPath} project={project} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
+        <SidebarNavItem href="/modules" currentPath={currentPath} project={project} onClick={onLinkClick}><Puzzle className="h-4 w-4" /><span>Modules</span></SidebarNavItem>
         <SidebarNavItem href="/site/uploads" currentPath={currentPath} project={project} onClick={onLinkClick}><UploadCloud className="h-4 w-4" /><span>Uploads</span></SidebarNavItem>
-        <SidebarNavItem href="/site/appbase" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></SidebarNavItem>
+        <SidebarNavItem href="/appbase" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>App Base</span></SidebarNavItem>
+        <SidebarNavItem href="/appbase/custom" currentPath={currentPath} project={project} onClick={onLinkClick}><FileText className="h-4 w-4" /><span>Custom Data</span></SidebarNavItem>
         <SidebarNavItem href="/site/environment" currentPath={currentPath} project={project} onClick={onLinkClick}><FileLock className="h-4 w-4" /><span>Environments</span></SidebarNavItem>
         <SidebarNavItem href="/analytics" currentPath={currentPath} project={project} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span></SidebarNavItem>
-        <SidebarNavItem href="/deploy" currentPath={currentPath} project={project} onClick={onLinkClick}><Rocket className="h-4 w-4" /><span>Deploy</span></SidebarNavItem>
         <SidebarNavItem href="/site/advanced" currentPath={currentPath} project={project} onClick={onLinkClick}><Wrench className="h-4 w-4" /><span>Advanced</span></SidebarNavItem>
       </div>
 

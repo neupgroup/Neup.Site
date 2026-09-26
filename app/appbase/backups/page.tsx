@@ -67,7 +67,7 @@ export default function BackupsPage() {
           <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Backups</h1>
           <p className="text-muted-foreground">View and restore backups of your base configuration files.</p>
         </div>
-        <LinkButton variant="outlined" href="/site/appbase">
+        <LinkButton variant="outlined" href="/appbase">
             Back to App Base
           </LinkButton>
       </header>
@@ -85,7 +85,7 @@ export default function BackupsPage() {
             <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
               <HardDrive className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold">No Backups Found</h3>
-              <p>Create a backup from the App Base page.</p>
+              <p>Backups include the complete App Base configuration and custom data.</p>
             </div>
           ) : (
             <Table>

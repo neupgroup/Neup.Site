@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -6,12 +7,11 @@ import { useDropzone } from 'react-dropzone';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
 import { Button } from '@neup/components/ui/button';
-import { LinkButton } from "@neup/components/ui/link-button";
 import { Input } from '@neup/components/ui/input';
 import { Label } from '@neup/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@neup/components/ui/alert';
 import { Skeleton } from '@neup/components/ui/skeleton';
-import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, RotateCcw, Save, FileJson, Plus, Upload } from 'lucide-react';
+import { UploadCloud, FileText, Folder, AlertCircle, Loader2, CheckCircle, Trash2, Edit, HardDrive, Save, FileJson, Plus, Upload } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { cn } from '@neup/core/utils';
 import { getSiteServers } from '@/services/servers';
@@ -33,7 +33,7 @@ import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 
 export default function AppBasePage() {
-  usePageTitle('App Base');
+  usePageTitle('Custom Data');
   const [files, setFiles] = useState<AppBaseFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -163,16 +163,8 @@ export default function AppBasePage() {
       />
       <header className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-headline text-2xl font-semibold tracking-tight">App Base Files</h1>
+          <h1 className="font-headline text-2xl font-semibold tracking-tight">Custom Data</h1>
           <p className="text-muted-foreground">Manage JSON configuration files in your application's base directories.</p>
-        </div>
-        <div className="flex gap-2">
-           <LinkButton variant="outlined" href="/site/appbase/backups">
-                  <RotateCcw className="mr-2 h-4 w-4" /> View Backups
-              </LinkButton>
-            <LinkButton variant="solid" href="/site/appbase/create">
-                    <Plus className="mr-2 h-4 w-4" /> Create File
-                </LinkButton>
         </div>
       </header>
       
