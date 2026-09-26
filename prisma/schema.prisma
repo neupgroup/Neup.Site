@@ -80,10 +80,42 @@ model Asset {
   teams                  Team[]
   members                Member[]
   jobPostings            JobPosting[]
+  forms                  Form[]
+  formSubmissions        FormSubmission[]
   defaultProjectAccounts Account[]             @relation("AccountDefaultProject")
 
   @@index([ownerAccountId])
   @@map("projects")
+}
+
+model Form {
+  id           String           @id @default(cuid())
+  projectId    String
+  name         String
+  slug         String
+  fields       Json
+  createdOn    DateTime         @default(now())
+  project      Asset            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  submissions  FormSubmission[]
+
+  @@unique([projectId, slug])
+  @@index([projectId, createdOn])
+  @@map("forms")
+}
+
+model FormSubmission {
+  id         String   @id @default(cuid())
+  projectId  String
+  formId     String
+  response   Json
+  postedOn   DateTime @default(now())
+  status     String   @db.VarChar(16)
+  project    Asset    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  form       Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, postedOn])
+  @@index([formId, postedOn])
+  @@map("formSubmissions")
 }
 
 model Profile {

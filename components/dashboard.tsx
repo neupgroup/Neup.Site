@@ -60,6 +60,7 @@ import {
   RefreshCw,
   ExternalLink,
   Globe,
+  Inbox,
 } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@neup/core/utils';
@@ -157,6 +158,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <SidebarNavItem href="/manage/permissions" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></SidebarNavItem>
         <SidebarNavItem href="/manage/redirects" currentPath={currentPath} project={project} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></SidebarNavItem>
         <SidebarNavItem href="/manage/contacts" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></SidebarNavItem>
+        <SidebarNavItem href="/inbox" currentPath={currentPath} project={project} onClick={onLinkClick}><Inbox className="h-4 w-4" /><span>Inbox</span></SidebarNavItem>
         <ExternalAnalyticsNavLink propertyId={propertyId} currentUrl={currentUrl} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span><ExternalLink className="h-3.5 w-3.5" aria-label="Opens external page" /></ExternalAnalyticsNavLink>
         <SidebarNavItem href="/manage/products" currentPath={currentPath} project={project} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></SidebarNavItem>
         <SidebarNavItem href="/manage/syncer" currentPath={currentPath} project={project} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></SidebarNavItem>

@@ -80,3 +80,22 @@ Fields:
 > coverLetter: string, nullable;
 > status: string;
 > appliedAt: timestamp, nullable;
+
+Table: forms, Model: Form
+Fields:
+> id: string, primary key, auto generated;
+> projectId: string, references projects.id, indexed;
+> name: string;
+> slug: string;
+> fields: jsonb;
+> createdOn: timestamp, default current timestamp;
+.. references formSubmissions;
+
+Table: formSubmissions, Model: FormSubmission
+Fields:
+> id: string, primary key, auto generated;
+> projectId: string, references projects.id, indexed;
+> formId: string, references forms.id, indexed;
+> response: jsonb;
+> postedOn: timestamp, default current timestamp;
+> status: varchar(16);

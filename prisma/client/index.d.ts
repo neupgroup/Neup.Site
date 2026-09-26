@@ -34,6 +34,16 @@ export type Domain = $Result.DefaultSelection<Prisma.$DomainPayload>
  */
 export type Asset = $Result.DefaultSelection<Prisma.$AssetPayload>
 /**
+ * Model Form
+ * 
+ */
+export type Form = $Result.DefaultSelection<Prisma.$FormPayload>
+/**
+ * Model FormSubmission
+ * 
+ */
+export type FormSubmission = $Result.DefaultSelection<Prisma.$FormSubmissionPayload>
+/**
  * Model Profile
  * 
  */
@@ -339,6 +349,26 @@ export class PrismaClient<
     * ```
     */
   get asset(): Prisma.AssetDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.form`: Exposes CRUD operations for the **Form** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Forms
+    * const forms = await prisma.form.findMany()
+    * ```
+    */
+  get form(): Prisma.FormDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.formSubmission`: Exposes CRUD operations for the **FormSubmission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FormSubmissions
+    * const formSubmissions = await prisma.formSubmission.findMany()
+    * ```
+    */
+  get formSubmission(): Prisma.FormSubmissionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.profile`: Exposes CRUD operations for the **Profile** model.
@@ -1067,6 +1097,8 @@ export namespace Prisma {
     Role: 'Role',
     Domain: 'Domain',
     Asset: 'Asset',
+    Form: 'Form',
+    FormSubmission: 'FormSubmission',
     Profile: 'Profile',
     Page: 'Page',
     PagePath: 'PagePath',
@@ -1111,7 +1143,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "role" | "domain" | "asset" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "newsArticle" | "syncRequest" | "assetModule" | "syncerLog"
+      modelProps: "account" | "role" | "domain" | "asset" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "newsArticle" | "syncRequest" | "assetModule" | "syncerLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1408,6 +1440,154 @@ export namespace Prisma {
           count: {
             args: Prisma.AssetCountArgs<ExtArgs>
             result: $Utils.Optional<AssetCountAggregateOutputType> | number
+          }
+        }
+      }
+      Form: {
+        payload: Prisma.$FormPayload<ExtArgs>
+        fields: Prisma.FormFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FormFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FormFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>
+          }
+          findFirst: {
+            args: Prisma.FormFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FormFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>
+          }
+          findMany: {
+            args: Prisma.FormFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>[]
+          }
+          create: {
+            args: Prisma.FormCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>
+          }
+          createMany: {
+            args: Prisma.FormCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FormCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>[]
+          }
+          delete: {
+            args: Prisma.FormDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>
+          }
+          update: {
+            args: Prisma.FormUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>
+          }
+          deleteMany: {
+            args: Prisma.FormDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FormUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FormUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>[]
+          }
+          upsert: {
+            args: Prisma.FormUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormPayload>
+          }
+          aggregate: {
+            args: Prisma.FormAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateForm>
+          }
+          groupBy: {
+            args: Prisma.FormGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FormGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FormCountArgs<ExtArgs>
+            result: $Utils.Optional<FormCountAggregateOutputType> | number
+          }
+        }
+      }
+      FormSubmission: {
+        payload: Prisma.$FormSubmissionPayload<ExtArgs>
+        fields: Prisma.FormSubmissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FormSubmissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FormSubmissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>
+          }
+          findFirst: {
+            args: Prisma.FormSubmissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FormSubmissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>
+          }
+          findMany: {
+            args: Prisma.FormSubmissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>[]
+          }
+          create: {
+            args: Prisma.FormSubmissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>
+          }
+          createMany: {
+            args: Prisma.FormSubmissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FormSubmissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>[]
+          }
+          delete: {
+            args: Prisma.FormSubmissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>
+          }
+          update: {
+            args: Prisma.FormSubmissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.FormSubmissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FormSubmissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FormSubmissionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>[]
+          }
+          upsert: {
+            args: Prisma.FormSubmissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FormSubmissionPayload>
+          }
+          aggregate: {
+            args: Prisma.FormSubmissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFormSubmission>
+          }
+          groupBy: {
+            args: Prisma.FormSubmissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FormSubmissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FormSubmissionCountArgs<ExtArgs>
+            result: $Utils.Optional<FormSubmissionCountAggregateOutputType> | number
           }
         }
       }
@@ -3669,6 +3849,8 @@ export namespace Prisma {
     role?: RoleOmit
     domain?: DomainOmit
     asset?: AssetOmit
+    form?: FormOmit
+    formSubmission?: FormSubmissionOmit
     profile?: ProfileOmit
     page?: PageOmit
     pagePath?: PagePathOmit
@@ -3828,6 +4010,8 @@ export namespace Prisma {
     teams: number
     members: number
     jobPostings: number
+    forms: number
+    formSubmissions: number
     defaultProjectAccounts: number
   }
 
@@ -3851,6 +4035,8 @@ export namespace Prisma {
     teams?: boolean | AssetCountOutputTypeCountTeamsArgs
     members?: boolean | AssetCountOutputTypeCountMembersArgs
     jobPostings?: boolean | AssetCountOutputTypeCountJobPostingsArgs
+    forms?: boolean | AssetCountOutputTypeCountFormsArgs
+    formSubmissions?: boolean | AssetCountOutputTypeCountFormSubmissionsArgs
     defaultProjectAccounts?: boolean | AssetCountOutputTypeCountDefaultProjectAccountsArgs
   }
 
@@ -4001,8 +4187,53 @@ export namespace Prisma {
   /**
    * AssetCountOutputType without action
    */
+  export type AssetCountOutputTypeCountFormsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FormWhereInput
+  }
+
+  /**
+   * AssetCountOutputType without action
+   */
+  export type AssetCountOutputTypeCountFormSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FormSubmissionWhereInput
+  }
+
+  /**
+   * AssetCountOutputType without action
+   */
   export type AssetCountOutputTypeCountDefaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
+  }
+
+
+  /**
+   * Count Type FormCountOutputType
+   */
+
+  export type FormCountOutputType = {
+    submissions: number
+  }
+
+  export type FormCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    submissions?: boolean | FormCountOutputTypeCountSubmissionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * FormCountOutputType without action
+   */
+  export type FormCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormCountOutputType
+     */
+    select?: FormCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * FormCountOutputType without action
+   */
+  export type FormCountOutputTypeCountSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FormSubmissionWhereInput
   }
 
 
@@ -7712,6 +7943,8 @@ export namespace Prisma {
     teams?: boolean | Asset$teamsArgs<ExtArgs>
     members?: boolean | Asset$membersArgs<ExtArgs>
     jobPostings?: boolean | Asset$jobPostingsArgs<ExtArgs>
+    forms?: boolean | Asset$formsArgs<ExtArgs>
+    formSubmissions?: boolean | Asset$formSubmissionsArgs<ExtArgs>
     defaultProjectAccounts?: boolean | Asset$defaultProjectAccountsArgs<ExtArgs>
     _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
@@ -7788,6 +8021,8 @@ export namespace Prisma {
     teams?: boolean | Asset$teamsArgs<ExtArgs>
     members?: boolean | Asset$membersArgs<ExtArgs>
     jobPostings?: boolean | Asset$jobPostingsArgs<ExtArgs>
+    forms?: boolean | Asset$formsArgs<ExtArgs>
+    formSubmissions?: boolean | Asset$formSubmissionsArgs<ExtArgs>
     defaultProjectAccounts?: boolean | Asset$defaultProjectAccountsArgs<ExtArgs>
     _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -7816,6 +8051,8 @@ export namespace Prisma {
       teams: Prisma.$TeamPayload<ExtArgs>[]
       members: Prisma.$MemberPayload<ExtArgs>[]
       jobPostings: Prisma.$JobPostingPayload<ExtArgs>[]
+      forms: Prisma.$FormPayload<ExtArgs>[]
+      formSubmissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
       defaultProjectAccounts: Prisma.$AccountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -8246,6 +8483,8 @@ export namespace Prisma {
     teams<T extends Asset$teamsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$teamsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     members<T extends Asset$membersArgs<ExtArgs> = {}>(args?: Subset<T, Asset$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     jobPostings<T extends Asset$jobPostingsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$jobPostingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    forms<T extends Asset$formsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$formsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    formSubmissions<T extends Asset$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     defaultProjectAccounts<T extends Asset$defaultProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$defaultProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -9139,6 +9378,54 @@ export namespace Prisma {
   }
 
   /**
+   * Asset.forms
+   */
+  export type Asset$formsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    where?: FormWhereInput
+    orderBy?: FormOrderByWithRelationInput | FormOrderByWithRelationInput[]
+    cursor?: FormWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FormScalarFieldEnum | FormScalarFieldEnum[]
+  }
+
+  /**
+   * Asset.formSubmissions
+   */
+  export type Asset$formSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    where?: FormSubmissionWhereInput
+    orderBy?: FormSubmissionOrderByWithRelationInput | FormSubmissionOrderByWithRelationInput[]
+    cursor?: FormSubmissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FormSubmissionScalarFieldEnum | FormSubmissionScalarFieldEnum[]
+  }
+
+  /**
    * Asset.defaultProjectAccounts
    */
   export type Asset$defaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9178,6 +9465,2188 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AssetInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Form
+   */
+
+  export type AggregateForm = {
+    _count: FormCountAggregateOutputType | null
+    _min: FormMinAggregateOutputType | null
+    _max: FormMaxAggregateOutputType | null
+  }
+
+  export type FormMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    name: string | null
+    slug: string | null
+    createdOn: Date | null
+  }
+
+  export type FormMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    name: string | null
+    slug: string | null
+    createdOn: Date | null
+  }
+
+  export type FormCountAggregateOutputType = {
+    id: number
+    projectId: number
+    name: number
+    slug: number
+    fields: number
+    createdOn: number
+    _all: number
+  }
+
+
+  export type FormMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    name?: true
+    slug?: true
+    createdOn?: true
+  }
+
+  export type FormMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    name?: true
+    slug?: true
+    createdOn?: true
+  }
+
+  export type FormCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    name?: true
+    slug?: true
+    fields?: true
+    createdOn?: true
+    _all?: true
+  }
+
+  export type FormAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Form to aggregate.
+     */
+    where?: FormWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Forms to fetch.
+     */
+    orderBy?: FormOrderByWithRelationInput | FormOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FormWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Forms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Forms.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Forms
+    **/
+    _count?: true | FormCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FormMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FormMaxAggregateInputType
+  }
+
+  export type GetFormAggregateType<T extends FormAggregateArgs> = {
+        [P in keyof T & keyof AggregateForm]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateForm[P]>
+      : GetScalarType<T[P], AggregateForm[P]>
+  }
+
+
+
+
+  export type FormGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FormWhereInput
+    orderBy?: FormOrderByWithAggregationInput | FormOrderByWithAggregationInput[]
+    by: FormScalarFieldEnum[] | FormScalarFieldEnum
+    having?: FormScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FormCountAggregateInputType | true
+    _min?: FormMinAggregateInputType
+    _max?: FormMaxAggregateInputType
+  }
+
+  export type FormGroupByOutputType = {
+    id: string
+    projectId: string
+    name: string
+    slug: string
+    fields: JsonValue
+    createdOn: Date
+    _count: FormCountAggregateOutputType | null
+    _min: FormMinAggregateOutputType | null
+    _max: FormMaxAggregateOutputType | null
+  }
+
+  type GetFormGroupByPayload<T extends FormGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FormGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FormGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FormGroupByOutputType[P]>
+            : GetScalarType<T[P], FormGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FormSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    fields?: boolean
+    createdOn?: boolean
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    submissions?: boolean | Form$submissionsArgs<ExtArgs>
+    _count?: boolean | FormCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["form"]>
+
+  export type FormSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    fields?: boolean
+    createdOn?: boolean
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["form"]>
+
+  export type FormSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    fields?: boolean
+    createdOn?: boolean
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["form"]>
+
+  export type FormSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    fields?: boolean
+    createdOn?: boolean
+  }
+
+  export type FormOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "name" | "slug" | "fields" | "createdOn", ExtArgs["result"]["form"]>
+  export type FormInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    submissions?: boolean | Form$submissionsArgs<ExtArgs>
+    _count?: boolean | FormCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type FormIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+  }
+  export type FormIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+  }
+
+  export type $FormPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Form"
+    objects: {
+      project: Prisma.$AssetPayload<ExtArgs>
+      submissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      name: string
+      slug: string
+      fields: Prisma.JsonValue
+      createdOn: Date
+    }, ExtArgs["result"]["form"]>
+    composites: {}
+  }
+
+  type FormGetPayload<S extends boolean | null | undefined | FormDefaultArgs> = $Result.GetResult<Prisma.$FormPayload, S>
+
+  type FormCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FormFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FormCountAggregateInputType | true
+    }
+
+  export interface FormDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Form'], meta: { name: 'Form' } }
+    /**
+     * Find zero or one Form that matches the filter.
+     * @param {FormFindUniqueArgs} args - Arguments to find a Form
+     * @example
+     * // Get one Form
+     * const form = await prisma.form.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FormFindUniqueArgs>(args: SelectSubset<T, FormFindUniqueArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Form that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FormFindUniqueOrThrowArgs} args - Arguments to find a Form
+     * @example
+     * // Get one Form
+     * const form = await prisma.form.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FormFindUniqueOrThrowArgs>(args: SelectSubset<T, FormFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Form that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormFindFirstArgs} args - Arguments to find a Form
+     * @example
+     * // Get one Form
+     * const form = await prisma.form.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FormFindFirstArgs>(args?: SelectSubset<T, FormFindFirstArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Form that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormFindFirstOrThrowArgs} args - Arguments to find a Form
+     * @example
+     * // Get one Form
+     * const form = await prisma.form.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FormFindFirstOrThrowArgs>(args?: SelectSubset<T, FormFindFirstOrThrowArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Forms that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Forms
+     * const forms = await prisma.form.findMany()
+     * 
+     * // Get first 10 Forms
+     * const forms = await prisma.form.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const formWithIdOnly = await prisma.form.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FormFindManyArgs>(args?: SelectSubset<T, FormFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Form.
+     * @param {FormCreateArgs} args - Arguments to create a Form.
+     * @example
+     * // Create one Form
+     * const Form = await prisma.form.create({
+     *   data: {
+     *     // ... data to create a Form
+     *   }
+     * })
+     * 
+     */
+    create<T extends FormCreateArgs>(args: SelectSubset<T, FormCreateArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Forms.
+     * @param {FormCreateManyArgs} args - Arguments to create many Forms.
+     * @example
+     * // Create many Forms
+     * const form = await prisma.form.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FormCreateManyArgs>(args?: SelectSubset<T, FormCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Forms and returns the data saved in the database.
+     * @param {FormCreateManyAndReturnArgs} args - Arguments to create many Forms.
+     * @example
+     * // Create many Forms
+     * const form = await prisma.form.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Forms and only return the `id`
+     * const formWithIdOnly = await prisma.form.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FormCreateManyAndReturnArgs>(args?: SelectSubset<T, FormCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Form.
+     * @param {FormDeleteArgs} args - Arguments to delete one Form.
+     * @example
+     * // Delete one Form
+     * const Form = await prisma.form.delete({
+     *   where: {
+     *     // ... filter to delete one Form
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FormDeleteArgs>(args: SelectSubset<T, FormDeleteArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Form.
+     * @param {FormUpdateArgs} args - Arguments to update one Form.
+     * @example
+     * // Update one Form
+     * const form = await prisma.form.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FormUpdateArgs>(args: SelectSubset<T, FormUpdateArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Forms.
+     * @param {FormDeleteManyArgs} args - Arguments to filter Forms to delete.
+     * @example
+     * // Delete a few Forms
+     * const { count } = await prisma.form.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FormDeleteManyArgs>(args?: SelectSubset<T, FormDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Forms.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Forms
+     * const form = await prisma.form.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FormUpdateManyArgs>(args: SelectSubset<T, FormUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Forms and returns the data updated in the database.
+     * @param {FormUpdateManyAndReturnArgs} args - Arguments to update many Forms.
+     * @example
+     * // Update many Forms
+     * const form = await prisma.form.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Forms and only return the `id`
+     * const formWithIdOnly = await prisma.form.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FormUpdateManyAndReturnArgs>(args: SelectSubset<T, FormUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Form.
+     * @param {FormUpsertArgs} args - Arguments to update or create a Form.
+     * @example
+     * // Update or create a Form
+     * const form = await prisma.form.upsert({
+     *   create: {
+     *     // ... data to create a Form
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Form we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FormUpsertArgs>(args: SelectSubset<T, FormUpsertArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Forms.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormCountArgs} args - Arguments to filter Forms to count.
+     * @example
+     * // Count the number of Forms
+     * const count = await prisma.form.count({
+     *   where: {
+     *     // ... the filter for the Forms we want to count
+     *   }
+     * })
+    **/
+    count<T extends FormCountArgs>(
+      args?: Subset<T, FormCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FormCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Form.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FormAggregateArgs>(args: Subset<T, FormAggregateArgs>): Prisma.PrismaPromise<GetFormAggregateType<T>>
+
+    /**
+     * Group by Form.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FormGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FormGroupByArgs['orderBy'] }
+        : { orderBy?: FormGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FormGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFormGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Form model
+   */
+  readonly fields: FormFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Form.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FormClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    submissions<T extends Form$submissionsArgs<ExtArgs> = {}>(args?: Subset<T, Form$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Form model
+   */
+  interface FormFieldRefs {
+    readonly id: FieldRef<"Form", 'String'>
+    readonly projectId: FieldRef<"Form", 'String'>
+    readonly name: FieldRef<"Form", 'String'>
+    readonly slug: FieldRef<"Form", 'String'>
+    readonly fields: FieldRef<"Form", 'Json'>
+    readonly createdOn: FieldRef<"Form", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Form findUnique
+   */
+  export type FormFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * Filter, which Form to fetch.
+     */
+    where: FormWhereUniqueInput
+  }
+
+  /**
+   * Form findUniqueOrThrow
+   */
+  export type FormFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * Filter, which Form to fetch.
+     */
+    where: FormWhereUniqueInput
+  }
+
+  /**
+   * Form findFirst
+   */
+  export type FormFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * Filter, which Form to fetch.
+     */
+    where?: FormWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Forms to fetch.
+     */
+    orderBy?: FormOrderByWithRelationInput | FormOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Forms.
+     */
+    cursor?: FormWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Forms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Forms.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Forms.
+     */
+    distinct?: FormScalarFieldEnum | FormScalarFieldEnum[]
+  }
+
+  /**
+   * Form findFirstOrThrow
+   */
+  export type FormFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * Filter, which Form to fetch.
+     */
+    where?: FormWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Forms to fetch.
+     */
+    orderBy?: FormOrderByWithRelationInput | FormOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Forms.
+     */
+    cursor?: FormWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Forms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Forms.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Forms.
+     */
+    distinct?: FormScalarFieldEnum | FormScalarFieldEnum[]
+  }
+
+  /**
+   * Form findMany
+   */
+  export type FormFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * Filter, which Forms to fetch.
+     */
+    where?: FormWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Forms to fetch.
+     */
+    orderBy?: FormOrderByWithRelationInput | FormOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Forms.
+     */
+    cursor?: FormWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Forms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Forms.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Forms.
+     */
+    distinct?: FormScalarFieldEnum | FormScalarFieldEnum[]
+  }
+
+  /**
+   * Form create
+   */
+  export type FormCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Form.
+     */
+    data: XOR<FormCreateInput, FormUncheckedCreateInput>
+  }
+
+  /**
+   * Form createMany
+   */
+  export type FormCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Forms.
+     */
+    data: FormCreateManyInput | FormCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Form createManyAndReturn
+   */
+  export type FormCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * The data used to create many Forms.
+     */
+    data: FormCreateManyInput | FormCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Form update
+   */
+  export type FormUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Form.
+     */
+    data: XOR<FormUpdateInput, FormUncheckedUpdateInput>
+    /**
+     * Choose, which Form to update.
+     */
+    where: FormWhereUniqueInput
+  }
+
+  /**
+   * Form updateMany
+   */
+  export type FormUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Forms.
+     */
+    data: XOR<FormUpdateManyMutationInput, FormUncheckedUpdateManyInput>
+    /**
+     * Filter which Forms to update
+     */
+    where?: FormWhereInput
+    /**
+     * Limit how many Forms to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Form updateManyAndReturn
+   */
+  export type FormUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * The data used to update Forms.
+     */
+    data: XOR<FormUpdateManyMutationInput, FormUncheckedUpdateManyInput>
+    /**
+     * Filter which Forms to update
+     */
+    where?: FormWhereInput
+    /**
+     * Limit how many Forms to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Form upsert
+   */
+  export type FormUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Form to update in case it exists.
+     */
+    where: FormWhereUniqueInput
+    /**
+     * In case the Form found by the `where` argument doesn't exist, create a new Form with this data.
+     */
+    create: XOR<FormCreateInput, FormUncheckedCreateInput>
+    /**
+     * In case the Form was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FormUpdateInput, FormUncheckedUpdateInput>
+  }
+
+  /**
+   * Form delete
+   */
+  export type FormDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+    /**
+     * Filter which Form to delete.
+     */
+    where: FormWhereUniqueInput
+  }
+
+  /**
+   * Form deleteMany
+   */
+  export type FormDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Forms to delete
+     */
+    where?: FormWhereInput
+    /**
+     * Limit how many Forms to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Form.submissions
+   */
+  export type Form$submissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    where?: FormSubmissionWhereInput
+    orderBy?: FormSubmissionOrderByWithRelationInput | FormSubmissionOrderByWithRelationInput[]
+    cursor?: FormSubmissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FormSubmissionScalarFieldEnum | FormSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * Form without action
+   */
+  export type FormDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Form
+     */
+    select?: FormSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Form
+     */
+    omit?: FormOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model FormSubmission
+   */
+
+  export type AggregateFormSubmission = {
+    _count: FormSubmissionCountAggregateOutputType | null
+    _min: FormSubmissionMinAggregateOutputType | null
+    _max: FormSubmissionMaxAggregateOutputType | null
+  }
+
+  export type FormSubmissionMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    formId: string | null
+    postedOn: Date | null
+    status: string | null
+  }
+
+  export type FormSubmissionMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    formId: string | null
+    postedOn: Date | null
+    status: string | null
+  }
+
+  export type FormSubmissionCountAggregateOutputType = {
+    id: number
+    projectId: number
+    formId: number
+    response: number
+    postedOn: number
+    status: number
+    _all: number
+  }
+
+
+  export type FormSubmissionMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    formId?: true
+    postedOn?: true
+    status?: true
+  }
+
+  export type FormSubmissionMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    formId?: true
+    postedOn?: true
+    status?: true
+  }
+
+  export type FormSubmissionCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    formId?: true
+    response?: true
+    postedOn?: true
+    status?: true
+    _all?: true
+  }
+
+  export type FormSubmissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FormSubmission to aggregate.
+     */
+    where?: FormSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FormSubmissions to fetch.
+     */
+    orderBy?: FormSubmissionOrderByWithRelationInput | FormSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FormSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FormSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FormSubmissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FormSubmissions
+    **/
+    _count?: true | FormSubmissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FormSubmissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FormSubmissionMaxAggregateInputType
+  }
+
+  export type GetFormSubmissionAggregateType<T extends FormSubmissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateFormSubmission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFormSubmission[P]>
+      : GetScalarType<T[P], AggregateFormSubmission[P]>
+  }
+
+
+
+
+  export type FormSubmissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FormSubmissionWhereInput
+    orderBy?: FormSubmissionOrderByWithAggregationInput | FormSubmissionOrderByWithAggregationInput[]
+    by: FormSubmissionScalarFieldEnum[] | FormSubmissionScalarFieldEnum
+    having?: FormSubmissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FormSubmissionCountAggregateInputType | true
+    _min?: FormSubmissionMinAggregateInputType
+    _max?: FormSubmissionMaxAggregateInputType
+  }
+
+  export type FormSubmissionGroupByOutputType = {
+    id: string
+    projectId: string
+    formId: string
+    response: JsonValue
+    postedOn: Date
+    status: string
+    _count: FormSubmissionCountAggregateOutputType | null
+    _min: FormSubmissionMinAggregateOutputType | null
+    _max: FormSubmissionMaxAggregateOutputType | null
+  }
+
+  type GetFormSubmissionGroupByPayload<T extends FormSubmissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FormSubmissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FormSubmissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FormSubmissionGroupByOutputType[P]>
+            : GetScalarType<T[P], FormSubmissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FormSubmissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    formId?: boolean
+    response?: boolean
+    postedOn?: boolean
+    status?: boolean
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    form?: boolean | FormDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["formSubmission"]>
+
+  export type FormSubmissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    formId?: boolean
+    response?: boolean
+    postedOn?: boolean
+    status?: boolean
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    form?: boolean | FormDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["formSubmission"]>
+
+  export type FormSubmissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    formId?: boolean
+    response?: boolean
+    postedOn?: boolean
+    status?: boolean
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    form?: boolean | FormDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["formSubmission"]>
+
+  export type FormSubmissionSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    formId?: boolean
+    response?: boolean
+    postedOn?: boolean
+    status?: boolean
+  }
+
+  export type FormSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "formId" | "response" | "postedOn" | "status", ExtArgs["result"]["formSubmission"]>
+  export type FormSubmissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    form?: boolean | FormDefaultArgs<ExtArgs>
+  }
+  export type FormSubmissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    form?: boolean | FormDefaultArgs<ExtArgs>
+  }
+  export type FormSubmissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | AssetDefaultArgs<ExtArgs>
+    form?: boolean | FormDefaultArgs<ExtArgs>
+  }
+
+  export type $FormSubmissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FormSubmission"
+    objects: {
+      project: Prisma.$AssetPayload<ExtArgs>
+      form: Prisma.$FormPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      formId: string
+      response: Prisma.JsonValue
+      postedOn: Date
+      status: string
+    }, ExtArgs["result"]["formSubmission"]>
+    composites: {}
+  }
+
+  type FormSubmissionGetPayload<S extends boolean | null | undefined | FormSubmissionDefaultArgs> = $Result.GetResult<Prisma.$FormSubmissionPayload, S>
+
+  type FormSubmissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FormSubmissionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FormSubmissionCountAggregateInputType | true
+    }
+
+  export interface FormSubmissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FormSubmission'], meta: { name: 'FormSubmission' } }
+    /**
+     * Find zero or one FormSubmission that matches the filter.
+     * @param {FormSubmissionFindUniqueArgs} args - Arguments to find a FormSubmission
+     * @example
+     * // Get one FormSubmission
+     * const formSubmission = await prisma.formSubmission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FormSubmissionFindUniqueArgs>(args: SelectSubset<T, FormSubmissionFindUniqueArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FormSubmission that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FormSubmissionFindUniqueOrThrowArgs} args - Arguments to find a FormSubmission
+     * @example
+     * // Get one FormSubmission
+     * const formSubmission = await prisma.formSubmission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FormSubmissionFindUniqueOrThrowArgs>(args: SelectSubset<T, FormSubmissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FormSubmission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormSubmissionFindFirstArgs} args - Arguments to find a FormSubmission
+     * @example
+     * // Get one FormSubmission
+     * const formSubmission = await prisma.formSubmission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FormSubmissionFindFirstArgs>(args?: SelectSubset<T, FormSubmissionFindFirstArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FormSubmission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormSubmissionFindFirstOrThrowArgs} args - Arguments to find a FormSubmission
+     * @example
+     * // Get one FormSubmission
+     * const formSubmission = await prisma.formSubmission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FormSubmissionFindFirstOrThrowArgs>(args?: SelectSubset<T, FormSubmissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FormSubmissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormSubmissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FormSubmissions
+     * const formSubmissions = await prisma.formSubmission.findMany()
+     * 
+     * // Get first 10 FormSubmissions
+     * const formSubmissions = await prisma.formSubmission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const formSubmissionWithIdOnly = await prisma.formSubmission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FormSubmissionFindManyArgs>(args?: SelectSubset<T, FormSubmissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FormSubmission.
+     * @param {FormSubmissionCreateArgs} args - Arguments to create a FormSubmission.
+     * @example
+     * // Create one FormSubmission
+     * const FormSubmission = await prisma.formSubmission.create({
+     *   data: {
+     *     // ... data to create a FormSubmission
+     *   }
+     * })
+     * 
+     */
+    create<T extends FormSubmissionCreateArgs>(args: SelectSubset<T, FormSubmissionCreateArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FormSubmissions.
+     * @param {FormSubmissionCreateManyArgs} args - Arguments to create many FormSubmissions.
+     * @example
+     * // Create many FormSubmissions
+     * const formSubmission = await prisma.formSubmission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FormSubmissionCreateManyArgs>(args?: SelectSubset<T, FormSubmissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FormSubmissions and returns the data saved in the database.
+     * @param {FormSubmissionCreateManyAndReturnArgs} args - Arguments to create many FormSubmissions.
+     * @example
+     * // Create many FormSubmissions
+     * const formSubmission = await prisma.formSubmission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FormSubmissions and only return the `id`
+     * const formSubmissionWithIdOnly = await prisma.formSubmission.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FormSubmissionCreateManyAndReturnArgs>(args?: SelectSubset<T, FormSubmissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FormSubmission.
+     * @param {FormSubmissionDeleteArgs} args - Arguments to delete one FormSubmission.
+     * @example
+     * // Delete one FormSubmission
+     * const FormSubmission = await prisma.formSubmission.delete({
+     *   where: {
+     *     // ... filter to delete one FormSubmission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FormSubmissionDeleteArgs>(args: SelectSubset<T, FormSubmissionDeleteArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FormSubmission.
+     * @param {FormSubmissionUpdateArgs} args - Arguments to update one FormSubmission.
+     * @example
+     * // Update one FormSubmission
+     * const formSubmission = await prisma.formSubmission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FormSubmissionUpdateArgs>(args: SelectSubset<T, FormSubmissionUpdateArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FormSubmissions.
+     * @param {FormSubmissionDeleteManyArgs} args - Arguments to filter FormSubmissions to delete.
+     * @example
+     * // Delete a few FormSubmissions
+     * const { count } = await prisma.formSubmission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FormSubmissionDeleteManyArgs>(args?: SelectSubset<T, FormSubmissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FormSubmissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormSubmissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FormSubmissions
+     * const formSubmission = await prisma.formSubmission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FormSubmissionUpdateManyArgs>(args: SelectSubset<T, FormSubmissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FormSubmissions and returns the data updated in the database.
+     * @param {FormSubmissionUpdateManyAndReturnArgs} args - Arguments to update many FormSubmissions.
+     * @example
+     * // Update many FormSubmissions
+     * const formSubmission = await prisma.formSubmission.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FormSubmissions and only return the `id`
+     * const formSubmissionWithIdOnly = await prisma.formSubmission.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FormSubmissionUpdateManyAndReturnArgs>(args: SelectSubset<T, FormSubmissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FormSubmission.
+     * @param {FormSubmissionUpsertArgs} args - Arguments to update or create a FormSubmission.
+     * @example
+     * // Update or create a FormSubmission
+     * const formSubmission = await prisma.formSubmission.upsert({
+     *   create: {
+     *     // ... data to create a FormSubmission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FormSubmission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FormSubmissionUpsertArgs>(args: SelectSubset<T, FormSubmissionUpsertArgs<ExtArgs>>): Prisma__FormSubmissionClient<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FormSubmissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormSubmissionCountArgs} args - Arguments to filter FormSubmissions to count.
+     * @example
+     * // Count the number of FormSubmissions
+     * const count = await prisma.formSubmission.count({
+     *   where: {
+     *     // ... the filter for the FormSubmissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends FormSubmissionCountArgs>(
+      args?: Subset<T, FormSubmissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FormSubmissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FormSubmission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormSubmissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FormSubmissionAggregateArgs>(args: Subset<T, FormSubmissionAggregateArgs>): Prisma.PrismaPromise<GetFormSubmissionAggregateType<T>>
+
+    /**
+     * Group by FormSubmission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FormSubmissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FormSubmissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FormSubmissionGroupByArgs['orderBy'] }
+        : { orderBy?: FormSubmissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FormSubmissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFormSubmissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FormSubmission model
+   */
+  readonly fields: FormSubmissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FormSubmission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FormSubmissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    form<T extends FormDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FormDefaultArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FormSubmission model
+   */
+  interface FormSubmissionFieldRefs {
+    readonly id: FieldRef<"FormSubmission", 'String'>
+    readonly projectId: FieldRef<"FormSubmission", 'String'>
+    readonly formId: FieldRef<"FormSubmission", 'String'>
+    readonly response: FieldRef<"FormSubmission", 'Json'>
+    readonly postedOn: FieldRef<"FormSubmission", 'DateTime'>
+    readonly status: FieldRef<"FormSubmission", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FormSubmission findUnique
+   */
+  export type FormSubmissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FormSubmission to fetch.
+     */
+    where: FormSubmissionWhereUniqueInput
+  }
+
+  /**
+   * FormSubmission findUniqueOrThrow
+   */
+  export type FormSubmissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FormSubmission to fetch.
+     */
+    where: FormSubmissionWhereUniqueInput
+  }
+
+  /**
+   * FormSubmission findFirst
+   */
+  export type FormSubmissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FormSubmission to fetch.
+     */
+    where?: FormSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FormSubmissions to fetch.
+     */
+    orderBy?: FormSubmissionOrderByWithRelationInput | FormSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FormSubmissions.
+     */
+    cursor?: FormSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FormSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FormSubmissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FormSubmissions.
+     */
+    distinct?: FormSubmissionScalarFieldEnum | FormSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * FormSubmission findFirstOrThrow
+   */
+  export type FormSubmissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FormSubmission to fetch.
+     */
+    where?: FormSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FormSubmissions to fetch.
+     */
+    orderBy?: FormSubmissionOrderByWithRelationInput | FormSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FormSubmissions.
+     */
+    cursor?: FormSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FormSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FormSubmissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FormSubmissions.
+     */
+    distinct?: FormSubmissionScalarFieldEnum | FormSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * FormSubmission findMany
+   */
+  export type FormSubmissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FormSubmissions to fetch.
+     */
+    where?: FormSubmissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FormSubmissions to fetch.
+     */
+    orderBy?: FormSubmissionOrderByWithRelationInput | FormSubmissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FormSubmissions.
+     */
+    cursor?: FormSubmissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FormSubmissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FormSubmissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FormSubmissions.
+     */
+    distinct?: FormSubmissionScalarFieldEnum | FormSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * FormSubmission create
+   */
+  export type FormSubmissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FormSubmission.
+     */
+    data: XOR<FormSubmissionCreateInput, FormSubmissionUncheckedCreateInput>
+  }
+
+  /**
+   * FormSubmission createMany
+   */
+  export type FormSubmissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FormSubmissions.
+     */
+    data: FormSubmissionCreateManyInput | FormSubmissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FormSubmission createManyAndReturn
+   */
+  export type FormSubmissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * The data used to create many FormSubmissions.
+     */
+    data: FormSubmissionCreateManyInput | FormSubmissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FormSubmission update
+   */
+  export type FormSubmissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FormSubmission.
+     */
+    data: XOR<FormSubmissionUpdateInput, FormSubmissionUncheckedUpdateInput>
+    /**
+     * Choose, which FormSubmission to update.
+     */
+    where: FormSubmissionWhereUniqueInput
+  }
+
+  /**
+   * FormSubmission updateMany
+   */
+  export type FormSubmissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FormSubmissions.
+     */
+    data: XOR<FormSubmissionUpdateManyMutationInput, FormSubmissionUncheckedUpdateManyInput>
+    /**
+     * Filter which FormSubmissions to update
+     */
+    where?: FormSubmissionWhereInput
+    /**
+     * Limit how many FormSubmissions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FormSubmission updateManyAndReturn
+   */
+  export type FormSubmissionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * The data used to update FormSubmissions.
+     */
+    data: XOR<FormSubmissionUpdateManyMutationInput, FormSubmissionUncheckedUpdateManyInput>
+    /**
+     * Filter which FormSubmissions to update
+     */
+    where?: FormSubmissionWhereInput
+    /**
+     * Limit how many FormSubmissions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FormSubmission upsert
+   */
+  export type FormSubmissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FormSubmission to update in case it exists.
+     */
+    where: FormSubmissionWhereUniqueInput
+    /**
+     * In case the FormSubmission found by the `where` argument doesn't exist, create a new FormSubmission with this data.
+     */
+    create: XOR<FormSubmissionCreateInput, FormSubmissionUncheckedCreateInput>
+    /**
+     * In case the FormSubmission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FormSubmissionUpdateInput, FormSubmissionUncheckedUpdateInput>
+  }
+
+  /**
+   * FormSubmission delete
+   */
+  export type FormSubmissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
+    /**
+     * Filter which FormSubmission to delete.
+     */
+    where: FormSubmissionWhereUniqueInput
+  }
+
+  /**
+   * FormSubmission deleteMany
+   */
+  export type FormSubmissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FormSubmissions to delete
+     */
+    where?: FormSubmissionWhereInput
+    /**
+     * Limit how many FormSubmissions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FormSubmission without action
+   */
+  export type FormSubmissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FormSubmission
+     */
+    select?: FormSubmissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FormSubmission
+     */
+    omit?: FormSubmissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FormSubmissionInclude<ExtArgs> | null
   }
 
 
@@ -41255,6 +43724,30 @@ export namespace Prisma {
   export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
 
 
+  export const FormScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    name: 'name',
+    slug: 'slug',
+    fields: 'fields',
+    createdOn: 'createdOn'
+  };
+
+  export type FormScalarFieldEnum = (typeof FormScalarFieldEnum)[keyof typeof FormScalarFieldEnum]
+
+
+  export const FormSubmissionScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    formId: 'formId',
+    response: 'response',
+    postedOn: 'postedOn',
+    status: 'status'
+  };
+
+  export type FormSubmissionScalarFieldEnum = (typeof FormSubmissionScalarFieldEnum)[keyof typeof FormSubmissionScalarFieldEnum]
+
+
   export const ProfileScalarFieldEnum: {
     id: 'id',
     assetId: 'assetId',
@@ -42038,6 +44531,8 @@ export namespace Prisma {
     teams?: TeamListRelationFilter
     members?: MemberListRelationFilter
     jobPostings?: JobPostingListRelationFilter
+    forms?: FormListRelationFilter
+    formSubmissions?: FormSubmissionListRelationFilter
     defaultProjectAccounts?: AccountListRelationFilter
   }
 
@@ -42075,6 +44570,8 @@ export namespace Prisma {
     teams?: TeamOrderByRelationAggregateInput
     members?: MemberOrderByRelationAggregateInput
     jobPostings?: JobPostingOrderByRelationAggregateInput
+    forms?: FormOrderByRelationAggregateInput
+    formSubmissions?: FormSubmissionOrderByRelationAggregateInput
     defaultProjectAccounts?: AccountOrderByRelationAggregateInput
   }
 
@@ -42115,6 +44612,8 @@ export namespace Prisma {
     teams?: TeamListRelationFilter
     members?: MemberListRelationFilter
     jobPostings?: JobPostingListRelationFilter
+    forms?: FormListRelationFilter
+    formSubmissions?: FormSubmissionListRelationFilter
     defaultProjectAccounts?: AccountListRelationFilter
   }, "id">
 
@@ -42156,6 +44655,133 @@ export namespace Prisma {
     ownerAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     status?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     type?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+  }
+
+  export type FormWhereInput = {
+    AND?: FormWhereInput | FormWhereInput[]
+    OR?: FormWhereInput[]
+    NOT?: FormWhereInput | FormWhereInput[]
+    id?: StringFilter<"Form"> | string
+    projectId?: StringFilter<"Form"> | string
+    name?: StringFilter<"Form"> | string
+    slug?: StringFilter<"Form"> | string
+    fields?: JsonFilter<"Form">
+    createdOn?: DateTimeFilter<"Form"> | Date | string
+    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    submissions?: FormSubmissionListRelationFilter
+  }
+
+  export type FormOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    fields?: SortOrder
+    createdOn?: SortOrder
+    project?: AssetOrderByWithRelationInput
+    submissions?: FormSubmissionOrderByRelationAggregateInput
+  }
+
+  export type FormWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    projectId_slug?: FormProjectIdSlugCompoundUniqueInput
+    AND?: FormWhereInput | FormWhereInput[]
+    OR?: FormWhereInput[]
+    NOT?: FormWhereInput | FormWhereInput[]
+    projectId?: StringFilter<"Form"> | string
+    name?: StringFilter<"Form"> | string
+    slug?: StringFilter<"Form"> | string
+    fields?: JsonFilter<"Form">
+    createdOn?: DateTimeFilter<"Form"> | Date | string
+    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    submissions?: FormSubmissionListRelationFilter
+  }, "id" | "projectId_slug">
+
+  export type FormOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    fields?: SortOrder
+    createdOn?: SortOrder
+    _count?: FormCountOrderByAggregateInput
+    _max?: FormMaxOrderByAggregateInput
+    _min?: FormMinOrderByAggregateInput
+  }
+
+  export type FormScalarWhereWithAggregatesInput = {
+    AND?: FormScalarWhereWithAggregatesInput | FormScalarWhereWithAggregatesInput[]
+    OR?: FormScalarWhereWithAggregatesInput[]
+    NOT?: FormScalarWhereWithAggregatesInput | FormScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Form"> | string
+    projectId?: StringWithAggregatesFilter<"Form"> | string
+    name?: StringWithAggregatesFilter<"Form"> | string
+    slug?: StringWithAggregatesFilter<"Form"> | string
+    fields?: JsonWithAggregatesFilter<"Form">
+    createdOn?: DateTimeWithAggregatesFilter<"Form"> | Date | string
+  }
+
+  export type FormSubmissionWhereInput = {
+    AND?: FormSubmissionWhereInput | FormSubmissionWhereInput[]
+    OR?: FormSubmissionWhereInput[]
+    NOT?: FormSubmissionWhereInput | FormSubmissionWhereInput[]
+    id?: StringFilter<"FormSubmission"> | string
+    projectId?: StringFilter<"FormSubmission"> | string
+    formId?: StringFilter<"FormSubmission"> | string
+    response?: JsonFilter<"FormSubmission">
+    postedOn?: DateTimeFilter<"FormSubmission"> | Date | string
+    status?: StringFilter<"FormSubmission"> | string
+    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    form?: XOR<FormScalarRelationFilter, FormWhereInput>
+  }
+
+  export type FormSubmissionOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    formId?: SortOrder
+    response?: SortOrder
+    postedOn?: SortOrder
+    status?: SortOrder
+    project?: AssetOrderByWithRelationInput
+    form?: FormOrderByWithRelationInput
+  }
+
+  export type FormSubmissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: FormSubmissionWhereInput | FormSubmissionWhereInput[]
+    OR?: FormSubmissionWhereInput[]
+    NOT?: FormSubmissionWhereInput | FormSubmissionWhereInput[]
+    projectId?: StringFilter<"FormSubmission"> | string
+    formId?: StringFilter<"FormSubmission"> | string
+    response?: JsonFilter<"FormSubmission">
+    postedOn?: DateTimeFilter<"FormSubmission"> | Date | string
+    status?: StringFilter<"FormSubmission"> | string
+    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    form?: XOR<FormScalarRelationFilter, FormWhereInput>
+  }, "id">
+
+  export type FormSubmissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    formId?: SortOrder
+    response?: SortOrder
+    postedOn?: SortOrder
+    status?: SortOrder
+    _count?: FormSubmissionCountOrderByAggregateInput
+    _max?: FormSubmissionMaxOrderByAggregateInput
+    _min?: FormSubmissionMinOrderByAggregateInput
+  }
+
+  export type FormSubmissionScalarWhereWithAggregatesInput = {
+    AND?: FormSubmissionScalarWhereWithAggregatesInput | FormSubmissionScalarWhereWithAggregatesInput[]
+    OR?: FormSubmissionScalarWhereWithAggregatesInput[]
+    NOT?: FormSubmissionScalarWhereWithAggregatesInput | FormSubmissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FormSubmission"> | string
+    projectId?: StringWithAggregatesFilter<"FormSubmission"> | string
+    formId?: StringWithAggregatesFilter<"FormSubmission"> | string
+    response?: JsonWithAggregatesFilter<"FormSubmission">
+    postedOn?: DateTimeWithAggregatesFilter<"FormSubmission"> | Date | string
+    status?: StringWithAggregatesFilter<"FormSubmission"> | string
   }
 
   export type ProfileWhereInput = {
@@ -44518,6 +47144,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -44555,6 +47183,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -44592,6 +47222,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -44629,6 +47261,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -44681,6 +47315,133 @@ export namespace Prisma {
     ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type FormCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    project: AssetCreateNestedOneWithoutFormsInput
+    submissions?: FormSubmissionCreateNestedManyWithoutFormInput
+  }
+
+  export type FormUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    submissions?: FormSubmissionUncheckedCreateNestedManyWithoutFormInput
+  }
+
+  export type FormUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: AssetUpdateOneRequiredWithoutFormsNestedInput
+    submissions?: FormSubmissionUpdateManyWithoutFormNestedInput
+  }
+
+  export type FormUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    submissions?: FormSubmissionUncheckedUpdateManyWithoutFormNestedInput
+  }
+
+  export type FormCreateManyInput = {
+    id?: string
+    projectId: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+  }
+
+  export type FormUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FormUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FormSubmissionCreateInput = {
+    id?: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+    project: AssetCreateNestedOneWithoutFormSubmissionsInput
+    form: FormCreateNestedOneWithoutSubmissionsInput
+  }
+
+  export type FormSubmissionUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    formId: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+  }
+
+  export type FormSubmissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    project?: AssetUpdateOneRequiredWithoutFormSubmissionsNestedInput
+    form?: FormUpdateOneRequiredWithoutSubmissionsNestedInput
+  }
+
+  export type FormSubmissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    formId?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FormSubmissionCreateManyInput = {
+    id?: string
+    projectId: string
+    formId: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+  }
+
+  export type FormSubmissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FormSubmissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    formId?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type ProfileCreateInput = {
@@ -47416,6 +50177,18 @@ export namespace Prisma {
     none?: JobPostingWhereInput
   }
 
+  export type FormListRelationFilter = {
+    every?: FormWhereInput
+    some?: FormWhereInput
+    none?: FormWhereInput
+  }
+
+  export type FormSubmissionListRelationFilter = {
+    every?: FormSubmissionWhereInput
+    some?: FormSubmissionWhereInput
+    none?: FormSubmissionWhereInput
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -47494,6 +50267,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type FormOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FormSubmissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type AccountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -47551,6 +50332,115 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type FormProjectIdSlugCompoundUniqueInput = {
+    projectId: string
+    slug: string
+  }
+
+  export type FormCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    fields?: SortOrder
+    createdOn?: SortOrder
+  }
+
+  export type FormMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    createdOn?: SortOrder
+  }
+
+  export type FormMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    createdOn?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type FormScalarRelationFilter = {
+    is?: FormWhereInput
+    isNot?: FormWhereInput
+  }
+
+  export type FormSubmissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    formId?: SortOrder
+    response?: SortOrder
+    postedOn?: SortOrder
+    status?: SortOrder
+  }
+
+  export type FormSubmissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    formId?: SortOrder
+    postedOn?: SortOrder
+    status?: SortOrder
+  }
+
+  export type FormSubmissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    formId?: SortOrder
+    postedOn?: SortOrder
+    status?: SortOrder
   }
 
   export type ProfileCountOrderByAggregateInput = {
@@ -48627,29 +51517,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
-  export type JsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type SyncRequestCountOrderByAggregateInput = {
     id?: SortOrder
@@ -48677,32 +51544,6 @@ export namespace Prisma {
     status?: SortOrder
     requestedOn?: SortOrder
     attemptOn?: SortOrder
-  }
-  export type JsonWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedJsonFilter<$PrismaModel>
-    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type AssetModuleCountOrderByAggregateInput = {
@@ -49005,6 +51846,20 @@ export namespace Prisma {
     connect?: JobPostingWhereUniqueInput | JobPostingWhereUniqueInput[]
   }
 
+  export type FormCreateNestedManyWithoutProjectInput = {
+    create?: XOR<FormCreateWithoutProjectInput, FormUncheckedCreateWithoutProjectInput> | FormCreateWithoutProjectInput[] | FormUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormCreateOrConnectWithoutProjectInput | FormCreateOrConnectWithoutProjectInput[]
+    createMany?: FormCreateManyProjectInputEnvelope
+    connect?: FormWhereUniqueInput | FormWhereUniqueInput[]
+  }
+
+  export type FormSubmissionCreateNestedManyWithoutProjectInput = {
+    create?: XOR<FormSubmissionCreateWithoutProjectInput, FormSubmissionUncheckedCreateWithoutProjectInput> | FormSubmissionCreateWithoutProjectInput[] | FormSubmissionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutProjectInput | FormSubmissionCreateOrConnectWithoutProjectInput[]
+    createMany?: FormSubmissionCreateManyProjectInputEnvelope
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+  }
+
   export type AccountCreateNestedManyWithoutDefaultProjectAssetInput = {
     create?: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput> | AccountCreateWithoutDefaultProjectAssetInput[] | AccountUncheckedCreateWithoutDefaultProjectAssetInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutDefaultProjectAssetInput | AccountCreateOrConnectWithoutDefaultProjectAssetInput[]
@@ -49143,6 +51998,20 @@ export namespace Prisma {
     connectOrCreate?: JobPostingCreateOrConnectWithoutAssetInput | JobPostingCreateOrConnectWithoutAssetInput[]
     createMany?: JobPostingCreateManyAssetInputEnvelope
     connect?: JobPostingWhereUniqueInput | JobPostingWhereUniqueInput[]
+  }
+
+  export type FormUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<FormCreateWithoutProjectInput, FormUncheckedCreateWithoutProjectInput> | FormCreateWithoutProjectInput[] | FormUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormCreateOrConnectWithoutProjectInput | FormCreateOrConnectWithoutProjectInput[]
+    createMany?: FormCreateManyProjectInputEnvelope
+    connect?: FormWhereUniqueInput | FormWhereUniqueInput[]
+  }
+
+  export type FormSubmissionUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<FormSubmissionCreateWithoutProjectInput, FormSubmissionUncheckedCreateWithoutProjectInput> | FormSubmissionCreateWithoutProjectInput[] | FormSubmissionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutProjectInput | FormSubmissionCreateOrConnectWithoutProjectInput[]
+    createMany?: FormSubmissionCreateManyProjectInputEnvelope
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
   }
 
   export type AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput = {
@@ -49420,6 +52289,34 @@ export namespace Prisma {
     update?: JobPostingUpdateWithWhereUniqueWithoutAssetInput | JobPostingUpdateWithWhereUniqueWithoutAssetInput[]
     updateMany?: JobPostingUpdateManyWithWhereWithoutAssetInput | JobPostingUpdateManyWithWhereWithoutAssetInput[]
     deleteMany?: JobPostingScalarWhereInput | JobPostingScalarWhereInput[]
+  }
+
+  export type FormUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<FormCreateWithoutProjectInput, FormUncheckedCreateWithoutProjectInput> | FormCreateWithoutProjectInput[] | FormUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormCreateOrConnectWithoutProjectInput | FormCreateOrConnectWithoutProjectInput[]
+    upsert?: FormUpsertWithWhereUniqueWithoutProjectInput | FormUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: FormCreateManyProjectInputEnvelope
+    set?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    disconnect?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    delete?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    connect?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    update?: FormUpdateWithWhereUniqueWithoutProjectInput | FormUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: FormUpdateManyWithWhereWithoutProjectInput | FormUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: FormScalarWhereInput | FormScalarWhereInput[]
+  }
+
+  export type FormSubmissionUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<FormSubmissionCreateWithoutProjectInput, FormSubmissionUncheckedCreateWithoutProjectInput> | FormSubmissionCreateWithoutProjectInput[] | FormSubmissionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutProjectInput | FormSubmissionCreateOrConnectWithoutProjectInput[]
+    upsert?: FormSubmissionUpsertWithWhereUniqueWithoutProjectInput | FormSubmissionUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: FormSubmissionCreateManyProjectInputEnvelope
+    set?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    disconnect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    delete?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    update?: FormSubmissionUpdateWithWhereUniqueWithoutProjectInput | FormSubmissionUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: FormSubmissionUpdateManyWithWhereWithoutProjectInput | FormSubmissionUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
   }
 
   export type AccountUpdateManyWithoutDefaultProjectAssetNestedInput = {
@@ -49702,6 +52599,34 @@ export namespace Prisma {
     deleteMany?: JobPostingScalarWhereInput | JobPostingScalarWhereInput[]
   }
 
+  export type FormUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<FormCreateWithoutProjectInput, FormUncheckedCreateWithoutProjectInput> | FormCreateWithoutProjectInput[] | FormUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormCreateOrConnectWithoutProjectInput | FormCreateOrConnectWithoutProjectInput[]
+    upsert?: FormUpsertWithWhereUniqueWithoutProjectInput | FormUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: FormCreateManyProjectInputEnvelope
+    set?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    disconnect?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    delete?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    connect?: FormWhereUniqueInput | FormWhereUniqueInput[]
+    update?: FormUpdateWithWhereUniqueWithoutProjectInput | FormUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: FormUpdateManyWithWhereWithoutProjectInput | FormUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: FormScalarWhereInput | FormScalarWhereInput[]
+  }
+
+  export type FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<FormSubmissionCreateWithoutProjectInput, FormSubmissionUncheckedCreateWithoutProjectInput> | FormSubmissionCreateWithoutProjectInput[] | FormSubmissionUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutProjectInput | FormSubmissionCreateOrConnectWithoutProjectInput[]
+    upsert?: FormSubmissionUpsertWithWhereUniqueWithoutProjectInput | FormSubmissionUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: FormSubmissionCreateManyProjectInputEnvelope
+    set?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    disconnect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    delete?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    update?: FormSubmissionUpdateWithWhereUniqueWithoutProjectInput | FormSubmissionUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: FormSubmissionUpdateManyWithWhereWithoutProjectInput | FormSubmissionUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput = {
     create?: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput> | AccountCreateWithoutDefaultProjectAssetInput[] | AccountUncheckedCreateWithoutDefaultProjectAssetInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutDefaultProjectAssetInput | AccountCreateOrConnectWithoutDefaultProjectAssetInput[]
@@ -49714,6 +52639,90 @@ export namespace Prisma {
     update?: AccountUpdateWithWhereUniqueWithoutDefaultProjectAssetInput | AccountUpdateWithWhereUniqueWithoutDefaultProjectAssetInput[]
     updateMany?: AccountUpdateManyWithWhereWithoutDefaultProjectAssetInput | AccountUpdateManyWithWhereWithoutDefaultProjectAssetInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
+  }
+
+  export type AssetCreateNestedOneWithoutFormsInput = {
+    create?: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutFormsInput
+    connect?: AssetWhereUniqueInput
+  }
+
+  export type FormSubmissionCreateNestedManyWithoutFormInput = {
+    create?: XOR<FormSubmissionCreateWithoutFormInput, FormSubmissionUncheckedCreateWithoutFormInput> | FormSubmissionCreateWithoutFormInput[] | FormSubmissionUncheckedCreateWithoutFormInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutFormInput | FormSubmissionCreateOrConnectWithoutFormInput[]
+    createMany?: FormSubmissionCreateManyFormInputEnvelope
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+  }
+
+  export type FormSubmissionUncheckedCreateNestedManyWithoutFormInput = {
+    create?: XOR<FormSubmissionCreateWithoutFormInput, FormSubmissionUncheckedCreateWithoutFormInput> | FormSubmissionCreateWithoutFormInput[] | FormSubmissionUncheckedCreateWithoutFormInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutFormInput | FormSubmissionCreateOrConnectWithoutFormInput[]
+    createMany?: FormSubmissionCreateManyFormInputEnvelope
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+  }
+
+  export type AssetUpdateOneRequiredWithoutFormsNestedInput = {
+    create?: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutFormsInput
+    upsert?: AssetUpsertWithoutFormsInput
+    connect?: AssetWhereUniqueInput
+    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutFormsInput, AssetUpdateWithoutFormsInput>, AssetUncheckedUpdateWithoutFormsInput>
+  }
+
+  export type FormSubmissionUpdateManyWithoutFormNestedInput = {
+    create?: XOR<FormSubmissionCreateWithoutFormInput, FormSubmissionUncheckedCreateWithoutFormInput> | FormSubmissionCreateWithoutFormInput[] | FormSubmissionUncheckedCreateWithoutFormInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutFormInput | FormSubmissionCreateOrConnectWithoutFormInput[]
+    upsert?: FormSubmissionUpsertWithWhereUniqueWithoutFormInput | FormSubmissionUpsertWithWhereUniqueWithoutFormInput[]
+    createMany?: FormSubmissionCreateManyFormInputEnvelope
+    set?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    disconnect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    delete?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    update?: FormSubmissionUpdateWithWhereUniqueWithoutFormInput | FormSubmissionUpdateWithWhereUniqueWithoutFormInput[]
+    updateMany?: FormSubmissionUpdateManyWithWhereWithoutFormInput | FormSubmissionUpdateManyWithWhereWithoutFormInput[]
+    deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
+  }
+
+  export type FormSubmissionUncheckedUpdateManyWithoutFormNestedInput = {
+    create?: XOR<FormSubmissionCreateWithoutFormInput, FormSubmissionUncheckedCreateWithoutFormInput> | FormSubmissionCreateWithoutFormInput[] | FormSubmissionUncheckedCreateWithoutFormInput[]
+    connectOrCreate?: FormSubmissionCreateOrConnectWithoutFormInput | FormSubmissionCreateOrConnectWithoutFormInput[]
+    upsert?: FormSubmissionUpsertWithWhereUniqueWithoutFormInput | FormSubmissionUpsertWithWhereUniqueWithoutFormInput[]
+    createMany?: FormSubmissionCreateManyFormInputEnvelope
+    set?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    disconnect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    delete?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+    update?: FormSubmissionUpdateWithWhereUniqueWithoutFormInput | FormSubmissionUpdateWithWhereUniqueWithoutFormInput[]
+    updateMany?: FormSubmissionUpdateManyWithWhereWithoutFormInput | FormSubmissionUpdateManyWithWhereWithoutFormInput[]
+    deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
+  }
+
+  export type AssetCreateNestedOneWithoutFormSubmissionsInput = {
+    create?: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutFormSubmissionsInput
+    connect?: AssetWhereUniqueInput
+  }
+
+  export type FormCreateNestedOneWithoutSubmissionsInput = {
+    create?: XOR<FormCreateWithoutSubmissionsInput, FormUncheckedCreateWithoutSubmissionsInput>
+    connectOrCreate?: FormCreateOrConnectWithoutSubmissionsInput
+    connect?: FormWhereUniqueInput
+  }
+
+  export type AssetUpdateOneRequiredWithoutFormSubmissionsNestedInput = {
+    create?: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutFormSubmissionsInput
+    upsert?: AssetUpsertWithoutFormSubmissionsInput
+    connect?: AssetWhereUniqueInput
+    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutFormSubmissionsInput, AssetUpdateWithoutFormSubmissionsInput>, AssetUncheckedUpdateWithoutFormSubmissionsInput>
+  }
+
+  export type FormUpdateOneRequiredWithoutSubmissionsNestedInput = {
+    create?: XOR<FormCreateWithoutSubmissionsInput, FormUncheckedCreateWithoutSubmissionsInput>
+    connectOrCreate?: FormCreateOrConnectWithoutSubmissionsInput
+    upsert?: FormUpsertWithoutSubmissionsInput
+    connect?: FormWhereUniqueInput
+    update?: XOR<XOR<FormUpdateToOneWithWhereWithoutSubmissionsInput, FormUpdateWithoutSubmissionsInput>, FormUncheckedUpdateWithoutSubmissionsInput>
   }
 
   export type AssetCreateNestedOneWithoutProfilesInput = {
@@ -50537,6 +53546,29 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
@@ -50604,29 +53636,6 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
-  export type NestedJsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type AssetCreateWithoutDefaultProjectAccountsInput = {
     id: string
@@ -50662,6 +53671,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
   }
 
   export type AssetUncheckedCreateWithoutDefaultProjectAccountsInput = {
@@ -50698,6 +53709,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type AssetCreateOrConnectWithoutDefaultProjectAccountsInput = {
@@ -50776,6 +53789,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutDefaultProjectAccountsInput = {
@@ -50812,6 +53827,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type RoleUpsertWithWhereUniqueWithoutAccountInput = {
@@ -50875,6 +53892,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -50911,6 +53930,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -50992,6 +54013,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -51028,6 +54051,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -51099,6 +54124,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -51135,6 +54162,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -51187,6 +54216,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -51223,6 +54254,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -51789,6 +54822,60 @@ export namespace Prisma {
 
   export type JobPostingCreateManyAssetInputEnvelope = {
     data: JobPostingCreateManyAssetInput | JobPostingCreateManyAssetInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FormCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    submissions?: FormSubmissionCreateNestedManyWithoutFormInput
+  }
+
+  export type FormUncheckedCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    submissions?: FormSubmissionUncheckedCreateNestedManyWithoutFormInput
+  }
+
+  export type FormCreateOrConnectWithoutProjectInput = {
+    where: FormWhereUniqueInput
+    create: XOR<FormCreateWithoutProjectInput, FormUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FormCreateManyProjectInputEnvelope = {
+    data: FormCreateManyProjectInput | FormCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FormSubmissionCreateWithoutProjectInput = {
+    id?: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+    form: FormCreateNestedOneWithoutSubmissionsInput
+  }
+
+  export type FormSubmissionUncheckedCreateWithoutProjectInput = {
+    id?: string
+    formId: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+  }
+
+  export type FormSubmissionCreateOrConnectWithoutProjectInput = {
+    where: FormSubmissionWhereUniqueInput
+    create: XOR<FormSubmissionCreateWithoutProjectInput, FormSubmissionUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FormSubmissionCreateManyProjectInputEnvelope = {
+    data: FormSubmissionCreateManyProjectInput | FormSubmissionCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -52377,6 +55464,62 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
   }
 
+  export type FormUpsertWithWhereUniqueWithoutProjectInput = {
+    where: FormWhereUniqueInput
+    update: XOR<FormUpdateWithoutProjectInput, FormUncheckedUpdateWithoutProjectInput>
+    create: XOR<FormCreateWithoutProjectInput, FormUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FormUpdateWithWhereUniqueWithoutProjectInput = {
+    where: FormWhereUniqueInput
+    data: XOR<FormUpdateWithoutProjectInput, FormUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type FormUpdateManyWithWhereWithoutProjectInput = {
+    where: FormScalarWhereInput
+    data: XOR<FormUpdateManyMutationInput, FormUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type FormScalarWhereInput = {
+    AND?: FormScalarWhereInput | FormScalarWhereInput[]
+    OR?: FormScalarWhereInput[]
+    NOT?: FormScalarWhereInput | FormScalarWhereInput[]
+    id?: StringFilter<"Form"> | string
+    projectId?: StringFilter<"Form"> | string
+    name?: StringFilter<"Form"> | string
+    slug?: StringFilter<"Form"> | string
+    fields?: JsonFilter<"Form">
+    createdOn?: DateTimeFilter<"Form"> | Date | string
+  }
+
+  export type FormSubmissionUpsertWithWhereUniqueWithoutProjectInput = {
+    where: FormSubmissionWhereUniqueInput
+    update: XOR<FormSubmissionUpdateWithoutProjectInput, FormSubmissionUncheckedUpdateWithoutProjectInput>
+    create: XOR<FormSubmissionCreateWithoutProjectInput, FormSubmissionUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FormSubmissionUpdateWithWhereUniqueWithoutProjectInput = {
+    where: FormSubmissionWhereUniqueInput
+    data: XOR<FormSubmissionUpdateWithoutProjectInput, FormSubmissionUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type FormSubmissionUpdateManyWithWhereWithoutProjectInput = {
+    where: FormSubmissionScalarWhereInput
+    data: XOR<FormSubmissionUpdateManyMutationInput, FormSubmissionUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type FormSubmissionScalarWhereInput = {
+    AND?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
+    OR?: FormSubmissionScalarWhereInput[]
+    NOT?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
+    id?: StringFilter<"FormSubmission"> | string
+    projectId?: StringFilter<"FormSubmission"> | string
+    formId?: StringFilter<"FormSubmission"> | string
+    response?: JsonFilter<"FormSubmission">
+    postedOn?: DateTimeFilter<"FormSubmission"> | Date | string
+    status?: StringFilter<"FormSubmission"> | string
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutDefaultProjectAssetInput, AccountUncheckedUpdateWithoutDefaultProjectAssetInput>
@@ -52406,6 +55549,436 @@ export namespace Prisma {
     status?: StringFilter<"Account"> | string
     moreDetails?: JsonNullableFilter<"Account">
     defaultProject?: StringNullableFilter<"Account"> | string | null
+  }
+
+  export type AssetCreateWithoutFormsInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainCreateNestedManyWithoutAssetInput
+    profiles?: ProfileCreateNestedManyWithoutAssetInput
+    pages?: PageCreateNestedManyWithoutAssetInput
+    paths?: PagePathCreateNestedManyWithoutAssetInput
+    sections?: SectionCreateNestedManyWithoutAssetInput
+    datalists?: DatalistCreateNestedManyWithoutAssetInput
+    sources?: DataSourceCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableCreateNestedManyWithoutAssetInput
+    redirects?: RedirectCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileCreateNestedManyWithoutAssetInput
+    allocations?: AllocationCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
+    teams?: TeamCreateNestedManyWithoutAssetInput
+    members?: MemberCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+  }
+
+  export type AssetUncheckedCreateWithoutFormsInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
+    profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
+    pages?: PageUncheckedCreateNestedManyWithoutAssetInput
+    paths?: PagePathUncheckedCreateNestedManyWithoutAssetInput
+    sections?: SectionUncheckedCreateNestedManyWithoutAssetInput
+    datalists?: DatalistUncheckedCreateNestedManyWithoutAssetInput
+    sources?: DataSourceUncheckedCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableUncheckedCreateNestedManyWithoutAssetInput
+    redirects?: RedirectUncheckedCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileUncheckedCreateNestedManyWithoutAssetInput
+    allocations?: AllocationUncheckedCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureUncheckedCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentUncheckedCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupUncheckedCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
+    teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
+    members?: MemberUncheckedCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+  }
+
+  export type AssetCreateOrConnectWithoutFormsInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
+  }
+
+  export type FormSubmissionCreateWithoutFormInput = {
+    id?: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+    project: AssetCreateNestedOneWithoutFormSubmissionsInput
+  }
+
+  export type FormSubmissionUncheckedCreateWithoutFormInput = {
+    id?: string
+    projectId: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+  }
+
+  export type FormSubmissionCreateOrConnectWithoutFormInput = {
+    where: FormSubmissionWhereUniqueInput
+    create: XOR<FormSubmissionCreateWithoutFormInput, FormSubmissionUncheckedCreateWithoutFormInput>
+  }
+
+  export type FormSubmissionCreateManyFormInputEnvelope = {
+    data: FormSubmissionCreateManyFormInput | FormSubmissionCreateManyFormInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AssetUpsertWithoutFormsInput = {
+    update: XOR<AssetUpdateWithoutFormsInput, AssetUncheckedUpdateWithoutFormsInput>
+    create: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
+    where?: AssetWhereInput
+  }
+
+  export type AssetUpdateToOneWithWhereWithoutFormsInput = {
+    where?: AssetWhereInput
+    data: XOR<AssetUpdateWithoutFormsInput, AssetUncheckedUpdateWithoutFormsInput>
+  }
+
+  export type AssetUpdateWithoutFormsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUpdateManyWithoutAssetNestedInput
+    pages?: PageUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUpdateManyWithoutAssetNestedInput
+    sections?: SectionUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
+    teams?: TeamUpdateManyWithoutAssetNestedInput
+    members?: MemberUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateWithoutFormsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
+    pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUncheckedUpdateManyWithoutAssetNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUncheckedUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUncheckedUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUncheckedUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUncheckedUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUncheckedUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUncheckedUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUncheckedUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUncheckedUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUncheckedUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
+    members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+  }
+
+  export type FormSubmissionUpsertWithWhereUniqueWithoutFormInput = {
+    where: FormSubmissionWhereUniqueInput
+    update: XOR<FormSubmissionUpdateWithoutFormInput, FormSubmissionUncheckedUpdateWithoutFormInput>
+    create: XOR<FormSubmissionCreateWithoutFormInput, FormSubmissionUncheckedCreateWithoutFormInput>
+  }
+
+  export type FormSubmissionUpdateWithWhereUniqueWithoutFormInput = {
+    where: FormSubmissionWhereUniqueInput
+    data: XOR<FormSubmissionUpdateWithoutFormInput, FormSubmissionUncheckedUpdateWithoutFormInput>
+  }
+
+  export type FormSubmissionUpdateManyWithWhereWithoutFormInput = {
+    where: FormSubmissionScalarWhereInput
+    data: XOR<FormSubmissionUpdateManyMutationInput, FormSubmissionUncheckedUpdateManyWithoutFormInput>
+  }
+
+  export type AssetCreateWithoutFormSubmissionsInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainCreateNestedManyWithoutAssetInput
+    profiles?: ProfileCreateNestedManyWithoutAssetInput
+    pages?: PageCreateNestedManyWithoutAssetInput
+    paths?: PagePathCreateNestedManyWithoutAssetInput
+    sections?: SectionCreateNestedManyWithoutAssetInput
+    datalists?: DatalistCreateNestedManyWithoutAssetInput
+    sources?: DataSourceCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableCreateNestedManyWithoutAssetInput
+    redirects?: RedirectCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileCreateNestedManyWithoutAssetInput
+    allocations?: AllocationCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
+    teams?: TeamCreateNestedManyWithoutAssetInput
+    members?: MemberCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+  }
+
+  export type AssetUncheckedCreateWithoutFormSubmissionsInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
+    profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
+    pages?: PageUncheckedCreateNestedManyWithoutAssetInput
+    paths?: PagePathUncheckedCreateNestedManyWithoutAssetInput
+    sections?: SectionUncheckedCreateNestedManyWithoutAssetInput
+    datalists?: DatalistUncheckedCreateNestedManyWithoutAssetInput
+    sources?: DataSourceUncheckedCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableUncheckedCreateNestedManyWithoutAssetInput
+    redirects?: RedirectUncheckedCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileUncheckedCreateNestedManyWithoutAssetInput
+    allocations?: AllocationUncheckedCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureUncheckedCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentUncheckedCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupUncheckedCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
+    teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
+    members?: MemberUncheckedCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+  }
+
+  export type AssetCreateOrConnectWithoutFormSubmissionsInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
+  }
+
+  export type FormCreateWithoutSubmissionsInput = {
+    id?: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    project: AssetCreateNestedOneWithoutFormsInput
+  }
+
+  export type FormUncheckedCreateWithoutSubmissionsInput = {
+    id?: string
+    projectId: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+  }
+
+  export type FormCreateOrConnectWithoutSubmissionsInput = {
+    where: FormWhereUniqueInput
+    create: XOR<FormCreateWithoutSubmissionsInput, FormUncheckedCreateWithoutSubmissionsInput>
+  }
+
+  export type AssetUpsertWithoutFormSubmissionsInput = {
+    update: XOR<AssetUpdateWithoutFormSubmissionsInput, AssetUncheckedUpdateWithoutFormSubmissionsInput>
+    create: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
+    where?: AssetWhereInput
+  }
+
+  export type AssetUpdateToOneWithWhereWithoutFormSubmissionsInput = {
+    where?: AssetWhereInput
+    data: XOR<AssetUpdateWithoutFormSubmissionsInput, AssetUncheckedUpdateWithoutFormSubmissionsInput>
+  }
+
+  export type AssetUpdateWithoutFormSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUpdateManyWithoutAssetNestedInput
+    pages?: PageUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUpdateManyWithoutAssetNestedInput
+    sections?: SectionUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
+    teams?: TeamUpdateManyWithoutAssetNestedInput
+    members?: MemberUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateWithoutFormSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
+    pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUncheckedUpdateManyWithoutAssetNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUncheckedUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUncheckedUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUncheckedUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUncheckedUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUncheckedUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUncheckedUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUncheckedUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUncheckedUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUncheckedUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
+    members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+  }
+
+  export type FormUpsertWithoutSubmissionsInput = {
+    update: XOR<FormUpdateWithoutSubmissionsInput, FormUncheckedUpdateWithoutSubmissionsInput>
+    create: XOR<FormCreateWithoutSubmissionsInput, FormUncheckedCreateWithoutSubmissionsInput>
+    where?: FormWhereInput
+  }
+
+  export type FormUpdateToOneWithWhereWithoutSubmissionsInput = {
+    where?: FormWhereInput
+    data: XOR<FormUpdateWithoutSubmissionsInput, FormUncheckedUpdateWithoutSubmissionsInput>
+  }
+
+  export type FormUpdateWithoutSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: AssetUpdateOneRequiredWithoutFormsNestedInput
+  }
+
+  export type FormUncheckedUpdateWithoutSubmissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssetCreateWithoutProfilesInput = {
@@ -52441,6 +56014,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -52477,6 +56052,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -52529,6 +56106,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -52565,6 +56144,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -52601,6 +56182,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -52637,6 +56220,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -52737,6 +56322,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -52773,6 +56360,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -52852,6 +56441,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -52888,6 +56479,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -52971,6 +56564,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53007,6 +56602,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53080,6 +56677,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53116,6 +56715,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53168,6 +56769,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53204,6 +56807,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53240,6 +56845,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53276,6 +56883,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53352,6 +56961,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53388,6 +56999,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53580,6 +57193,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53616,6 +57231,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53668,6 +57285,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53704,6 +57323,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53740,6 +57361,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53776,6 +57399,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53828,6 +57453,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53864,6 +57491,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -53900,6 +57529,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53936,6 +57567,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53988,6 +57621,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54024,6 +57659,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54060,6 +57697,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54096,6 +57735,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54148,6 +57789,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54184,6 +57827,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54220,6 +57865,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54256,6 +57903,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54308,6 +57957,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54344,6 +57995,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54549,6 +58202,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54585,6 +58240,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54696,6 +58353,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54732,6 +58391,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54880,6 +58541,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54916,6 +58579,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54968,6 +58633,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55004,6 +58671,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55040,6 +58709,8 @@ export namespace Prisma {
     assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55076,6 +58747,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55164,6 +58837,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55200,6 +58875,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55252,6 +58929,8 @@ export namespace Prisma {
     assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
     teams?: TeamCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55288,6 +58967,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55363,6 +59044,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
     teams?: TeamUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55399,6 +59082,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55494,6 +59179,8 @@ export namespace Prisma {
     assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55530,6 +59217,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55612,6 +59301,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55648,6 +59339,8 @@ export namespace Prisma {
     assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55764,6 +59457,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55800,6 +59495,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55852,6 +59549,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55888,6 +59587,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55924,6 +59625,8 @@ export namespace Prisma {
     teams?: TeamCreateNestedManyWithoutAssetInput
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55960,6 +59663,8 @@ export namespace Prisma {
     teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56012,6 +59717,8 @@ export namespace Prisma {
     teams?: TeamUpdateManyWithoutAssetNestedInput
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56048,6 +59755,8 @@ export namespace Prisma {
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56264,6 +59973,22 @@ export namespace Prisma {
     openings?: number | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+  }
+
+  export type FormCreateManyProjectInput = {
+    id?: string
+    name: string
+    slug: string
+    fields: JsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+  }
+
+  export type FormSubmissionCreateManyProjectInput = {
+    id?: string
+    formId: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
   }
 
   export type AccountCreateManyDefaultProjectAssetInput = {
@@ -56836,6 +60561,56 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type FormUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    submissions?: FormSubmissionUpdateManyWithoutFormNestedInput
+  }
+
+  export type FormUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    submissions?: FormSubmissionUncheckedUpdateManyWithoutFormNestedInput
+  }
+
+  export type FormUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    fields?: JsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FormSubmissionUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    form?: FormUpdateOneRequiredWithoutSubmissionsNestedInput
+  }
+
+  export type FormSubmissionUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    formId?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FormSubmissionUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    formId?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
   export type AccountUpdateWithoutDefaultProjectAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
@@ -56869,6 +60644,38 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type FormSubmissionCreateManyFormInput = {
+    id?: string
+    projectId: string
+    response: JsonNullValueInput | InputJsonValue
+    postedOn?: Date | string
+    status: string
+  }
+
+  export type FormSubmissionUpdateWithoutFormInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    project?: AssetUpdateOneRequiredWithoutFormSubmissionsNestedInput
+  }
+
+  export type FormSubmissionUncheckedUpdateWithoutFormInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FormSubmissionUncheckedUpdateManyWithoutFormInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    response?: JsonNullValueInput | InputJsonValue
+    postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
   }
 
   export type PagePathCreateManyPageInput = {

@@ -165,6 +165,24 @@ exports.Prisma.AssetScalarFieldEnum = {
   type: 'type'
 };
 
+exports.Prisma.FormScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  name: 'name',
+  slug: 'slug',
+  fields: 'fields',
+  createdOn: 'createdOn'
+};
+
+exports.Prisma.FormSubmissionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  formId: 'formId',
+  response: 'response',
+  postedOn: 'postedOn',
+  status: 'status'
+};
+
 exports.Prisma.ProfileScalarFieldEnum = {
   id: 'id',
   assetId: 'assetId',
@@ -536,6 +554,8 @@ exports.Prisma.ModelName = {
   Role: 'Role',
   Domain: 'Domain',
   Asset: 'Asset',
+  Form: 'Form',
+  FormSubmission: 'FormSubmission',
   Profile: 'Profile',
   Page: 'Page',
   PagePath: 'PagePath',
