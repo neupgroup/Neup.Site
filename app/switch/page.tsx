@@ -15,6 +15,7 @@ import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
+import { appendProject } from '@/inapp/helpers/application-mode';
 
 function ProjectRow({
     asset,
@@ -81,6 +82,7 @@ function AssetList() {
 
     const { toast } = useToast();
     const projectId = searchParams.get('project');
+    const defaultProjectId = allAssets.find((asset) => asset.isDefault)?.id ?? null;
 
     useEffect(() => {
         const fetchAssets = async () => {
@@ -166,7 +168,7 @@ function AssetList() {
         <div className="w-full space-y-6">
             <div>
                     <Link
-                        href="/switch/new"
+                        href={appendProject('/switch/new', projectId ?? defaultProjectId)}
                         className={[
                             'flex w-full items-center gap-3 border p-4 transition-colors hover:bg-muted/90',
                             allAssets.length > 0 ? 'rounded-t-md border-b-0' : 'rounded-md',

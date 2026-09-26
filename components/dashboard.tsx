@@ -78,6 +78,7 @@ import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/inapp/helpers/ass
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/accounts';
 import { appendProject } from '@/inapp/helpers/application-mode';
+import { getAssetsForAccount } from '@/services/assets';
 
 const navLinkClassName = (isActive: boolean) => cn(
   'flex w-full items-center justify-start gap-2 rounded-md border border-transparent px-3 py-2 text-left text-sm font-semibold text-foreground transition-colors duration-300 hover:bg-primary/10 hover:text-primary active:bg-primary/20 active:text-primary',
@@ -343,7 +344,28 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [propertyId, setPropertyId] = useState<string | null>(null);
   const [currentUrl, setCurrentUrl] = useState('');
+  const [defaultProject, setDefaultProject] = useState<string | null>(null);
   const project = searchParams.get('project');
+
+  useEffect(() => {
+    if (pathname !== '/switch' || project) {
+      setDefaultProject(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    getAssetsForAccount().then(({ assets }) => {
+      if (cancelled) return;
+      setDefaultProject(assets?.find((asset) => asset.isDefault)?.id ?? null);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname, project]);
+
+  const projectForLinks = project ?? (pathname === '/switch' ? defaultProject : null);
 
   useEffect(() => {
     setPropertyId(project);
@@ -367,7 +389,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
-      <Header isMobileMenuOpen={isMobileMenuOpen} toggleMobileMenu={toggleMobileMenu} project={project} />
+      <Header isMobileMenuOpen={isMobileMenuOpen} toggleMobileMenu={toggleMobileMenu} project={projectForLinks} />
 
       {/* Mobile Menu */}
       <div className={cn(
@@ -376,7 +398,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
       )}>
         <ScrollArea className="h-full">
           <div className="p-4">
-            <MainNavContent currentPath={pathname} currentUrl={currentUrl} isAuthenticated={isAuthenticated} propertyId={propertyId} project={project} onLinkClick={closeMobileMenu} />
+            <MainNavContent currentPath={pathname} currentUrl={currentUrl} isAuthenticated={isAuthenticated} propertyId={propertyId} project={projectForLinks} onLinkClick={closeMobileMenu} />
           </div>
         </ScrollArea>
       </div>
@@ -388,7 +410,7 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
           className="hidden h-[calc(100vh-4rem)] w-[280px] min-w-[280px] shrink-0 flex-col border-r bg-background lg:sticky lg:top-16 lg:flex"
         >
           <div className="flex flex-1 flex-col overflow-y-auto p-4 custom-scrollbar">
-            <MainNavContent currentPath={pathname} currentUrl={currentUrl} isAuthenticated={isAuthenticated} propertyId={propertyId} project={project} />
+            <MainNavContent currentPath={pathname} currentUrl={currentUrl} isAuthenticated={isAuthenticated} propertyId={propertyId} project={projectForLinks} />
           </div>
         </Sidebar>
 
