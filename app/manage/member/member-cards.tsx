@@ -314,7 +314,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                         return;
                       }
 
-                      router.push(appendProject(`/manage/members/${member.id}`, project));
+                      router.push(appendProject(`/manage/members/${member.slug}--${member.id}`, project));
                     }}
                     onKeyDown={(event) => {
                       if (event.key !== 'Enter' && event.key !== ' ') {
@@ -322,7 +322,7 @@ export function MemberCards({ initialMembers, initialTeams }: MemberCardsProps) 
                       }
 
                       event.preventDefault();
-                      router.push(appendProject(`/manage/members/${member.id}`, project));
+                      router.push(appendProject(`/manage/members/${member.slug}--${member.id}`, project));
                     }}
                     onDragStart={(event) => {
                       event.stopPropagation();

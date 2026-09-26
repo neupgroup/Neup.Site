@@ -3,8 +3,8 @@ import { createMember, getMembers } from '@/services/members';
 import { logApiError, requireProject } from './_helpers';
 
 function apiMember(member: Record<string, unknown>) {
-  const { imageUrl, ...record } = member;
-  return { ...record, displayImage: imageUrl ?? null };
+  const { id, imageUrl, slug, ...record } = member as Record<string, unknown> & { id?: string; imageUrl?: string | null; slug?: string };
+  return { ...record, slug: `${slug}--${id}`, displayImage: imageUrl ?? null };
 }
 
 export async function GET(request: Request) {

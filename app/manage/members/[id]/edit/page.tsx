@@ -27,6 +27,12 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+function parseMemberReference(reference: string) {
+  const separator = reference.lastIndexOf('--');
+  if (separator <= 0 || separator === reference.length - 2) return null;
+  return { slug: reference.slice(0, separator), id: reference.slice(separator + 2) };
+}
+
 export default function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
   usePageTitle('Edit Member');
   const router = useRouter();
@@ -51,9 +57,11 @@ export default function EditMemberPage({ params }: { params: Promise<{ id: strin
 
   useEffect(() => {
     let active = true;
-    params.then(async ({ id }) => {
-      setMemberId(id);
-      const result = await getMember(id);
+    params.then(async ({ id: reference }) => {
+      const parsed = parseMemberReference(reference);
+      if (!parsed) return;
+      setMemberId(reference);
+      const result = await getMember(parsed.id);
       if (!active) return;
       if (!result.success || !result.member) {
         toast({ variant: 'destructive', title: 'Error', description: result.error || 'Member not found.' });
@@ -70,14 +78,15 @@ export default function EditMemberPage({ params }: { params: Promise<{ id: strin
   }, [form, params, toast]);
 
   const onSubmit = async (values: FormValues) => {
-    const { id } = await params;
-    const result = await updateMember(id, { ...values, imageUrl: values.imageUrl || undefined });
+    const reference = parseMemberReference((await params).id);
+    if (!reference) return;
+    const result = await updateMember(reference.id, { ...values, imageUrl: values.imageUrl || undefined });
     if (!result.success) {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
       return;
     }
     toast({ title: 'Member Updated' });
-    router.push(appendProject(`/manage/members/${id}`, project));
+    router.push(appendProject(`/manage/members/${reference.slug}--${reference.id}`, project));
   };
 
   return (

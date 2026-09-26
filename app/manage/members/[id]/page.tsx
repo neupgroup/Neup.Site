@@ -15,7 +15,7 @@ import { appendProject } from '@/inapp/helpers/application-mode';
 
 ::public
 
-Member detail page for `/manage/members/[id]`.
+Member detail page for `/manage/members/[slug]`.
 
 It returns a 404 when the member does not exist for the active asset and shows
 the member's stored profile fields.
@@ -32,9 +32,15 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
+function parseMemberReference(reference: string) {
+  const separator = reference.lastIndexOf('--');
+  if (separator <= 0 || separator === reference.length - 2) return null;
+  return { slug: reference.slice(0, separator), id: reference.slice(separator + 2) };
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const { member } = await getMember(id);
+  const reference = parseMemberReference((await params).id);
+  const { member } = reference ? await getMember(reference.id) : { member: undefined };
   return generatePageMetadata({
     title: member?.name || 'Member',
     prefix: 'Member',
@@ -52,9 +58,10 @@ export default async function ViewMemberPage({
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const project = query.project?.trim() || null;
-  const { member, error } = await getMember(id);
+  const reference = parseMemberReference(id);
+  const { member, error } = reference ? await getMember(reference.id) : { member: undefined, error: 'Invalid member reference.' };
 
-  if (error || !member) {
+  if (error || !member || !reference || member.slug !== reference.slug) {
     notFound();
   }
 
@@ -78,7 +85,7 @@ export default async function ViewMemberPage({
           </div>
         </CardHeader>
           <CardContent className="space-y-4">
-          <LinkButton variant="solid" href={appendProject(`/manage/members/${member.id}/edit`, project)}>
+          <LinkButton variant="solid" href={appendProject(`/manage/members/${member.slug}--${member.id}/edit`, project)}>
             Edit Member
           </LinkButton>
           <div className="rounded-md border px-3 py-2 text-sm">
