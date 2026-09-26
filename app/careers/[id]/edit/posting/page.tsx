@@ -27,7 +27,7 @@ export default function JobPostingOptionsPage({ params }: { params: Promise<{ id
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="mb-4">
-        <LinkButton variant="outlined" href={`/manage/hiring/${id}`}>
+        <LinkButton variant="outlined" href={`/careers/${id}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Job Posting
           </LinkButton>
@@ -69,7 +69,7 @@ export default function JobPostingOptionsPage({ params }: { params: Promise<{ id
                          <RadioGroupItem value="urgent" id="urgent-hire" />
                         <div className="flex-1">
                             <h3 className="font-semibold">Hire Urgently</h3>
-                            <p className="text-sm text-muted-foreground">Promote your job posting for faster hiring.</p>
+                            <p className="text-sm text-muted-foreground">Promote your job posting for faster careers.</p>
                         </div>
                     </CardHeader>
                     {postingOption === 'urgent' && (

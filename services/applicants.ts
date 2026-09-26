@@ -32,7 +32,7 @@ export async function createApplicant(jobId: string, data: Partial<Omit<Applican
       },
       select: { id: true },
     });
-    revalidatePath(`/manage/hiring/${jobId}/applicants`);
+    revalidatePath(`/careers/${jobId}/applicants`);
     return { success: true, id: record.id };
   } catch (e: any) {
     await logger.error({ message: `Failed to create applicant for job ${jobId}: ${e.message}`, stack: e.stack, source: 'createApplicant' });

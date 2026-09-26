@@ -1,3 +1,4 @@
+
 'use client';
 
 import { getJobPostingById, updateJobPosting, type JobPosting } from '@/services/hiring';
@@ -15,6 +16,8 @@ import { Skeleton } from '@neup/components/ui/skeleton';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useSearchParams } from 'next/navigation';
+import { appendProject } from '@/inapp/helpers/application-mode';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { Input } from '@neup/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
@@ -119,6 +122,7 @@ function EditJobForm({ posting, onCancel, onSave }: { posting: JobPosting, onCan
 }
 
 export default function ViewJobPostingPage({ params }: { params: { id: string } }) {
+  const project = useSearchParams().get('project');
   const [posting, setPosting] = useState<JobPosting | null>(null);
   const [applicants, setApplicants] = useState<Applicant[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -177,7 +181,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   if (error || !posting) {
     return (
       <div className="w-full max-w-4xl mx-auto space-y-4">
-        <LinkButton variant="plain" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
+        <LinkButton variant="outlined" href={appendProject('/careers', project)}><ArrowLeft className="mr-2 h-4 w-4" />Back to Careers</LinkButton>
         <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'Job posting not found'}</AlertDescription></Alert>
       </div>
     );
@@ -186,7 +190,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
   return (
     <div className="w-full max-w-4xl space-y-6">
       <div className="mb-4">
-        <LinkButton variant="plain" href="/manage/hiring"><ArrowLeft className="mr-2 h-4 w-4" />Back to Hiring</LinkButton>
+        <LinkButton variant="outlined" href={appendProject('/careers', project)}><ArrowLeft className="mr-2 h-4 w-4" />Back to Careers</LinkButton>
       </div>
 
       <div className="space-y-6">
@@ -228,7 +232,7 @@ export default function ViewJobPostingPage({ params }: { params: { id: string } 
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">Applicants<LinkButton variant="outlined" size="sm" href={`/manage/hiring/${params.id}`}>View All</LinkButton></CardTitle>
+                <CardTitle className="flex items-center justify-between">Applicants<LinkButton variant="outlined" size="sm" href={`/careers/${params.id}`}>View All</LinkButton></CardTitle>
             </CardHeader>
             <CardContent>
                 {applicants && applicants.length > 0 ? (

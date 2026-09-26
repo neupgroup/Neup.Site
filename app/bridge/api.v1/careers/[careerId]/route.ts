@@ -24,7 +24,8 @@
  *   { "success": true }
  */
 import { NextResponse } from 'next/server';
-import { deleteJobPosting, getJobPostingById, parseCareerReference, updateJobPosting } from '@/services/hiring';
+import { deleteJobPosting, getJobPostingById, updateJobPosting } from '@/services/hiring';
+import { parseCareerReference } from '@/services/career-reference';
 import { requireProject } from '../../members/_helpers';
 
 function publicCareer<T extends { id: string }>(career: T) {

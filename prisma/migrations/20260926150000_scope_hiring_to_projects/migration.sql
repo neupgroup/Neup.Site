@@ -1,5 +1,6 @@
 ALTER TABLE "hiring" ADD COLUMN "projectId" TEXT;
 ALTER TABLE "hiring" ADD COLUMN "slug" TEXT;
+ALTER TABLE "hiring" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();
 
 ALTER TABLE "hiring" ALTER COLUMN "projectId" SET NOT NULL;
 ALTER TABLE "hiring" ALTER COLUMN "slug" SET NOT NULL;

@@ -6,20 +6,10 @@ import { revalidatePath } from 'next/cache';
 import { logger } from '@neup/logica/logger';
 import { getActiveProjectId } from '@/services/projects';
 import { slugify } from '@neup/core/helpers/slug';
-import { randomUUID } from 'node:crypto';
+import { parseCareerReference } from '@/services/career-reference';
 
 function normalizeCareerSlug(value: string) {
   return slugify(value, 'career').replace(/-{2,}/g, '-').toLowerCase();
-}
-
-export function careerReference(slug: string, id: string) {
-  return `${slug}--${id}`;
-}
-
-export function parseCareerReference(reference: string) {
-  const separatorIndex = reference.lastIndexOf('--');
-  if (separatorIndex <= 0 || separatorIndex === reference.length - 2) return null;
-  return { slug: reference.slice(0, separatorIndex), id: reference.slice(separatorIndex + 2) };
 }
 
 export interface JobPosting {
@@ -41,11 +31,9 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
   try {
     const projectId = (await getActiveProjectId({ required: true }))!;
     const now = new Date();
-    const id = randomUUID();
     const slug = normalizeCareerSlug(data.slug ?? data.title ?? '');
     const record = await db.jobPosting.create({
       data: {
-        id,
         title: data.title ?? '',
         projectId,
         slug,
@@ -61,7 +49,7 @@ export async function createJobPosting(data: Partial<Omit<JobPosting, 'id' | 'st
       },
       select: { id: true },
     });
-    revalidatePath('@neup/manage/hiring');
+    revalidatePath('@neup/careers');
     return { success: true, id: record.id, slug };
   } catch (e: any) {
     await logger.error({ message: `Failed to create job posting: ${e.message}`, stack: e.stack, source: 'createJobPosting' });
@@ -143,8 +131,8 @@ export async function updateJobPosting(id: string, data: Partial<Omit<JobPosting
             updatedAt: new Date(),
           },
         });
-        revalidatePath(`/manage/hiring`);
-        revalidatePath(`/manage/hiring/${id}`);
+        revalidatePath(`/careers`);
+        revalidatePath(`/careers/${id}`);
         return { success: true };
     } catch (e: any) {
         await logger.error({ message: `Failed to update job posting ${id}: ${e.message}`, stack: e.stack, source: 'updateJobPosting' });
@@ -156,7 +144,7 @@ export async function deleteJobPosting(id: string): Promise<{ success: boolean; 
     try {
         const projectId = (await getActiveProjectId({ required: true }))!;
         await db.jobPosting.delete({ where: { id, projectId } });
-        revalidatePath('@neup/manage/hiring');
+        revalidatePath('@neup/careers');
         return { success: true };
     } catch (e: any) {
         await logger.error({ message: `Failed to delete job posting ${id}: ${e.message}`, stack: e.stack, source: 'deleteJobPosting' });

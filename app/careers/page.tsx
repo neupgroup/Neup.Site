@@ -12,8 +12,8 @@ import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { useSearchParams } from 'next/navigation';
 import { appendProject } from '@/inapp/helpers/application-mode';
 
-export default function HiringDashboardPage() {
-  usePageTitle('Hiring');
+export default function CareersDashboardPage() {
+  usePageTitle('Careers');
   const searchParams = useSearchParams();
   const project = searchParams.get('project');
 
@@ -39,7 +39,7 @@ export default function HiringDashboardPage() {
   return (
     <div className="w-full space-y-8">
       <header className="space-y-2">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">Hiring</h1>
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">Careers</h1>
       </header>
       {loading ? (
         <div className="grid gap-4">
@@ -58,7 +58,7 @@ export default function HiringDashboardPage() {
           <LinkButton
             variant="plain"
             className="grid h-auto justify-start gap-4 rounded-lg border border-dashed bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr] md:items-center"
-            href={appendProject('/manage/hiring/create', project)}
+            href={appendProject('/careers/create', project)}
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <Plus className="h-5 w-5 text-muted-foreground" />
@@ -74,7 +74,7 @@ export default function HiringDashboardPage() {
               key={posting.id}
               variant="plain"
               className="grid h-auto justify-start gap-4 rounded-lg border bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr_auto] md:items-center"
-                        href={appendProject(`/manage/hiring/${posting.slug}--${posting.id}`, project)}
+                        href={appendProject(`/careers/${posting.slug}--${posting.id}`, project)}
             >
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                 <Briefcase className="h-5 w-5 text-muted-foreground" />

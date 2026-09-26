@@ -151,7 +151,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         </div>
         <SidebarNavItem href="/manage/member" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></SidebarNavItem>
         <SidebarNavItem href="/manage/projects" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></SidebarNavItem>
-        <SidebarNavItem href="/manage/hiring" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Hiring</span></SidebarNavItem>
+        <SidebarNavItem href="/careers" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Careers</span></SidebarNavItem>
         <SidebarNavItem href="/manage/billing" currentPath={currentPath} project={project} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
         <SidebarNavItem href="/manage/access" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></SidebarNavItem>
         <SidebarNavItem href="/manage/permissions" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></SidebarNavItem>
