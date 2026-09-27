@@ -159,11 +159,7 @@ export function isResolvedAssetLogoSvg(value: string | null | undefined): boolea
 }
 
 export function resolveAssetLogoUrl(value: string | null | undefined, theme?: AssetLogoTheme): string | null {
-  if (!value?.trim()) {
-    return null;
-  }
-
-  const normalizedUrl = normalizeUrl(value);
+  const normalizedUrl = normalizeUrl(value?.trim() || '/logo.svg');
   if (!normalizedUrl) {
     return null;
   }
