@@ -122,6 +122,22 @@ function resolveThemeColors(theme?: AssetLogoTheme): { primary: string; backgrou
   return { primary, background, tint };
 }
 
+function withApplicationBasePath(path: string): string {
+  if (!path.startsWith('/') || path.startsWith('//')) {
+    return path;
+  }
+
+  const basePath = process.env.NEXT_PUBLIC_APP_BASEPATH?.trim();
+  if (!basePath || basePath === '/') {
+    return path;
+  }
+
+  const normalizedBasePath = `/${basePath.replace(/^\/+|\/+$/g, '')}`;
+  return path === normalizedBasePath || path.startsWith(`${normalizedBasePath}/`)
+    ? path
+    : `${normalizedBasePath}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
 function getSvgSourcePath(value: string): string | null {
   try {
     const url = new URL(value, 'https://asset.local');
@@ -152,8 +168,10 @@ export function resolveAssetLogoUrl(value: string | null | undefined, theme?: As
     return null;
   }
 
-  if (!isResolvedAssetLogoSvg(normalizedUrl)) {
-    return normalizedUrl;
+  const resolvedUrl = withApplicationBasePath(normalizedUrl);
+
+  if (!isResolvedAssetLogoSvg(resolvedUrl)) {
+    return resolvedUrl;
   }
 
   const colors = resolveThemeColors(theme);
@@ -162,11 +180,11 @@ export function resolveAssetLogoUrl(value: string | null | undefined, theme?: As
   }
 
   const params = new URLSearchParams({
-    url: normalizedUrl,
+    url: resolvedUrl,
     primary: colors.primary,
     background: colors.background,
     tint: colors.tint,
   });
 
-  return `/bridge/api.v1/asset/logo?${params.toString()}`;
+  return withApplicationBasePath(`/bridge/api.v1/asset/logo?${params.toString()}`);
 }
