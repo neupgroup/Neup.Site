@@ -99,7 +99,7 @@ function getContentType(filePath: string): string {
 
 export async function getBuildMap(siteId: string): Promise<{ success: true; buildMap: BuildMapFile[] } | { success: false; error: string }> {
   try {
-    const asset = await db.asset.findUnique({
+    const asset = await db.project.findUnique({
       where: { id: siteId },
       select: { id: true },
     });
@@ -185,7 +185,7 @@ export async function getBuildFile(siteId: string, requestedPath: string): Promi
             where: { id: pagePath.pageId },
             select: { elements: true },
           }),
-          db.asset.findUnique({
+          db.project.findUnique({
             where: { id: siteId },
             select: { design: true },
           }),

@@ -22,7 +22,7 @@ export async function requireProject(request: Request) {
     }
   }
 
-  const project = await db.asset.findFirst({
+  const project = await db.project.findFirst({
     where: {
       id: projectId,
       ...(accountId

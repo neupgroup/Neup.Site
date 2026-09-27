@@ -91,7 +91,7 @@ export async function getManagedProjectsOverview(): Promise<{
     const accountId = await getAccountId();
     const currentProjectId = await getActiveProjectId();
 
-    const projects = await db.asset.findMany({
+    const projects = await db.project.findMany({
       where: {
         OR: [
           { ownerAccountId: accountId },
@@ -270,7 +270,7 @@ export async function deleteManagedProject(projectId: string): Promise<{ success
       return { success: false, error: 'Project ID is required.' };
     }
 
-    const result = await db.asset.deleteMany({
+    const result = await db.project.deleteMany({
       where: {
         id: normalizedProjectId,
         OR: [

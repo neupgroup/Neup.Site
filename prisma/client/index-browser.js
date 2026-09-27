@@ -148,7 +148,7 @@ exports.Prisma.DomainScalarFieldEnum = {
   isPrimary: 'isPrimary'
 };
 
-exports.Prisma.AssetScalarFieldEnum = {
+exports.Prisma.ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
   url: 'url',
@@ -553,7 +553,7 @@ exports.Prisma.ModelName = {
   Account: 'Account',
   Role: 'Role',
   Domain: 'Domain',
-  Asset: 'Asset',
+  Project: 'Project',
   Form: 'Form',
   FormSubmission: 'FormSubmission',
   Profile: 'Profile',

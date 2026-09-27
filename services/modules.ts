@@ -24,7 +24,7 @@ export async function getAssetModules(): Promise<{ success: boolean; modules?: A
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const record = await db.asset.findUnique({
+    const record = await db.project.findUnique({
       where: { id: assetId },
       select: { modules: true },
     });
@@ -55,7 +55,7 @@ export async function updateAssetModule(moduleId: string, isActive: boolean): Pr
       updateData.expiresOn = null;
     }
 
-    const record = await db.asset.findUnique({
+    const record = await db.project.findUnique({
       where: { id: assetId },
       select: { modules: true },
     });
@@ -65,7 +65,7 @@ export async function updateAssetModule(moduleId: string, isActive: boolean): Pr
       [moduleId]: updateData,
     };
 
-    await db.asset.update({
+    await db.project.update({
       where: { id: assetId },
       data: { modules: nextModules as any },
     });

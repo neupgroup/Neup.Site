@@ -121,8 +121,8 @@ export async function createAssetForAccount(input: {
     }
 
     await db.$transaction([
-      db.asset.create({ data: assetData }),
-      db.asset.update({ where: { id: assetId }, data: { design: { theme: defaultTheme } as any } }),
+      db.project.create({ data: assetData }),
+      db.project.update({ where: { id: assetId }, data: { design: { theme: defaultTheme } as any } }),
       db.profile.createMany({
         data: [
           ...(input.logoUrl?.trim()
@@ -162,7 +162,7 @@ export async function setDefaultProjectForAccount(projectId: string): Promise<{ 
   const accountId = await getAccountId();
 
   try {
-    const project = await db.asset.findFirst({
+    const project = await db.project.findFirst({
       where: {
         id: projectId,
         roles: { some: { accountId } },

@@ -17,7 +17,7 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
   }
 
   try {
-    const records = await db.asset.findMany({
+    const records = await db.project.findMany({
       where: { ownerAccountId: accountId },
       include: {
         profiles: { select: { subject: true, value: true } },

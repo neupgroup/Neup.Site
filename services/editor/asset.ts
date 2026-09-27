@@ -31,7 +31,7 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
 
   try {
     const [record, profileEntries] = await Promise.all([
-      db.asset.findUnique({ where: { id: assetId } }),
+      db.project.findUnique({ where: { id: assetId } }),
       db.profile.findMany({
         where: { assetId },
         select: { subject: true, value: true },
@@ -96,7 +96,7 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
   if (!assetId) return { success: false, error: 'Asset ID not found.' };
 
   try {
-    const existing = await db.asset.findUnique({ where: { id: assetId } });
+    const existing = await db.project.findUnique({ where: { id: assetId } });
 
     const {
       hideSitename: nextHideSitename,
@@ -154,7 +154,7 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
       };
     }
 
-    await db.asset.upsert({
+    await db.project.upsert({
       where: { id: assetId },
       create: { id: assetId, ...assetData },
       update: assetData,

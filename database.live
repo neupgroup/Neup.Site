@@ -1,4 +1,4 @@
-Table: projects, Model: Asset
+Table: projects, Model: Project
 Fields:
 > id: string, primary key;
 > name: string, default: "";

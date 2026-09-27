@@ -79,7 +79,7 @@ export async function getAccessAddProjects(projectId?: string): Promise<{
   try {
     const accountId = await getAccountId();
     const [projects, accounts] = await Promise.all([
-      db.asset.findMany({
+      db.project.findMany({
         where: {
           ...(projectId ? { id: projectId } : {}),
           OR: [
@@ -123,7 +123,7 @@ export async function addAccessRole(input: {
     if (expectedAssetId && assetId !== expectedAssetId) return { success: false, error: 'This access form is locked to a different site.' };
     if (role === 'owner') return { success: false, error: 'Owner access cannot be added here.' };
 
-    const managedAsset = await db.asset.findFirst({
+    const managedAsset = await db.project.findFirst({
       where: {
         id: assetId,
         OR: [
@@ -162,7 +162,7 @@ export async function getAccessOverview(): Promise<{
     const currentAssetId = await getActiveProjectId() ?? null;
 
     const [managedAssets, accounts] = await Promise.all([
-      db.asset.findMany({
+      db.project.findMany({
       where: {
         OR: [
           { ownerAccountId: accountId },

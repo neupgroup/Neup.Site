@@ -17,7 +17,7 @@ model Account {
   status              String   @default("active")
   moreDetails         Json?
   defaultProject      String?
-  defaultProjectAsset Asset?   @relation("AccountDefaultProject", fields: [defaultProject], references: [id], onDelete: SetNull)
+  defaultProjectAsset Project? @relation("AccountDefaultProject", fields: [defaultProject], references: [id], onDelete: SetNull)
   roles               Role[]
 
   @@map("accounts")
@@ -30,7 +30,7 @@ model Role {
   accountId   String
   role        String
   status      String  @default("active")
-  asset       Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset       Project @relation(fields: [assetId], references: [id], onDelete: Cascade)
   account     Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@map("role")
@@ -41,12 +41,12 @@ model Domain {
   assetId   String
   domain    String
   isPrimary Boolean
-  asset     Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Project @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@map("domain")
 }
 
-model Asset {
+model Project {
   id                     String                @id
   name                   String                @default("")
   url                    String?
@@ -95,7 +95,7 @@ model Form {
   slug         String
   fields       Json
   createdOn    DateTime         @default(now())
-  project      Asset            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   submissions  FormSubmission[]
 
   @@unique([projectId, slug])
@@ -110,7 +110,7 @@ model FormSubmission {
   response   Json
   postedOn   DateTime @default(now())
   status     String   @db.VarChar(16)
-  project    Asset    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   form       Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([projectId, postedOn])
@@ -123,7 +123,7 @@ model Profile {
   assetId String
   subject String
   value   String @db.VarChar(512)
-  asset   Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset   Project @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@index([assetId, subject])
@@ -140,7 +140,7 @@ model Page {
   type               String                  @default("editor")
   createdAt          DateTime?
   updatedAt          DateTime?
-  asset              Asset                   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset              Project                 @relation(fields: [assetId], references: [id], onDelete: Cascade)
   paths              PagePath[]
   dataSourceBindings PageDataSourceBinding[]
 
@@ -154,7 +154,7 @@ model PagePath {
   pageId    String
   path      String
   createdAt DateTime?
-  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
   page      Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([assetId, path])
@@ -171,7 +171,7 @@ model Section {
   source    String    @default("json")
   createdBy String
   createdAt DateTime?
-  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@map("sections")
@@ -206,7 +206,7 @@ model DataSource {
   data       Json?
   datalistId String?
   createdAt  DateTime?
-  asset      Asset                   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset      Project                 @relation(fields: [assetId], references: [id], onDelete: Cascade)
   bindings   PageDataSourceBinding[]
 
   @@index([assetId])
@@ -233,7 +233,7 @@ model Datalist {
   data      String
   createdAt DateTime?
   updatedAt DateTime?
-  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@map("datalists")
@@ -247,7 +247,7 @@ model Redirect {
   type       String
   created_by String
   created_on DateTime?
-  asset      Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset      Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, created_on])
   @@map("redirects")
@@ -262,7 +262,7 @@ model EnvironmentVariable {
   isPrivate Boolean   @default(false)
   createdBy String
   createdOn DateTime?
-  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, createdOn])
   @@map("environments")
@@ -279,7 +279,7 @@ model SiteStructure {
   appBaseChanged      Boolean   @default(false)
   environmentsChanged Boolean   @default(false)
   updatedAt           DateTime?
-  asset               Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset               Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@map("structure")
 }
@@ -294,7 +294,7 @@ model Deployment {
   siteProfile  Json?
   environments Json?
   attemptedOn  DateTime?
-  asset        Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset        Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, status, attemptedOn])
   @@map("deployments")
@@ -339,7 +339,7 @@ model Allocation {
   allocatedOn       DateTime?
   status            String    @default("active")
   server            Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
-  asset             Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset             Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, serverId])
   @@map("allocations")
@@ -387,7 +387,7 @@ model CodeFile {
   content   String
   size      Int       @default(0)
   createdAt DateTime?
-  asset     Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset     Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, createdAt])
   @@map("codeFiles")
@@ -429,7 +429,7 @@ model Team {
   name        String
   description String?
   order       Int?
-  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset       Project  @relation(fields: [assetId], references: [id], onDelete: Cascade)
   members     Member[]
 
   @@unique([assetId, slug])
@@ -449,7 +449,7 @@ model Member {
   order       Int?
   teamId      String? @map("team_id")
   permissions Json?
-  asset       Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset       Project @relation(fields: [assetId], references: [id], onDelete: Cascade)
   team        Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
 
   @@unique([assetId, slug])
@@ -473,7 +473,7 @@ model JobPosting {
   createdAt      DateTime?
   updatedAt      DateTime?
   applicants     Applicant[]
-  asset          Asset       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  asset          Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, createdAt])
 
@@ -516,7 +516,7 @@ model AppBaseBackup {
   content    String
   backedUpAt DateTime?
   backedUpBy String
-  asset      Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset      Project   @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId, backedUpAt])
   @@map("appBaseBackups")
@@ -553,7 +553,7 @@ model AssetModule {
   assetId String
   title   String
   status  String
-  asset   Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset   Project @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@map("modules")

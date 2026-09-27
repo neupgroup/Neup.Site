@@ -90,7 +90,7 @@ function mapDirectoryItem(record: {
 }
 
 async function ensureProject(projectId: string) {
-  return db.asset.findUnique({
+  return db.project.findUnique({
     where: { id: projectId },
     select: { id: true },
   });

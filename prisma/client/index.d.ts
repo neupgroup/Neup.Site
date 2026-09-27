@@ -29,10 +29,10 @@ export type Role = $Result.DefaultSelection<Prisma.$RolePayload>
  */
 export type Domain = $Result.DefaultSelection<Prisma.$DomainPayload>
 /**
- * Model Asset
+ * Model Project
  * 
  */
-export type Asset = $Result.DefaultSelection<Prisma.$AssetPayload>
+export type Project = $Result.DefaultSelection<Prisma.$ProjectPayload>
 /**
  * Model Form
  * 
@@ -341,14 +341,14 @@ export class PrismaClient<
   get domain(): Prisma.DomainDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.asset`: Exposes CRUD operations for the **Asset** model.
+   * `prisma.project`: Exposes CRUD operations for the **Project** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Assets
-    * const assets = await prisma.asset.findMany()
+    * // Fetch zero or more Projects
+    * const projects = await prisma.project.findMany()
     * ```
     */
-  get asset(): Prisma.AssetDelegate<ExtArgs, ClientOptions>;
+  get project(): Prisma.ProjectDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.form`: Exposes CRUD operations for the **Form** model.
@@ -1096,7 +1096,7 @@ export namespace Prisma {
     Account: 'Account',
     Role: 'Role',
     Domain: 'Domain',
-    Asset: 'Asset',
+    Project: 'Project',
     Form: 'Form',
     FormSubmission: 'FormSubmission',
     Profile: 'Profile',
@@ -1143,7 +1143,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "role" | "domain" | "asset" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "newsArticle" | "syncRequest" | "assetModule" | "syncerLog"
+      modelProps: "account" | "role" | "domain" | "project" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "newsArticle" | "syncRequest" | "assetModule" | "syncerLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1369,77 +1369,77 @@ export namespace Prisma {
           }
         }
       }
-      Asset: {
-        payload: Prisma.$AssetPayload<ExtArgs>
-        fields: Prisma.AssetFieldRefs
+      Project: {
+        payload: Prisma.$ProjectPayload<ExtArgs>
+        fields: Prisma.ProjectFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.AssetFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload> | null
+            args: Prisma.ProjectFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.AssetFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+            args: Prisma.ProjectFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
           }
           findFirst: {
-            args: Prisma.AssetFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload> | null
+            args: Prisma.ProjectFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.AssetFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+            args: Prisma.ProjectFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
           }
           findMany: {
-            args: Prisma.AssetFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+            args: Prisma.ProjectFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>[]
           }
           create: {
-            args: Prisma.AssetCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+            args: Prisma.ProjectCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
           }
           createMany: {
-            args: Prisma.AssetCreateManyArgs<ExtArgs>
+            args: Prisma.ProjectCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.AssetCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+            args: Prisma.ProjectCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>[]
           }
           delete: {
-            args: Prisma.AssetDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+            args: Prisma.ProjectDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
           }
           update: {
-            args: Prisma.AssetUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+            args: Prisma.ProjectUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
           }
           deleteMany: {
-            args: Prisma.AssetDeleteManyArgs<ExtArgs>
+            args: Prisma.ProjectDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.AssetUpdateManyArgs<ExtArgs>
+            args: Prisma.ProjectUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.AssetUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>[]
+            args: Prisma.ProjectUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>[]
           }
           upsert: {
-            args: Prisma.AssetUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AssetPayload>
+            args: Prisma.ProjectUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectPayload>
           }
           aggregate: {
-            args: Prisma.AssetAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateAsset>
+            args: Prisma.ProjectAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProject>
           }
           groupBy: {
-            args: Prisma.AssetGroupByArgs<ExtArgs>
-            result: $Utils.Optional<AssetGroupByOutputType>[]
+            args: Prisma.ProjectGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProjectGroupByOutputType>[]
           }
           count: {
-            args: Prisma.AssetCountArgs<ExtArgs>
-            result: $Utils.Optional<AssetCountAggregateOutputType> | number
+            args: Prisma.ProjectCountArgs<ExtArgs>
+            result: $Utils.Optional<ProjectCountAggregateOutputType> | number
           }
         }
       }
@@ -3848,7 +3848,7 @@ export namespace Prisma {
     account?: AccountOmit
     role?: RoleOmit
     domain?: DomainOmit
-    asset?: AssetOmit
+    project?: ProjectOmit
     form?: FormOmit
     formSubmission?: FormSubmissionOmit
     profile?: ProfileOmit
@@ -3987,10 +3987,10 @@ export namespace Prisma {
 
 
   /**
-   * Count Type AssetCountOutputType
+   * Count Type ProjectCountOutputType
    */
 
-  export type AssetCountOutputType = {
+  export type ProjectCountOutputType = {
     roles: number
     domainEntries: number
     profiles: number
@@ -4015,193 +4015,193 @@ export namespace Prisma {
     defaultProjectAccounts: number
   }
 
-  export type AssetCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    roles?: boolean | AssetCountOutputTypeCountRolesArgs
-    domainEntries?: boolean | AssetCountOutputTypeCountDomainEntriesArgs
-    profiles?: boolean | AssetCountOutputTypeCountProfilesArgs
-    pages?: boolean | AssetCountOutputTypeCountPagesArgs
-    paths?: boolean | AssetCountOutputTypeCountPathsArgs
-    sections?: boolean | AssetCountOutputTypeCountSectionsArgs
-    datalists?: boolean | AssetCountOutputTypeCountDatalistsArgs
-    sources?: boolean | AssetCountOutputTypeCountSourcesArgs
-    environments?: boolean | AssetCountOutputTypeCountEnvironmentsArgs
-    redirects?: boolean | AssetCountOutputTypeCountRedirectsArgs
-    codeFiles?: boolean | AssetCountOutputTypeCountCodeFilesArgs
-    allocations?: boolean | AssetCountOutputTypeCountAllocationsArgs
-    structures?: boolean | AssetCountOutputTypeCountStructuresArgs
-    deployments?: boolean | AssetCountOutputTypeCountDeploymentsArgs
-    appBaseBackups?: boolean | AssetCountOutputTypeCountAppBaseBackupsArgs
-    assetModules?: boolean | AssetCountOutputTypeCountAssetModulesArgs
-    teams?: boolean | AssetCountOutputTypeCountTeamsArgs
-    members?: boolean | AssetCountOutputTypeCountMembersArgs
-    jobPostings?: boolean | AssetCountOutputTypeCountJobPostingsArgs
-    forms?: boolean | AssetCountOutputTypeCountFormsArgs
-    formSubmissions?: boolean | AssetCountOutputTypeCountFormSubmissionsArgs
-    defaultProjectAccounts?: boolean | AssetCountOutputTypeCountDefaultProjectAccountsArgs
+  export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    roles?: boolean | ProjectCountOutputTypeCountRolesArgs
+    domainEntries?: boolean | ProjectCountOutputTypeCountDomainEntriesArgs
+    profiles?: boolean | ProjectCountOutputTypeCountProfilesArgs
+    pages?: boolean | ProjectCountOutputTypeCountPagesArgs
+    paths?: boolean | ProjectCountOutputTypeCountPathsArgs
+    sections?: boolean | ProjectCountOutputTypeCountSectionsArgs
+    datalists?: boolean | ProjectCountOutputTypeCountDatalistsArgs
+    sources?: boolean | ProjectCountOutputTypeCountSourcesArgs
+    environments?: boolean | ProjectCountOutputTypeCountEnvironmentsArgs
+    redirects?: boolean | ProjectCountOutputTypeCountRedirectsArgs
+    codeFiles?: boolean | ProjectCountOutputTypeCountCodeFilesArgs
+    allocations?: boolean | ProjectCountOutputTypeCountAllocationsArgs
+    structures?: boolean | ProjectCountOutputTypeCountStructuresArgs
+    deployments?: boolean | ProjectCountOutputTypeCountDeploymentsArgs
+    appBaseBackups?: boolean | ProjectCountOutputTypeCountAppBaseBackupsArgs
+    assetModules?: boolean | ProjectCountOutputTypeCountAssetModulesArgs
+    teams?: boolean | ProjectCountOutputTypeCountTeamsArgs
+    members?: boolean | ProjectCountOutputTypeCountMembersArgs
+    jobPostings?: boolean | ProjectCountOutputTypeCountJobPostingsArgs
+    forms?: boolean | ProjectCountOutputTypeCountFormsArgs
+    formSubmissions?: boolean | ProjectCountOutputTypeCountFormSubmissionsArgs
+    defaultProjectAccounts?: boolean | ProjectCountOutputTypeCountDefaultProjectAccountsArgs
   }
 
   // Custom InputTypes
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AssetCountOutputType
+     * Select specific fields to fetch from the ProjectCountOutputType
      */
-    select?: AssetCountOutputTypeSelect<ExtArgs> | null
+    select?: ProjectCountOutputTypeSelect<ExtArgs> | null
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountRolesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountRolesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RoleWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountDomainEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountDomainEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DomainWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProfileWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountPagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountPagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PageWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountPathsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountPathsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PagePathWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountSectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountSectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SectionWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountDatalistsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountDatalistsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DatalistWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountSourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountSourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DataSourceWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountEnvironmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountEnvironmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EnvironmentVariableWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountRedirectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountRedirectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RedirectWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountCodeFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountCodeFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CodeFileWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountAllocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountAllocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AllocationWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountStructuresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountStructuresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SiteStructureWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountDeploymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountDeploymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DeploymentWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountAppBaseBackupsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountAppBaseBackupsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AppBaseBackupWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountAssetModulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountAssetModulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AssetModuleWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountTeamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountTeamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TeamWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MemberWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountJobPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountJobPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: JobPostingWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountFormsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountFormsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FormWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountFormSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountFormSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FormSubmissionWhereInput
   }
 
   /**
-   * AssetCountOutputType without action
+   * ProjectCountOutputType without action
    */
-  export type AssetCountOutputTypeCountDefaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountDefaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
   }
 
@@ -4665,7 +4665,7 @@ export namespace Prisma {
   export type $AccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Account"
     objects: {
-      defaultProjectAsset: Prisma.$AssetPayload<ExtArgs> | null
+      defaultProjectAsset: Prisma.$ProjectPayload<ExtArgs> | null
       roles: Prisma.$RolePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5072,7 +5072,7 @@ export namespace Prisma {
    */
   export interface Prisma__AccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    defaultProjectAsset<T extends Account$defaultProjectAssetArgs<ExtArgs> = {}>(args?: Subset<T, Account$defaultProjectAssetArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    defaultProjectAsset<T extends Account$defaultProjectAssetArgs<ExtArgs> = {}>(args?: Subset<T, Account$defaultProjectAssetArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     roles<T extends Account$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Account$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5517,18 +5517,18 @@ export namespace Prisma {
    */
   export type Account$defaultProjectAssetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
-    where?: AssetWhereInput
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
   }
 
   /**
@@ -5746,7 +5746,7 @@ export namespace Prisma {
     accountId?: boolean
     role?: boolean
     status?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["role"]>
 
@@ -5757,7 +5757,7 @@ export namespace Prisma {
     accountId?: boolean
     role?: boolean
     status?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["role"]>
 
@@ -5768,7 +5768,7 @@ export namespace Prisma {
     accountId?: boolean
     role?: boolean
     status?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["role"]>
 
@@ -5783,22 +5783,22 @@ export namespace Prisma {
 
   export type RoleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "portfolioId" | "accountId" | "role" | "status", ExtArgs["result"]["role"]>
   export type RoleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }
   export type RoleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }
   export type RoleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
   }
 
   export type $RolePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Role"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
       account: Prisma.$AccountPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -6202,7 +6202,7 @@ export namespace Prisma {
    */
   export interface Prisma__RoleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     account<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6814,7 +6814,7 @@ export namespace Prisma {
     assetId?: boolean
     domain?: boolean
     isPrimary?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["domain"]>
 
   export type DomainSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6822,7 +6822,7 @@ export namespace Prisma {
     assetId?: boolean
     domain?: boolean
     isPrimary?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["domain"]>
 
   export type DomainSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6830,7 +6830,7 @@ export namespace Prisma {
     assetId?: boolean
     domain?: boolean
     isPrimary?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["domain"]>
 
   export type DomainSelectScalar = {
@@ -6842,19 +6842,19 @@ export namespace Prisma {
 
   export type DomainOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "domain" | "isPrimary", ExtArgs["result"]["domain"]>
   export type DomainInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type DomainIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type DomainIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $DomainPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Domain"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7255,7 +7255,7 @@ export namespace Prisma {
    */
   export interface Prisma__DomainClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7709,16 +7709,16 @@ export namespace Prisma {
 
 
   /**
-   * Model Asset
+   * Model Project
    */
 
-  export type AggregateAsset = {
-    _count: AssetCountAggregateOutputType | null
-    _min: AssetMinAggregateOutputType | null
-    _max: AssetMaxAggregateOutputType | null
+  export type AggregateProject = {
+    _count: ProjectCountAggregateOutputType | null
+    _min: ProjectMinAggregateOutputType | null
+    _max: ProjectMaxAggregateOutputType | null
   }
 
-  export type AssetMinAggregateOutputType = {
+  export type ProjectMinAggregateOutputType = {
     id: string | null
     name: string | null
     url: string | null
@@ -7730,7 +7730,7 @@ export namespace Prisma {
     type: string | null
   }
 
-  export type AssetMaxAggregateOutputType = {
+  export type ProjectMaxAggregateOutputType = {
     id: string | null
     name: string | null
     url: string | null
@@ -7742,7 +7742,7 @@ export namespace Prisma {
     type: string | null
   }
 
-  export type AssetCountAggregateOutputType = {
+  export type ProjectCountAggregateOutputType = {
     id: number
     name: number
     url: number
@@ -7761,7 +7761,7 @@ export namespace Prisma {
   }
 
 
-  export type AssetMinAggregateInputType = {
+  export type ProjectMinAggregateInputType = {
     id?: true
     name?: true
     url?: true
@@ -7773,7 +7773,7 @@ export namespace Prisma {
     type?: true
   }
 
-  export type AssetMaxAggregateInputType = {
+  export type ProjectMaxAggregateInputType = {
     id?: true
     name?: true
     url?: true
@@ -7785,7 +7785,7 @@ export namespace Prisma {
     type?: true
   }
 
-  export type AssetCountAggregateInputType = {
+  export type ProjectCountAggregateInputType = {
     id?: true
     name?: true
     url?: true
@@ -7803,79 +7803,79 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type AssetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Asset to aggregate.
+     * Filter which Project to aggregate.
      */
-    where?: AssetWhereInput
+    where?: ProjectWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Assets to fetch.
+     * Determine the order of Projects to fetch.
      */
-    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: AssetWhereUniqueInput
+    cursor?: ProjectWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Assets from the position of the cursor.
+     * Take `±n` Projects from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Assets.
+     * Skip the first `n` Projects.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Assets
+     * Count returned Projects
     **/
-    _count?: true | AssetCountAggregateInputType
+    _count?: true | ProjectCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: AssetMinAggregateInputType
+    _min?: ProjectMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: AssetMaxAggregateInputType
+    _max?: ProjectMaxAggregateInputType
   }
 
-  export type GetAssetAggregateType<T extends AssetAggregateArgs> = {
-        [P in keyof T & keyof AggregateAsset]: P extends '_count' | 'count'
+  export type GetProjectAggregateType<T extends ProjectAggregateArgs> = {
+        [P in keyof T & keyof AggregateProject]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateAsset[P]>
-      : GetScalarType<T[P], AggregateAsset[P]>
+        : GetScalarType<T[P], AggregateProject[P]>
+      : GetScalarType<T[P], AggregateProject[P]>
   }
 
 
 
 
-  export type AssetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AssetWhereInput
-    orderBy?: AssetOrderByWithAggregationInput | AssetOrderByWithAggregationInput[]
-    by: AssetScalarFieldEnum[] | AssetScalarFieldEnum
-    having?: AssetScalarWhereWithAggregatesInput
+  export type ProjectGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithAggregationInput | ProjectOrderByWithAggregationInput[]
+    by: ProjectScalarFieldEnum[] | ProjectScalarFieldEnum
+    having?: ProjectScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: AssetCountAggregateInputType | true
-    _min?: AssetMinAggregateInputType
-    _max?: AssetMaxAggregateInputType
+    _count?: ProjectCountAggregateInputType | true
+    _min?: ProjectMinAggregateInputType
+    _max?: ProjectMaxAggregateInputType
   }
 
-  export type AssetGroupByOutputType = {
+  export type ProjectGroupByOutputType = {
     id: string
     name: string
     url: string | null
@@ -7890,26 +7890,26 @@ export namespace Prisma {
     ownerAccountId: string | null
     status: string | null
     type: string | null
-    _count: AssetCountAggregateOutputType | null
-    _min: AssetMinAggregateOutputType | null
-    _max: AssetMaxAggregateOutputType | null
+    _count: ProjectCountAggregateOutputType | null
+    _min: ProjectMinAggregateOutputType | null
+    _max: ProjectMaxAggregateOutputType | null
   }
 
-  type GetAssetGroupByPayload<T extends AssetGroupByArgs> = Prisma.PrismaPromise<
+  type GetProjectGroupByPayload<T extends ProjectGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<AssetGroupByOutputType, T['by']> &
+      PickEnumerable<ProjectGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof AssetGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof ProjectGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], AssetGroupByOutputType[P]>
-            : GetScalarType<T[P], AssetGroupByOutputType[P]>
+              : GetScalarType<T[P], ProjectGroupByOutputType[P]>
+            : GetScalarType<T[P], ProjectGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type AssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type ProjectSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     url?: boolean
@@ -7924,32 +7924,32 @@ export namespace Prisma {
     ownerAccountId?: boolean
     status?: boolean
     type?: boolean
-    roles?: boolean | Asset$rolesArgs<ExtArgs>
-    domainEntries?: boolean | Asset$domainEntriesArgs<ExtArgs>
-    profiles?: boolean | Asset$profilesArgs<ExtArgs>
-    pages?: boolean | Asset$pagesArgs<ExtArgs>
-    paths?: boolean | Asset$pathsArgs<ExtArgs>
-    sections?: boolean | Asset$sectionsArgs<ExtArgs>
-    datalists?: boolean | Asset$datalistsArgs<ExtArgs>
-    sources?: boolean | Asset$sourcesArgs<ExtArgs>
-    environments?: boolean | Asset$environmentsArgs<ExtArgs>
-    redirects?: boolean | Asset$redirectsArgs<ExtArgs>
-    codeFiles?: boolean | Asset$codeFilesArgs<ExtArgs>
-    allocations?: boolean | Asset$allocationsArgs<ExtArgs>
-    structures?: boolean | Asset$structuresArgs<ExtArgs>
-    deployments?: boolean | Asset$deploymentsArgs<ExtArgs>
-    appBaseBackups?: boolean | Asset$appBaseBackupsArgs<ExtArgs>
-    assetModules?: boolean | Asset$assetModulesArgs<ExtArgs>
-    teams?: boolean | Asset$teamsArgs<ExtArgs>
-    members?: boolean | Asset$membersArgs<ExtArgs>
-    jobPostings?: boolean | Asset$jobPostingsArgs<ExtArgs>
-    forms?: boolean | Asset$formsArgs<ExtArgs>
-    formSubmissions?: boolean | Asset$formSubmissionsArgs<ExtArgs>
-    defaultProjectAccounts?: boolean | Asset$defaultProjectAccountsArgs<ExtArgs>
-    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["asset"]>
+    roles?: boolean | Project$rolesArgs<ExtArgs>
+    domainEntries?: boolean | Project$domainEntriesArgs<ExtArgs>
+    profiles?: boolean | Project$profilesArgs<ExtArgs>
+    pages?: boolean | Project$pagesArgs<ExtArgs>
+    paths?: boolean | Project$pathsArgs<ExtArgs>
+    sections?: boolean | Project$sectionsArgs<ExtArgs>
+    datalists?: boolean | Project$datalistsArgs<ExtArgs>
+    sources?: boolean | Project$sourcesArgs<ExtArgs>
+    environments?: boolean | Project$environmentsArgs<ExtArgs>
+    redirects?: boolean | Project$redirectsArgs<ExtArgs>
+    codeFiles?: boolean | Project$codeFilesArgs<ExtArgs>
+    allocations?: boolean | Project$allocationsArgs<ExtArgs>
+    structures?: boolean | Project$structuresArgs<ExtArgs>
+    deployments?: boolean | Project$deploymentsArgs<ExtArgs>
+    appBaseBackups?: boolean | Project$appBaseBackupsArgs<ExtArgs>
+    assetModules?: boolean | Project$assetModulesArgs<ExtArgs>
+    teams?: boolean | Project$teamsArgs<ExtArgs>
+    members?: boolean | Project$membersArgs<ExtArgs>
+    jobPostings?: boolean | Project$jobPostingsArgs<ExtArgs>
+    forms?: boolean | Project$formsArgs<ExtArgs>
+    formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
+    defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
+    _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["project"]>
 
-  export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type ProjectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     url?: boolean
@@ -7964,9 +7964,9 @@ export namespace Prisma {
     ownerAccountId?: boolean
     status?: boolean
     type?: boolean
-  }, ExtArgs["result"]["asset"]>
+  }, ExtArgs["result"]["project"]>
 
-  export type AssetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type ProjectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     url?: boolean
@@ -7981,9 +7981,9 @@ export namespace Prisma {
     ownerAccountId?: boolean
     status?: boolean
     type?: boolean
-  }, ExtArgs["result"]["asset"]>
+  }, ExtArgs["result"]["project"]>
 
-  export type AssetSelectScalar = {
+  export type ProjectSelectScalar = {
     id?: boolean
     name?: boolean
     url?: boolean
@@ -8000,37 +8000,37 @@ export namespace Prisma {
     type?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "url" | "tier" | "modules" | "icons" | "domains" | "design" | "features" | "createdAt" | "updatedAt" | "ownerAccountId" | "status" | "type", ExtArgs["result"]["asset"]>
-  export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    roles?: boolean | Asset$rolesArgs<ExtArgs>
-    domainEntries?: boolean | Asset$domainEntriesArgs<ExtArgs>
-    profiles?: boolean | Asset$profilesArgs<ExtArgs>
-    pages?: boolean | Asset$pagesArgs<ExtArgs>
-    paths?: boolean | Asset$pathsArgs<ExtArgs>
-    sections?: boolean | Asset$sectionsArgs<ExtArgs>
-    datalists?: boolean | Asset$datalistsArgs<ExtArgs>
-    sources?: boolean | Asset$sourcesArgs<ExtArgs>
-    environments?: boolean | Asset$environmentsArgs<ExtArgs>
-    redirects?: boolean | Asset$redirectsArgs<ExtArgs>
-    codeFiles?: boolean | Asset$codeFilesArgs<ExtArgs>
-    allocations?: boolean | Asset$allocationsArgs<ExtArgs>
-    structures?: boolean | Asset$structuresArgs<ExtArgs>
-    deployments?: boolean | Asset$deploymentsArgs<ExtArgs>
-    appBaseBackups?: boolean | Asset$appBaseBackupsArgs<ExtArgs>
-    assetModules?: boolean | Asset$assetModulesArgs<ExtArgs>
-    teams?: boolean | Asset$teamsArgs<ExtArgs>
-    members?: boolean | Asset$membersArgs<ExtArgs>
-    jobPostings?: boolean | Asset$jobPostingsArgs<ExtArgs>
-    forms?: boolean | Asset$formsArgs<ExtArgs>
-    formSubmissions?: boolean | Asset$formSubmissionsArgs<ExtArgs>
-    defaultProjectAccounts?: boolean | Asset$defaultProjectAccountsArgs<ExtArgs>
-    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "url" | "tier" | "modules" | "icons" | "domains" | "design" | "features" | "createdAt" | "updatedAt" | "ownerAccountId" | "status" | "type", ExtArgs["result"]["project"]>
+  export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    roles?: boolean | Project$rolesArgs<ExtArgs>
+    domainEntries?: boolean | Project$domainEntriesArgs<ExtArgs>
+    profiles?: boolean | Project$profilesArgs<ExtArgs>
+    pages?: boolean | Project$pagesArgs<ExtArgs>
+    paths?: boolean | Project$pathsArgs<ExtArgs>
+    sections?: boolean | Project$sectionsArgs<ExtArgs>
+    datalists?: boolean | Project$datalistsArgs<ExtArgs>
+    sources?: boolean | Project$sourcesArgs<ExtArgs>
+    environments?: boolean | Project$environmentsArgs<ExtArgs>
+    redirects?: boolean | Project$redirectsArgs<ExtArgs>
+    codeFiles?: boolean | Project$codeFilesArgs<ExtArgs>
+    allocations?: boolean | Project$allocationsArgs<ExtArgs>
+    structures?: boolean | Project$structuresArgs<ExtArgs>
+    deployments?: boolean | Project$deploymentsArgs<ExtArgs>
+    appBaseBackups?: boolean | Project$appBaseBackupsArgs<ExtArgs>
+    assetModules?: boolean | Project$assetModulesArgs<ExtArgs>
+    teams?: boolean | Project$teamsArgs<ExtArgs>
+    members?: boolean | Project$membersArgs<ExtArgs>
+    jobPostings?: boolean | Project$jobPostingsArgs<ExtArgs>
+    forms?: boolean | Project$formsArgs<ExtArgs>
+    formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
+    defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
+    _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type AssetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProjectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
-  export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Asset"
+  export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Project"
     objects: {
       roles: Prisma.$RolePayload<ExtArgs>[]
       domainEntries: Prisma.$DomainPayload<ExtArgs>[]
@@ -8070,136 +8070,136 @@ export namespace Prisma {
       ownerAccountId: string | null
       status: string | null
       type: string | null
-    }, ExtArgs["result"]["asset"]>
+    }, ExtArgs["result"]["project"]>
     composites: {}
   }
 
-  type AssetGetPayload<S extends boolean | null | undefined | AssetDefaultArgs> = $Result.GetResult<Prisma.$AssetPayload, S>
+  type ProjectGetPayload<S extends boolean | null | undefined | ProjectDefaultArgs> = $Result.GetResult<Prisma.$ProjectPayload, S>
 
-  type AssetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<AssetFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: AssetCountAggregateInputType | true
+  type ProjectCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProjectFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProjectCountAggregateInputType | true
     }
 
-  export interface AssetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Asset'], meta: { name: 'Asset' } }
+  export interface ProjectDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Project'], meta: { name: 'Project' } }
     /**
-     * Find zero or one Asset that matches the filter.
-     * @param {AssetFindUniqueArgs} args - Arguments to find a Asset
+     * Find zero or one Project that matches the filter.
+     * @param {ProjectFindUniqueArgs} args - Arguments to find a Project
      * @example
-     * // Get one Asset
-     * const asset = await prisma.asset.findUnique({
+     * // Get one Project
+     * const project = await prisma.project.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends AssetFindUniqueArgs>(args: SelectSubset<T, AssetFindUniqueArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends ProjectFindUniqueArgs>(args: SelectSubset<T, ProjectFindUniqueArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one Asset that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Project that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {AssetFindUniqueOrThrowArgs} args - Arguments to find a Asset
+     * @param {ProjectFindUniqueOrThrowArgs} args - Arguments to find a Project
      * @example
-     * // Get one Asset
-     * const asset = await prisma.asset.findUniqueOrThrow({
+     * // Get one Project
+     * const project = await prisma.project.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends AssetFindUniqueOrThrowArgs>(args: SelectSubset<T, AssetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends ProjectFindUniqueOrThrowArgs>(args: SelectSubset<T, ProjectFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Asset that matches the filter.
+     * Find the first Project that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AssetFindFirstArgs} args - Arguments to find a Asset
+     * @param {ProjectFindFirstArgs} args - Arguments to find a Project
      * @example
-     * // Get one Asset
-     * const asset = await prisma.asset.findFirst({
+     * // Get one Project
+     * const project = await prisma.project.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends AssetFindFirstArgs>(args?: SelectSubset<T, AssetFindFirstArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends ProjectFindFirstArgs>(args?: SelectSubset<T, ProjectFindFirstArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Asset that matches the filter or
+     * Find the first Project that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AssetFindFirstOrThrowArgs} args - Arguments to find a Asset
+     * @param {ProjectFindFirstOrThrowArgs} args - Arguments to find a Project
      * @example
-     * // Get one Asset
-     * const asset = await prisma.asset.findFirstOrThrow({
+     * // Get one Project
+     * const project = await prisma.project.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends AssetFindFirstOrThrowArgs>(args?: SelectSubset<T, AssetFindFirstOrThrowArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends ProjectFindFirstOrThrowArgs>(args?: SelectSubset<T, ProjectFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more Assets that matches the filter.
+     * Find zero or more Projects that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AssetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {ProjectFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Assets
-     * const assets = await prisma.asset.findMany()
+     * // Get all Projects
+     * const projects = await prisma.project.findMany()
      * 
-     * // Get first 10 Assets
-     * const assets = await prisma.asset.findMany({ take: 10 })
+     * // Get first 10 Projects
+     * const projects = await prisma.project.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const assetWithIdOnly = await prisma.asset.findMany({ select: { id: true } })
+     * const projectWithIdOnly = await prisma.project.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends AssetFindManyArgs>(args?: SelectSubset<T, AssetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends ProjectFindManyArgs>(args?: SelectSubset<T, ProjectFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a Asset.
-     * @param {AssetCreateArgs} args - Arguments to create a Asset.
+     * Create a Project.
+     * @param {ProjectCreateArgs} args - Arguments to create a Project.
      * @example
-     * // Create one Asset
-     * const Asset = await prisma.asset.create({
+     * // Create one Project
+     * const Project = await prisma.project.create({
      *   data: {
-     *     // ... data to create a Asset
+     *     // ... data to create a Project
      *   }
      * })
      * 
      */
-    create<T extends AssetCreateArgs>(args: SelectSubset<T, AssetCreateArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends ProjectCreateArgs>(args: SelectSubset<T, ProjectCreateArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many Assets.
-     * @param {AssetCreateManyArgs} args - Arguments to create many Assets.
+     * Create many Projects.
+     * @param {ProjectCreateManyArgs} args - Arguments to create many Projects.
      * @example
-     * // Create many Assets
-     * const asset = await prisma.asset.createMany({
+     * // Create many Projects
+     * const project = await prisma.project.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends AssetCreateManyArgs>(args?: SelectSubset<T, AssetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends ProjectCreateManyArgs>(args?: SelectSubset<T, ProjectCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many Assets and returns the data saved in the database.
-     * @param {AssetCreateManyAndReturnArgs} args - Arguments to create many Assets.
+     * Create many Projects and returns the data saved in the database.
+     * @param {ProjectCreateManyAndReturnArgs} args - Arguments to create many Projects.
      * @example
-     * // Create many Assets
-     * const asset = await prisma.asset.createManyAndReturn({
+     * // Create many Projects
+     * const project = await prisma.project.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many Assets and only return the `id`
-     * const assetWithIdOnly = await prisma.asset.createManyAndReturn({
+     * // Create many Projects and only return the `id`
+     * const projectWithIdOnly = await prisma.project.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -8209,28 +8209,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends AssetCreateManyAndReturnArgs>(args?: SelectSubset<T, AssetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends ProjectCreateManyAndReturnArgs>(args?: SelectSubset<T, ProjectCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a Asset.
-     * @param {AssetDeleteArgs} args - Arguments to delete one Asset.
+     * Delete a Project.
+     * @param {ProjectDeleteArgs} args - Arguments to delete one Project.
      * @example
-     * // Delete one Asset
-     * const Asset = await prisma.asset.delete({
+     * // Delete one Project
+     * const Project = await prisma.project.delete({
      *   where: {
-     *     // ... filter to delete one Asset
+     *     // ... filter to delete one Project
      *   }
      * })
      * 
      */
-    delete<T extends AssetDeleteArgs>(args: SelectSubset<T, AssetDeleteArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends ProjectDeleteArgs>(args: SelectSubset<T, ProjectDeleteArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one Asset.
-     * @param {AssetUpdateArgs} args - Arguments to update one Asset.
+     * Update one Project.
+     * @param {ProjectUpdateArgs} args - Arguments to update one Project.
      * @example
-     * // Update one Asset
-     * const asset = await prisma.asset.update({
+     * // Update one Project
+     * const project = await prisma.project.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -8240,30 +8240,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends AssetUpdateArgs>(args: SelectSubset<T, AssetUpdateArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends ProjectUpdateArgs>(args: SelectSubset<T, ProjectUpdateArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more Assets.
-     * @param {AssetDeleteManyArgs} args - Arguments to filter Assets to delete.
+     * Delete zero or more Projects.
+     * @param {ProjectDeleteManyArgs} args - Arguments to filter Projects to delete.
      * @example
-     * // Delete a few Assets
-     * const { count } = await prisma.asset.deleteMany({
+     * // Delete a few Projects
+     * const { count } = await prisma.project.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends AssetDeleteManyArgs>(args?: SelectSubset<T, AssetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends ProjectDeleteManyArgs>(args?: SelectSubset<T, ProjectDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Assets.
+     * Update zero or more Projects.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AssetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {ProjectUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Assets
-     * const asset = await prisma.asset.updateMany({
+     * // Update many Projects
+     * const project = await prisma.project.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -8273,14 +8273,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends AssetUpdateManyArgs>(args: SelectSubset<T, AssetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends ProjectUpdateManyArgs>(args: SelectSubset<T, ProjectUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Assets and returns the data updated in the database.
-     * @param {AssetUpdateManyAndReturnArgs} args - Arguments to update many Assets.
+     * Update zero or more Projects and returns the data updated in the database.
+     * @param {ProjectUpdateManyAndReturnArgs} args - Arguments to update many Projects.
      * @example
-     * // Update many Assets
-     * const asset = await prisma.asset.updateManyAndReturn({
+     * // Update many Projects
+     * const project = await prisma.project.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -8289,8 +8289,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more Assets and only return the `id`
-     * const assetWithIdOnly = await prisma.asset.updateManyAndReturn({
+     * // Update zero or more Projects and only return the `id`
+     * const projectWithIdOnly = await prisma.project.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -8303,56 +8303,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends AssetUpdateManyAndReturnArgs>(args: SelectSubset<T, AssetUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends ProjectUpdateManyAndReturnArgs>(args: SelectSubset<T, ProjectUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one Asset.
-     * @param {AssetUpsertArgs} args - Arguments to update or create a Asset.
+     * Create or update one Project.
+     * @param {ProjectUpsertArgs} args - Arguments to update or create a Project.
      * @example
-     * // Update or create a Asset
-     * const asset = await prisma.asset.upsert({
+     * // Update or create a Project
+     * const project = await prisma.project.upsert({
      *   create: {
-     *     // ... data to create a Asset
+     *     // ... data to create a Project
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the Asset we want to update
+     *     // ... the filter for the Project we want to update
      *   }
      * })
      */
-    upsert<T extends AssetUpsertArgs>(args: SelectSubset<T, AssetUpsertArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends ProjectUpsertArgs>(args: SelectSubset<T, ProjectUpsertArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of Assets.
+     * Count the number of Projects.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AssetCountArgs} args - Arguments to filter Assets to count.
+     * @param {ProjectCountArgs} args - Arguments to filter Projects to count.
      * @example
-     * // Count the number of Assets
-     * const count = await prisma.asset.count({
+     * // Count the number of Projects
+     * const count = await prisma.project.count({
      *   where: {
-     *     // ... the filter for the Assets we want to count
+     *     // ... the filter for the Projects we want to count
      *   }
      * })
     **/
-    count<T extends AssetCountArgs>(
-      args?: Subset<T, AssetCountArgs>,
+    count<T extends ProjectCountArgs>(
+      args?: Subset<T, ProjectCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], AssetCountAggregateOutputType>
+          : GetScalarType<T['select'], ProjectCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a Asset.
+     * Allows you to perform aggregations operations on a Project.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AssetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {ProjectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -8372,13 +8372,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends AssetAggregateArgs>(args: Subset<T, AssetAggregateArgs>): Prisma.PrismaPromise<GetAssetAggregateType<T>>
+    aggregate<T extends ProjectAggregateArgs>(args: Subset<T, ProjectAggregateArgs>): Prisma.PrismaPromise<GetProjectAggregateType<T>>
 
     /**
-     * Group by Asset.
+     * Group by Project.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AssetGroupByArgs} args - Group by arguments.
+     * @param {ProjectGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -8393,14 +8393,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends AssetGroupByArgs,
+      T extends ProjectGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: AssetGroupByArgs['orderBy'] }
-        : { orderBy?: AssetGroupByArgs['orderBy'] },
+        ? { orderBy: ProjectGroupByArgs['orderBy'] }
+        : { orderBy?: ProjectGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -8449,43 +8449,43 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, AssetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ProjectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the Asset model
+   * Fields of the Project model
    */
-  readonly fields: AssetFieldRefs;
+  readonly fields: ProjectFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for Asset.
+   * The delegate class that acts as a "Promise-like" for Project.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    roles<T extends Asset$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    domainEntries<T extends Asset$domainEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$domainEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    profiles<T extends Asset$profilesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$profilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    pages<T extends Asset$pagesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    paths<T extends Asset$pathsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$pathsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePathPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    sections<T extends Asset$sectionsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    datalists<T extends Asset$datalistsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$datalistsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DatalistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    sources<T extends Asset$sourcesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DataSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    environments<T extends Asset$environmentsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$environmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnvironmentVariablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    redirects<T extends Asset$redirectsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$redirectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RedirectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    codeFiles<T extends Asset$codeFilesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$codeFilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CodeFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    allocations<T extends Asset$allocationsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$allocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AllocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    structures<T extends Asset$structuresArgs<ExtArgs> = {}>(args?: Subset<T, Asset$structuresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteStructurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    deployments<T extends Asset$deploymentsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$deploymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeploymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    appBaseBackups<T extends Asset$appBaseBackupsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$appBaseBackupsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppBaseBackupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    assetModules<T extends Asset$assetModulesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$assetModulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    teams<T extends Asset$teamsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$teamsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    members<T extends Asset$membersArgs<ExtArgs> = {}>(args?: Subset<T, Asset$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    jobPostings<T extends Asset$jobPostingsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$jobPostingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    forms<T extends Asset$formsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$formsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    formSubmissions<T extends Asset$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    defaultProjectAccounts<T extends Asset$defaultProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$defaultProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    roles<T extends Project$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Project$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    domainEntries<T extends Project$domainEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Project$domainEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    profiles<T extends Project$profilesArgs<ExtArgs> = {}>(args?: Subset<T, Project$profilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pages<T extends Project$pagesArgs<ExtArgs> = {}>(args?: Subset<T, Project$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    paths<T extends Project$pathsArgs<ExtArgs> = {}>(args?: Subset<T, Project$pathsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePathPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sections<T extends Project$sectionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    datalists<T extends Project$datalistsArgs<ExtArgs> = {}>(args?: Subset<T, Project$datalistsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DatalistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sources<T extends Project$sourcesArgs<ExtArgs> = {}>(args?: Subset<T, Project$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DataSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    environments<T extends Project$environmentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$environmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnvironmentVariablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    redirects<T extends Project$redirectsArgs<ExtArgs> = {}>(args?: Subset<T, Project$redirectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RedirectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    codeFiles<T extends Project$codeFilesArgs<ExtArgs> = {}>(args?: Subset<T, Project$codeFilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CodeFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    allocations<T extends Project$allocationsArgs<ExtArgs> = {}>(args?: Subset<T, Project$allocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AllocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    structures<T extends Project$structuresArgs<ExtArgs> = {}>(args?: Subset<T, Project$structuresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteStructurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    deployments<T extends Project$deploymentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$deploymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DeploymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    appBaseBackups<T extends Project$appBaseBackupsArgs<ExtArgs> = {}>(args?: Subset<T, Project$appBaseBackupsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppBaseBackupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    assetModules<T extends Project$assetModulesArgs<ExtArgs> = {}>(args?: Subset<T, Project$assetModulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetModulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    teams<T extends Project$teamsArgs<ExtArgs> = {}>(args?: Subset<T, Project$teamsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    members<T extends Project$membersArgs<ExtArgs> = {}>(args?: Subset<T, Project$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    jobPostings<T extends Project$jobPostingsArgs<ExtArgs> = {}>(args?: Subset<T, Project$jobPostingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    forms<T extends Project$formsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    formSubmissions<T extends Project$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    defaultProjectAccounts<T extends Project$defaultProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Project$defaultProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8512,419 +8512,419 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the Asset model
+   * Fields of the Project model
    */
-  interface AssetFieldRefs {
-    readonly id: FieldRef<"Asset", 'String'>
-    readonly name: FieldRef<"Asset", 'String'>
-    readonly url: FieldRef<"Asset", 'String'>
-    readonly tier: FieldRef<"Asset", 'String'>
-    readonly modules: FieldRef<"Asset", 'Json'>
-    readonly icons: FieldRef<"Asset", 'Json'>
-    readonly domains: FieldRef<"Asset", 'Json'>
-    readonly design: FieldRef<"Asset", 'Json'>
-    readonly features: FieldRef<"Asset", 'Json'>
-    readonly createdAt: FieldRef<"Asset", 'DateTime'>
-    readonly updatedAt: FieldRef<"Asset", 'DateTime'>
-    readonly ownerAccountId: FieldRef<"Asset", 'String'>
-    readonly status: FieldRef<"Asset", 'String'>
-    readonly type: FieldRef<"Asset", 'String'>
+  interface ProjectFieldRefs {
+    readonly id: FieldRef<"Project", 'String'>
+    readonly name: FieldRef<"Project", 'String'>
+    readonly url: FieldRef<"Project", 'String'>
+    readonly tier: FieldRef<"Project", 'String'>
+    readonly modules: FieldRef<"Project", 'Json'>
+    readonly icons: FieldRef<"Project", 'Json'>
+    readonly domains: FieldRef<"Project", 'Json'>
+    readonly design: FieldRef<"Project", 'Json'>
+    readonly features: FieldRef<"Project", 'Json'>
+    readonly createdAt: FieldRef<"Project", 'DateTime'>
+    readonly updatedAt: FieldRef<"Project", 'DateTime'>
+    readonly ownerAccountId: FieldRef<"Project", 'String'>
+    readonly status: FieldRef<"Project", 'String'>
+    readonly type: FieldRef<"Project", 'String'>
   }
     
 
   // Custom InputTypes
   /**
-   * Asset findUnique
+   * Project findUnique
    */
-  export type AssetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * Filter, which Asset to fetch.
+     * Filter, which Project to fetch.
      */
-    where: AssetWhereUniqueInput
+    where: ProjectWhereUniqueInput
   }
 
   /**
-   * Asset findUniqueOrThrow
+   * Project findUniqueOrThrow
    */
-  export type AssetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * Filter, which Asset to fetch.
+     * Filter, which Project to fetch.
      */
-    where: AssetWhereUniqueInput
+    where: ProjectWhereUniqueInput
   }
 
   /**
-   * Asset findFirst
+   * Project findFirst
    */
-  export type AssetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * Filter, which Asset to fetch.
+     * Filter, which Project to fetch.
      */
-    where?: AssetWhereInput
+    where?: ProjectWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Assets to fetch.
+     * Determine the order of Projects to fetch.
      */
-    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Assets.
+     * Sets the position for searching for Projects.
      */
-    cursor?: AssetWhereUniqueInput
+    cursor?: ProjectWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Assets from the position of the cursor.
+     * Take `±n` Projects from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Assets.
+     * Skip the first `n` Projects.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Assets.
+     * Filter by unique combinations of Projects.
      */
-    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
   }
 
   /**
-   * Asset findFirstOrThrow
+   * Project findFirstOrThrow
    */
-  export type AssetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * Filter, which Asset to fetch.
+     * Filter, which Project to fetch.
      */
-    where?: AssetWhereInput
+    where?: ProjectWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Assets to fetch.
+     * Determine the order of Projects to fetch.
      */
-    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Assets.
+     * Sets the position for searching for Projects.
      */
-    cursor?: AssetWhereUniqueInput
+    cursor?: ProjectWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Assets from the position of the cursor.
+     * Take `±n` Projects from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Assets.
+     * Skip the first `n` Projects.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Assets.
+     * Filter by unique combinations of Projects.
      */
-    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
   }
 
   /**
-   * Asset findMany
+   * Project findMany
    */
-  export type AssetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * Filter, which Assets to fetch.
+     * Filter, which Projects to fetch.
      */
-    where?: AssetWhereInput
+    where?: ProjectWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Assets to fetch.
+     * Determine the order of Projects to fetch.
      */
-    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Assets.
+     * Sets the position for listing Projects.
      */
-    cursor?: AssetWhereUniqueInput
+    cursor?: ProjectWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Assets from the position of the cursor.
+     * Take `±n` Projects from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Assets.
+     * Skip the first `n` Projects.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Assets.
+     * Filter by unique combinations of Projects.
      */
-    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
   }
 
   /**
-   * Asset create
+   * Project create
    */
-  export type AssetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * The data needed to create a Asset.
+     * The data needed to create a Project.
      */
-    data: XOR<AssetCreateInput, AssetUncheckedCreateInput>
+    data: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
   }
 
   /**
-   * Asset createMany
+   * Project createMany
    */
-  export type AssetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many Assets.
+     * The data used to create many Projects.
      */
-    data: AssetCreateManyInput | AssetCreateManyInput[]
+    data: ProjectCreateManyInput | ProjectCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * Asset createManyAndReturn
+   * Project createManyAndReturn
    */
-  export type AssetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelectCreateManyAndReturn<ExtArgs> | null
+    select?: ProjectSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
-     * The data used to create many Assets.
+     * The data used to create many Projects.
      */
-    data: AssetCreateManyInput | AssetCreateManyInput[]
+    data: ProjectCreateManyInput | ProjectCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * Asset update
+   * Project update
    */
-  export type AssetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * The data needed to update a Asset.
+     * The data needed to update a Project.
      */
-    data: XOR<AssetUpdateInput, AssetUncheckedUpdateInput>
+    data: XOR<ProjectUpdateInput, ProjectUncheckedUpdateInput>
     /**
-     * Choose, which Asset to update.
+     * Choose, which Project to update.
      */
-    where: AssetWhereUniqueInput
+    where: ProjectWhereUniqueInput
   }
 
   /**
-   * Asset updateMany
+   * Project updateMany
    */
-  export type AssetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update Assets.
+     * The data used to update Projects.
      */
-    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyInput>
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyInput>
     /**
-     * Filter which Assets to update
+     * Filter which Projects to update
      */
-    where?: AssetWhereInput
+    where?: ProjectWhereInput
     /**
-     * Limit how many Assets to update.
+     * Limit how many Projects to update.
      */
     limit?: number
   }
 
   /**
-   * Asset updateManyAndReturn
+   * Project updateManyAndReturn
    */
-  export type AssetUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: ProjectSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
-     * The data used to update Assets.
+     * The data used to update Projects.
      */
-    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyInput>
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyInput>
     /**
-     * Filter which Assets to update
+     * Filter which Projects to update
      */
-    where?: AssetWhereInput
+    where?: ProjectWhereInput
     /**
-     * Limit how many Assets to update.
+     * Limit how many Projects to update.
      */
     limit?: number
   }
 
   /**
-   * Asset upsert
+   * Project upsert
    */
-  export type AssetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * The filter to search for the Asset to update in case it exists.
+     * The filter to search for the Project to update in case it exists.
      */
-    where: AssetWhereUniqueInput
+    where: ProjectWhereUniqueInput
     /**
-     * In case the Asset found by the `where` argument doesn't exist, create a new Asset with this data.
+     * In case the Project found by the `where` argument doesn't exist, create a new Project with this data.
      */
-    create: XOR<AssetCreateInput, AssetUncheckedCreateInput>
+    create: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
     /**
-     * In case the Asset was found with the provided `where` argument, update it with this data.
+     * In case the Project was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<AssetUpdateInput, AssetUncheckedUpdateInput>
+    update: XOR<ProjectUpdateInput, ProjectUncheckedUpdateInput>
   }
 
   /**
-   * Asset delete
+   * Project delete
    */
-  export type AssetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
     /**
-     * Filter which Asset to delete.
+     * Filter which Project to delete.
      */
-    where: AssetWhereUniqueInput
+    where: ProjectWhereUniqueInput
   }
 
   /**
-   * Asset deleteMany
+   * Project deleteMany
    */
-  export type AssetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Assets to delete
+     * Filter which Projects to delete
      */
-    where?: AssetWhereInput
+    where?: ProjectWhereInput
     /**
-     * Limit how many Assets to delete.
+     * Limit how many Projects to delete.
      */
     limit?: number
   }
 
   /**
-   * Asset.roles
+   * Project.roles
    */
-  export type Asset$rolesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$rolesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Role
      */
@@ -8946,9 +8946,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.domainEntries
+   * Project.domainEntries
    */
-  export type Asset$domainEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$domainEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Domain
      */
@@ -8970,9 +8970,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.profiles
+   * Project.profiles
    */
-  export type Asset$profilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$profilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Profile
      */
@@ -8994,9 +8994,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.pages
+   * Project.pages
    */
-  export type Asset$pagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$pagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Page
      */
@@ -9018,9 +9018,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.paths
+   * Project.paths
    */
-  export type Asset$pathsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$pathsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the PagePath
      */
@@ -9042,9 +9042,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.sections
+   * Project.sections
    */
-  export type Asset$sectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$sectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Section
      */
@@ -9066,9 +9066,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.datalists
+   * Project.datalists
    */
-  export type Asset$datalistsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$datalistsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Datalist
      */
@@ -9090,9 +9090,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.sources
+   * Project.sources
    */
-  export type Asset$sourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$sourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the DataSource
      */
@@ -9114,9 +9114,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.environments
+   * Project.environments
    */
-  export type Asset$environmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$environmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the EnvironmentVariable
      */
@@ -9138,9 +9138,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.redirects
+   * Project.redirects
    */
-  export type Asset$redirectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$redirectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Redirect
      */
@@ -9162,9 +9162,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.codeFiles
+   * Project.codeFiles
    */
-  export type Asset$codeFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$codeFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the CodeFile
      */
@@ -9186,9 +9186,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.allocations
+   * Project.allocations
    */
-  export type Asset$allocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$allocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Allocation
      */
@@ -9210,9 +9210,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.structures
+   * Project.structures
    */
-  export type Asset$structuresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$structuresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the SiteStructure
      */
@@ -9234,9 +9234,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.deployments
+   * Project.deployments
    */
-  export type Asset$deploymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$deploymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Deployment
      */
@@ -9258,9 +9258,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.appBaseBackups
+   * Project.appBaseBackups
    */
-  export type Asset$appBaseBackupsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$appBaseBackupsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the AppBaseBackup
      */
@@ -9282,9 +9282,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.assetModules
+   * Project.assetModules
    */
-  export type Asset$assetModulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$assetModulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the AssetModule
      */
@@ -9306,9 +9306,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.teams
+   * Project.teams
    */
-  export type Asset$teamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$teamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Team
      */
@@ -9330,9 +9330,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.members
+   * Project.members
    */
-  export type Asset$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Member
      */
@@ -9354,9 +9354,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.jobPostings
+   * Project.jobPostings
    */
-  export type Asset$jobPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$jobPostingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the JobPosting
      */
@@ -9378,9 +9378,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.forms
+   * Project.forms
    */
-  export type Asset$formsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$formsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Form
      */
@@ -9402,9 +9402,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.formSubmissions
+   * Project.formSubmissions
    */
-  export type Asset$formSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$formSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the FormSubmission
      */
@@ -9426,9 +9426,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.defaultProjectAccounts
+   * Project.defaultProjectAccounts
    */
-  export type Asset$defaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$defaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -9450,21 +9450,21 @@ export namespace Prisma {
   }
 
   /**
-   * Asset without action
+   * Project without action
    */
-  export type AssetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Asset
+     * Select specific fields to fetch from the Project
      */
-    select?: AssetSelect<ExtArgs> | null
+    select?: ProjectSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Asset
+     * Omit specific fields from the Project
      */
-    omit?: AssetOmit<ExtArgs> | null
+    omit?: ProjectOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AssetInclude<ExtArgs> | null
+    include?: ProjectInclude<ExtArgs> | null
   }
 
 
@@ -9636,7 +9636,7 @@ export namespace Prisma {
     slug?: boolean
     fields?: boolean
     createdOn?: boolean
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     submissions?: boolean | Form$submissionsArgs<ExtArgs>
     _count?: boolean | FormCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["form"]>
@@ -9648,7 +9648,7 @@ export namespace Prisma {
     slug?: boolean
     fields?: boolean
     createdOn?: boolean
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["form"]>
 
   export type FormSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9658,7 +9658,7 @@ export namespace Prisma {
     slug?: boolean
     fields?: boolean
     createdOn?: boolean
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["form"]>
 
   export type FormSelectScalar = {
@@ -9672,21 +9672,21 @@ export namespace Prisma {
 
   export type FormOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "name" | "slug" | "fields" | "createdOn", ExtArgs["result"]["form"]>
   export type FormInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     submissions?: boolean | Form$submissionsArgs<ExtArgs>
     _count?: boolean | FormCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type FormIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type FormIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $FormPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Form"
     objects: {
-      project: Prisma.$AssetPayload<ExtArgs>
+      project: Prisma.$ProjectPayload<ExtArgs>
       submissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -10090,7 +10090,7 @@ export namespace Prisma {
    */
   export interface Prisma__FormClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    project<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     submissions<T extends Form$submissionsArgs<ExtArgs> = {}>(args?: Subset<T, Form$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10738,7 +10738,7 @@ export namespace Prisma {
     response?: boolean
     postedOn?: boolean
     status?: boolean
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     form?: boolean | FormDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["formSubmission"]>
 
@@ -10749,7 +10749,7 @@ export namespace Prisma {
     response?: boolean
     postedOn?: boolean
     status?: boolean
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     form?: boolean | FormDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["formSubmission"]>
 
@@ -10760,7 +10760,7 @@ export namespace Prisma {
     response?: boolean
     postedOn?: boolean
     status?: boolean
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     form?: boolean | FormDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["formSubmission"]>
 
@@ -10775,22 +10775,22 @@ export namespace Prisma {
 
   export type FormSubmissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "formId" | "response" | "postedOn" | "status", ExtArgs["result"]["formSubmission"]>
   export type FormSubmissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     form?: boolean | FormDefaultArgs<ExtArgs>
   }
   export type FormSubmissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     form?: boolean | FormDefaultArgs<ExtArgs>
   }
   export type FormSubmissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | AssetDefaultArgs<ExtArgs>
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
     form?: boolean | FormDefaultArgs<ExtArgs>
   }
 
   export type $FormSubmissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FormSubmission"
     objects: {
-      project: Prisma.$AssetPayload<ExtArgs>
+      project: Prisma.$ProjectPayload<ExtArgs>
       form: Prisma.$FormPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -11194,7 +11194,7 @@ export namespace Prisma {
    */
   export interface Prisma__FormSubmissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    project<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     form<T extends FormDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FormDefaultArgs<ExtArgs>>): Prisma__FormClient<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -11806,7 +11806,7 @@ export namespace Prisma {
     assetId?: boolean
     subject?: boolean
     value?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
 
   export type ProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11814,7 +11814,7 @@ export namespace Prisma {
     assetId?: boolean
     subject?: boolean
     value?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
 
   export type ProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11822,7 +11822,7 @@ export namespace Prisma {
     assetId?: boolean
     subject?: boolean
     value?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
 
   export type ProfileSelectScalar = {
@@ -11834,19 +11834,19 @@ export namespace Prisma {
 
   export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "subject" | "value", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type ProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type ProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $ProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Profile"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12247,7 +12247,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12892,7 +12892,7 @@ export namespace Prisma {
     type?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     paths?: boolean | Page$pathsArgs<ExtArgs>
     dataSourceBindings?: boolean | Page$dataSourceBindingsArgs<ExtArgs>
     _count?: boolean | PageCountOutputTypeDefaultArgs<ExtArgs>
@@ -12908,7 +12908,7 @@ export namespace Prisma {
     type?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["page"]>
 
   export type PageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12921,7 +12921,7 @@ export namespace Prisma {
     type?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["page"]>
 
   export type PageSelectScalar = {
@@ -12938,22 +12938,22 @@ export namespace Prisma {
 
   export type PageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "description" | "elements" | "reactComponent" | "type" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
   export type PageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     paths?: boolean | Page$pathsArgs<ExtArgs>
     dataSourceBindings?: boolean | Page$dataSourceBindingsArgs<ExtArgs>
     _count?: boolean | PageCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type PageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $PagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Page"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
       paths: Prisma.$PagePathPayload<ExtArgs>[]
       dataSourceBindings: Prisma.$PageDataSourceBindingPayload<ExtArgs>[]
     }
@@ -13361,7 +13361,7 @@ export namespace Prisma {
    */
   export interface Prisma__PageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     paths<T extends Page$pathsArgs<ExtArgs> = {}>(args?: Subset<T, Page$pathsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PagePathPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     dataSourceBindings<T extends Page$dataSourceBindingsArgs<ExtArgs> = {}>(args?: Subset<T, Page$dataSourceBindingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PageDataSourceBindingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -14033,7 +14033,7 @@ export namespace Prisma {
     pageId?: boolean
     path?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     page?: boolean | PageDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["pagePath"]>
 
@@ -14043,7 +14043,7 @@ export namespace Prisma {
     pageId?: boolean
     path?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     page?: boolean | PageDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["pagePath"]>
 
@@ -14053,7 +14053,7 @@ export namespace Prisma {
     pageId?: boolean
     path?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     page?: boolean | PageDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["pagePath"]>
 
@@ -14067,22 +14067,22 @@ export namespace Prisma {
 
   export type PagePathOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "pageId" | "path" | "createdAt", ExtArgs["result"]["pagePath"]>
   export type PagePathInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     page?: boolean | PageDefaultArgs<ExtArgs>
   }
   export type PagePathIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     page?: boolean | PageDefaultArgs<ExtArgs>
   }
   export type PagePathIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     page?: boolean | PageDefaultArgs<ExtArgs>
   }
 
   export type $PagePathPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "PagePath"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
       page: Prisma.$PagePayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -14485,7 +14485,7 @@ export namespace Prisma {
    */
   export interface Prisma__PagePathClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     page<T extends PageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PageDefaultArgs<ExtArgs>>): Prisma__PageClient<$Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -15128,7 +15128,7 @@ export namespace Prisma {
     source?: boolean
     createdBy?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["section"]>
 
   export type SectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15140,7 +15140,7 @@ export namespace Prisma {
     source?: boolean
     createdBy?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["section"]>
 
   export type SectionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15152,7 +15152,7 @@ export namespace Prisma {
     source?: boolean
     createdBy?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["section"]>
 
   export type SectionSelectScalar = {
@@ -15168,19 +15168,19 @@ export namespace Prisma {
 
   export type SectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "type" | "content" | "source" | "createdBy" | "createdAt", ExtArgs["result"]["section"]>
   export type SectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type SectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type SectionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $SectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Section"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15585,7 +15585,7 @@ export namespace Prisma {
    */
   export interface Prisma__SectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17325,7 +17325,7 @@ export namespace Prisma {
     data?: boolean
     datalistId?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     bindings?: boolean | DataSource$bindingsArgs<ExtArgs>
     _count?: boolean | DataSourceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["dataSource"]>
@@ -17342,7 +17342,7 @@ export namespace Prisma {
     data?: boolean
     datalistId?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["dataSource"]>
 
   export type DataSourceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -17357,7 +17357,7 @@ export namespace Prisma {
     data?: boolean
     datalistId?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["dataSource"]>
 
   export type DataSourceSelectScalar = {
@@ -17376,21 +17376,21 @@ export namespace Prisma {
 
   export type DataSourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "type" | "methods" | "url" | "headers" | "connection" | "data" | "datalistId" | "createdAt", ExtArgs["result"]["dataSource"]>
   export type DataSourceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     bindings?: boolean | DataSource$bindingsArgs<ExtArgs>
     _count?: boolean | DataSourceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type DataSourceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type DataSourceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $DataSourcePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "DataSource"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
       bindings: Prisma.$PageDataSourceBindingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -17799,7 +17799,7 @@ export namespace Prisma {
    */
   export interface Prisma__DataSourceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     bindings<T extends DataSource$bindingsArgs<ExtArgs> = {}>(args?: Subset<T, DataSource$bindingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PageDataSourceBindingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -19527,7 +19527,7 @@ export namespace Prisma {
     data?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["datalist"]>
 
   export type DatalistSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -19537,7 +19537,7 @@ export namespace Prisma {
     data?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["datalist"]>
 
   export type DatalistSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -19547,7 +19547,7 @@ export namespace Prisma {
     data?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["datalist"]>
 
   export type DatalistSelectScalar = {
@@ -19561,19 +19561,19 @@ export namespace Prisma {
 
   export type DatalistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "data" | "createdAt" | "updatedAt", ExtArgs["result"]["datalist"]>
   export type DatalistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type DatalistIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type DatalistIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $DatalistPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Datalist"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -19976,7 +19976,7 @@ export namespace Prisma {
    */
   export interface Prisma__DatalistClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20611,7 +20611,7 @@ export namespace Prisma {
     type?: boolean
     created_by?: boolean
     created_on?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["redirect"]>
 
   export type RedirectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -20622,7 +20622,7 @@ export namespace Prisma {
     type?: boolean
     created_by?: boolean
     created_on?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["redirect"]>
 
   export type RedirectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -20633,7 +20633,7 @@ export namespace Prisma {
     type?: boolean
     created_by?: boolean
     created_on?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["redirect"]>
 
   export type RedirectSelectScalar = {
@@ -20648,19 +20648,19 @@ export namespace Prisma {
 
   export type RedirectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "from" | "to" | "type" | "created_by" | "created_on", ExtArgs["result"]["redirect"]>
   export type RedirectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type RedirectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type RedirectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $RedirectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Redirect"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -21064,7 +21064,7 @@ export namespace Prisma {
    */
   export interface Prisma__RedirectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -21708,7 +21708,7 @@ export namespace Prisma {
     isPrivate?: boolean
     createdBy?: boolean
     createdOn?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["environmentVariable"]>
 
   export type EnvironmentVariableSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -21720,7 +21720,7 @@ export namespace Prisma {
     isPrivate?: boolean
     createdBy?: boolean
     createdOn?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["environmentVariable"]>
 
   export type EnvironmentVariableSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -21732,7 +21732,7 @@ export namespace Prisma {
     isPrivate?: boolean
     createdBy?: boolean
     createdOn?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["environmentVariable"]>
 
   export type EnvironmentVariableSelectScalar = {
@@ -21748,19 +21748,19 @@ export namespace Prisma {
 
   export type EnvironmentVariableOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "name" | "value" | "dataType" | "isPrivate" | "createdBy" | "createdOn", ExtArgs["result"]["environmentVariable"]>
   export type EnvironmentVariableInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type EnvironmentVariableIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type EnvironmentVariableIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $EnvironmentVariablePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "EnvironmentVariable"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -22165,7 +22165,7 @@ export namespace Prisma {
    */
   export interface Prisma__EnvironmentVariableClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22822,7 +22822,7 @@ export namespace Prisma {
     appBaseChanged?: boolean
     environmentsChanged?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["siteStructure"]>
 
   export type SiteStructureSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -22836,7 +22836,7 @@ export namespace Prisma {
     appBaseChanged?: boolean
     environmentsChanged?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["siteStructure"]>
 
   export type SiteStructureSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -22850,7 +22850,7 @@ export namespace Prisma {
     appBaseChanged?: boolean
     environmentsChanged?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["siteStructure"]>
 
   export type SiteStructureSelectScalar = {
@@ -22868,19 +22868,19 @@ export namespace Prisma {
 
   export type SiteStructureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "structure" | "status" | "themeChanged" | "redirectsChanged" | "assetsChanged" | "appBaseChanged" | "environmentsChanged" | "updatedAt", ExtArgs["result"]["siteStructure"]>
   export type SiteStructureInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type SiteStructureIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type SiteStructureIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $SiteStructurePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "SiteStructure"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23287,7 +23287,7 @@ export namespace Prisma {
    */
   export interface Prisma__SiteStructureClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -23922,7 +23922,7 @@ export namespace Prisma {
     siteProfile?: boolean
     environments?: boolean
     attemptedOn?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["deployment"]>
 
   export type DeploymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -23935,7 +23935,7 @@ export namespace Prisma {
     siteProfile?: boolean
     environments?: boolean
     attemptedOn?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["deployment"]>
 
   export type DeploymentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -23948,7 +23948,7 @@ export namespace Prisma {
     siteProfile?: boolean
     environments?: boolean
     attemptedOn?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["deployment"]>
 
   export type DeploymentSelectScalar = {
@@ -23965,19 +23965,19 @@ export namespace Prisma {
 
   export type DeploymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "structure" | "status" | "theme" | "redirects" | "siteProfile" | "environments" | "attemptedOn", ExtArgs["result"]["deployment"]>
   export type DeploymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type DeploymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type DeploymentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $DeploymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Deployment"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -24383,7 +24383,7 @@ export namespace Prisma {
    */
   export interface Prisma__DeploymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -26378,7 +26378,7 @@ export namespace Prisma {
     allocatedOn?: boolean
     status?: boolean
     server?: boolean | ServerDefaultArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["allocation"]>
 
   export type AllocationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -26393,7 +26393,7 @@ export namespace Prisma {
     allocatedOn?: boolean
     status?: boolean
     server?: boolean | ServerDefaultArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["allocation"]>
 
   export type AllocationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -26408,7 +26408,7 @@ export namespace Prisma {
     allocatedOn?: boolean
     status?: boolean
     server?: boolean | ServerDefaultArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["allocation"]>
 
   export type AllocationSelectScalar = {
@@ -26427,22 +26427,22 @@ export namespace Prisma {
   export type AllocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "serverId" | "assetId" | "username" | "deploymentPath" | "storageAllocation" | "port" | "allocatedStorage" | "allocatedOn" | "status", ExtArgs["result"]["allocation"]>
   export type AllocationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     server?: boolean | ServerDefaultArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type AllocationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     server?: boolean | ServerDefaultArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type AllocationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     server?: boolean | ServerDefaultArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $AllocationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Allocation"
     objects: {
       server: Prisma.$ServerPayload<ExtArgs>
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -26850,7 +26850,7 @@ export namespace Prisma {
   export interface Prisma__AllocationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     server<T extends ServerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServerDefaultArgs<ExtArgs>>): Prisma__ServerClient<$Result.GetResult<Prisma.$ServerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -29734,7 +29734,7 @@ export namespace Prisma {
     content?: boolean
     size?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["codeFile"]>
 
   export type CodeFileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -29745,7 +29745,7 @@ export namespace Prisma {
     content?: boolean
     size?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["codeFile"]>
 
   export type CodeFileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -29756,7 +29756,7 @@ export namespace Prisma {
     content?: boolean
     size?: boolean
     createdAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["codeFile"]>
 
   export type CodeFileSelectScalar = {
@@ -29771,19 +29771,19 @@ export namespace Prisma {
 
   export type CodeFileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "fileName" | "filePath" | "content" | "size" | "createdAt", ExtArgs["result"]["codeFile"]>
   export type CodeFileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type CodeFileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type CodeFileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $CodeFilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "CodeFile"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -30187,7 +30187,7 @@ export namespace Prisma {
    */
   export interface Prisma__CodeFileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -32927,7 +32927,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     order?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     members?: boolean | Team$membersArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
@@ -32939,7 +32939,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     order?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
   export type TeamSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -32949,7 +32949,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     order?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
   export type TeamSelectScalar = {
@@ -32963,21 +32963,21 @@ export namespace Prisma {
 
   export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "slug" | "name" | "description" | "order", ExtArgs["result"]["team"]>
   export type TeamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     members?: boolean | Team$membersArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TeamIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type TeamIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $TeamPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Team"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
       members: Prisma.$MemberPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -33381,7 +33381,7 @@ export namespace Prisma {
    */
   export interface Prisma__TeamClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     members<T extends Team$membersArgs<ExtArgs> = {}>(args?: Subset<T, Team$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -34103,7 +34103,7 @@ export namespace Prisma {
     order?: boolean
     teamId?: boolean
     permissions?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
@@ -34119,7 +34119,7 @@ export namespace Prisma {
     order?: boolean
     teamId?: boolean
     permissions?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
@@ -34135,7 +34135,7 @@ export namespace Prisma {
     order?: boolean
     teamId?: boolean
     permissions?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
@@ -34155,22 +34155,22 @@ export namespace Prisma {
 
   export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "slug" | "name" | "email" | "role" | "status" | "imageUrl" | "order" | "teamId" | "permissions", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
   }
   export type MemberIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
   }
   export type MemberIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     team?: boolean | Member$teamArgs<ExtArgs>
   }
 
   export type $MemberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Member"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
       team: Prisma.$TeamPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -34579,7 +34579,7 @@ export namespace Prisma {
    */
   export interface Prisma__MemberClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     team<T extends Member$teamArgs<ExtArgs> = {}>(args?: Subset<T, Member$teamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -35318,7 +35318,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     applicants?: boolean | JobPosting$applicantsArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     _count?: boolean | JobPostingCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["jobPosting"]>
 
@@ -35336,7 +35336,7 @@ export namespace Prisma {
     openings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["jobPosting"]>
 
   export type JobPostingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -35353,7 +35353,7 @@ export namespace Prisma {
     openings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["jobPosting"]>
 
   export type JobPostingSelectScalar = {
@@ -35375,21 +35375,21 @@ export namespace Prisma {
   export type JobPostingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "slug" | "title" | "location" | "type" | "description" | "status" | "qualifications" | "salary" | "openings" | "createdAt" | "updatedAt", ExtArgs["result"]["jobPosting"]>
   export type JobPostingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     applicants?: boolean | JobPosting$applicantsArgs<ExtArgs>
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
     _count?: boolean | JobPostingCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type JobPostingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type JobPostingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $JobPostingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "JobPosting"
     objects: {
       applicants: Prisma.$ApplicantPayload<ExtArgs>[]
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -35800,7 +35800,7 @@ export namespace Prisma {
   export interface Prisma__JobPostingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     applicants<T extends JobPosting$applicantsArgs<ExtArgs> = {}>(args?: Subset<T, JobPosting$applicantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -38594,7 +38594,7 @@ export namespace Prisma {
     content?: boolean
     backedUpAt?: boolean
     backedUpBy?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["appBaseBackup"]>
 
   export type AppBaseBackupSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -38605,7 +38605,7 @@ export namespace Prisma {
     content?: boolean
     backedUpAt?: boolean
     backedUpBy?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["appBaseBackup"]>
 
   export type AppBaseBackupSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -38616,7 +38616,7 @@ export namespace Prisma {
     content?: boolean
     backedUpAt?: boolean
     backedUpBy?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["appBaseBackup"]>
 
   export type AppBaseBackupSelectScalar = {
@@ -38631,19 +38631,19 @@ export namespace Prisma {
 
   export type AppBaseBackupOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "fileName" | "fileType" | "content" | "backedUpAt" | "backedUpBy", ExtArgs["result"]["appBaseBackup"]>
   export type AppBaseBackupInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type AppBaseBackupIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type AppBaseBackupIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $AppBaseBackupPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AppBaseBackup"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -39047,7 +39047,7 @@ export namespace Prisma {
    */
   export interface Prisma__AppBaseBackupClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -41733,7 +41733,7 @@ export namespace Prisma {
     assetId?: boolean
     title?: boolean
     status?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["assetModule"]>
 
   export type AssetModuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -41741,7 +41741,7 @@ export namespace Prisma {
     assetId?: boolean
     title?: boolean
     status?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["assetModule"]>
 
   export type AssetModuleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -41749,7 +41749,7 @@ export namespace Prisma {
     assetId?: boolean
     title?: boolean
     status?: boolean
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["assetModule"]>
 
   export type AssetModuleSelectScalar = {
@@ -41761,19 +41761,19 @@ export namespace Prisma {
 
   export type AssetModuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetId" | "title" | "status", ExtArgs["result"]["assetModule"]>
   export type AssetModuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type AssetModuleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
   export type AssetModuleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    asset?: boolean | AssetDefaultArgs<ExtArgs>
+    asset?: boolean | ProjectDefaultArgs<ExtArgs>
   }
 
   export type $AssetModulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AssetModule"
     objects: {
-      asset: Prisma.$AssetPayload<ExtArgs>
+      asset: Prisma.$ProjectPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -42174,7 +42174,7 @@ export namespace Prisma {
    */
   export interface Prisma__AssetModuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -43704,7 +43704,7 @@ export namespace Prisma {
   export type DomainScalarFieldEnum = (typeof DomainScalarFieldEnum)[keyof typeof DomainScalarFieldEnum]
 
 
-  export const AssetScalarFieldEnum: {
+  export const ProjectScalarFieldEnum: {
     id: 'id',
     name: 'name',
     url: 'url',
@@ -43721,7 +43721,7 @@ export namespace Prisma {
     type: 'type'
   };
 
-  export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
+  export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
 
 
   export const FormScalarFieldEnum: {
@@ -44316,7 +44316,7 @@ export namespace Prisma {
     status?: StringFilter<"Account"> | string
     moreDetails?: JsonNullableFilter<"Account">
     defaultProject?: StringNullableFilter<"Account"> | string | null
-    defaultProjectAsset?: XOR<AssetNullableScalarRelationFilter, AssetWhereInput> | null
+    defaultProjectAsset?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
     roles?: RoleListRelationFilter
   }
 
@@ -44330,7 +44330,7 @@ export namespace Prisma {
     status?: SortOrder
     moreDetails?: SortOrderInput | SortOrder
     defaultProject?: SortOrderInput | SortOrder
-    defaultProjectAsset?: AssetOrderByWithRelationInput
+    defaultProjectAsset?: ProjectOrderByWithRelationInput
     roles?: RoleOrderByRelationAggregateInput
   }
 
@@ -44347,7 +44347,7 @@ export namespace Prisma {
     status?: StringFilter<"Account"> | string
     moreDetails?: JsonNullableFilter<"Account">
     defaultProject?: StringNullableFilter<"Account"> | string | null
-    defaultProjectAsset?: XOR<AssetNullableScalarRelationFilter, AssetWhereInput> | null
+    defaultProjectAsset?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
     roles?: RoleListRelationFilter
   }, "id" | "neupId">
 
@@ -44391,7 +44391,7 @@ export namespace Prisma {
     accountId?: StringFilter<"Role"> | string
     role?: StringFilter<"Role"> | string
     status?: StringFilter<"Role"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
   }
 
@@ -44402,7 +44402,7 @@ export namespace Prisma {
     accountId?: SortOrder
     role?: SortOrder
     status?: SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
     account?: AccountOrderByWithRelationInput
   }
 
@@ -44416,7 +44416,7 @@ export namespace Prisma {
     accountId?: StringFilter<"Role"> | string
     role?: StringFilter<"Role"> | string
     status?: StringFilter<"Role"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
   }, "id">
 
@@ -44452,7 +44452,7 @@ export namespace Prisma {
     assetId?: StringFilter<"Domain"> | string
     domain?: StringFilter<"Domain"> | string
     isPrimary?: BoolFilter<"Domain"> | boolean
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type DomainOrderByWithRelationInput = {
@@ -44460,7 +44460,7 @@ export namespace Prisma {
     assetId?: SortOrder
     domain?: SortOrder
     isPrimary?: SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type DomainWhereUniqueInput = Prisma.AtLeast<{
@@ -44471,7 +44471,7 @@ export namespace Prisma {
     assetId?: StringFilter<"Domain"> | string
     domain?: StringFilter<"Domain"> | string
     isPrimary?: BoolFilter<"Domain"> | boolean
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type DomainOrderByWithAggregationInput = {
@@ -44494,24 +44494,24 @@ export namespace Prisma {
     isPrimary?: BoolWithAggregatesFilter<"Domain"> | boolean
   }
 
-  export type AssetWhereInput = {
-    AND?: AssetWhereInput | AssetWhereInput[]
-    OR?: AssetWhereInput[]
-    NOT?: AssetWhereInput | AssetWhereInput[]
-    id?: StringFilter<"Asset"> | string
-    name?: StringFilter<"Asset"> | string
-    url?: StringNullableFilter<"Asset"> | string | null
-    tier?: StringFilter<"Asset"> | string
-    modules?: JsonNullableFilter<"Asset">
-    icons?: JsonNullableFilter<"Asset">
-    domains?: JsonNullableFilter<"Asset">
-    design?: JsonNullableFilter<"Asset">
-    features?: JsonNullableFilter<"Asset">
-    createdAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
-    updatedAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
-    ownerAccountId?: StringNullableFilter<"Asset"> | string | null
-    status?: StringNullableFilter<"Asset"> | string | null
-    type?: StringNullableFilter<"Asset"> | string | null
+  export type ProjectWhereInput = {
+    AND?: ProjectWhereInput | ProjectWhereInput[]
+    OR?: ProjectWhereInput[]
+    NOT?: ProjectWhereInput | ProjectWhereInput[]
+    id?: StringFilter<"Project"> | string
+    name?: StringFilter<"Project"> | string
+    url?: StringNullableFilter<"Project"> | string | null
+    tier?: StringFilter<"Project"> | string
+    modules?: JsonNullableFilter<"Project">
+    icons?: JsonNullableFilter<"Project">
+    domains?: JsonNullableFilter<"Project">
+    design?: JsonNullableFilter<"Project">
+    features?: JsonNullableFilter<"Project">
+    createdAt?: DateTimeNullableFilter<"Project"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"Project"> | Date | string | null
+    ownerAccountId?: StringNullableFilter<"Project"> | string | null
+    status?: StringNullableFilter<"Project"> | string | null
+    type?: StringNullableFilter<"Project"> | string | null
     roles?: RoleListRelationFilter
     domainEntries?: DomainListRelationFilter
     profiles?: ProfileListRelationFilter
@@ -44536,7 +44536,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountListRelationFilter
   }
 
-  export type AssetOrderByWithRelationInput = {
+  export type ProjectOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     url?: SortOrderInput | SortOrder
@@ -44575,24 +44575,24 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountOrderByRelationAggregateInput
   }
 
-  export type AssetWhereUniqueInput = Prisma.AtLeast<{
+  export type ProjectWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: AssetWhereInput | AssetWhereInput[]
-    OR?: AssetWhereInput[]
-    NOT?: AssetWhereInput | AssetWhereInput[]
-    name?: StringFilter<"Asset"> | string
-    url?: StringNullableFilter<"Asset"> | string | null
-    tier?: StringFilter<"Asset"> | string
-    modules?: JsonNullableFilter<"Asset">
-    icons?: JsonNullableFilter<"Asset">
-    domains?: JsonNullableFilter<"Asset">
-    design?: JsonNullableFilter<"Asset">
-    features?: JsonNullableFilter<"Asset">
-    createdAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
-    updatedAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
-    ownerAccountId?: StringNullableFilter<"Asset"> | string | null
-    status?: StringNullableFilter<"Asset"> | string | null
-    type?: StringNullableFilter<"Asset"> | string | null
+    AND?: ProjectWhereInput | ProjectWhereInput[]
+    OR?: ProjectWhereInput[]
+    NOT?: ProjectWhereInput | ProjectWhereInput[]
+    name?: StringFilter<"Project"> | string
+    url?: StringNullableFilter<"Project"> | string | null
+    tier?: StringFilter<"Project"> | string
+    modules?: JsonNullableFilter<"Project">
+    icons?: JsonNullableFilter<"Project">
+    domains?: JsonNullableFilter<"Project">
+    design?: JsonNullableFilter<"Project">
+    features?: JsonNullableFilter<"Project">
+    createdAt?: DateTimeNullableFilter<"Project"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"Project"> | Date | string | null
+    ownerAccountId?: StringNullableFilter<"Project"> | string | null
+    status?: StringNullableFilter<"Project"> | string | null
+    type?: StringNullableFilter<"Project"> | string | null
     roles?: RoleListRelationFilter
     domainEntries?: DomainListRelationFilter
     profiles?: ProfileListRelationFilter
@@ -44617,7 +44617,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountListRelationFilter
   }, "id">
 
-  export type AssetOrderByWithAggregationInput = {
+  export type ProjectOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     url?: SortOrderInput | SortOrder
@@ -44632,29 +44632,29 @@ export namespace Prisma {
     ownerAccountId?: SortOrderInput | SortOrder
     status?: SortOrderInput | SortOrder
     type?: SortOrderInput | SortOrder
-    _count?: AssetCountOrderByAggregateInput
-    _max?: AssetMaxOrderByAggregateInput
-    _min?: AssetMinOrderByAggregateInput
+    _count?: ProjectCountOrderByAggregateInput
+    _max?: ProjectMaxOrderByAggregateInput
+    _min?: ProjectMinOrderByAggregateInput
   }
 
-  export type AssetScalarWhereWithAggregatesInput = {
-    AND?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
-    OR?: AssetScalarWhereWithAggregatesInput[]
-    NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Asset"> | string
-    name?: StringWithAggregatesFilter<"Asset"> | string
-    url?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    tier?: StringWithAggregatesFilter<"Asset"> | string
-    modules?: JsonNullableWithAggregatesFilter<"Asset">
-    icons?: JsonNullableWithAggregatesFilter<"Asset">
-    domains?: JsonNullableWithAggregatesFilter<"Asset">
-    design?: JsonNullableWithAggregatesFilter<"Asset">
-    features?: JsonNullableWithAggregatesFilter<"Asset">
-    createdAt?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
-    updatedAt?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
-    ownerAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    status?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    type?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+  export type ProjectScalarWhereWithAggregatesInput = {
+    AND?: ProjectScalarWhereWithAggregatesInput | ProjectScalarWhereWithAggregatesInput[]
+    OR?: ProjectScalarWhereWithAggregatesInput[]
+    NOT?: ProjectScalarWhereWithAggregatesInput | ProjectScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Project"> | string
+    name?: StringWithAggregatesFilter<"Project"> | string
+    url?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    tier?: StringWithAggregatesFilter<"Project"> | string
+    modules?: JsonNullableWithAggregatesFilter<"Project">
+    icons?: JsonNullableWithAggregatesFilter<"Project">
+    domains?: JsonNullableWithAggregatesFilter<"Project">
+    design?: JsonNullableWithAggregatesFilter<"Project">
+    features?: JsonNullableWithAggregatesFilter<"Project">
+    createdAt?: DateTimeNullableWithAggregatesFilter<"Project"> | Date | string | null
+    updatedAt?: DateTimeNullableWithAggregatesFilter<"Project"> | Date | string | null
+    ownerAccountId?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    status?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    type?: StringNullableWithAggregatesFilter<"Project"> | string | null
   }
 
   export type FormWhereInput = {
@@ -44667,7 +44667,7 @@ export namespace Prisma {
     slug?: StringFilter<"Form"> | string
     fields?: JsonFilter<"Form">
     createdOn?: DateTimeFilter<"Form"> | Date | string
-    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     submissions?: FormSubmissionListRelationFilter
   }
 
@@ -44678,7 +44678,7 @@ export namespace Prisma {
     slug?: SortOrder
     fields?: SortOrder
     createdOn?: SortOrder
-    project?: AssetOrderByWithRelationInput
+    project?: ProjectOrderByWithRelationInput
     submissions?: FormSubmissionOrderByRelationAggregateInput
   }
 
@@ -44693,7 +44693,7 @@ export namespace Prisma {
     slug?: StringFilter<"Form"> | string
     fields?: JsonFilter<"Form">
     createdOn?: DateTimeFilter<"Form"> | Date | string
-    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     submissions?: FormSubmissionListRelationFilter
   }, "id" | "projectId_slug">
 
@@ -44731,7 +44731,7 @@ export namespace Prisma {
     response?: JsonFilter<"FormSubmission">
     postedOn?: DateTimeFilter<"FormSubmission"> | Date | string
     status?: StringFilter<"FormSubmission"> | string
-    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     form?: XOR<FormScalarRelationFilter, FormWhereInput>
   }
 
@@ -44742,7 +44742,7 @@ export namespace Prisma {
     response?: SortOrder
     postedOn?: SortOrder
     status?: SortOrder
-    project?: AssetOrderByWithRelationInput
+    project?: ProjectOrderByWithRelationInput
     form?: FormOrderByWithRelationInput
   }
 
@@ -44756,7 +44756,7 @@ export namespace Prisma {
     response?: JsonFilter<"FormSubmission">
     postedOn?: DateTimeFilter<"FormSubmission"> | Date | string
     status?: StringFilter<"FormSubmission"> | string
-    project?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     form?: XOR<FormScalarRelationFilter, FormWhereInput>
   }, "id">
 
@@ -44792,7 +44792,7 @@ export namespace Prisma {
     assetId?: StringFilter<"Profile"> | string
     subject?: StringFilter<"Profile"> | string
     value?: StringFilter<"Profile"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type ProfileOrderByWithRelationInput = {
@@ -44800,7 +44800,7 @@ export namespace Prisma {
     assetId?: SortOrder
     subject?: SortOrder
     value?: SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type ProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -44811,7 +44811,7 @@ export namespace Prisma {
     assetId?: StringFilter<"Profile"> | string
     subject?: StringFilter<"Profile"> | string
     value?: StringFilter<"Profile"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type ProfileOrderByWithAggregationInput = {
@@ -44847,7 +44847,7 @@ export namespace Prisma {
     type?: StringFilter<"Page"> | string
     createdAt?: DateTimeNullableFilter<"Page"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Page"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     paths?: PagePathListRelationFilter
     dataSourceBindings?: PageDataSourceBindingListRelationFilter
   }
@@ -44862,7 +44862,7 @@ export namespace Prisma {
     type?: SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
     paths?: PagePathOrderByRelationAggregateInput
     dataSourceBindings?: PageDataSourceBindingOrderByRelationAggregateInput
   }
@@ -44880,7 +44880,7 @@ export namespace Prisma {
     type?: StringFilter<"Page"> | string
     createdAt?: DateTimeNullableFilter<"Page"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Page"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     paths?: PagePathListRelationFilter
     dataSourceBindings?: PageDataSourceBindingListRelationFilter
   }, "id">
@@ -44924,7 +44924,7 @@ export namespace Prisma {
     pageId?: StringFilter<"PagePath"> | string
     path?: StringFilter<"PagePath"> | string
     createdAt?: DateTimeNullableFilter<"PagePath"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     page?: XOR<PageScalarRelationFilter, PageWhereInput>
   }
 
@@ -44934,7 +44934,7 @@ export namespace Prisma {
     pageId?: SortOrder
     path?: SortOrder
     createdAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
     page?: PageOrderByWithRelationInput
   }
 
@@ -44948,7 +44948,7 @@ export namespace Prisma {
     pageId?: StringFilter<"PagePath"> | string
     path?: StringFilter<"PagePath"> | string
     createdAt?: DateTimeNullableFilter<"PagePath"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     page?: XOR<PageScalarRelationFilter, PageWhereInput>
   }, "id" | "assetId_path">
 
@@ -44986,7 +44986,7 @@ export namespace Prisma {
     source?: StringFilter<"Section"> | string
     createdBy?: StringFilter<"Section"> | string
     createdAt?: DateTimeNullableFilter<"Section"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type SectionOrderByWithRelationInput = {
@@ -44998,7 +44998,7 @@ export namespace Prisma {
     source?: SortOrder
     createdBy?: SortOrder
     createdAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type SectionWhereUniqueInput = Prisma.AtLeast<{
@@ -45013,7 +45013,7 @@ export namespace Prisma {
     source?: StringFilter<"Section"> | string
     createdBy?: StringFilter<"Section"> | string
     createdAt?: DateTimeNullableFilter<"Section"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type SectionOrderByWithAggregationInput = {
@@ -45146,7 +45146,7 @@ export namespace Prisma {
     data?: JsonNullableFilter<"DataSource">
     datalistId?: StringNullableFilter<"DataSource"> | string | null
     createdAt?: DateTimeNullableFilter<"DataSource"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     bindings?: PageDataSourceBindingListRelationFilter
   }
 
@@ -45162,7 +45162,7 @@ export namespace Prisma {
     data?: SortOrderInput | SortOrder
     datalistId?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
     bindings?: PageDataSourceBindingOrderByRelationAggregateInput
   }
 
@@ -45181,7 +45181,7 @@ export namespace Prisma {
     data?: JsonNullableFilter<"DataSource">
     datalistId?: StringNullableFilter<"DataSource"> | string | null
     createdAt?: DateTimeNullableFilter<"DataSource"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     bindings?: PageDataSourceBindingListRelationFilter
   }, "id">
 
@@ -45287,7 +45287,7 @@ export namespace Prisma {
     data?: StringFilter<"Datalist"> | string
     createdAt?: DateTimeNullableFilter<"Datalist"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Datalist"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type DatalistOrderByWithRelationInput = {
@@ -45297,7 +45297,7 @@ export namespace Prisma {
     data?: SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type DatalistWhereUniqueInput = Prisma.AtLeast<{
@@ -45310,7 +45310,7 @@ export namespace Prisma {
     data?: StringFilter<"Datalist"> | string
     createdAt?: DateTimeNullableFilter<"Datalist"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Datalist"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type DatalistOrderByWithAggregationInput = {
@@ -45348,7 +45348,7 @@ export namespace Prisma {
     type?: StringFilter<"Redirect"> | string
     created_by?: StringFilter<"Redirect"> | string
     created_on?: DateTimeNullableFilter<"Redirect"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type RedirectOrderByWithRelationInput = {
@@ -45359,7 +45359,7 @@ export namespace Prisma {
     type?: SortOrder
     created_by?: SortOrder
     created_on?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type RedirectWhereUniqueInput = Prisma.AtLeast<{
@@ -45373,7 +45373,7 @@ export namespace Prisma {
     type?: StringFilter<"Redirect"> | string
     created_by?: StringFilter<"Redirect"> | string
     created_on?: DateTimeNullableFilter<"Redirect"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type RedirectOrderByWithAggregationInput = {
@@ -45414,7 +45414,7 @@ export namespace Prisma {
     isPrivate?: BoolFilter<"EnvironmentVariable"> | boolean
     createdBy?: StringFilter<"EnvironmentVariable"> | string
     createdOn?: DateTimeNullableFilter<"EnvironmentVariable"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type EnvironmentVariableOrderByWithRelationInput = {
@@ -45426,7 +45426,7 @@ export namespace Prisma {
     isPrivate?: SortOrder
     createdBy?: SortOrder
     createdOn?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type EnvironmentVariableWhereUniqueInput = Prisma.AtLeast<{
@@ -45441,7 +45441,7 @@ export namespace Prisma {
     isPrivate?: BoolFilter<"EnvironmentVariable"> | boolean
     createdBy?: StringFilter<"EnvironmentVariable"> | string
     createdOn?: DateTimeNullableFilter<"EnvironmentVariable"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type EnvironmentVariableOrderByWithAggregationInput = {
@@ -45486,7 +45486,7 @@ export namespace Prisma {
     appBaseChanged?: BoolFilter<"SiteStructure"> | boolean
     environmentsChanged?: BoolFilter<"SiteStructure"> | boolean
     updatedAt?: DateTimeNullableFilter<"SiteStructure"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type SiteStructureOrderByWithRelationInput = {
@@ -45500,7 +45500,7 @@ export namespace Prisma {
     appBaseChanged?: SortOrder
     environmentsChanged?: SortOrder
     updatedAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type SiteStructureWhereUniqueInput = Prisma.AtLeast<{
@@ -45517,7 +45517,7 @@ export namespace Prisma {
     appBaseChanged?: BoolFilter<"SiteStructure"> | boolean
     environmentsChanged?: BoolFilter<"SiteStructure"> | boolean
     updatedAt?: DateTimeNullableFilter<"SiteStructure"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id" | "assetId">
 
   export type SiteStructureOrderByWithAggregationInput = {
@@ -45565,7 +45565,7 @@ export namespace Prisma {
     siteProfile?: JsonNullableFilter<"Deployment">
     environments?: JsonNullableFilter<"Deployment">
     attemptedOn?: DateTimeNullableFilter<"Deployment"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type DeploymentOrderByWithRelationInput = {
@@ -45578,7 +45578,7 @@ export namespace Prisma {
     siteProfile?: SortOrderInput | SortOrder
     environments?: SortOrderInput | SortOrder
     attemptedOn?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type DeploymentWhereUniqueInput = Prisma.AtLeast<{
@@ -45594,7 +45594,7 @@ export namespace Prisma {
     siteProfile?: JsonNullableFilter<"Deployment">
     environments?: JsonNullableFilter<"Deployment">
     attemptedOn?: DateTimeNullableFilter<"Deployment"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type DeploymentOrderByWithAggregationInput = {
@@ -45775,7 +45775,7 @@ export namespace Prisma {
     allocatedOn?: DateTimeNullableFilter<"Allocation"> | Date | string | null
     status?: StringFilter<"Allocation"> | string
     server?: XOR<ServerScalarRelationFilter, ServerWhereInput>
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type AllocationOrderByWithRelationInput = {
@@ -45790,7 +45790,7 @@ export namespace Prisma {
     allocatedOn?: SortOrderInput | SortOrder
     status?: SortOrder
     server?: ServerOrderByWithRelationInput
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type AllocationWhereUniqueInput = Prisma.AtLeast<{
@@ -45808,7 +45808,7 @@ export namespace Prisma {
     allocatedOn?: DateTimeNullableFilter<"Allocation"> | Date | string | null
     status?: StringFilter<"Allocation"> | string
     server?: XOR<ServerScalarRelationFilter, ServerWhereInput>
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type AllocationOrderByWithAggregationInput = {
@@ -46023,7 +46023,7 @@ export namespace Prisma {
     content?: StringFilter<"CodeFile"> | string
     size?: IntFilter<"CodeFile"> | number
     createdAt?: DateTimeNullableFilter<"CodeFile"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type CodeFileOrderByWithRelationInput = {
@@ -46034,7 +46034,7 @@ export namespace Prisma {
     content?: SortOrder
     size?: SortOrder
     createdAt?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type CodeFileWhereUniqueInput = Prisma.AtLeast<{
@@ -46048,7 +46048,7 @@ export namespace Prisma {
     content?: StringFilter<"CodeFile"> | string
     size?: IntFilter<"CodeFile"> | number
     createdAt?: DateTimeNullableFilter<"CodeFile"> | Date | string | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type CodeFileOrderByWithAggregationInput = {
@@ -46224,7 +46224,7 @@ export namespace Prisma {
     name?: StringFilter<"Team"> | string
     description?: StringNullableFilter<"Team"> | string | null
     order?: IntNullableFilter<"Team"> | number | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     members?: MemberListRelationFilter
   }
 
@@ -46235,7 +46235,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     order?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
     members?: MemberOrderByRelationAggregateInput
   }
 
@@ -46250,7 +46250,7 @@ export namespace Prisma {
     name?: StringFilter<"Team"> | string
     description?: StringNullableFilter<"Team"> | string | null
     order?: IntNullableFilter<"Team"> | number | null
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     members?: MemberListRelationFilter
   }, "id" | "assetId_slug">
 
@@ -46295,7 +46295,7 @@ export namespace Prisma {
     order?: IntNullableFilter<"Member"> | number | null
     teamId?: StringNullableFilter<"Member"> | string | null
     permissions?: JsonNullableFilter<"Member">
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
   }
 
@@ -46311,7 +46311,7 @@ export namespace Prisma {
     order?: SortOrderInput | SortOrder
     teamId?: SortOrderInput | SortOrder
     permissions?: SortOrderInput | SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
     team?: TeamOrderByWithRelationInput
   }
 
@@ -46331,7 +46331,7 @@ export namespace Prisma {
     order?: IntNullableFilter<"Member"> | number | null
     teamId?: StringNullableFilter<"Member"> | string | null
     permissions?: JsonNullableFilter<"Member">
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
   }, "id" | "assetId_slug">
 
@@ -46389,7 +46389,7 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     applicants?: ApplicantListRelationFilter
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type JobPostingOrderByWithRelationInput = {
@@ -46407,7 +46407,7 @@ export namespace Prisma {
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
     applicants?: ApplicantOrderByRelationAggregateInput
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type JobPostingWhereUniqueInput = Prisma.AtLeast<{
@@ -46428,7 +46428,7 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"JobPosting"> | Date | string | null
     applicants?: ApplicantListRelationFilter
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type JobPostingOrderByWithAggregationInput = {
@@ -46614,7 +46614,7 @@ export namespace Prisma {
     content?: StringFilter<"AppBaseBackup"> | string
     backedUpAt?: DateTimeNullableFilter<"AppBaseBackup"> | Date | string | null
     backedUpBy?: StringFilter<"AppBaseBackup"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type AppBaseBackupOrderByWithRelationInput = {
@@ -46625,7 +46625,7 @@ export namespace Prisma {
     content?: SortOrder
     backedUpAt?: SortOrderInput | SortOrder
     backedUpBy?: SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type AppBaseBackupWhereUniqueInput = Prisma.AtLeast<{
@@ -46639,7 +46639,7 @@ export namespace Prisma {
     content?: StringFilter<"AppBaseBackup"> | string
     backedUpAt?: DateTimeNullableFilter<"AppBaseBackup"> | Date | string | null
     backedUpBy?: StringFilter<"AppBaseBackup"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type AppBaseBackupOrderByWithAggregationInput = {
@@ -46810,7 +46810,7 @@ export namespace Prisma {
     assetId?: StringFilter<"AssetModule"> | string
     title?: StringFilter<"AssetModule"> | string
     status?: StringFilter<"AssetModule"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }
 
   export type AssetModuleOrderByWithRelationInput = {
@@ -46818,7 +46818,7 @@ export namespace Prisma {
     assetId?: SortOrder
     title?: SortOrder
     status?: SortOrder
-    asset?: AssetOrderByWithRelationInput
+    asset?: ProjectOrderByWithRelationInput
   }
 
   export type AssetModuleWhereUniqueInput = Prisma.AtLeast<{
@@ -46829,7 +46829,7 @@ export namespace Prisma {
     assetId?: StringFilter<"AssetModule"> | string
     title?: StringFilter<"AssetModule"> | string
     status?: StringFilter<"AssetModule"> | string
-    asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
+    asset?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
   }, "id">
 
   export type AssetModuleOrderByWithAggregationInput = {
@@ -46923,7 +46923,7 @@ export namespace Prisma {
     createdOn?: Date | string
     status?: string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: AssetCreateNestedOneWithoutDefaultProjectAccountsInput
+    defaultProjectAsset?: ProjectCreateNestedOneWithoutDefaultProjectAccountsInput
     roles?: RoleCreateNestedManyWithoutAccountInput
   }
 
@@ -46949,7 +46949,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: AssetUpdateOneWithoutDefaultProjectAccountsNestedInput
+    defaultProjectAsset?: ProjectUpdateOneWithoutDefaultProjectAccountsNestedInput
     roles?: RoleUpdateManyWithoutAccountNestedInput
   }
 
@@ -47006,7 +47006,7 @@ export namespace Prisma {
     portfolioId: string
     role: string
     status?: string
-    asset: AssetCreateNestedOneWithoutRolesInput
+    asset: ProjectCreateNestedOneWithoutRolesInput
     account: AccountCreateNestedOneWithoutRolesInput
   }
 
@@ -47024,7 +47024,7 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
-    asset?: AssetUpdateOneRequiredWithoutRolesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutRolesNestedInput
     account?: AccountUpdateOneRequiredWithoutRolesNestedInput
   }
 
@@ -47066,7 +47066,7 @@ export namespace Prisma {
     id: string
     domain: string
     isPrimary: boolean
-    asset: AssetCreateNestedOneWithoutDomainEntriesInput
+    asset: ProjectCreateNestedOneWithoutDomainEntriesInput
   }
 
   export type DomainUncheckedCreateInput = {
@@ -47080,7 +47080,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     domain?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
-    asset?: AssetUpdateOneRequiredWithoutDomainEntriesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutDomainEntriesNestedInput
   }
 
   export type DomainUncheckedUpdateInput = {
@@ -47110,7 +47110,7 @@ export namespace Prisma {
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type AssetCreateInput = {
+  export type ProjectCreateInput = {
     id: string
     name?: string
     url?: string | null
@@ -47149,7 +47149,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateInput = {
+  export type ProjectUncheckedCreateInput = {
     id: string
     name?: string
     url?: string | null
@@ -47188,7 +47188,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUpdateInput = {
+  export type ProjectUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47227,7 +47227,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateInput = {
+  export type ProjectUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47266,7 +47266,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateManyInput = {
+  export type ProjectCreateManyInput = {
     id: string
     name?: string
     url?: string | null
@@ -47283,7 +47283,7 @@ export namespace Prisma {
     type?: string | null
   }
 
-  export type AssetUpdateManyMutationInput = {
+  export type ProjectUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47300,7 +47300,7 @@ export namespace Prisma {
     type?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AssetUncheckedUpdateManyInput = {
+  export type ProjectUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47323,7 +47323,7 @@ export namespace Prisma {
     slug: string
     fields: JsonNullValueInput | InputJsonValue
     createdOn?: Date | string
-    project: AssetCreateNestedOneWithoutFormsInput
+    project: ProjectCreateNestedOneWithoutFormsInput
     submissions?: FormSubmissionCreateNestedManyWithoutFormInput
   }
 
@@ -47343,7 +47343,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     fields?: JsonNullValueInput | InputJsonValue
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
-    project?: AssetUpdateOneRequiredWithoutFormsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFormsNestedInput
     submissions?: FormSubmissionUpdateManyWithoutFormNestedInput
   }
 
@@ -47388,7 +47388,7 @@ export namespace Prisma {
     response: JsonNullValueInput | InputJsonValue
     postedOn?: Date | string
     status: string
-    project: AssetCreateNestedOneWithoutFormSubmissionsInput
+    project: ProjectCreateNestedOneWithoutFormSubmissionsInput
     form: FormCreateNestedOneWithoutSubmissionsInput
   }
 
@@ -47406,7 +47406,7 @@ export namespace Prisma {
     response?: JsonNullValueInput | InputJsonValue
     postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
-    project?: AssetUpdateOneRequiredWithoutFormSubmissionsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFormSubmissionsNestedInput
     form?: FormUpdateOneRequiredWithoutSubmissionsNestedInput
   }
 
@@ -47448,7 +47448,7 @@ export namespace Prisma {
     id?: string
     subject: string
     value: string
-    asset: AssetCreateNestedOneWithoutProfilesInput
+    asset: ProjectCreateNestedOneWithoutProfilesInput
   }
 
   export type ProfileUncheckedCreateInput = {
@@ -47462,7 +47462,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     subject?: StringFieldUpdateOperationsInput | string
     value?: StringFieldUpdateOperationsInput | string
-    asset?: AssetUpdateOneRequiredWithoutProfilesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutProfilesNestedInput
   }
 
   export type ProfileUncheckedUpdateInput = {
@@ -47501,7 +47501,7 @@ export namespace Prisma {
     type?: string
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutPagesInput
+    asset: ProjectCreateNestedOneWithoutPagesInput
     paths?: PagePathCreateNestedManyWithoutPageInput
     dataSourceBindings?: PageDataSourceBindingCreateNestedManyWithoutPageInput
   }
@@ -47529,7 +47529,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutPagesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutPagesNestedInput
     paths?: PagePathUpdateManyWithoutPageNestedInput
     dataSourceBindings?: PageDataSourceBindingUpdateManyWithoutPageNestedInput
   }
@@ -47587,7 +47587,7 @@ export namespace Prisma {
     id?: string
     path: string
     createdAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutPathsInput
+    asset: ProjectCreateNestedOneWithoutPathsInput
     page: PageCreateNestedOneWithoutPathsInput
   }
 
@@ -47603,7 +47603,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     path?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutPathsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutPathsNestedInput
     page?: PageUpdateOneRequiredWithoutPathsNestedInput
   }
 
@@ -47645,7 +47645,7 @@ export namespace Prisma {
     source?: string
     createdBy: string
     createdAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutSectionsInput
+    asset: ProjectCreateNestedOneWithoutSectionsInput
   }
 
   export type SectionUncheckedCreateInput = {
@@ -47667,7 +47667,7 @@ export namespace Prisma {
     source?: StringFieldUpdateOperationsInput | string
     createdBy?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutSectionsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutSectionsNestedInput
   }
 
   export type SectionUncheckedUpdateInput = {
@@ -47829,7 +47829,7 @@ export namespace Prisma {
     data?: NullableJsonNullValueInput | InputJsonValue
     datalistId?: string | null
     createdAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutSourcesInput
+    asset: ProjectCreateNestedOneWithoutSourcesInput
     bindings?: PageDataSourceBindingCreateNestedManyWithoutSourceInput
   }
 
@@ -47859,7 +47859,7 @@ export namespace Prisma {
     data?: NullableJsonNullValueInput | InputJsonValue
     datalistId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutSourcesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutSourcesNestedInput
     bindings?: PageDataSourceBindingUpdateManyWithoutSourceNestedInput
   }
 
@@ -47979,7 +47979,7 @@ export namespace Prisma {
     data: string
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutDatalistsInput
+    asset: ProjectCreateNestedOneWithoutDatalistsInput
   }
 
   export type DatalistUncheckedCreateInput = {
@@ -47997,7 +47997,7 @@ export namespace Prisma {
     data?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutDatalistsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutDatalistsNestedInput
   }
 
   export type DatalistUncheckedUpdateInput = {
@@ -48042,7 +48042,7 @@ export namespace Prisma {
     type: string
     created_by: string
     created_on?: Date | string | null
-    asset: AssetCreateNestedOneWithoutRedirectsInput
+    asset: ProjectCreateNestedOneWithoutRedirectsInput
   }
 
   export type RedirectUncheckedCreateInput = {
@@ -48062,7 +48062,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     created_by?: StringFieldUpdateOperationsInput | string
     created_on?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutRedirectsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutRedirectsNestedInput
   }
 
   export type RedirectUncheckedUpdateInput = {
@@ -48112,7 +48112,7 @@ export namespace Prisma {
     isPrivate?: boolean
     createdBy: string
     createdOn?: Date | string | null
-    asset: AssetCreateNestedOneWithoutEnvironmentsInput
+    asset: ProjectCreateNestedOneWithoutEnvironmentsInput
   }
 
   export type EnvironmentVariableUncheckedCreateInput = {
@@ -48134,7 +48134,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdBy?: StringFieldUpdateOperationsInput | string
     createdOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutEnvironmentsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput
   }
 
   export type EnvironmentVariableUncheckedUpdateInput = {
@@ -48190,7 +48190,7 @@ export namespace Prisma {
     appBaseChanged?: boolean
     environmentsChanged?: boolean
     updatedAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutStructuresInput
+    asset: ProjectCreateNestedOneWithoutStructuresInput
   }
 
   export type SiteStructureUncheckedCreateInput = {
@@ -48216,7 +48216,7 @@ export namespace Prisma {
     appBaseChanged?: BoolFieldUpdateOperationsInput | boolean
     environmentsChanged?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutStructuresNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutStructuresNestedInput
   }
 
   export type SiteStructureUncheckedUpdateInput = {
@@ -48279,7 +48279,7 @@ export namespace Prisma {
     siteProfile?: NullableJsonNullValueInput | InputJsonValue
     environments?: NullableJsonNullValueInput | InputJsonValue
     attemptedOn?: Date | string | null
-    asset: AssetCreateNestedOneWithoutDeploymentsInput
+    asset: ProjectCreateNestedOneWithoutDeploymentsInput
   }
 
   export type DeploymentUncheckedCreateInput = {
@@ -48303,7 +48303,7 @@ export namespace Prisma {
     siteProfile?: NullableJsonNullValueInput | InputJsonValue
     environments?: NullableJsonNullValueInput | InputJsonValue
     attemptedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutDeploymentsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutDeploymentsNestedInput
   }
 
   export type DeploymentUncheckedUpdateInput = {
@@ -48532,7 +48532,7 @@ export namespace Prisma {
     allocatedOn?: Date | string | null
     status?: string
     server: ServerCreateNestedOneWithoutAllocationsInput
-    asset: AssetCreateNestedOneWithoutAllocationsInput
+    asset: ProjectCreateNestedOneWithoutAllocationsInput
   }
 
   export type AllocationUncheckedCreateInput = {
@@ -48558,7 +48558,7 @@ export namespace Prisma {
     allocatedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     server?: ServerUpdateOneRequiredWithoutAllocationsNestedInput
-    asset?: AssetUpdateOneRequiredWithoutAllocationsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutAllocationsNestedInput
   }
 
   export type AllocationUncheckedUpdateInput = {
@@ -48813,7 +48813,7 @@ export namespace Prisma {
     content: string
     size?: number
     createdAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutCodeFilesInput
+    asset: ProjectCreateNestedOneWithoutCodeFilesInput
   }
 
   export type CodeFileUncheckedCreateInput = {
@@ -48833,7 +48833,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutCodeFilesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutCodeFilesNestedInput
   }
 
   export type CodeFileUncheckedUpdateInput = {
@@ -49035,7 +49035,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     order?: number | null
-    asset: AssetCreateNestedOneWithoutTeamsInput
+    asset: ProjectCreateNestedOneWithoutTeamsInput
     members?: MemberCreateNestedManyWithoutTeamInput
   }
 
@@ -49055,7 +49055,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
-    asset?: AssetUpdateOneRequiredWithoutTeamsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutTeamsNestedInput
     members?: MemberUpdateManyWithoutTeamNestedInput
   }
 
@@ -49105,7 +49105,7 @@ export namespace Prisma {
     imageUrl?: string | null
     order?: number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
-    asset: AssetCreateNestedOneWithoutMembersInput
+    asset: ProjectCreateNestedOneWithoutMembersInput
     team?: TeamCreateNestedOneWithoutMembersInput
   }
 
@@ -49133,7 +49133,7 @@ export namespace Prisma {
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
-    asset?: AssetUpdateOneRequiredWithoutMembersNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutMembersNestedInput
     team?: TeamUpdateOneWithoutMembersNestedInput
   }
 
@@ -49205,7 +49205,7 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     applicants?: ApplicantCreateNestedManyWithoutJobInput
-    asset: AssetCreateNestedOneWithoutJobPostingsInput
+    asset: ProjectCreateNestedOneWithoutJobPostingsInput
   }
 
   export type JobPostingUncheckedCreateInput = {
@@ -49239,7 +49239,7 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     applicants?: ApplicantUpdateManyWithoutJobNestedInput
-    asset?: AssetUpdateOneRequiredWithoutJobPostingsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutJobPostingsNestedInput
   }
 
   export type JobPostingUncheckedUpdateInput = {
@@ -49459,7 +49459,7 @@ export namespace Prisma {
     content: string
     backedUpAt?: Date | string | null
     backedUpBy: string
-    asset: AssetCreateNestedOneWithoutAppBaseBackupsInput
+    asset: ProjectCreateNestedOneWithoutAppBaseBackupsInput
   }
 
   export type AppBaseBackupUncheckedCreateInput = {
@@ -49479,7 +49479,7 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     backedUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     backedUpBy?: StringFieldUpdateOperationsInput | string
-    asset?: AssetUpdateOneRequiredWithoutAppBaseBackupsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutAppBaseBackupsNestedInput
   }
 
   export type AppBaseBackupUncheckedUpdateInput = {
@@ -49679,7 +49679,7 @@ export namespace Prisma {
     id?: string
     title: string
     status: string
-    asset: AssetCreateNestedOneWithoutAssetModulesInput
+    asset: ProjectCreateNestedOneWithoutAssetModulesInput
   }
 
   export type AssetModuleUncheckedCreateInput = {
@@ -49693,7 +49693,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
-    asset?: AssetUpdateOneRequiredWithoutAssetModulesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutAssetModulesNestedInput
   }
 
   export type AssetModuleUncheckedUpdateInput = {
@@ -49857,9 +49857,9 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type AssetNullableScalarRelationFilter = {
-    is?: AssetWhereInput | null
-    isNot?: AssetWhereInput | null
+  export type ProjectNullableScalarRelationFilter = {
+    is?: ProjectWhereInput | null
+    isNot?: ProjectWhereInput | null
   }
 
   export type RoleListRelationFilter = {
@@ -49987,9 +49987,9 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
-  export type AssetScalarRelationFilter = {
-    is?: AssetWhereInput
-    isNot?: AssetWhereInput
+  export type ProjectScalarRelationFilter = {
+    is?: ProjectWhereInput
+    isNot?: ProjectWhereInput
   }
 
   export type AccountScalarRelationFilter = {
@@ -50279,7 +50279,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type AssetCountOrderByAggregateInput = {
+  export type ProjectCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     url?: SortOrder
@@ -50296,7 +50296,7 @@ export namespace Prisma {
     type?: SortOrder
   }
 
-  export type AssetMaxOrderByAggregateInput = {
+  export type ProjectMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     url?: SortOrder
@@ -50308,7 +50308,7 @@ export namespace Prisma {
     type?: SortOrder
   }
 
-  export type AssetMinOrderByAggregateInput = {
+  export type ProjectMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     url?: SortOrder
@@ -51597,10 +51597,10 @@ export namespace Prisma {
     status?: SortOrder
   }
 
-  export type AssetCreateNestedOneWithoutDefaultProjectAccountsInput = {
-    create?: XOR<AssetCreateWithoutDefaultProjectAccountsInput, AssetUncheckedCreateWithoutDefaultProjectAccountsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDefaultProjectAccountsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutDefaultProjectAccountsInput = {
+    create?: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDefaultProjectAccountsInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type RoleCreateNestedManyWithoutAccountInput = {
@@ -51629,14 +51629,14 @@ export namespace Prisma {
     set?: Date | string
   }
 
-  export type AssetUpdateOneWithoutDefaultProjectAccountsNestedInput = {
-    create?: XOR<AssetCreateWithoutDefaultProjectAccountsInput, AssetUncheckedCreateWithoutDefaultProjectAccountsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDefaultProjectAccountsInput
-    upsert?: AssetUpsertWithoutDefaultProjectAccountsInput
-    disconnect?: AssetWhereInput | boolean
-    delete?: AssetWhereInput | boolean
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutDefaultProjectAccountsInput, AssetUpdateWithoutDefaultProjectAccountsInput>, AssetUncheckedUpdateWithoutDefaultProjectAccountsInput>
+  export type ProjectUpdateOneWithoutDefaultProjectAccountsNestedInput = {
+    create?: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDefaultProjectAccountsInput
+    upsert?: ProjectUpsertWithoutDefaultProjectAccountsInput
+    disconnect?: ProjectWhereInput | boolean
+    delete?: ProjectWhereInput | boolean
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutDefaultProjectAccountsInput, ProjectUpdateWithoutDefaultProjectAccountsInput>, ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput>
   }
 
   export type RoleUpdateManyWithoutAccountNestedInput = {
@@ -51667,10 +51667,10 @@ export namespace Prisma {
     deleteMany?: RoleScalarWhereInput | RoleScalarWhereInput[]
   }
 
-  export type AssetCreateNestedOneWithoutRolesInput = {
-    create?: XOR<AssetCreateWithoutRolesInput, AssetUncheckedCreateWithoutRolesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutRolesInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutRolesInput = {
+    create?: XOR<ProjectCreateWithoutRolesInput, ProjectUncheckedCreateWithoutRolesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutRolesInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type AccountCreateNestedOneWithoutRolesInput = {
@@ -51679,12 +51679,12 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutRolesNestedInput = {
-    create?: XOR<AssetCreateWithoutRolesInput, AssetUncheckedCreateWithoutRolesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutRolesInput
-    upsert?: AssetUpsertWithoutRolesInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutRolesInput, AssetUpdateWithoutRolesInput>, AssetUncheckedUpdateWithoutRolesInput>
+  export type ProjectUpdateOneRequiredWithoutRolesNestedInput = {
+    create?: XOR<ProjectCreateWithoutRolesInput, ProjectUncheckedCreateWithoutRolesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutRolesInput
+    upsert?: ProjectUpsertWithoutRolesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutRolesInput, ProjectUpdateWithoutRolesInput>, ProjectUncheckedUpdateWithoutRolesInput>
   }
 
   export type AccountUpdateOneRequiredWithoutRolesNestedInput = {
@@ -51695,22 +51695,22 @@ export namespace Prisma {
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutRolesInput, AccountUpdateWithoutRolesInput>, AccountUncheckedUpdateWithoutRolesInput>
   }
 
-  export type AssetCreateNestedOneWithoutDomainEntriesInput = {
-    create?: XOR<AssetCreateWithoutDomainEntriesInput, AssetUncheckedCreateWithoutDomainEntriesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDomainEntriesInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutDomainEntriesInput = {
+    create?: XOR<ProjectCreateWithoutDomainEntriesInput, ProjectUncheckedCreateWithoutDomainEntriesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDomainEntriesInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
   }
 
-  export type AssetUpdateOneRequiredWithoutDomainEntriesNestedInput = {
-    create?: XOR<AssetCreateWithoutDomainEntriesInput, AssetUncheckedCreateWithoutDomainEntriesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDomainEntriesInput
-    upsert?: AssetUpsertWithoutDomainEntriesInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutDomainEntriesInput, AssetUpdateWithoutDomainEntriesInput>, AssetUncheckedUpdateWithoutDomainEntriesInput>
+  export type ProjectUpdateOneRequiredWithoutDomainEntriesNestedInput = {
+    create?: XOR<ProjectCreateWithoutDomainEntriesInput, ProjectUncheckedCreateWithoutDomainEntriesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDomainEntriesInput
+    upsert?: ProjectUpsertWithoutDomainEntriesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutDomainEntriesInput, ProjectUpdateWithoutDomainEntriesInput>, ProjectUncheckedUpdateWithoutDomainEntriesInput>
   }
 
   export type RoleCreateNestedManyWithoutAssetInput = {
@@ -52641,10 +52641,10 @@ export namespace Prisma {
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
   }
 
-  export type AssetCreateNestedOneWithoutFormsInput = {
-    create?: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutFormsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutFormsInput = {
+    create?: XOR<ProjectCreateWithoutFormsInput, ProjectUncheckedCreateWithoutFormsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFormsInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type FormSubmissionCreateNestedManyWithoutFormInput = {
@@ -52661,12 +52661,12 @@ export namespace Prisma {
     connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
   }
 
-  export type AssetUpdateOneRequiredWithoutFormsNestedInput = {
-    create?: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutFormsInput
-    upsert?: AssetUpsertWithoutFormsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutFormsInput, AssetUpdateWithoutFormsInput>, AssetUncheckedUpdateWithoutFormsInput>
+  export type ProjectUpdateOneRequiredWithoutFormsNestedInput = {
+    create?: XOR<ProjectCreateWithoutFormsInput, ProjectUncheckedCreateWithoutFormsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFormsInput
+    upsert?: ProjectUpsertWithoutFormsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutFormsInput, ProjectUpdateWithoutFormsInput>, ProjectUncheckedUpdateWithoutFormsInput>
   }
 
   export type FormSubmissionUpdateManyWithoutFormNestedInput = {
@@ -52697,10 +52697,10 @@ export namespace Prisma {
     deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
   }
 
-  export type AssetCreateNestedOneWithoutFormSubmissionsInput = {
-    create?: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutFormSubmissionsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutFormSubmissionsInput = {
+    create?: XOR<ProjectCreateWithoutFormSubmissionsInput, ProjectUncheckedCreateWithoutFormSubmissionsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFormSubmissionsInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type FormCreateNestedOneWithoutSubmissionsInput = {
@@ -52709,12 +52709,12 @@ export namespace Prisma {
     connect?: FormWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutFormSubmissionsNestedInput = {
-    create?: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutFormSubmissionsInput
-    upsert?: AssetUpsertWithoutFormSubmissionsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutFormSubmissionsInput, AssetUpdateWithoutFormSubmissionsInput>, AssetUncheckedUpdateWithoutFormSubmissionsInput>
+  export type ProjectUpdateOneRequiredWithoutFormSubmissionsNestedInput = {
+    create?: XOR<ProjectCreateWithoutFormSubmissionsInput, ProjectUncheckedCreateWithoutFormSubmissionsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFormSubmissionsInput
+    upsert?: ProjectUpsertWithoutFormSubmissionsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutFormSubmissionsInput, ProjectUpdateWithoutFormSubmissionsInput>, ProjectUncheckedUpdateWithoutFormSubmissionsInput>
   }
 
   export type FormUpdateOneRequiredWithoutSubmissionsNestedInput = {
@@ -52725,24 +52725,24 @@ export namespace Prisma {
     update?: XOR<XOR<FormUpdateToOneWithWhereWithoutSubmissionsInput, FormUpdateWithoutSubmissionsInput>, FormUncheckedUpdateWithoutSubmissionsInput>
   }
 
-  export type AssetCreateNestedOneWithoutProfilesInput = {
-    create?: XOR<AssetCreateWithoutProfilesInput, AssetUncheckedCreateWithoutProfilesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutProfilesInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutProfilesInput = {
+    create?: XOR<ProjectCreateWithoutProfilesInput, ProjectUncheckedCreateWithoutProfilesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutProfilesInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutProfilesNestedInput = {
-    create?: XOR<AssetCreateWithoutProfilesInput, AssetUncheckedCreateWithoutProfilesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutProfilesInput
-    upsert?: AssetUpsertWithoutProfilesInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutProfilesInput, AssetUpdateWithoutProfilesInput>, AssetUncheckedUpdateWithoutProfilesInput>
+  export type ProjectUpdateOneRequiredWithoutProfilesNestedInput = {
+    create?: XOR<ProjectCreateWithoutProfilesInput, ProjectUncheckedCreateWithoutProfilesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutProfilesInput
+    upsert?: ProjectUpsertWithoutProfilesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutProfilesInput, ProjectUpdateWithoutProfilesInput>, ProjectUncheckedUpdateWithoutProfilesInput>
   }
 
-  export type AssetCreateNestedOneWithoutPagesInput = {
-    create?: XOR<AssetCreateWithoutPagesInput, AssetUncheckedCreateWithoutPagesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutPagesInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutPagesInput = {
+    create?: XOR<ProjectCreateWithoutPagesInput, ProjectUncheckedCreateWithoutPagesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutPagesInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type PagePathCreateNestedManyWithoutPageInput = {
@@ -52773,12 +52773,12 @@ export namespace Prisma {
     connect?: PageDataSourceBindingWhereUniqueInput | PageDataSourceBindingWhereUniqueInput[]
   }
 
-  export type AssetUpdateOneRequiredWithoutPagesNestedInput = {
-    create?: XOR<AssetCreateWithoutPagesInput, AssetUncheckedCreateWithoutPagesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutPagesInput
-    upsert?: AssetUpsertWithoutPagesInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutPagesInput, AssetUpdateWithoutPagesInput>, AssetUncheckedUpdateWithoutPagesInput>
+  export type ProjectUpdateOneRequiredWithoutPagesNestedInput = {
+    create?: XOR<ProjectCreateWithoutPagesInput, ProjectUncheckedCreateWithoutPagesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutPagesInput
+    upsert?: ProjectUpsertWithoutPagesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutPagesInput, ProjectUpdateWithoutPagesInput>, ProjectUncheckedUpdateWithoutPagesInput>
   }
 
   export type PagePathUpdateManyWithoutPageNestedInput = {
@@ -52837,10 +52837,10 @@ export namespace Prisma {
     deleteMany?: PageDataSourceBindingScalarWhereInput | PageDataSourceBindingScalarWhereInput[]
   }
 
-  export type AssetCreateNestedOneWithoutPathsInput = {
-    create?: XOR<AssetCreateWithoutPathsInput, AssetUncheckedCreateWithoutPathsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutPathsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutPathsInput = {
+    create?: XOR<ProjectCreateWithoutPathsInput, ProjectUncheckedCreateWithoutPathsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutPathsInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type PageCreateNestedOneWithoutPathsInput = {
@@ -52849,12 +52849,12 @@ export namespace Prisma {
     connect?: PageWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutPathsNestedInput = {
-    create?: XOR<AssetCreateWithoutPathsInput, AssetUncheckedCreateWithoutPathsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutPathsInput
-    upsert?: AssetUpsertWithoutPathsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutPathsInput, AssetUpdateWithoutPathsInput>, AssetUncheckedUpdateWithoutPathsInput>
+  export type ProjectUpdateOneRequiredWithoutPathsNestedInput = {
+    create?: XOR<ProjectCreateWithoutPathsInput, ProjectUncheckedCreateWithoutPathsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutPathsInput
+    upsert?: ProjectUpsertWithoutPathsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutPathsInput, ProjectUpdateWithoutPathsInput>, ProjectUncheckedUpdateWithoutPathsInput>
   }
 
   export type PageUpdateOneRequiredWithoutPathsNestedInput = {
@@ -52865,24 +52865,24 @@ export namespace Prisma {
     update?: XOR<XOR<PageUpdateToOneWithWhereWithoutPathsInput, PageUpdateWithoutPathsInput>, PageUncheckedUpdateWithoutPathsInput>
   }
 
-  export type AssetCreateNestedOneWithoutSectionsInput = {
-    create?: XOR<AssetCreateWithoutSectionsInput, AssetUncheckedCreateWithoutSectionsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutSectionsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutSectionsInput = {
+    create?: XOR<ProjectCreateWithoutSectionsInput, ProjectUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutSectionsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutSectionsNestedInput = {
-    create?: XOR<AssetCreateWithoutSectionsInput, AssetUncheckedCreateWithoutSectionsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutSectionsInput
-    upsert?: AssetUpsertWithoutSectionsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutSectionsInput, AssetUpdateWithoutSectionsInput>, AssetUncheckedUpdateWithoutSectionsInput>
+  export type ProjectUpdateOneRequiredWithoutSectionsNestedInput = {
+    create?: XOR<ProjectCreateWithoutSectionsInput, ProjectUncheckedCreateWithoutSectionsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutSectionsInput
+    upsert?: ProjectUpsertWithoutSectionsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutSectionsInput, ProjectUpdateWithoutSectionsInput>, ProjectUncheckedUpdateWithoutSectionsInput>
   }
 
-  export type AssetCreateNestedOneWithoutSourcesInput = {
-    create?: XOR<AssetCreateWithoutSourcesInput, AssetUncheckedCreateWithoutSourcesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutSourcesInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutSourcesInput = {
+    create?: XOR<ProjectCreateWithoutSourcesInput, ProjectUncheckedCreateWithoutSourcesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutSourcesInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type PageDataSourceBindingCreateNestedManyWithoutSourceInput = {
@@ -52899,12 +52899,12 @@ export namespace Prisma {
     connect?: PageDataSourceBindingWhereUniqueInput | PageDataSourceBindingWhereUniqueInput[]
   }
 
-  export type AssetUpdateOneRequiredWithoutSourcesNestedInput = {
-    create?: XOR<AssetCreateWithoutSourcesInput, AssetUncheckedCreateWithoutSourcesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutSourcesInput
-    upsert?: AssetUpsertWithoutSourcesInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutSourcesInput, AssetUpdateWithoutSourcesInput>, AssetUncheckedUpdateWithoutSourcesInput>
+  export type ProjectUpdateOneRequiredWithoutSourcesNestedInput = {
+    create?: XOR<ProjectCreateWithoutSourcesInput, ProjectUncheckedCreateWithoutSourcesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutSourcesInput
+    upsert?: ProjectUpsertWithoutSourcesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutSourcesInput, ProjectUpdateWithoutSourcesInput>, ProjectUncheckedUpdateWithoutSourcesInput>
   }
 
   export type PageDataSourceBindingUpdateManyWithoutSourceNestedInput = {
@@ -52963,74 +52963,74 @@ export namespace Prisma {
     update?: XOR<XOR<DataSourceUpdateToOneWithWhereWithoutBindingsInput, DataSourceUpdateWithoutBindingsInput>, DataSourceUncheckedUpdateWithoutBindingsInput>
   }
 
-  export type AssetCreateNestedOneWithoutDatalistsInput = {
-    create?: XOR<AssetCreateWithoutDatalistsInput, AssetUncheckedCreateWithoutDatalistsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDatalistsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutDatalistsInput = {
+    create?: XOR<ProjectCreateWithoutDatalistsInput, ProjectUncheckedCreateWithoutDatalistsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDatalistsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutDatalistsNestedInput = {
-    create?: XOR<AssetCreateWithoutDatalistsInput, AssetUncheckedCreateWithoutDatalistsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDatalistsInput
-    upsert?: AssetUpsertWithoutDatalistsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutDatalistsInput, AssetUpdateWithoutDatalistsInput>, AssetUncheckedUpdateWithoutDatalistsInput>
+  export type ProjectUpdateOneRequiredWithoutDatalistsNestedInput = {
+    create?: XOR<ProjectCreateWithoutDatalistsInput, ProjectUncheckedCreateWithoutDatalistsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDatalistsInput
+    upsert?: ProjectUpsertWithoutDatalistsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutDatalistsInput, ProjectUpdateWithoutDatalistsInput>, ProjectUncheckedUpdateWithoutDatalistsInput>
   }
 
-  export type AssetCreateNestedOneWithoutRedirectsInput = {
-    create?: XOR<AssetCreateWithoutRedirectsInput, AssetUncheckedCreateWithoutRedirectsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutRedirectsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutRedirectsInput = {
+    create?: XOR<ProjectCreateWithoutRedirectsInput, ProjectUncheckedCreateWithoutRedirectsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutRedirectsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutRedirectsNestedInput = {
-    create?: XOR<AssetCreateWithoutRedirectsInput, AssetUncheckedCreateWithoutRedirectsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutRedirectsInput
-    upsert?: AssetUpsertWithoutRedirectsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutRedirectsInput, AssetUpdateWithoutRedirectsInput>, AssetUncheckedUpdateWithoutRedirectsInput>
+  export type ProjectUpdateOneRequiredWithoutRedirectsNestedInput = {
+    create?: XOR<ProjectCreateWithoutRedirectsInput, ProjectUncheckedCreateWithoutRedirectsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutRedirectsInput
+    upsert?: ProjectUpsertWithoutRedirectsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutRedirectsInput, ProjectUpdateWithoutRedirectsInput>, ProjectUncheckedUpdateWithoutRedirectsInput>
   }
 
-  export type AssetCreateNestedOneWithoutEnvironmentsInput = {
-    create?: XOR<AssetCreateWithoutEnvironmentsInput, AssetUncheckedCreateWithoutEnvironmentsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutEnvironmentsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutEnvironmentsInput = {
+    create?: XOR<ProjectCreateWithoutEnvironmentsInput, ProjectUncheckedCreateWithoutEnvironmentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutEnvironmentsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutEnvironmentsNestedInput = {
-    create?: XOR<AssetCreateWithoutEnvironmentsInput, AssetUncheckedCreateWithoutEnvironmentsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutEnvironmentsInput
-    upsert?: AssetUpsertWithoutEnvironmentsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutEnvironmentsInput, AssetUpdateWithoutEnvironmentsInput>, AssetUncheckedUpdateWithoutEnvironmentsInput>
+  export type ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput = {
+    create?: XOR<ProjectCreateWithoutEnvironmentsInput, ProjectUncheckedCreateWithoutEnvironmentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutEnvironmentsInput
+    upsert?: ProjectUpsertWithoutEnvironmentsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutEnvironmentsInput, ProjectUpdateWithoutEnvironmentsInput>, ProjectUncheckedUpdateWithoutEnvironmentsInput>
   }
 
-  export type AssetCreateNestedOneWithoutStructuresInput = {
-    create?: XOR<AssetCreateWithoutStructuresInput, AssetUncheckedCreateWithoutStructuresInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutStructuresInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutStructuresInput = {
+    create?: XOR<ProjectCreateWithoutStructuresInput, ProjectUncheckedCreateWithoutStructuresInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutStructuresInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutStructuresNestedInput = {
-    create?: XOR<AssetCreateWithoutStructuresInput, AssetUncheckedCreateWithoutStructuresInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutStructuresInput
-    upsert?: AssetUpsertWithoutStructuresInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutStructuresInput, AssetUpdateWithoutStructuresInput>, AssetUncheckedUpdateWithoutStructuresInput>
+  export type ProjectUpdateOneRequiredWithoutStructuresNestedInput = {
+    create?: XOR<ProjectCreateWithoutStructuresInput, ProjectUncheckedCreateWithoutStructuresInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutStructuresInput
+    upsert?: ProjectUpsertWithoutStructuresInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutStructuresInput, ProjectUpdateWithoutStructuresInput>, ProjectUncheckedUpdateWithoutStructuresInput>
   }
 
-  export type AssetCreateNestedOneWithoutDeploymentsInput = {
-    create?: XOR<AssetCreateWithoutDeploymentsInput, AssetUncheckedCreateWithoutDeploymentsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDeploymentsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutDeploymentsInput = {
+    create?: XOR<ProjectCreateWithoutDeploymentsInput, ProjectUncheckedCreateWithoutDeploymentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDeploymentsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutDeploymentsNestedInput = {
-    create?: XOR<AssetCreateWithoutDeploymentsInput, AssetUncheckedCreateWithoutDeploymentsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutDeploymentsInput
-    upsert?: AssetUpsertWithoutDeploymentsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutDeploymentsInput, AssetUpdateWithoutDeploymentsInput>, AssetUncheckedUpdateWithoutDeploymentsInput>
+  export type ProjectUpdateOneRequiredWithoutDeploymentsNestedInput = {
+    create?: XOR<ProjectCreateWithoutDeploymentsInput, ProjectUncheckedCreateWithoutDeploymentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutDeploymentsInput
+    upsert?: ProjectUpsertWithoutDeploymentsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutDeploymentsInput, ProjectUpdateWithoutDeploymentsInput>, ProjectUncheckedUpdateWithoutDeploymentsInput>
   }
 
   export type AllocationCreateNestedManyWithoutServerInput = {
@@ -53127,10 +53127,10 @@ export namespace Prisma {
     connect?: ServerWhereUniqueInput
   }
 
-  export type AssetCreateNestedOneWithoutAllocationsInput = {
-    create?: XOR<AssetCreateWithoutAllocationsInput, AssetUncheckedCreateWithoutAllocationsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutAllocationsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutAllocationsInput = {
+    create?: XOR<ProjectCreateWithoutAllocationsInput, ProjectUncheckedCreateWithoutAllocationsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAllocationsInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -53149,12 +53149,12 @@ export namespace Prisma {
     update?: XOR<XOR<ServerUpdateToOneWithWhereWithoutAllocationsInput, ServerUpdateWithoutAllocationsInput>, ServerUncheckedUpdateWithoutAllocationsInput>
   }
 
-  export type AssetUpdateOneRequiredWithoutAllocationsNestedInput = {
-    create?: XOR<AssetCreateWithoutAllocationsInput, AssetUncheckedCreateWithoutAllocationsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutAllocationsInput
-    upsert?: AssetUpsertWithoutAllocationsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutAllocationsInput, AssetUpdateWithoutAllocationsInput>, AssetUncheckedUpdateWithoutAllocationsInput>
+  export type ProjectUpdateOneRequiredWithoutAllocationsNestedInput = {
+    create?: XOR<ProjectCreateWithoutAllocationsInput, ProjectUncheckedCreateWithoutAllocationsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAllocationsInput
+    upsert?: ProjectUpsertWithoutAllocationsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAllocationsInput, ProjectUpdateWithoutAllocationsInput>, ProjectUncheckedUpdateWithoutAllocationsInput>
   }
 
   export type ServerCreateNestedOneWithoutLogsInput = {
@@ -53171,10 +53171,10 @@ export namespace Prisma {
     update?: XOR<XOR<ServerUpdateToOneWithWhereWithoutLogsInput, ServerUpdateWithoutLogsInput>, ServerUncheckedUpdateWithoutLogsInput>
   }
 
-  export type AssetCreateNestedOneWithoutCodeFilesInput = {
-    create?: XOR<AssetCreateWithoutCodeFilesInput, AssetUncheckedCreateWithoutCodeFilesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutCodeFilesInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutCodeFilesInput = {
+    create?: XOR<ProjectCreateWithoutCodeFilesInput, ProjectUncheckedCreateWithoutCodeFilesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCodeFilesInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -53185,18 +53185,18 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type AssetUpdateOneRequiredWithoutCodeFilesNestedInput = {
-    create?: XOR<AssetCreateWithoutCodeFilesInput, AssetUncheckedCreateWithoutCodeFilesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutCodeFilesInput
-    upsert?: AssetUpsertWithoutCodeFilesInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutCodeFilesInput, AssetUpdateWithoutCodeFilesInput>, AssetUncheckedUpdateWithoutCodeFilesInput>
+  export type ProjectUpdateOneRequiredWithoutCodeFilesNestedInput = {
+    create?: XOR<ProjectCreateWithoutCodeFilesInput, ProjectUncheckedCreateWithoutCodeFilesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCodeFilesInput
+    upsert?: ProjectUpsertWithoutCodeFilesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutCodeFilesInput, ProjectUpdateWithoutCodeFilesInput>, ProjectUncheckedUpdateWithoutCodeFilesInput>
   }
 
-  export type AssetCreateNestedOneWithoutTeamsInput = {
-    create?: XOR<AssetCreateWithoutTeamsInput, AssetUncheckedCreateWithoutTeamsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutTeamsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutTeamsInput = {
+    create?: XOR<ProjectCreateWithoutTeamsInput, ProjectUncheckedCreateWithoutTeamsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTeamsInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type MemberCreateNestedManyWithoutTeamInput = {
@@ -53213,12 +53213,12 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
-  export type AssetUpdateOneRequiredWithoutTeamsNestedInput = {
-    create?: XOR<AssetCreateWithoutTeamsInput, AssetUncheckedCreateWithoutTeamsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutTeamsInput
-    upsert?: AssetUpsertWithoutTeamsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutTeamsInput, AssetUpdateWithoutTeamsInput>, AssetUncheckedUpdateWithoutTeamsInput>
+  export type ProjectUpdateOneRequiredWithoutTeamsNestedInput = {
+    create?: XOR<ProjectCreateWithoutTeamsInput, ProjectUncheckedCreateWithoutTeamsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTeamsInput
+    upsert?: ProjectUpsertWithoutTeamsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutTeamsInput, ProjectUpdateWithoutTeamsInput>, ProjectUncheckedUpdateWithoutTeamsInput>
   }
 
   export type MemberUpdateManyWithoutTeamNestedInput = {
@@ -53249,10 +53249,10 @@ export namespace Prisma {
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
-  export type AssetCreateNestedOneWithoutMembersInput = {
-    create?: XOR<AssetCreateWithoutMembersInput, AssetUncheckedCreateWithoutMembersInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutMembersInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutMembersInput = {
+    create?: XOR<ProjectCreateWithoutMembersInput, ProjectUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutMembersInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type TeamCreateNestedOneWithoutMembersInput = {
@@ -53261,12 +53261,12 @@ export namespace Prisma {
     connect?: TeamWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutMembersNestedInput = {
-    create?: XOR<AssetCreateWithoutMembersInput, AssetUncheckedCreateWithoutMembersInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutMembersInput
-    upsert?: AssetUpsertWithoutMembersInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutMembersInput, AssetUpdateWithoutMembersInput>, AssetUncheckedUpdateWithoutMembersInput>
+  export type ProjectUpdateOneRequiredWithoutMembersNestedInput = {
+    create?: XOR<ProjectCreateWithoutMembersInput, ProjectUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutMembersInput
+    upsert?: ProjectUpsertWithoutMembersInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutMembersInput, ProjectUpdateWithoutMembersInput>, ProjectUncheckedUpdateWithoutMembersInput>
   }
 
   export type TeamUpdateOneWithoutMembersNestedInput = {
@@ -53286,10 +53286,10 @@ export namespace Prisma {
     connect?: ApplicantWhereUniqueInput | ApplicantWhereUniqueInput[]
   }
 
-  export type AssetCreateNestedOneWithoutJobPostingsInput = {
-    create?: XOR<AssetCreateWithoutJobPostingsInput, AssetUncheckedCreateWithoutJobPostingsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutJobPostingsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutJobPostingsInput = {
+    create?: XOR<ProjectCreateWithoutJobPostingsInput, ProjectUncheckedCreateWithoutJobPostingsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutJobPostingsInput
+    connect?: ProjectWhereUniqueInput
   }
 
   export type ApplicantUncheckedCreateNestedManyWithoutJobInput = {
@@ -53313,12 +53313,12 @@ export namespace Prisma {
     deleteMany?: ApplicantScalarWhereInput | ApplicantScalarWhereInput[]
   }
 
-  export type AssetUpdateOneRequiredWithoutJobPostingsNestedInput = {
-    create?: XOR<AssetCreateWithoutJobPostingsInput, AssetUncheckedCreateWithoutJobPostingsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutJobPostingsInput
-    upsert?: AssetUpsertWithoutJobPostingsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutJobPostingsInput, AssetUpdateWithoutJobPostingsInput>, AssetUncheckedUpdateWithoutJobPostingsInput>
+  export type ProjectUpdateOneRequiredWithoutJobPostingsNestedInput = {
+    create?: XOR<ProjectCreateWithoutJobPostingsInput, ProjectUncheckedCreateWithoutJobPostingsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutJobPostingsInput
+    upsert?: ProjectUpsertWithoutJobPostingsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutJobPostingsInput, ProjectUpdateWithoutJobPostingsInput>, ProjectUncheckedUpdateWithoutJobPostingsInput>
   }
 
   export type ApplicantUncheckedUpdateManyWithoutJobNestedInput = {
@@ -53349,32 +53349,32 @@ export namespace Prisma {
     update?: XOR<XOR<JobPostingUpdateToOneWithWhereWithoutApplicantsInput, JobPostingUpdateWithoutApplicantsInput>, JobPostingUncheckedUpdateWithoutApplicantsInput>
   }
 
-  export type AssetCreateNestedOneWithoutAppBaseBackupsInput = {
-    create?: XOR<AssetCreateWithoutAppBaseBackupsInput, AssetUncheckedCreateWithoutAppBaseBackupsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutAppBaseBackupsInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutAppBaseBackupsInput = {
+    create?: XOR<ProjectCreateWithoutAppBaseBackupsInput, ProjectUncheckedCreateWithoutAppBaseBackupsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAppBaseBackupsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutAppBaseBackupsNestedInput = {
-    create?: XOR<AssetCreateWithoutAppBaseBackupsInput, AssetUncheckedCreateWithoutAppBaseBackupsInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutAppBaseBackupsInput
-    upsert?: AssetUpsertWithoutAppBaseBackupsInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutAppBaseBackupsInput, AssetUpdateWithoutAppBaseBackupsInput>, AssetUncheckedUpdateWithoutAppBaseBackupsInput>
+  export type ProjectUpdateOneRequiredWithoutAppBaseBackupsNestedInput = {
+    create?: XOR<ProjectCreateWithoutAppBaseBackupsInput, ProjectUncheckedCreateWithoutAppBaseBackupsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAppBaseBackupsInput
+    upsert?: ProjectUpsertWithoutAppBaseBackupsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAppBaseBackupsInput, ProjectUpdateWithoutAppBaseBackupsInput>, ProjectUncheckedUpdateWithoutAppBaseBackupsInput>
   }
 
-  export type AssetCreateNestedOneWithoutAssetModulesInput = {
-    create?: XOR<AssetCreateWithoutAssetModulesInput, AssetUncheckedCreateWithoutAssetModulesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutAssetModulesInput
-    connect?: AssetWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutAssetModulesInput = {
+    create?: XOR<ProjectCreateWithoutAssetModulesInput, ProjectUncheckedCreateWithoutAssetModulesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAssetModulesInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type AssetUpdateOneRequiredWithoutAssetModulesNestedInput = {
-    create?: XOR<AssetCreateWithoutAssetModulesInput, AssetUncheckedCreateWithoutAssetModulesInput>
-    connectOrCreate?: AssetCreateOrConnectWithoutAssetModulesInput
-    upsert?: AssetUpsertWithoutAssetModulesInput
-    connect?: AssetWhereUniqueInput
-    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutAssetModulesInput, AssetUpdateWithoutAssetModulesInput>, AssetUncheckedUpdateWithoutAssetModulesInput>
+  export type ProjectUpdateOneRequiredWithoutAssetModulesNestedInput = {
+    create?: XOR<ProjectCreateWithoutAssetModulesInput, ProjectUncheckedCreateWithoutAssetModulesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAssetModulesInput
+    upsert?: ProjectUpsertWithoutAssetModulesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAssetModulesInput, ProjectUpdateWithoutAssetModulesInput>, ProjectUncheckedUpdateWithoutAssetModulesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -53637,7 +53637,7 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type AssetCreateWithoutDefaultProjectAccountsInput = {
+  export type ProjectCreateWithoutDefaultProjectAccountsInput = {
     id: string
     name?: string
     url?: string | null
@@ -53675,7 +53675,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
   }
 
-  export type AssetUncheckedCreateWithoutDefaultProjectAccountsInput = {
+  export type ProjectUncheckedCreateWithoutDefaultProjectAccountsInput = {
     id: string
     name?: string
     url?: string | null
@@ -53713,9 +53713,9 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
   }
 
-  export type AssetCreateOrConnectWithoutDefaultProjectAccountsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutDefaultProjectAccountsInput, AssetUncheckedCreateWithoutDefaultProjectAccountsInput>
+  export type ProjectCreateOrConnectWithoutDefaultProjectAccountsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
   }
 
   export type RoleCreateWithoutAccountInput = {
@@ -53723,7 +53723,7 @@ export namespace Prisma {
     portfolioId: string
     role: string
     status?: string
-    asset: AssetCreateNestedOneWithoutRolesInput
+    asset: ProjectCreateNestedOneWithoutRolesInput
   }
 
   export type RoleUncheckedCreateWithoutAccountInput = {
@@ -53744,18 +53744,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetUpsertWithoutDefaultProjectAccountsInput = {
-    update: XOR<AssetUpdateWithoutDefaultProjectAccountsInput, AssetUncheckedUpdateWithoutDefaultProjectAccountsInput>
-    create: XOR<AssetCreateWithoutDefaultProjectAccountsInput, AssetUncheckedCreateWithoutDefaultProjectAccountsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutDefaultProjectAccountsInput = {
+    update: XOR<ProjectUpdateWithoutDefaultProjectAccountsInput, ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput>
+    create: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutDefaultProjectAccountsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutDefaultProjectAccountsInput, AssetUncheckedUpdateWithoutDefaultProjectAccountsInput>
+  export type ProjectUpdateToOneWithWhereWithoutDefaultProjectAccountsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutDefaultProjectAccountsInput, ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput>
   }
 
-  export type AssetUpdateWithoutDefaultProjectAccountsInput = {
+  export type ProjectUpdateWithoutDefaultProjectAccountsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53793,7 +53793,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutDefaultProjectAccountsInput = {
+  export type ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53859,7 +53859,7 @@ export namespace Prisma {
     status?: StringFilter<"Role"> | string
   }
 
-  export type AssetCreateWithoutRolesInput = {
+  export type ProjectCreateWithoutRolesInput = {
     id: string
     name?: string
     url?: string | null
@@ -53897,7 +53897,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutRolesInput = {
+  export type ProjectUncheckedCreateWithoutRolesInput = {
     id: string
     name?: string
     url?: string | null
@@ -53935,9 +53935,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutRolesInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutRolesInput, AssetUncheckedCreateWithoutRolesInput>
+  export type ProjectCreateOrConnectWithoutRolesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutRolesInput, ProjectUncheckedCreateWithoutRolesInput>
   }
 
   export type AccountCreateWithoutRolesInput = {
@@ -53949,7 +53949,7 @@ export namespace Prisma {
     createdOn?: Date | string
     status?: string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: AssetCreateNestedOneWithoutDefaultProjectAccountsInput
+    defaultProjectAsset?: ProjectCreateNestedOneWithoutDefaultProjectAccountsInput
   }
 
   export type AccountUncheckedCreateWithoutRolesInput = {
@@ -53969,18 +53969,18 @@ export namespace Prisma {
     create: XOR<AccountCreateWithoutRolesInput, AccountUncheckedCreateWithoutRolesInput>
   }
 
-  export type AssetUpsertWithoutRolesInput = {
-    update: XOR<AssetUpdateWithoutRolesInput, AssetUncheckedUpdateWithoutRolesInput>
-    create: XOR<AssetCreateWithoutRolesInput, AssetUncheckedCreateWithoutRolesInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutRolesInput = {
+    update: XOR<ProjectUpdateWithoutRolesInput, ProjectUncheckedUpdateWithoutRolesInput>
+    create: XOR<ProjectCreateWithoutRolesInput, ProjectUncheckedCreateWithoutRolesInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutRolesInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutRolesInput, AssetUncheckedUpdateWithoutRolesInput>
+  export type ProjectUpdateToOneWithWhereWithoutRolesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutRolesInput, ProjectUncheckedUpdateWithoutRolesInput>
   }
 
-  export type AssetUpdateWithoutRolesInput = {
+  export type ProjectUpdateWithoutRolesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54018,7 +54018,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutRolesInput = {
+  export type ProjectUncheckedUpdateWithoutRolesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54076,7 +54076,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: AssetUpdateOneWithoutDefaultProjectAccountsNestedInput
+    defaultProjectAsset?: ProjectUpdateOneWithoutDefaultProjectAccountsNestedInput
   }
 
   export type AccountUncheckedUpdateWithoutRolesInput = {
@@ -54091,7 +54091,7 @@ export namespace Prisma {
     defaultProject?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AssetCreateWithoutDomainEntriesInput = {
+  export type ProjectCreateWithoutDomainEntriesInput = {
     id: string
     name?: string
     url?: string | null
@@ -54129,7 +54129,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutDomainEntriesInput = {
+  export type ProjectUncheckedCreateWithoutDomainEntriesInput = {
     id: string
     name?: string
     url?: string | null
@@ -54167,23 +54167,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutDomainEntriesInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutDomainEntriesInput, AssetUncheckedCreateWithoutDomainEntriesInput>
+  export type ProjectCreateOrConnectWithoutDomainEntriesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutDomainEntriesInput, ProjectUncheckedCreateWithoutDomainEntriesInput>
   }
 
-  export type AssetUpsertWithoutDomainEntriesInput = {
-    update: XOR<AssetUpdateWithoutDomainEntriesInput, AssetUncheckedUpdateWithoutDomainEntriesInput>
-    create: XOR<AssetCreateWithoutDomainEntriesInput, AssetUncheckedCreateWithoutDomainEntriesInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutDomainEntriesInput = {
+    update: XOR<ProjectUpdateWithoutDomainEntriesInput, ProjectUncheckedUpdateWithoutDomainEntriesInput>
+    create: XOR<ProjectCreateWithoutDomainEntriesInput, ProjectUncheckedCreateWithoutDomainEntriesInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutDomainEntriesInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutDomainEntriesInput, AssetUncheckedUpdateWithoutDomainEntriesInput>
+  export type ProjectUpdateToOneWithWhereWithoutDomainEntriesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutDomainEntriesInput, ProjectUncheckedUpdateWithoutDomainEntriesInput>
   }
 
-  export type AssetUpdateWithoutDomainEntriesInput = {
+  export type ProjectUpdateWithoutDomainEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54221,7 +54221,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutDomainEntriesInput = {
+  export type ProjectUncheckedUpdateWithoutDomainEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55551,7 +55551,7 @@ export namespace Prisma {
     defaultProject?: StringNullableFilter<"Account"> | string | null
   }
 
-  export type AssetCreateWithoutFormsInput = {
+  export type ProjectCreateWithoutFormsInput = {
     id: string
     name?: string
     url?: string | null
@@ -55589,7 +55589,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutFormsInput = {
+  export type ProjectUncheckedCreateWithoutFormsInput = {
     id: string
     name?: string
     url?: string | null
@@ -55627,9 +55627,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutFormsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
+  export type ProjectCreateOrConnectWithoutFormsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutFormsInput, ProjectUncheckedCreateWithoutFormsInput>
   }
 
   export type FormSubmissionCreateWithoutFormInput = {
@@ -55637,7 +55637,7 @@ export namespace Prisma {
     response: JsonNullValueInput | InputJsonValue
     postedOn?: Date | string
     status: string
-    project: AssetCreateNestedOneWithoutFormSubmissionsInput
+    project: ProjectCreateNestedOneWithoutFormSubmissionsInput
   }
 
   export type FormSubmissionUncheckedCreateWithoutFormInput = {
@@ -55658,18 +55658,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetUpsertWithoutFormsInput = {
-    update: XOR<AssetUpdateWithoutFormsInput, AssetUncheckedUpdateWithoutFormsInput>
-    create: XOR<AssetCreateWithoutFormsInput, AssetUncheckedCreateWithoutFormsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutFormsInput = {
+    update: XOR<ProjectUpdateWithoutFormsInput, ProjectUncheckedUpdateWithoutFormsInput>
+    create: XOR<ProjectCreateWithoutFormsInput, ProjectUncheckedCreateWithoutFormsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutFormsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutFormsInput, AssetUncheckedUpdateWithoutFormsInput>
+  export type ProjectUpdateToOneWithWhereWithoutFormsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutFormsInput, ProjectUncheckedUpdateWithoutFormsInput>
   }
 
-  export type AssetUpdateWithoutFormsInput = {
+  export type ProjectUpdateWithoutFormsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55707,7 +55707,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutFormsInput = {
+  export type ProjectUncheckedUpdateWithoutFormsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55761,7 +55761,7 @@ export namespace Prisma {
     data: XOR<FormSubmissionUpdateManyMutationInput, FormSubmissionUncheckedUpdateManyWithoutFormInput>
   }
 
-  export type AssetCreateWithoutFormSubmissionsInput = {
+  export type ProjectCreateWithoutFormSubmissionsInput = {
     id: string
     name?: string
     url?: string | null
@@ -55799,7 +55799,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutFormSubmissionsInput = {
+  export type ProjectUncheckedCreateWithoutFormSubmissionsInput = {
     id: string
     name?: string
     url?: string | null
@@ -55837,9 +55837,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutFormSubmissionsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
+  export type ProjectCreateOrConnectWithoutFormSubmissionsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutFormSubmissionsInput, ProjectUncheckedCreateWithoutFormSubmissionsInput>
   }
 
   export type FormCreateWithoutSubmissionsInput = {
@@ -55848,7 +55848,7 @@ export namespace Prisma {
     slug: string
     fields: JsonNullValueInput | InputJsonValue
     createdOn?: Date | string
-    project: AssetCreateNestedOneWithoutFormsInput
+    project: ProjectCreateNestedOneWithoutFormsInput
   }
 
   export type FormUncheckedCreateWithoutSubmissionsInput = {
@@ -55865,18 +55865,18 @@ export namespace Prisma {
     create: XOR<FormCreateWithoutSubmissionsInput, FormUncheckedCreateWithoutSubmissionsInput>
   }
 
-  export type AssetUpsertWithoutFormSubmissionsInput = {
-    update: XOR<AssetUpdateWithoutFormSubmissionsInput, AssetUncheckedUpdateWithoutFormSubmissionsInput>
-    create: XOR<AssetCreateWithoutFormSubmissionsInput, AssetUncheckedCreateWithoutFormSubmissionsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutFormSubmissionsInput = {
+    update: XOR<ProjectUpdateWithoutFormSubmissionsInput, ProjectUncheckedUpdateWithoutFormSubmissionsInput>
+    create: XOR<ProjectCreateWithoutFormSubmissionsInput, ProjectUncheckedCreateWithoutFormSubmissionsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutFormSubmissionsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutFormSubmissionsInput, AssetUncheckedUpdateWithoutFormSubmissionsInput>
+  export type ProjectUpdateToOneWithWhereWithoutFormSubmissionsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutFormSubmissionsInput, ProjectUncheckedUpdateWithoutFormSubmissionsInput>
   }
 
-  export type AssetUpdateWithoutFormSubmissionsInput = {
+  export type ProjectUpdateWithoutFormSubmissionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55914,7 +55914,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutFormSubmissionsInput = {
+  export type ProjectUncheckedUpdateWithoutFormSubmissionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55969,7 +55969,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     fields?: JsonNullValueInput | InputJsonValue
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
-    project?: AssetUpdateOneRequiredWithoutFormsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFormsNestedInput
   }
 
   export type FormUncheckedUpdateWithoutSubmissionsInput = {
@@ -55981,7 +55981,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type AssetCreateWithoutProfilesInput = {
+  export type ProjectCreateWithoutProfilesInput = {
     id: string
     name?: string
     url?: string | null
@@ -56019,7 +56019,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutProfilesInput = {
+  export type ProjectUncheckedCreateWithoutProfilesInput = {
     id: string
     name?: string
     url?: string | null
@@ -56057,23 +56057,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutProfilesInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutProfilesInput, AssetUncheckedCreateWithoutProfilesInput>
+  export type ProjectCreateOrConnectWithoutProfilesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutProfilesInput, ProjectUncheckedCreateWithoutProfilesInput>
   }
 
-  export type AssetUpsertWithoutProfilesInput = {
-    update: XOR<AssetUpdateWithoutProfilesInput, AssetUncheckedUpdateWithoutProfilesInput>
-    create: XOR<AssetCreateWithoutProfilesInput, AssetUncheckedCreateWithoutProfilesInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutProfilesInput = {
+    update: XOR<ProjectUpdateWithoutProfilesInput, ProjectUncheckedUpdateWithoutProfilesInput>
+    create: XOR<ProjectCreateWithoutProfilesInput, ProjectUncheckedCreateWithoutProfilesInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutProfilesInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutProfilesInput, AssetUncheckedUpdateWithoutProfilesInput>
+  export type ProjectUpdateToOneWithWhereWithoutProfilesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutProfilesInput, ProjectUncheckedUpdateWithoutProfilesInput>
   }
 
-  export type AssetUpdateWithoutProfilesInput = {
+  export type ProjectUpdateWithoutProfilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56111,7 +56111,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutProfilesInput = {
+  export type ProjectUncheckedUpdateWithoutProfilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56149,7 +56149,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutPagesInput = {
+  export type ProjectCreateWithoutPagesInput = {
     id: string
     name?: string
     url?: string | null
@@ -56187,7 +56187,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutPagesInput = {
+  export type ProjectUncheckedCreateWithoutPagesInput = {
     id: string
     name?: string
     url?: string | null
@@ -56225,16 +56225,16 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutPagesInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutPagesInput, AssetUncheckedCreateWithoutPagesInput>
+  export type ProjectCreateOrConnectWithoutPagesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutPagesInput, ProjectUncheckedCreateWithoutPagesInput>
   }
 
   export type PagePathCreateWithoutPageInput = {
     id?: string
     path: string
     createdAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutPathsInput
+    asset: ProjectCreateNestedOneWithoutPathsInput
   }
 
   export type PagePathUncheckedCreateWithoutPageInput = {
@@ -56278,18 +56278,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetUpsertWithoutPagesInput = {
-    update: XOR<AssetUpdateWithoutPagesInput, AssetUncheckedUpdateWithoutPagesInput>
-    create: XOR<AssetCreateWithoutPagesInput, AssetUncheckedCreateWithoutPagesInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutPagesInput = {
+    update: XOR<ProjectUpdateWithoutPagesInput, ProjectUncheckedUpdateWithoutPagesInput>
+    create: XOR<ProjectCreateWithoutPagesInput, ProjectUncheckedCreateWithoutPagesInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutPagesInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutPagesInput, AssetUncheckedUpdateWithoutPagesInput>
+  export type ProjectUpdateToOneWithWhereWithoutPagesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutPagesInput, ProjectUncheckedUpdateWithoutPagesInput>
   }
 
-  export type AssetUpdateWithoutPagesInput = {
+  export type ProjectUpdateWithoutPagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56327,7 +56327,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutPagesInput = {
+  export type ProjectUncheckedUpdateWithoutPagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56408,7 +56408,7 @@ export namespace Prisma {
     methodName?: StringFilter<"PageDataSourceBinding"> | string
   }
 
-  export type AssetCreateWithoutPathsInput = {
+  export type ProjectCreateWithoutPathsInput = {
     id: string
     name?: string
     url?: string | null
@@ -56446,7 +56446,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutPathsInput = {
+  export type ProjectUncheckedCreateWithoutPathsInput = {
     id: string
     name?: string
     url?: string | null
@@ -56484,9 +56484,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutPathsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutPathsInput, AssetUncheckedCreateWithoutPathsInput>
+  export type ProjectCreateOrConnectWithoutPathsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutPathsInput, ProjectUncheckedCreateWithoutPathsInput>
   }
 
   export type PageCreateWithoutPathsInput = {
@@ -56498,7 +56498,7 @@ export namespace Prisma {
     type?: string
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutPagesInput
+    asset: ProjectCreateNestedOneWithoutPagesInput
     dataSourceBindings?: PageDataSourceBindingCreateNestedManyWithoutPageInput
   }
 
@@ -56520,18 +56520,18 @@ export namespace Prisma {
     create: XOR<PageCreateWithoutPathsInput, PageUncheckedCreateWithoutPathsInput>
   }
 
-  export type AssetUpsertWithoutPathsInput = {
-    update: XOR<AssetUpdateWithoutPathsInput, AssetUncheckedUpdateWithoutPathsInput>
-    create: XOR<AssetCreateWithoutPathsInput, AssetUncheckedCreateWithoutPathsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutPathsInput = {
+    update: XOR<ProjectUpdateWithoutPathsInput, ProjectUncheckedUpdateWithoutPathsInput>
+    create: XOR<ProjectCreateWithoutPathsInput, ProjectUncheckedCreateWithoutPathsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutPathsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutPathsInput, AssetUncheckedUpdateWithoutPathsInput>
+  export type ProjectUpdateToOneWithWhereWithoutPathsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutPathsInput, ProjectUncheckedUpdateWithoutPathsInput>
   }
 
-  export type AssetUpdateWithoutPathsInput = {
+  export type ProjectUpdateWithoutPathsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56569,7 +56569,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutPathsInput = {
+  export type ProjectUncheckedUpdateWithoutPathsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56627,7 +56627,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutPagesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutPagesNestedInput
     dataSourceBindings?: PageDataSourceBindingUpdateManyWithoutPageNestedInput
   }
 
@@ -56644,7 +56644,7 @@ export namespace Prisma {
     dataSourceBindings?: PageDataSourceBindingUncheckedUpdateManyWithoutPageNestedInput
   }
 
-  export type AssetCreateWithoutSectionsInput = {
+  export type ProjectCreateWithoutSectionsInput = {
     id: string
     name?: string
     url?: string | null
@@ -56682,7 +56682,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutSectionsInput = {
+  export type ProjectUncheckedCreateWithoutSectionsInput = {
     id: string
     name?: string
     url?: string | null
@@ -56720,23 +56720,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutSectionsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutSectionsInput, AssetUncheckedCreateWithoutSectionsInput>
+  export type ProjectCreateOrConnectWithoutSectionsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutSectionsInput, ProjectUncheckedCreateWithoutSectionsInput>
   }
 
-  export type AssetUpsertWithoutSectionsInput = {
-    update: XOR<AssetUpdateWithoutSectionsInput, AssetUncheckedUpdateWithoutSectionsInput>
-    create: XOR<AssetCreateWithoutSectionsInput, AssetUncheckedCreateWithoutSectionsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutSectionsInput = {
+    update: XOR<ProjectUpdateWithoutSectionsInput, ProjectUncheckedUpdateWithoutSectionsInput>
+    create: XOR<ProjectCreateWithoutSectionsInput, ProjectUncheckedCreateWithoutSectionsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutSectionsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutSectionsInput, AssetUncheckedUpdateWithoutSectionsInput>
+  export type ProjectUpdateToOneWithWhereWithoutSectionsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutSectionsInput, ProjectUncheckedUpdateWithoutSectionsInput>
   }
 
-  export type AssetUpdateWithoutSectionsInput = {
+  export type ProjectUpdateWithoutSectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56774,7 +56774,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutSectionsInput = {
+  export type ProjectUncheckedUpdateWithoutSectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56812,7 +56812,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutSourcesInput = {
+  export type ProjectCreateWithoutSourcesInput = {
     id: string
     name?: string
     url?: string | null
@@ -56850,7 +56850,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutSourcesInput = {
+  export type ProjectUncheckedCreateWithoutSourcesInput = {
     id: string
     name?: string
     url?: string | null
@@ -56888,9 +56888,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutSourcesInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutSourcesInput, AssetUncheckedCreateWithoutSourcesInput>
+  export type ProjectCreateOrConnectWithoutSourcesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutSourcesInput, ProjectUncheckedCreateWithoutSourcesInput>
   }
 
   export type PageDataSourceBindingCreateWithoutSourceInput = {
@@ -56917,18 +56917,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetUpsertWithoutSourcesInput = {
-    update: XOR<AssetUpdateWithoutSourcesInput, AssetUncheckedUpdateWithoutSourcesInput>
-    create: XOR<AssetCreateWithoutSourcesInput, AssetUncheckedCreateWithoutSourcesInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutSourcesInput = {
+    update: XOR<ProjectUpdateWithoutSourcesInput, ProjectUncheckedUpdateWithoutSourcesInput>
+    create: XOR<ProjectCreateWithoutSourcesInput, ProjectUncheckedCreateWithoutSourcesInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutSourcesInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutSourcesInput, AssetUncheckedUpdateWithoutSourcesInput>
+  export type ProjectUpdateToOneWithWhereWithoutSourcesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutSourcesInput, ProjectUncheckedUpdateWithoutSourcesInput>
   }
 
-  export type AssetUpdateWithoutSourcesInput = {
+  export type ProjectUpdateWithoutSourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56966,7 +56966,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutSourcesInput = {
+  export type ProjectUncheckedUpdateWithoutSourcesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57029,7 +57029,7 @@ export namespace Prisma {
     type?: string
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutPagesInput
+    asset: ProjectCreateNestedOneWithoutPagesInput
     paths?: PagePathCreateNestedManyWithoutPageInput
   }
 
@@ -57062,7 +57062,7 @@ export namespace Prisma {
     data?: NullableJsonNullValueInput | InputJsonValue
     datalistId?: string | null
     createdAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutSourcesInput
+    asset: ProjectCreateNestedOneWithoutSourcesInput
   }
 
   export type DataSourceUncheckedCreateWithoutBindingsInput = {
@@ -57104,7 +57104,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutPagesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutPagesNestedInput
     paths?: PagePathUpdateManyWithoutPageNestedInput
   }
 
@@ -57143,7 +57143,7 @@ export namespace Prisma {
     data?: NullableJsonNullValueInput | InputJsonValue
     datalistId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutSourcesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutSourcesNestedInput
   }
 
   export type DataSourceUncheckedUpdateWithoutBindingsInput = {
@@ -57160,7 +57160,7 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type AssetCreateWithoutDatalistsInput = {
+  export type ProjectCreateWithoutDatalistsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57198,7 +57198,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutDatalistsInput = {
+  export type ProjectUncheckedCreateWithoutDatalistsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57236,23 +57236,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutDatalistsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutDatalistsInput, AssetUncheckedCreateWithoutDatalistsInput>
+  export type ProjectCreateOrConnectWithoutDatalistsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutDatalistsInput, ProjectUncheckedCreateWithoutDatalistsInput>
   }
 
-  export type AssetUpsertWithoutDatalistsInput = {
-    update: XOR<AssetUpdateWithoutDatalistsInput, AssetUncheckedUpdateWithoutDatalistsInput>
-    create: XOR<AssetCreateWithoutDatalistsInput, AssetUncheckedCreateWithoutDatalistsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutDatalistsInput = {
+    update: XOR<ProjectUpdateWithoutDatalistsInput, ProjectUncheckedUpdateWithoutDatalistsInput>
+    create: XOR<ProjectCreateWithoutDatalistsInput, ProjectUncheckedCreateWithoutDatalistsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutDatalistsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutDatalistsInput, AssetUncheckedUpdateWithoutDatalistsInput>
+  export type ProjectUpdateToOneWithWhereWithoutDatalistsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutDatalistsInput, ProjectUncheckedUpdateWithoutDatalistsInput>
   }
 
-  export type AssetUpdateWithoutDatalistsInput = {
+  export type ProjectUpdateWithoutDatalistsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57290,7 +57290,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutDatalistsInput = {
+  export type ProjectUncheckedUpdateWithoutDatalistsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57328,7 +57328,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutRedirectsInput = {
+  export type ProjectCreateWithoutRedirectsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57366,7 +57366,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutRedirectsInput = {
+  export type ProjectUncheckedCreateWithoutRedirectsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57404,23 +57404,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutRedirectsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutRedirectsInput, AssetUncheckedCreateWithoutRedirectsInput>
+  export type ProjectCreateOrConnectWithoutRedirectsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutRedirectsInput, ProjectUncheckedCreateWithoutRedirectsInput>
   }
 
-  export type AssetUpsertWithoutRedirectsInput = {
-    update: XOR<AssetUpdateWithoutRedirectsInput, AssetUncheckedUpdateWithoutRedirectsInput>
-    create: XOR<AssetCreateWithoutRedirectsInput, AssetUncheckedCreateWithoutRedirectsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutRedirectsInput = {
+    update: XOR<ProjectUpdateWithoutRedirectsInput, ProjectUncheckedUpdateWithoutRedirectsInput>
+    create: XOR<ProjectCreateWithoutRedirectsInput, ProjectUncheckedCreateWithoutRedirectsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutRedirectsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutRedirectsInput, AssetUncheckedUpdateWithoutRedirectsInput>
+  export type ProjectUpdateToOneWithWhereWithoutRedirectsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutRedirectsInput, ProjectUncheckedUpdateWithoutRedirectsInput>
   }
 
-  export type AssetUpdateWithoutRedirectsInput = {
+  export type ProjectUpdateWithoutRedirectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57458,7 +57458,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutRedirectsInput = {
+  export type ProjectUncheckedUpdateWithoutRedirectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57496,7 +57496,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutEnvironmentsInput = {
+  export type ProjectCreateWithoutEnvironmentsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57534,7 +57534,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutEnvironmentsInput = {
+  export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57572,23 +57572,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutEnvironmentsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutEnvironmentsInput, AssetUncheckedCreateWithoutEnvironmentsInput>
+  export type ProjectCreateOrConnectWithoutEnvironmentsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutEnvironmentsInput, ProjectUncheckedCreateWithoutEnvironmentsInput>
   }
 
-  export type AssetUpsertWithoutEnvironmentsInput = {
-    update: XOR<AssetUpdateWithoutEnvironmentsInput, AssetUncheckedUpdateWithoutEnvironmentsInput>
-    create: XOR<AssetCreateWithoutEnvironmentsInput, AssetUncheckedCreateWithoutEnvironmentsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutEnvironmentsInput = {
+    update: XOR<ProjectUpdateWithoutEnvironmentsInput, ProjectUncheckedUpdateWithoutEnvironmentsInput>
+    create: XOR<ProjectCreateWithoutEnvironmentsInput, ProjectUncheckedCreateWithoutEnvironmentsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutEnvironmentsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutEnvironmentsInput, AssetUncheckedUpdateWithoutEnvironmentsInput>
+  export type ProjectUpdateToOneWithWhereWithoutEnvironmentsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutEnvironmentsInput, ProjectUncheckedUpdateWithoutEnvironmentsInput>
   }
 
-  export type AssetUpdateWithoutEnvironmentsInput = {
+  export type ProjectUpdateWithoutEnvironmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57626,7 +57626,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutEnvironmentsInput = {
+  export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57664,7 +57664,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutStructuresInput = {
+  export type ProjectCreateWithoutStructuresInput = {
     id: string
     name?: string
     url?: string | null
@@ -57702,7 +57702,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutStructuresInput = {
+  export type ProjectUncheckedCreateWithoutStructuresInput = {
     id: string
     name?: string
     url?: string | null
@@ -57740,23 +57740,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutStructuresInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutStructuresInput, AssetUncheckedCreateWithoutStructuresInput>
+  export type ProjectCreateOrConnectWithoutStructuresInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutStructuresInput, ProjectUncheckedCreateWithoutStructuresInput>
   }
 
-  export type AssetUpsertWithoutStructuresInput = {
-    update: XOR<AssetUpdateWithoutStructuresInput, AssetUncheckedUpdateWithoutStructuresInput>
-    create: XOR<AssetCreateWithoutStructuresInput, AssetUncheckedCreateWithoutStructuresInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutStructuresInput = {
+    update: XOR<ProjectUpdateWithoutStructuresInput, ProjectUncheckedUpdateWithoutStructuresInput>
+    create: XOR<ProjectCreateWithoutStructuresInput, ProjectUncheckedCreateWithoutStructuresInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutStructuresInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutStructuresInput, AssetUncheckedUpdateWithoutStructuresInput>
+  export type ProjectUpdateToOneWithWhereWithoutStructuresInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutStructuresInput, ProjectUncheckedUpdateWithoutStructuresInput>
   }
 
-  export type AssetUpdateWithoutStructuresInput = {
+  export type ProjectUpdateWithoutStructuresInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57794,7 +57794,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutStructuresInput = {
+  export type ProjectUncheckedUpdateWithoutStructuresInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57832,7 +57832,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutDeploymentsInput = {
+  export type ProjectCreateWithoutDeploymentsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57870,7 +57870,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutDeploymentsInput = {
+  export type ProjectUncheckedCreateWithoutDeploymentsInput = {
     id: string
     name?: string
     url?: string | null
@@ -57908,23 +57908,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutDeploymentsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutDeploymentsInput, AssetUncheckedCreateWithoutDeploymentsInput>
+  export type ProjectCreateOrConnectWithoutDeploymentsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutDeploymentsInput, ProjectUncheckedCreateWithoutDeploymentsInput>
   }
 
-  export type AssetUpsertWithoutDeploymentsInput = {
-    update: XOR<AssetUpdateWithoutDeploymentsInput, AssetUncheckedUpdateWithoutDeploymentsInput>
-    create: XOR<AssetCreateWithoutDeploymentsInput, AssetUncheckedCreateWithoutDeploymentsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutDeploymentsInput = {
+    update: XOR<ProjectUpdateWithoutDeploymentsInput, ProjectUncheckedUpdateWithoutDeploymentsInput>
+    create: XOR<ProjectCreateWithoutDeploymentsInput, ProjectUncheckedCreateWithoutDeploymentsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutDeploymentsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutDeploymentsInput, AssetUncheckedUpdateWithoutDeploymentsInput>
+  export type ProjectUpdateToOneWithWhereWithoutDeploymentsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutDeploymentsInput, ProjectUncheckedUpdateWithoutDeploymentsInput>
   }
 
-  export type AssetUpdateWithoutDeploymentsInput = {
+  export type ProjectUpdateWithoutDeploymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57962,7 +57962,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutDeploymentsInput = {
+  export type ProjectUncheckedUpdateWithoutDeploymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58009,7 +58009,7 @@ export namespace Prisma {
     allocatedStorage?: number | null
     allocatedOn?: Date | string | null
     status?: string
-    asset: AssetCreateNestedOneWithoutAllocationsInput
+    asset: ProjectCreateNestedOneWithoutAllocationsInput
   }
 
   export type AllocationUncheckedCreateWithoutServerInput = {
@@ -58169,7 +58169,7 @@ export namespace Prisma {
     create: XOR<ServerCreateWithoutAllocationsInput, ServerUncheckedCreateWithoutAllocationsInput>
   }
 
-  export type AssetCreateWithoutAllocationsInput = {
+  export type ProjectCreateWithoutAllocationsInput = {
     id: string
     name?: string
     url?: string | null
@@ -58207,7 +58207,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutAllocationsInput = {
+  export type ProjectUncheckedCreateWithoutAllocationsInput = {
     id: string
     name?: string
     url?: string | null
@@ -58245,9 +58245,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutAllocationsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutAllocationsInput, AssetUncheckedCreateWithoutAllocationsInput>
+  export type ProjectCreateOrConnectWithoutAllocationsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutAllocationsInput, ProjectUncheckedCreateWithoutAllocationsInput>
   }
 
   export type ServerUpsertWithoutAllocationsInput = {
@@ -58309,18 +58309,18 @@ export namespace Prisma {
     logs?: ServerLogUncheckedUpdateManyWithoutServerNestedInput
   }
 
-  export type AssetUpsertWithoutAllocationsInput = {
-    update: XOR<AssetUpdateWithoutAllocationsInput, AssetUncheckedUpdateWithoutAllocationsInput>
-    create: XOR<AssetCreateWithoutAllocationsInput, AssetUncheckedCreateWithoutAllocationsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutAllocationsInput = {
+    update: XOR<ProjectUpdateWithoutAllocationsInput, ProjectUncheckedUpdateWithoutAllocationsInput>
+    create: XOR<ProjectCreateWithoutAllocationsInput, ProjectUncheckedCreateWithoutAllocationsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutAllocationsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutAllocationsInput, AssetUncheckedUpdateWithoutAllocationsInput>
+  export type ProjectUpdateToOneWithWhereWithoutAllocationsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutAllocationsInput, ProjectUncheckedUpdateWithoutAllocationsInput>
   }
 
-  export type AssetUpdateWithoutAllocationsInput = {
+  export type ProjectUpdateWithoutAllocationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58358,7 +58358,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutAllocationsInput = {
+  export type ProjectUncheckedUpdateWithoutAllocationsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58508,7 +58508,7 @@ export namespace Prisma {
     allocations?: AllocationUncheckedUpdateManyWithoutServerNestedInput
   }
 
-  export type AssetCreateWithoutCodeFilesInput = {
+  export type ProjectCreateWithoutCodeFilesInput = {
     id: string
     name?: string
     url?: string | null
@@ -58546,7 +58546,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutCodeFilesInput = {
+  export type ProjectUncheckedCreateWithoutCodeFilesInput = {
     id: string
     name?: string
     url?: string | null
@@ -58584,23 +58584,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutCodeFilesInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutCodeFilesInput, AssetUncheckedCreateWithoutCodeFilesInput>
+  export type ProjectCreateOrConnectWithoutCodeFilesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutCodeFilesInput, ProjectUncheckedCreateWithoutCodeFilesInput>
   }
 
-  export type AssetUpsertWithoutCodeFilesInput = {
-    update: XOR<AssetUpdateWithoutCodeFilesInput, AssetUncheckedUpdateWithoutCodeFilesInput>
-    create: XOR<AssetCreateWithoutCodeFilesInput, AssetUncheckedCreateWithoutCodeFilesInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutCodeFilesInput = {
+    update: XOR<ProjectUpdateWithoutCodeFilesInput, ProjectUncheckedUpdateWithoutCodeFilesInput>
+    create: XOR<ProjectCreateWithoutCodeFilesInput, ProjectUncheckedCreateWithoutCodeFilesInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutCodeFilesInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutCodeFilesInput, AssetUncheckedUpdateWithoutCodeFilesInput>
+  export type ProjectUpdateToOneWithWhereWithoutCodeFilesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutCodeFilesInput, ProjectUncheckedUpdateWithoutCodeFilesInput>
   }
 
-  export type AssetUpdateWithoutCodeFilesInput = {
+  export type ProjectUpdateWithoutCodeFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58638,7 +58638,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutCodeFilesInput = {
+  export type ProjectUncheckedUpdateWithoutCodeFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58676,7 +58676,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutTeamsInput = {
+  export type ProjectCreateWithoutTeamsInput = {
     id: string
     name?: string
     url?: string | null
@@ -58714,7 +58714,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutTeamsInput = {
+  export type ProjectUncheckedCreateWithoutTeamsInput = {
     id: string
     name?: string
     url?: string | null
@@ -58752,9 +58752,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutTeamsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutTeamsInput, AssetUncheckedCreateWithoutTeamsInput>
+  export type ProjectCreateOrConnectWithoutTeamsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutTeamsInput, ProjectUncheckedCreateWithoutTeamsInput>
   }
 
   export type MemberCreateWithoutTeamInput = {
@@ -58767,7 +58767,7 @@ export namespace Prisma {
     imageUrl?: string | null
     order?: number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
-    asset: AssetCreateNestedOneWithoutMembersInput
+    asset: ProjectCreateNestedOneWithoutMembersInput
   }
 
   export type MemberUncheckedCreateWithoutTeamInput = {
@@ -58793,18 +58793,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetUpsertWithoutTeamsInput = {
-    update: XOR<AssetUpdateWithoutTeamsInput, AssetUncheckedUpdateWithoutTeamsInput>
-    create: XOR<AssetCreateWithoutTeamsInput, AssetUncheckedCreateWithoutTeamsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutTeamsInput = {
+    update: XOR<ProjectUpdateWithoutTeamsInput, ProjectUncheckedUpdateWithoutTeamsInput>
+    create: XOR<ProjectCreateWithoutTeamsInput, ProjectUncheckedCreateWithoutTeamsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutTeamsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutTeamsInput, AssetUncheckedUpdateWithoutTeamsInput>
+  export type ProjectUpdateToOneWithWhereWithoutTeamsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutTeamsInput, ProjectUncheckedUpdateWithoutTeamsInput>
   }
 
-  export type AssetUpdateWithoutTeamsInput = {
+  export type ProjectUpdateWithoutTeamsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58842,7 +58842,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutTeamsInput = {
+  export type ProjectUncheckedUpdateWithoutTeamsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58896,7 +58896,7 @@ export namespace Prisma {
     data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutTeamInput>
   }
 
-  export type AssetCreateWithoutMembersInput = {
+  export type ProjectCreateWithoutMembersInput = {
     id: string
     name?: string
     url?: string | null
@@ -58934,7 +58934,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutMembersInput = {
+  export type ProjectUncheckedCreateWithoutMembersInput = {
     id: string
     name?: string
     url?: string | null
@@ -58972,9 +58972,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutMembersInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutMembersInput, AssetUncheckedCreateWithoutMembersInput>
+  export type ProjectCreateOrConnectWithoutMembersInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutMembersInput, ProjectUncheckedCreateWithoutMembersInput>
   }
 
   export type TeamCreateWithoutMembersInput = {
@@ -58983,7 +58983,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     order?: number | null
-    asset: AssetCreateNestedOneWithoutTeamsInput
+    asset: ProjectCreateNestedOneWithoutTeamsInput
   }
 
   export type TeamUncheckedCreateWithoutMembersInput = {
@@ -59000,18 +59000,18 @@ export namespace Prisma {
     create: XOR<TeamCreateWithoutMembersInput, TeamUncheckedCreateWithoutMembersInput>
   }
 
-  export type AssetUpsertWithoutMembersInput = {
-    update: XOR<AssetUpdateWithoutMembersInput, AssetUncheckedUpdateWithoutMembersInput>
-    create: XOR<AssetCreateWithoutMembersInput, AssetUncheckedCreateWithoutMembersInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutMembersInput = {
+    update: XOR<ProjectUpdateWithoutMembersInput, ProjectUncheckedUpdateWithoutMembersInput>
+    create: XOR<ProjectCreateWithoutMembersInput, ProjectUncheckedCreateWithoutMembersInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutMembersInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutMembersInput, AssetUncheckedUpdateWithoutMembersInput>
+  export type ProjectUpdateToOneWithWhereWithoutMembersInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutMembersInput, ProjectUncheckedUpdateWithoutMembersInput>
   }
 
-  export type AssetUpdateWithoutMembersInput = {
+  export type ProjectUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59049,7 +59049,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutMembersInput = {
+  export type ProjectUncheckedUpdateWithoutMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59104,7 +59104,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
-    asset?: AssetUpdateOneRequiredWithoutTeamsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutTeamsNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutMembersInput = {
@@ -59146,7 +59146,7 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetCreateWithoutJobPostingsInput = {
+  export type ProjectCreateWithoutJobPostingsInput = {
     id: string
     name?: string
     url?: string | null
@@ -59184,7 +59184,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutJobPostingsInput = {
+  export type ProjectUncheckedCreateWithoutJobPostingsInput = {
     id: string
     name?: string
     url?: string | null
@@ -59222,9 +59222,9 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutJobPostingsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutJobPostingsInput, AssetUncheckedCreateWithoutJobPostingsInput>
+  export type ProjectCreateOrConnectWithoutJobPostingsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutJobPostingsInput, ProjectUncheckedCreateWithoutJobPostingsInput>
   }
 
   export type ApplicantUpsertWithWhereUniqueWithoutJobInput = {
@@ -59257,18 +59257,18 @@ export namespace Prisma {
     appliedAt?: DateTimeNullableFilter<"Applicant"> | Date | string | null
   }
 
-  export type AssetUpsertWithoutJobPostingsInput = {
-    update: XOR<AssetUpdateWithoutJobPostingsInput, AssetUncheckedUpdateWithoutJobPostingsInput>
-    create: XOR<AssetCreateWithoutJobPostingsInput, AssetUncheckedCreateWithoutJobPostingsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutJobPostingsInput = {
+    update: XOR<ProjectUpdateWithoutJobPostingsInput, ProjectUncheckedUpdateWithoutJobPostingsInput>
+    create: XOR<ProjectCreateWithoutJobPostingsInput, ProjectUncheckedCreateWithoutJobPostingsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutJobPostingsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutJobPostingsInput, AssetUncheckedUpdateWithoutJobPostingsInput>
+  export type ProjectUpdateToOneWithWhereWithoutJobPostingsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutJobPostingsInput, ProjectUncheckedUpdateWithoutJobPostingsInput>
   }
 
-  export type AssetUpdateWithoutJobPostingsInput = {
+  export type ProjectUpdateWithoutJobPostingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59306,7 +59306,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutJobPostingsInput = {
+  export type ProjectUncheckedUpdateWithoutJobPostingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59357,7 +59357,7 @@ export namespace Prisma {
     openings?: number | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    asset: AssetCreateNestedOneWithoutJobPostingsInput
+    asset: ProjectCreateNestedOneWithoutJobPostingsInput
   }
 
   export type JobPostingUncheckedCreateWithoutApplicantsInput = {
@@ -59405,7 +59405,7 @@ export namespace Prisma {
     openings?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutJobPostingsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutJobPostingsNestedInput
   }
 
   export type JobPostingUncheckedUpdateWithoutApplicantsInput = {
@@ -59424,7 +59424,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type AssetCreateWithoutAppBaseBackupsInput = {
+  export type ProjectCreateWithoutAppBaseBackupsInput = {
     id: string
     name?: string
     url?: string | null
@@ -59462,7 +59462,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutAppBaseBackupsInput = {
+  export type ProjectUncheckedCreateWithoutAppBaseBackupsInput = {
     id: string
     name?: string
     url?: string | null
@@ -59500,23 +59500,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutAppBaseBackupsInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutAppBaseBackupsInput, AssetUncheckedCreateWithoutAppBaseBackupsInput>
+  export type ProjectCreateOrConnectWithoutAppBaseBackupsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutAppBaseBackupsInput, ProjectUncheckedCreateWithoutAppBaseBackupsInput>
   }
 
-  export type AssetUpsertWithoutAppBaseBackupsInput = {
-    update: XOR<AssetUpdateWithoutAppBaseBackupsInput, AssetUncheckedUpdateWithoutAppBaseBackupsInput>
-    create: XOR<AssetCreateWithoutAppBaseBackupsInput, AssetUncheckedCreateWithoutAppBaseBackupsInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutAppBaseBackupsInput = {
+    update: XOR<ProjectUpdateWithoutAppBaseBackupsInput, ProjectUncheckedUpdateWithoutAppBaseBackupsInput>
+    create: XOR<ProjectCreateWithoutAppBaseBackupsInput, ProjectUncheckedCreateWithoutAppBaseBackupsInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutAppBaseBackupsInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutAppBaseBackupsInput, AssetUncheckedUpdateWithoutAppBaseBackupsInput>
+  export type ProjectUpdateToOneWithWhereWithoutAppBaseBackupsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutAppBaseBackupsInput, ProjectUncheckedUpdateWithoutAppBaseBackupsInput>
   }
 
-  export type AssetUpdateWithoutAppBaseBackupsInput = {
+  export type ProjectUpdateWithoutAppBaseBackupsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59554,7 +59554,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutAppBaseBackupsInput = {
+  export type ProjectUncheckedUpdateWithoutAppBaseBackupsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59592,7 +59592,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetCreateWithoutAssetModulesInput = {
+  export type ProjectCreateWithoutAssetModulesInput = {
     id: string
     name?: string
     url?: string | null
@@ -59630,7 +59630,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutAssetModulesInput = {
+  export type ProjectUncheckedCreateWithoutAssetModulesInput = {
     id: string
     name?: string
     url?: string | null
@@ -59668,23 +59668,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutAssetModulesInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutAssetModulesInput, AssetUncheckedCreateWithoutAssetModulesInput>
+  export type ProjectCreateOrConnectWithoutAssetModulesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutAssetModulesInput, ProjectUncheckedCreateWithoutAssetModulesInput>
   }
 
-  export type AssetUpsertWithoutAssetModulesInput = {
-    update: XOR<AssetUpdateWithoutAssetModulesInput, AssetUncheckedUpdateWithoutAssetModulesInput>
-    create: XOR<AssetCreateWithoutAssetModulesInput, AssetUncheckedCreateWithoutAssetModulesInput>
-    where?: AssetWhereInput
+  export type ProjectUpsertWithoutAssetModulesInput = {
+    update: XOR<ProjectUpdateWithoutAssetModulesInput, ProjectUncheckedUpdateWithoutAssetModulesInput>
+    create: XOR<ProjectCreateWithoutAssetModulesInput, ProjectUncheckedCreateWithoutAssetModulesInput>
+    where?: ProjectWhereInput
   }
 
-  export type AssetUpdateToOneWithWhereWithoutAssetModulesInput = {
-    where?: AssetWhereInput
-    data: XOR<AssetUpdateWithoutAssetModulesInput, AssetUncheckedUpdateWithoutAssetModulesInput>
+  export type ProjectUpdateToOneWithWhereWithoutAssetModulesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutAssetModulesInput, ProjectUncheckedUpdateWithoutAssetModulesInput>
   }
 
-  export type AssetUpdateWithoutAssetModulesInput = {
+  export type ProjectUpdateWithoutAssetModulesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59722,7 +59722,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutAssetModulesInput = {
+  export type ProjectUncheckedUpdateWithoutAssetModulesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -59773,7 +59773,7 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
-    asset?: AssetUpdateOneRequiredWithoutRolesNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutRolesNestedInput
   }
 
   export type RoleUncheckedUpdateWithoutAccountInput = {
@@ -60659,7 +60659,7 @@ export namespace Prisma {
     response?: JsonNullValueInput | InputJsonValue
     postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
-    project?: AssetUpdateOneRequiredWithoutFormSubmissionsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFormSubmissionsNestedInput
   }
 
   export type FormSubmissionUncheckedUpdateWithoutFormInput = {
@@ -60696,7 +60696,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     path?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    asset?: AssetUpdateOneRequiredWithoutPathsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutPathsNestedInput
   }
 
   export type PagePathUncheckedUpdateWithoutPageInput = {
@@ -60795,7 +60795,7 @@ export namespace Prisma {
     allocatedStorage?: NullableIntFieldUpdateOperationsInput | number | null
     allocatedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
-    asset?: AssetUpdateOneRequiredWithoutAllocationsNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutAllocationsNestedInput
   }
 
   export type AllocationUncheckedUpdateWithoutServerInput = {
@@ -60881,7 +60881,7 @@ export namespace Prisma {
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     order?: NullableIntFieldUpdateOperationsInput | number | null
     permissions?: NullableJsonNullValueInput | InputJsonValue
-    asset?: AssetUpdateOneRequiredWithoutMembersNestedInput
+    asset?: ProjectUpdateOneRequiredWithoutMembersNestedInput
   }
 
   export type MemberUncheckedUpdateWithoutTeamInput = {
