@@ -12,7 +12,7 @@ import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
-import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
+import { Redo, AlertCircle, Plus, Trash2, ChevronLeft, ChevronRight, UploadCloud, ArrowRight } from 'lucide-react';
 import { Badge } from '@neup/components/ui/badge';
 import { format } from 'date-fns';
 import { CardFooter } from '@neup/components/ui/card';
@@ -97,45 +97,62 @@ export default function RedirectsPage() {
     <div className="w-full space-y-8">
       <header className="flex items-center justify-between">
         <div>
-            <h1 className="font-headline text-2xl font-semibold tracking-tight">Redirects</h1>
-            <p className="text-muted-foreground">Create and manage URL redirects for your site.</p>
+          <h1 className="font-headline text-2xl font-semibold tracking-tight">Redirects</h1>
+          <p className="text-muted-foreground">Create and manage URL redirects for your site.</p>
         </div>
-        <div className="flex gap-2">
+        <div>
             <Button variant="outlined" onClick={handleUpdateOnServer} disabled={isDeploying}>
                 <UploadCloud className="mr-2 h-4 w-4" />
                 {isDeploying ? 'Updating...' : 'Update on Server'}
             </Button>
-            <LinkButton variant="solid" href="/manage/redirects/create">
-                    <Plus className="mr-2 h-4 w-4" /> Create Redirect
-                </LinkButton>
         </div>
       </header>
       
-      <div className="space-y-2">
+      <div className="grid gap-4">
         {loading ? (
-          <div className="space-y-2"><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /></div>
+          <div className="grid gap-4"><Skeleton className="h-20 w-full" /><Skeleton className="h-20 w-full" /><Skeleton className="h-20 w-full" /></div>
         ) : error ? (
           <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
-        ) : redirects.length === 0 ? (
-          <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-            <Redo className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <p>No redirects created yet.</p>
-          </div>
         ) : (
-            redirects.map((redirect) => (
-                <div key={redirect.id} className="p-3 bg-muted/50 rounded-md hover:bg-muted flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border">
-                    <div className="flex-1 min-w-0">
-                        <p className="font-mono text-sm truncate" title={redirect.from}>{redirect.from}</p>
-                        <p className="font-mono text-xs text-muted-foreground truncate" title={redirect.to}>&rarr; {redirect.to}</p>
-                    </div>
-                    <div className="flex items-center gap-4 self-end sm:self-center">
-                        <Badge variant={redirect.type === 'permanent' ? 'default' : 'secondary'}>{redirect.type === 'permanent' ? '301' : '302'}</Badge>
-                         <Button variant="plain" size="icon" onClick={() => handleDelete(redirect.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                    </div>
-                </div>
-            ))
+          <>
+            <LinkButton
+              variant="plain"
+              className="grid h-auto justify-start gap-4 rounded-lg border border-border bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr_auto] md:items-center"
+              href="/manage/redirects/create"
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                <Plus className="h-5 w-5 text-muted-foreground" />
+              </span>
+              <span>
+                <span className="block font-medium">Create Redirect</span>
+                <span className="block text-sm text-muted-foreground">Add a URL redirect to this project.</span>
+              </span>
+              <ArrowRight className="h-4 w-4" />
+            </LinkButton>
+            {!redirects.length ? (
+              <div className="rounded-lg border-2 border-dashed p-12 text-center text-muted-foreground">
+                <Redo className="mx-auto mb-4 h-12 w-12" />
+                <p className="font-medium text-foreground">No redirects exist.</p>
+              </div>
+            ) : null}
+            {redirects.map((redirect) => (
+              <div key={redirect.id} className="grid gap-4 rounded-lg border border-border bg-card px-5 py-4 md:grid-cols-[auto_1fr_auto] md:items-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                  <Redo className="h-5 w-5 text-muted-foreground" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate font-mono text-sm" title={redirect.from}>{redirect.from}</span>
+                  <span className="block truncate font-mono text-xs text-muted-foreground" title={redirect.to}>&rarr; {redirect.to}</span>
+                </span>
+                <span className="flex items-center gap-3 self-end sm:self-center">
+                  <Badge variant={redirect.type === 'permanent' ? 'default' : 'secondary'}>{redirect.type === 'permanent' ? '301' : '302'}</Badge>
+                  <Button variant="plain" size="icon" onClick={() => handleDelete(redirect.id)}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </span>
+              </div>
+            ))}
+          </>
         )}
       </div>
 
