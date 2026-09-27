@@ -292,7 +292,7 @@ export async function deleteManagedProject(projectId: string): Promise<{ success
     }
 
     revalidatePath('@neup/manage/projects');
-    revalidatePath('@neup/manage/access');
+    revalidatePath('@neup/access');
     revalidatePath('@neup/switch');
 
     return { success: true };

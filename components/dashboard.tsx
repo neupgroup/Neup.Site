@@ -154,7 +154,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <SidebarNavItem href="/manage/projects" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></SidebarNavItem>
         <SidebarNavItem href="/careers" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Careers</span></SidebarNavItem>
         <SidebarNavItem href="/manage/billing" currentPath={currentPath} project={project} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
-        <SidebarNavItem href="/manage/access" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></SidebarNavItem>
+        <SidebarNavItem href="/access" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></SidebarNavItem>
         <SidebarNavItem href="/manage/permissions" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></SidebarNavItem>
         <SidebarNavItem href="/manage/redirects" currentPath={currentPath} project={project} onClick={onLinkClick}><Redo className="h-4 w-4" /><span>Redirects</span></SidebarNavItem>
         <SidebarNavItem href="/manage/contacts" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></SidebarNavItem>

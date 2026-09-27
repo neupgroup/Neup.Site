@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { getActiveProjectId } from '@/services/projects';
 
 import { prisma as db } from '@neup/core/database/prisma';
@@ -28,12 +29,16 @@ export interface AccessOverviewUserSite {
 
 export interface AccessOverviewUser {
   accountId: string;
+  displayName: string;
+  neupId: string | null;
   totalSites: number;
   sites: AccessOverviewUserSite[];
 }
 
 export interface AccessOverviewSiteUser {
   accountId: string;
+  displayName: string;
+  neupId: string | null;
   roles: string[];
 }
 
@@ -54,6 +59,98 @@ function formatAssetName(name: string, assetId: string) {
   return trimmedName || `Untitled Site (${assetId.slice(0, 8)})`;
 }
 
+export interface AccessAddProject {
+  id: string;
+  name: string;
+}
+
+export interface AccessAddAccount {
+  id: string;
+  neupId: string | null;
+  displayName: string;
+}
+
+export async function getAccessAddProjects(projectId?: string): Promise<{
+  success: boolean;
+  projects?: AccessAddProject[];
+  accounts?: AccessAddAccount[];
+  error?: string;
+}> {
+  try {
+    const accountId = await getAccountId();
+    const [projects, accounts] = await Promise.all([
+      db.asset.findMany({
+        where: {
+          ...(projectId ? { id: projectId } : {}),
+          OR: [
+            { ownerAccountId: accountId },
+            { roles: { some: { accountId, role: 'owner' } } },
+          ],
+        },
+        select: { id: true, name: true },
+        orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      }),
+      db.account.findMany({
+        select: { id: true, neupId: true, displayName: true },
+        orderBy: [{ neupId: 'asc' }, { id: 'asc' }],
+      }),
+    ]);
+
+    return {
+      success: true,
+      projects: projects.map((project) => ({ id: project.id, name: formatAssetName(project.name, project.id) })),
+      accounts,
+    };
+  } catch {
+    return { success: false, error: 'Failed to load managed sites.' };
+  }
+}
+
+export async function addAccessRole(input: {
+  accountId: string;
+  assetId: string;
+  role: string;
+  expectedAssetId?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const managerAccountId = await getAccountId();
+    const accountId = input.accountId.trim();
+    const assetId = input.assetId.trim();
+    const role = normalizeRole(input.role);
+    const expectedAssetId = input.expectedAssetId?.trim();
+
+    if (!accountId || !assetId || !role) return { success: false, error: 'Account, site, and role are required.' };
+    if (expectedAssetId && assetId !== expectedAssetId) return { success: false, error: 'This access form is locked to a different site.' };
+    if (role === 'owner') return { success: false, error: 'Owner access cannot be added here.' };
+
+    const managedAsset = await db.asset.findFirst({
+      where: {
+        id: assetId,
+        OR: [
+          { ownerAccountId: managerAccountId },
+          { roles: { some: { accountId: managerAccountId, role: 'owner' } } },
+        ],
+      },
+      select: { id: true },
+    });
+    if (!managedAsset) return { success: false, error: 'Site not found or you do not have owner access.' };
+
+    const account = await db.account.findUnique({ where: { id: accountId }, select: { id: true } });
+    if (!account) return { success: false, error: 'Account not found.' };
+
+    await db.role.upsert({
+      where: { id: `${assetId}:${accountId}:${role}` },
+      create: { id: `${assetId}:${accountId}:${role}`, assetId, portfolioId: assetId, accountId, role },
+      update: { status: 'active' },
+    });
+
+    revalidatePath('@neup/access');
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Failed to add access.' };
+  }
+}
+
 export async function getAccessOverview(): Promise<{
   success: boolean;
   users?: AccessOverviewUser[];
@@ -64,7 +161,8 @@ export async function getAccessOverview(): Promise<{
     const accountId = await getAccountId();
     const currentAssetId = await getActiveProjectId() ?? null;
 
-    const managedAssets = await db.asset.findMany({
+    const [managedAssets, accounts] = await Promise.all([
+      db.asset.findMany({
       where: {
         OR: [
           { ownerAccountId: accountId },
@@ -86,14 +184,20 @@ export async function getAccessOverview(): Promise<{
           select: {
             accountId: true,
             role: true,
+            account: { select: { displayName: true, neupId: true } },
           },
         },
       },
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
-    });
+      }),
+      db.account.findMany({
+        select: { id: true, displayName: true, neupId: true },
+      }),
+    ]);
+    const accountMap = new Map(accounts.map((account) => [account.id, account]));
 
-    const userMap = new Map<string, Map<string, { assetName: string; roles: Set<string>; isCurrentAsset: boolean }>>();
-    const siteMap = new Map<string, { assetName: string; isCurrentAsset: boolean; users: Map<string, Set<string>> }>();
+    const userMap = new Map<string, Map<string, { assetName: string; roles: Set<string>; isCurrentAsset: boolean; displayName: string; neupId: string | null }>>();
+    const siteMap = new Map<string, { assetName: string; isCurrentAsset: boolean; users: Map<string, { roles: Set<string>; displayName: string; neupId: string | null }> }>();
 
     for (const asset of managedAssets) {
       const assetName = formatAssetName(asset.name, asset.id);
@@ -101,24 +205,29 @@ export async function getAccessOverview(): Promise<{
       const accessRows = asset.roles.map((role) => ({
         accountId: role.accountId,
         role: normalizeRole(role.role),
+        displayName: role.account.displayName,
+        neupId: role.account.neupId,
       }));
 
       if (asset.ownerAccountId?.trim()) {
         const ownerId = asset.ownerAccountId.trim();
         const ownerAlreadyPresent = accessRows.some((row) => row.accountId === ownerId && row.role === 'owner');
         if (!ownerAlreadyPresent) {
-          accessRows.push({ accountId: ownerId, role: 'owner' });
+          const owner = accountMap.get(ownerId);
+          accessRows.push({ accountId: ownerId, role: 'owner', displayName: owner?.displayName ?? '', neupId: owner?.neupId ?? null });
         }
       }
 
       for (const accessRow of accessRows) {
         if (!accessRow.accountId) continue;
 
-        const userAssets = userMap.get(accessRow.accountId) ?? new Map<string, { assetName: string; roles: Set<string>; isCurrentAsset: boolean }>();
+        const userAssets = userMap.get(accessRow.accountId) ?? new Map<string, { assetName: string; roles: Set<string>; isCurrentAsset: boolean; displayName: string; neupId: string | null }>();
         const userAssetEntry = userAssets.get(asset.id) ?? {
           assetName,
           roles: new Set<string>(),
           isCurrentAsset,
+          displayName: accessRow.displayName,
+          neupId: accessRow.neupId,
         };
         userAssetEntry.roles.add(accessRow.role);
         userAssets.set(asset.id, userAssetEntry);
@@ -127,11 +236,11 @@ export async function getAccessOverview(): Promise<{
         const siteEntry = siteMap.get(asset.id) ?? {
           assetName,
           isCurrentAsset,
-          users: new Map<string, Set<string>>(),
+          users: new Map<string, { roles: Set<string>; displayName: string; neupId: string | null }>(),
         };
-        const userRoles = siteEntry.users.get(accessRow.accountId) ?? new Set<string>();
-        userRoles.add(accessRow.role);
-        siteEntry.users.set(accessRow.accountId, userRoles);
+        const userEntry = siteEntry.users.get(accessRow.accountId) ?? { roles: new Set<string>(), displayName: accessRow.displayName, neupId: accessRow.neupId };
+        userEntry.roles.add(accessRow.role);
+        siteEntry.users.set(accessRow.accountId, userEntry);
         siteMap.set(asset.id, siteEntry);
       }
     }
@@ -139,6 +248,8 @@ export async function getAccessOverview(): Promise<{
     const users: AccessOverviewUser[] = Array.from(userMap.entries())
       .map(([userAccountId, assets]) => ({
         accountId: userAccountId,
+        displayName: Array.from(assets.values())[0]?.displayName ?? '',
+        neupId: Array.from(assets.values())[0]?.neupId ?? null,
         totalSites: assets.size,
         sites: Array.from(assets.entries())
           .map(([assetId, asset]) => ({
@@ -160,7 +271,9 @@ export async function getAccessOverview(): Promise<{
         users: Array.from(site.users.entries())
           .map(([userAccountId, roles]) => ({
             accountId: userAccountId,
-            roles: Array.from(roles).sort(),
+            displayName: roles.displayName,
+            neupId: roles.neupId,
+            roles: Array.from(roles.roles).sort(),
           }))
           .sort((left, right) => left.accountId.localeCompare(right.accountId)),
       }))
