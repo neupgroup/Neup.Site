@@ -236,15 +236,29 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
   );
 }
 
-function Header({ isMobileMenuOpen, toggleMobileMenu, project }: { isMobileMenuOpen: boolean, toggleMobileMenu: () => void, project: string | null }) {
+function Header({
+  isMobileMenuOpen,
+  toggleMobileMenu,
+  project,
+  initialAsset,
+  initialAccountBasics,
+}: {
+  isMobileMenuOpen: boolean;
+  toggleMobileMenu: () => void;
+  project: string | null;
+  initialAsset?: Asset;
+  initialAccountBasics?: SelfAccountBasics | null;
+}) {
   const { asset, loading } = useProfile();
-  const [accountBasics, setAccountBasics] = useState<SelfAccountBasics | null>(null);
-  const [accountBasicsLoading, setAccountBasicsLoading] = useState(true);
+  const [accountBasics, setAccountBasics] = useState<SelfAccountBasics | null>(initialAccountBasics ?? null);
+  const [accountBasicsLoading, setAccountBasicsLoading] = useState(!initialAccountBasics);
 
-  const profileName = asset?.name;
-  const logoUrl = resolveAssetLogoUrl(asset?.logoUrl, asset?.theme);
+  const headerAsset = asset ?? initialAsset;
+  const profileName = headerAsset?.name;
+  const logoUrl = resolveAssetLogoUrl(headerAsset?.logoUrl, headerAsset?.theme);
   const isSvgLogo = isResolvedAssetLogoSvg(logoUrl);
-  const hideSitename = asset?.hideSitename;
+  const isInlineLogo = logoUrl?.startsWith('data:image/') ?? false;
+  const hideSitename = headerAsset?.hideSitename;
 
   useEffect(() => {
     let active = true;
@@ -252,7 +266,7 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, project }: { isMobileMenuO
     async function loadAccountBasics() {
       const result = await getSelfAccountBasics();
       if (!active) return;
-      setAccountBasics(result.basics ?? null);
+      if (result.basics) setAccountBasics(result.basics);
       setAccountBasicsLoading(false);
     }
 
@@ -278,19 +292,27 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, project }: { isMobileMenuO
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
           <Link href={appendProject('/home', project)} className="flex items-center gap-4">
-            {(loading ? (
+            {((loading && !initialAsset) ? (
               <Skeleton className="h-6 w-6" />
             ) : logoUrl ? (
               <div className="relative h-7 w-auto" style={{ aspectRatio: 'auto' }}>
-                <Image
-                  src={logoUrl}
-                  alt="Asset Logo"
-                  width={160}
-                  height={28}
-                  unoptimized={isSvgLogo}
-                  className="h-7 w-auto"
-                  style={{ objectFit: 'contain' }}
-                />
+                {isInlineLogo ? (
+                  <img
+                    src={logoUrl}
+                    alt="Asset Logo"
+                    className="h-7 w-auto object-contain"
+                  />
+                ) : (
+                  <Image
+                    src={logoUrl}
+                    alt="Asset Logo"
+                    width={160}
+                    height={28}
+                    unoptimized={isSvgLogo}
+                    className="h-7 w-auto"
+                    style={{ objectFit: 'contain' }}
+                  />
+                )}
               </div>
             ) : (
               <Rocket className="h-6 w-6 text-primary" />
@@ -322,9 +344,17 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, project }: { isMobileMenuO
                 {accountBasicsLoading ? <Skeleton className="ml-auto mt-1 h-3 w-24" /> : (neupid ? `@${neupid}` : '')}
               </div>
             </div>
-            <Avatar className="h-10 w-10 border border-border/60">
-              {displayImage ? <AvatarImage src={displayImage} alt={displayName || neupid || 'Account'} /> : null}
-              <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">{initials}</AvatarFallback>
+            <Avatar
+              className="h-10 w-10 border border-border/60"
+              displayName={displayName}
+              neupid={neupid}
+            >
+              {displayImage ? (
+                <AvatarImage src={displayImage} alt={displayName || neupid || 'Account'} />
+              ) : null}
+              <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">
+                {initials}
+              </AvatarFallback>
             </Avatar>
           </Link>
           <div className="md:hidden">
@@ -338,7 +368,17 @@ function Header({ isMobileMenuOpen, toggleMobileMenu, project }: { isMobileMenuO
   );
 }
 
-export function Dashboard({ children, theme }: { children: React.ReactNode, theme?: Partial<AssetTheme> }) {
+export function Dashboard({
+  children,
+  theme,
+  initialAsset,
+  initialAccountBasics,
+}: {
+  children: React.ReactNode;
+  theme?: Partial<AssetTheme>;
+  initialAsset?: Asset;
+  initialAccountBasics?: SelfAccountBasics | null;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -390,7 +430,13 @@ export function Dashboard({ children, theme }: { children: React.ReactNode, them
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
-      <Header isMobileMenuOpen={isMobileMenuOpen} toggleMobileMenu={toggleMobileMenu} project={projectForLinks} />
+      <Header
+        isMobileMenuOpen={isMobileMenuOpen}
+        toggleMobileMenu={toggleMobileMenu}
+        project={projectForLinks}
+        initialAsset={initialAsset}
+        initialAccountBasics={initialAccountBasics}
+      />
 
       {/* Mobile Menu */}
       <div className={cn(

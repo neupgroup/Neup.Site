@@ -4,6 +4,7 @@ import './globals.css';
 import { SidebarProvider } from '@neup/components/ui/sidebar';
 import BaseRootLayout from '@neup/components/layout/RootLayout';
 import { getAsset } from '@/services/editor/asset';
+import { getSelfAccountBasics } from '@/services/accounts';
 import { initializeUserAccount } from '@/services/auth/initialize';
 import { cn } from '@neup/core/utils';
 import { AppLayoutClient } from './layout-client';
@@ -18,7 +19,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [{ asset }, { accountId }] = await Promise.all([getAsset(), initializeUserAccount()]);
+  const [{ asset }, { accountId }, { basics: accountBasics }] = await Promise.all([
+    getAsset(),
+    initializeUserAccount(),
+    getSelfAccountBasics(),
+  ]);
   const radius = asset?.theme?.radius;
   const radiusClass = radius ? `radius-${radius}` : 'radius-medium';
   const themeMode = asset?.theme?.mode || 'light';
@@ -109,7 +114,13 @@ export default async function RootLayout({
       <body className={cn("font-body antialiased")}>
         <BaseRootLayout>
           <SidebarProvider>
-            <AppLayoutClient currentAccountId={accountId}>{children}</AppLayoutClient>
+            <AppLayoutClient
+              currentAccountId={accountId}
+              initialAsset={asset}
+              initialAccountBasics={accountBasics}
+            >
+              {children}
+            </AppLayoutClient>
           </SidebarProvider>
         </BaseRootLayout>
       </body>
