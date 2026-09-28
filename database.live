@@ -81,6 +81,20 @@ Fields:
 > status: string;
 > appliedAt: timestamp, nullable;
 
+Table: news, Model: NewsArticle
+Fields:
+> id: string, primary key;
+> projectId: string, nullable, references projects.id;
+> slug: string, nullable;
+> title: string;
+> content: string;
+> author: string;
+> imageUrl: string, nullable;
+> publishedAt: timestamp, nullable;
+> createdAt: timestamp, nullable;
+> updatedAt: timestamp, nullable;
+.. references projects;
+
 Table: forms, Model: Form
 Fields:
 > id: string, primary key, auto generated;

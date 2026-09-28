@@ -162,7 +162,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <ExternalAnalyticsNavLink propertyId={propertyId} currentUrl={currentUrl} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span><ExternalLink className="h-3.5 w-3.5" aria-label="Opens external page" /></ExternalAnalyticsNavLink>
         <SidebarNavItem href="/manage/products" currentPath={currentPath} project={project} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></SidebarNavItem>
         <SidebarNavItem href="/manage/syncer" currentPath={currentPath} project={project} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></SidebarNavItem>
-        <SidebarNavItem href="/manage/articles" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
+        <SidebarNavItem href="/articles" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
         <SidebarNavItem href="/manage/referrals" currentPath={currentPath} project={project} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></SidebarNavItem>
       </div>
 

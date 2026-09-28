@@ -4012,6 +4012,7 @@ export namespace Prisma {
     jobPostings: number
     forms: number
     formSubmissions: number
+    newsArticles: number
     defaultProjectAccounts: number
   }
 
@@ -4037,6 +4038,7 @@ export namespace Prisma {
     jobPostings?: boolean | ProjectCountOutputTypeCountJobPostingsArgs
     forms?: boolean | ProjectCountOutputTypeCountFormsArgs
     formSubmissions?: boolean | ProjectCountOutputTypeCountFormSubmissionsArgs
+    newsArticles?: boolean | ProjectCountOutputTypeCountNewsArticlesArgs
     defaultProjectAccounts?: boolean | ProjectCountOutputTypeCountDefaultProjectAccountsArgs
   }
 
@@ -4196,6 +4198,13 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountFormSubmissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FormSubmissionWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountNewsArticlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NewsArticleWhereInput
   }
 
   /**
@@ -7945,6 +7954,7 @@ export namespace Prisma {
     jobPostings?: boolean | Project$jobPostingsArgs<ExtArgs>
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
+    newsArticles?: boolean | Project$newsArticlesArgs<ExtArgs>
     defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
@@ -8023,6 +8033,7 @@ export namespace Prisma {
     jobPostings?: boolean | Project$jobPostingsArgs<ExtArgs>
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
+    newsArticles?: boolean | Project$newsArticlesArgs<ExtArgs>
     defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -8053,6 +8064,7 @@ export namespace Prisma {
       jobPostings: Prisma.$JobPostingPayload<ExtArgs>[]
       forms: Prisma.$FormPayload<ExtArgs>[]
       formSubmissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
+      newsArticles: Prisma.$NewsArticlePayload<ExtArgs>[]
       defaultProjectAccounts: Prisma.$AccountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -8485,6 +8497,7 @@ export namespace Prisma {
     jobPostings<T extends Project$jobPostingsArgs<ExtArgs> = {}>(args?: Subset<T, Project$jobPostingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     forms<T extends Project$formsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     formSubmissions<T extends Project$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    newsArticles<T extends Project$newsArticlesArgs<ExtArgs> = {}>(args?: Subset<T, Project$newsArticlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     defaultProjectAccounts<T extends Project$defaultProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Project$defaultProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -9423,6 +9436,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FormSubmissionScalarFieldEnum | FormSubmissionScalarFieldEnum[]
+  }
+
+  /**
+   * Project.newsArticles
+   */
+  export type Project$newsArticlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NewsArticle
+     */
+    select?: NewsArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NewsArticle
+     */
+    omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
+    where?: NewsArticleWhereInput
+    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    cursor?: NewsArticleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
   }
 
   /**
@@ -39515,6 +39552,7 @@ export namespace Prisma {
 
   export type NewsArticleMinAggregateOutputType = {
     id: string | null
+    projectId: string | null
     slug: string | null
     title: string | null
     content: string | null
@@ -39527,6 +39565,7 @@ export namespace Prisma {
 
   export type NewsArticleMaxAggregateOutputType = {
     id: string | null
+    projectId: string | null
     slug: string | null
     title: string | null
     content: string | null
@@ -39539,6 +39578,7 @@ export namespace Prisma {
 
   export type NewsArticleCountAggregateOutputType = {
     id: number
+    projectId: number
     slug: number
     title: number
     content: number
@@ -39553,6 +39593,7 @@ export namespace Prisma {
 
   export type NewsArticleMinAggregateInputType = {
     id?: true
+    projectId?: true
     slug?: true
     title?: true
     content?: true
@@ -39565,6 +39606,7 @@ export namespace Prisma {
 
   export type NewsArticleMaxAggregateInputType = {
     id?: true
+    projectId?: true
     slug?: true
     title?: true
     content?: true
@@ -39577,6 +39619,7 @@ export namespace Prisma {
 
   export type NewsArticleCountAggregateInputType = {
     id?: true
+    projectId?: true
     slug?: true
     title?: true
     content?: true
@@ -39662,6 +39705,7 @@ export namespace Prisma {
 
   export type NewsArticleGroupByOutputType = {
     id: string
+    projectId: string | null
     slug: string | null
     title: string
     content: string
@@ -39691,6 +39735,7 @@ export namespace Prisma {
 
   export type NewsArticleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     slug?: boolean
     title?: boolean
     content?: boolean
@@ -39699,10 +39744,12 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    project?: boolean | NewsArticle$projectArgs<ExtArgs>
   }, ExtArgs["result"]["newsArticle"]>
 
   export type NewsArticleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     slug?: boolean
     title?: boolean
     content?: boolean
@@ -39711,10 +39758,12 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    project?: boolean | NewsArticle$projectArgs<ExtArgs>
   }, ExtArgs["result"]["newsArticle"]>
 
   export type NewsArticleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    projectId?: boolean
     slug?: boolean
     title?: boolean
     content?: boolean
@@ -39723,10 +39772,12 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    project?: boolean | NewsArticle$projectArgs<ExtArgs>
   }, ExtArgs["result"]["newsArticle"]>
 
   export type NewsArticleSelectScalar = {
     id?: boolean
+    projectId?: boolean
     slug?: boolean
     title?: boolean
     content?: boolean
@@ -39737,13 +39788,25 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type NewsArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "title" | "content" | "author" | "imageUrl" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["newsArticle"]>
+  export type NewsArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "slug" | "title" | "content" | "author" | "imageUrl" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["newsArticle"]>
+  export type NewsArticleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | NewsArticle$projectArgs<ExtArgs>
+  }
+  export type NewsArticleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | NewsArticle$projectArgs<ExtArgs>
+  }
+  export type NewsArticleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | NewsArticle$projectArgs<ExtArgs>
+  }
 
   export type $NewsArticlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "NewsArticle"
-    objects: {}
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      projectId: string | null
       slug: string | null
       title: string
       content: string
@@ -40146,6 +40209,7 @@ export namespace Prisma {
    */
   export interface Prisma__NewsArticleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends NewsArticle$projectArgs<ExtArgs> = {}>(args?: Subset<T, NewsArticle$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -40176,6 +40240,7 @@ export namespace Prisma {
    */
   interface NewsArticleFieldRefs {
     readonly id: FieldRef<"NewsArticle", 'String'>
+    readonly projectId: FieldRef<"NewsArticle", 'String'>
     readonly slug: FieldRef<"NewsArticle", 'String'>
     readonly title: FieldRef<"NewsArticle", 'String'>
     readonly content: FieldRef<"NewsArticle", 'String'>
@@ -40201,6 +40266,10 @@ export namespace Prisma {
      */
     omit?: NewsArticleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
+    /**
      * Filter, which NewsArticle to fetch.
      */
     where: NewsArticleWhereUniqueInput
@@ -40219,6 +40288,10 @@ export namespace Prisma {
      */
     omit?: NewsArticleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
+    /**
      * Filter, which NewsArticle to fetch.
      */
     where: NewsArticleWhereUniqueInput
@@ -40236,6 +40309,10 @@ export namespace Prisma {
      * Omit specific fields from the NewsArticle
      */
     omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
     /**
      * Filter, which NewsArticle to fetch.
      */
@@ -40285,6 +40362,10 @@ export namespace Prisma {
      */
     omit?: NewsArticleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
+    /**
      * Filter, which NewsArticle to fetch.
      */
     where?: NewsArticleWhereInput
@@ -40332,6 +40413,10 @@ export namespace Prisma {
      * Omit specific fields from the NewsArticle
      */
     omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
     /**
      * Filter, which NewsArticles to fetch.
      */
@@ -40381,6 +40466,10 @@ export namespace Prisma {
      */
     omit?: NewsArticleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
+    /**
      * The data needed to create a NewsArticle.
      */
     data: XOR<NewsArticleCreateInput, NewsArticleUncheckedCreateInput>
@@ -40414,6 +40503,10 @@ export namespace Prisma {
      */
     data: NewsArticleCreateManyInput | NewsArticleCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -40428,6 +40521,10 @@ export namespace Prisma {
      * Omit specific fields from the NewsArticle
      */
     omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
     /**
      * The data needed to update a NewsArticle.
      */
@@ -40480,6 +40577,10 @@ export namespace Prisma {
      * Limit how many NewsArticles to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -40494,6 +40595,10 @@ export namespace Prisma {
      * Omit specific fields from the NewsArticle
      */
     omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
     /**
      * The filter to search for the NewsArticle to update in case it exists.
      */
@@ -40521,6 +40626,10 @@ export namespace Prisma {
      */
     omit?: NewsArticleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
+    /**
      * Filter which NewsArticle to delete.
      */
     where: NewsArticleWhereUniqueInput
@@ -40541,6 +40650,25 @@ export namespace Prisma {
   }
 
   /**
+   * NewsArticle.project
+   */
+  export type NewsArticle$projectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Project
+     */
+    omit?: ProjectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+  }
+
+  /**
    * NewsArticle without action
    */
   export type NewsArticleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40552,6 +40680,10 @@ export namespace Prisma {
      * Omit specific fields from the NewsArticle
      */
     omit?: NewsArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NewsArticleInclude<ExtArgs> | null
   }
 
 
@@ -44121,6 +44253,7 @@ export namespace Prisma {
 
   export const NewsArticleScalarFieldEnum: {
     id: 'id',
+    projectId: 'projectId',
     slug: 'slug',
     title: 'title',
     content: 'content',
@@ -44533,6 +44666,7 @@ export namespace Prisma {
     jobPostings?: JobPostingListRelationFilter
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
+    newsArticles?: NewsArticleListRelationFilter
     defaultProjectAccounts?: AccountListRelationFilter
   }
 
@@ -44572,6 +44706,7 @@ export namespace Prisma {
     jobPostings?: JobPostingOrderByRelationAggregateInput
     forms?: FormOrderByRelationAggregateInput
     formSubmissions?: FormSubmissionOrderByRelationAggregateInput
+    newsArticles?: NewsArticleOrderByRelationAggregateInput
     defaultProjectAccounts?: AccountOrderByRelationAggregateInput
   }
 
@@ -44614,6 +44749,7 @@ export namespace Prisma {
     jobPostings?: JobPostingListRelationFilter
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
+    newsArticles?: NewsArticleListRelationFilter
     defaultProjectAccounts?: AccountListRelationFilter
   }, "id">
 
@@ -46673,6 +46809,7 @@ export namespace Prisma {
     OR?: NewsArticleWhereInput[]
     NOT?: NewsArticleWhereInput | NewsArticleWhereInput[]
     id?: StringFilter<"NewsArticle"> | string
+    projectId?: StringNullableFilter<"NewsArticle"> | string | null
     slug?: StringNullableFilter<"NewsArticle"> | string | null
     title?: StringFilter<"NewsArticle"> | string
     content?: StringFilter<"NewsArticle"> | string
@@ -46681,10 +46818,12 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
     createdAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
   }
 
   export type NewsArticleOrderByWithRelationInput = {
     id?: SortOrder
+    projectId?: SortOrderInput | SortOrder
     slug?: SortOrderInput | SortOrder
     title?: SortOrder
     content?: SortOrder
@@ -46693,6 +46832,7 @@ export namespace Prisma {
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
+    project?: ProjectOrderByWithRelationInput
   }
 
   export type NewsArticleWhereUniqueInput = Prisma.AtLeast<{
@@ -46700,6 +46840,7 @@ export namespace Prisma {
     AND?: NewsArticleWhereInput | NewsArticleWhereInput[]
     OR?: NewsArticleWhereInput[]
     NOT?: NewsArticleWhereInput | NewsArticleWhereInput[]
+    projectId?: StringNullableFilter<"NewsArticle"> | string | null
     slug?: StringNullableFilter<"NewsArticle"> | string | null
     title?: StringFilter<"NewsArticle"> | string
     content?: StringFilter<"NewsArticle"> | string
@@ -46708,10 +46849,12 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
     createdAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
   }, "id">
 
   export type NewsArticleOrderByWithAggregationInput = {
     id?: SortOrder
+    projectId?: SortOrderInput | SortOrder
     slug?: SortOrderInput | SortOrder
     title?: SortOrder
     content?: SortOrder
@@ -46730,6 +46873,7 @@ export namespace Prisma {
     OR?: NewsArticleScalarWhereWithAggregatesInput[]
     NOT?: NewsArticleScalarWhereWithAggregatesInput | NewsArticleScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"NewsArticle"> | string
+    projectId?: StringNullableWithAggregatesFilter<"NewsArticle"> | string | null
     slug?: StringNullableWithAggregatesFilter<"NewsArticle"> | string | null
     title?: StringWithAggregatesFilter<"NewsArticle"> | string
     content?: StringWithAggregatesFilter<"NewsArticle"> | string
@@ -47146,6 +47290,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -47185,6 +47330,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -47224,6 +47370,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -47263,6 +47410,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -49531,10 +49679,12 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    project?: ProjectCreateNestedOneWithoutNewsArticlesInput
   }
 
   export type NewsArticleUncheckedCreateInput = {
     id: string
+    projectId?: string | null
     slug?: string | null
     title: string
     content: string
@@ -49555,10 +49705,12 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    project?: ProjectUpdateOneWithoutNewsArticlesNestedInput
   }
 
   export type NewsArticleUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
@@ -49571,6 +49723,7 @@ export namespace Prisma {
 
   export type NewsArticleCreateManyInput = {
     id: string
+    projectId?: string | null
     slug?: string | null
     title: string
     content: string
@@ -49595,6 +49748,7 @@ export namespace Prisma {
 
   export type NewsArticleUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
@@ -50189,6 +50343,12 @@ export namespace Prisma {
     none?: FormSubmissionWhereInput
   }
 
+  export type NewsArticleListRelationFilter = {
+    every?: NewsArticleWhereInput
+    some?: NewsArticleWhereInput
+    none?: NewsArticleWhereInput
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -50272,6 +50432,10 @@ export namespace Prisma {
   }
 
   export type FormSubmissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NewsArticleOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -51484,6 +51648,7 @@ export namespace Prisma {
 
   export type NewsArticleCountOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     slug?: SortOrder
     title?: SortOrder
     content?: SortOrder
@@ -51496,6 +51661,7 @@ export namespace Prisma {
 
   export type NewsArticleMaxOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     slug?: SortOrder
     title?: SortOrder
     content?: SortOrder
@@ -51508,6 +51674,7 @@ export namespace Prisma {
 
   export type NewsArticleMinOrderByAggregateInput = {
     id?: SortOrder
+    projectId?: SortOrder
     slug?: SortOrder
     title?: SortOrder
     content?: SortOrder
@@ -51860,6 +52027,13 @@ export namespace Prisma {
     connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
   }
 
+  export type NewsArticleCreateNestedManyWithoutProjectInput = {
+    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
+    createMany?: NewsArticleCreateManyProjectInputEnvelope
+    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+  }
+
   export type AccountCreateNestedManyWithoutDefaultProjectAssetInput = {
     create?: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput> | AccountCreateWithoutDefaultProjectAssetInput[] | AccountUncheckedCreateWithoutDefaultProjectAssetInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutDefaultProjectAssetInput | AccountCreateOrConnectWithoutDefaultProjectAssetInput[]
@@ -52012,6 +52186,13 @@ export namespace Prisma {
     connectOrCreate?: FormSubmissionCreateOrConnectWithoutProjectInput | FormSubmissionCreateOrConnectWithoutProjectInput[]
     createMany?: FormSubmissionCreateManyProjectInputEnvelope
     connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
+  }
+
+  export type NewsArticleUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
+    createMany?: NewsArticleCreateManyProjectInputEnvelope
+    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
   }
 
   export type AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput = {
@@ -52317,6 +52498,20 @@ export namespace Prisma {
     update?: FormSubmissionUpdateWithWhereUniqueWithoutProjectInput | FormSubmissionUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: FormSubmissionUpdateManyWithWhereWithoutProjectInput | FormSubmissionUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
+  }
+
+  export type NewsArticleUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
+    upsert?: NewsArticleUpsertWithWhereUniqueWithoutProjectInput | NewsArticleUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: NewsArticleCreateManyProjectInputEnvelope
+    set?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    disconnect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    delete?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    update?: NewsArticleUpdateWithWhereUniqueWithoutProjectInput | NewsArticleUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: NewsArticleUpdateManyWithWhereWithoutProjectInput | NewsArticleUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
   }
 
   export type AccountUpdateManyWithoutDefaultProjectAssetNestedInput = {
@@ -52625,6 +52820,20 @@ export namespace Prisma {
     update?: FormSubmissionUpdateWithWhereUniqueWithoutProjectInput | FormSubmissionUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: FormSubmissionUpdateManyWithWhereWithoutProjectInput | FormSubmissionUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
+  }
+
+  export type NewsArticleUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
+    upsert?: NewsArticleUpsertWithWhereUniqueWithoutProjectInput | NewsArticleUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: NewsArticleCreateManyProjectInputEnvelope
+    set?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    disconnect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    delete?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+    update?: NewsArticleUpdateWithWhereUniqueWithoutProjectInput | NewsArticleUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: NewsArticleUpdateManyWithWhereWithoutProjectInput | NewsArticleUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
   }
 
   export type AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput = {
@@ -53363,6 +53572,22 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAppBaseBackupsInput, ProjectUpdateWithoutAppBaseBackupsInput>, ProjectUncheckedUpdateWithoutAppBaseBackupsInput>
   }
 
+  export type ProjectCreateNestedOneWithoutNewsArticlesInput = {
+    create?: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutNewsArticlesInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneWithoutNewsArticlesNestedInput = {
+    create?: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutNewsArticlesInput
+    upsert?: ProjectUpsertWithoutNewsArticlesInput
+    disconnect?: ProjectWhereInput | boolean
+    delete?: ProjectWhereInput | boolean
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutNewsArticlesInput, ProjectUpdateWithoutNewsArticlesInput>, ProjectUncheckedUpdateWithoutNewsArticlesInput>
+  }
+
   export type ProjectCreateNestedOneWithoutAssetModulesInput = {
     create?: XOR<ProjectCreateWithoutAssetModulesInput, ProjectUncheckedCreateWithoutAssetModulesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutAssetModulesInput
@@ -53673,6 +53898,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutDefaultProjectAccountsInput = {
@@ -53711,6 +53937,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutDefaultProjectAccountsInput = {
@@ -53791,6 +54018,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput = {
@@ -53829,6 +54057,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type RoleUpsertWithWhereUniqueWithoutAccountInput = {
@@ -53894,6 +54123,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -53932,6 +54162,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54015,6 +54246,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54053,6 +54285,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54126,6 +54359,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54164,6 +54398,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54218,6 +54453,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54256,6 +54492,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54876,6 +55113,40 @@ export namespace Prisma {
 
   export type FormSubmissionCreateManyProjectInputEnvelope = {
     data: FormSubmissionCreateManyProjectInput | FormSubmissionCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NewsArticleCreateWithoutProjectInput = {
+    id: string
+    slug?: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl?: string | null
+    publishedAt?: Date | string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+  }
+
+  export type NewsArticleUncheckedCreateWithoutProjectInput = {
+    id: string
+    slug?: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl?: string | null
+    publishedAt?: Date | string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+  }
+
+  export type NewsArticleCreateOrConnectWithoutProjectInput = {
+    where: NewsArticleWhereUniqueInput
+    create: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput>
+  }
+
+  export type NewsArticleCreateManyProjectInputEnvelope = {
+    data: NewsArticleCreateManyProjectInput | NewsArticleCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -55520,6 +55791,38 @@ export namespace Prisma {
     status?: StringFilter<"FormSubmission"> | string
   }
 
+  export type NewsArticleUpsertWithWhereUniqueWithoutProjectInput = {
+    where: NewsArticleWhereUniqueInput
+    update: XOR<NewsArticleUpdateWithoutProjectInput, NewsArticleUncheckedUpdateWithoutProjectInput>
+    create: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput>
+  }
+
+  export type NewsArticleUpdateWithWhereUniqueWithoutProjectInput = {
+    where: NewsArticleWhereUniqueInput
+    data: XOR<NewsArticleUpdateWithoutProjectInput, NewsArticleUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type NewsArticleUpdateManyWithWhereWithoutProjectInput = {
+    where: NewsArticleScalarWhereInput
+    data: XOR<NewsArticleUpdateManyMutationInput, NewsArticleUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type NewsArticleScalarWhereInput = {
+    AND?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
+    OR?: NewsArticleScalarWhereInput[]
+    NOT?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
+    id?: StringFilter<"NewsArticle"> | string
+    projectId?: StringNullableFilter<"NewsArticle"> | string | null
+    slug?: StringNullableFilter<"NewsArticle"> | string | null
+    title?: StringFilter<"NewsArticle"> | string
+    content?: StringFilter<"NewsArticle"> | string
+    author?: StringFilter<"NewsArticle"> | string
+    imageUrl?: StringNullableFilter<"NewsArticle"> | string | null
+    publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+    createdAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutDefaultProjectAssetInput, AccountUncheckedUpdateWithoutDefaultProjectAssetInput>
@@ -55586,6 +55889,7 @@ export namespace Prisma {
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55624,6 +55928,7 @@ export namespace Prisma {
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55704,6 +56009,7 @@ export namespace Prisma {
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55742,6 +56048,7 @@ export namespace Prisma {
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55796,6 +56103,7 @@ export namespace Prisma {
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55834,6 +56142,7 @@ export namespace Prisma {
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55911,6 +56220,7 @@ export namespace Prisma {
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55949,6 +56259,7 @@ export namespace Prisma {
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56016,6 +56327,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56054,6 +56366,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56108,6 +56421,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56146,6 +56460,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56184,6 +56499,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56222,6 +56538,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56324,6 +56641,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56362,6 +56680,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56443,6 +56762,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56481,6 +56801,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56566,6 +56887,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56604,6 +56926,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56679,6 +57002,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56717,6 +57041,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56771,6 +57096,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56809,6 +57135,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56847,6 +57174,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56885,6 +57213,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56963,6 +57292,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57001,6 +57331,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57195,6 +57526,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57233,6 +57565,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57287,6 +57620,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57325,6 +57659,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57363,6 +57698,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57401,6 +57737,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57455,6 +57792,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57493,6 +57831,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57531,6 +57870,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57569,6 +57909,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57623,6 +57964,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57661,6 +58003,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57699,6 +58042,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57737,6 +58081,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57791,6 +58136,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57829,6 +58175,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57867,6 +58214,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57905,6 +58253,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57959,6 +58308,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57997,6 +58347,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58204,6 +58555,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58242,6 +58594,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58355,6 +58708,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58393,6 +58747,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58543,6 +58898,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58581,6 +58937,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58635,6 +58992,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58673,6 +59031,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58711,6 +59070,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58749,6 +59109,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58839,6 +59200,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58877,6 +59239,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58931,6 +59294,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58969,6 +59333,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59046,6 +59411,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59084,6 +59450,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59181,6 +59548,7 @@ export namespace Prisma {
     members?: MemberCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59219,6 +59587,7 @@ export namespace Prisma {
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59303,6 +59672,7 @@ export namespace Prisma {
     members?: MemberUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59341,6 +59711,7 @@ export namespace Prisma {
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59459,6 +59830,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59497,6 +59869,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59551,6 +59924,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59583,6 +59957,179 @@ export namespace Prisma {
     allocations?: AllocationUncheckedUpdateManyWithoutAssetNestedInput
     structures?: SiteStructureUncheckedUpdateManyWithoutAssetNestedInput
     deployments?: DeploymentUncheckedUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
+    members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+  }
+
+  export type ProjectCreateWithoutNewsArticlesInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainCreateNestedManyWithoutAssetInput
+    profiles?: ProfileCreateNestedManyWithoutAssetInput
+    pages?: PageCreateNestedManyWithoutAssetInput
+    paths?: PagePathCreateNestedManyWithoutAssetInput
+    sections?: SectionCreateNestedManyWithoutAssetInput
+    datalists?: DatalistCreateNestedManyWithoutAssetInput
+    sources?: DataSourceCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableCreateNestedManyWithoutAssetInput
+    redirects?: RedirectCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileCreateNestedManyWithoutAssetInput
+    allocations?: AllocationCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
+    teams?: TeamCreateNestedManyWithoutAssetInput
+    members?: MemberCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+  }
+
+  export type ProjectUncheckedCreateWithoutNewsArticlesInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
+    profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
+    pages?: PageUncheckedCreateNestedManyWithoutAssetInput
+    paths?: PagePathUncheckedCreateNestedManyWithoutAssetInput
+    sections?: SectionUncheckedCreateNestedManyWithoutAssetInput
+    datalists?: DatalistUncheckedCreateNestedManyWithoutAssetInput
+    sources?: DataSourceUncheckedCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableUncheckedCreateNestedManyWithoutAssetInput
+    redirects?: RedirectUncheckedCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileUncheckedCreateNestedManyWithoutAssetInput
+    allocations?: AllocationUncheckedCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureUncheckedCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentUncheckedCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupUncheckedCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
+    teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
+    members?: MemberUncheckedCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+  }
+
+  export type ProjectCreateOrConnectWithoutNewsArticlesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
+  }
+
+  export type ProjectUpsertWithoutNewsArticlesInput = {
+    update: XOR<ProjectUpdateWithoutNewsArticlesInput, ProjectUncheckedUpdateWithoutNewsArticlesInput>
+    create: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutNewsArticlesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutNewsArticlesInput, ProjectUncheckedUpdateWithoutNewsArticlesInput>
+  }
+
+  export type ProjectUpdateWithoutNewsArticlesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUpdateManyWithoutAssetNestedInput
+    pages?: PageUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUpdateManyWithoutAssetNestedInput
+    sections?: SectionUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
+    teams?: TeamUpdateManyWithoutAssetNestedInput
+    members?: MemberUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutNewsArticlesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
+    pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUncheckedUpdateManyWithoutAssetNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUncheckedUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUncheckedUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUncheckedUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUncheckedUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUncheckedUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUncheckedUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUncheckedUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUncheckedUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUncheckedUpdateManyWithoutAssetNestedInput
     assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
     teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
@@ -59627,6 +60174,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59665,6 +60213,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59719,6 +60268,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59757,6 +60307,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59989,6 +60540,18 @@ export namespace Prisma {
     response: JsonNullValueInput | InputJsonValue
     postedOn?: Date | string
     status: string
+  }
+
+  export type NewsArticleCreateManyProjectInput = {
+    id: string
+    slug?: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl?: string | null
+    publishedAt?: Date | string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
   }
 
   export type AccountCreateManyDefaultProjectAssetInput = {
@@ -60609,6 +61172,42 @@ export namespace Prisma {
     response?: JsonNullValueInput | InputJsonValue
     postedOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type NewsArticleUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsArticleUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsArticleUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AccountUpdateWithoutDefaultProjectAssetInput = {

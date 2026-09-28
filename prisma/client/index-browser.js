@@ -481,6 +481,7 @@ exports.Prisma.AppBaseBackupScalarFieldEnum = {
 
 exports.Prisma.NewsArticleScalarFieldEnum = {
   id: 'id',
+  projectId: 'projectId',
   slug: 'slug',
   title: 'title',
   content: 'content',
