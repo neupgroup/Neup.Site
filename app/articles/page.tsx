@@ -2,12 +2,7 @@ import Link from 'next/link';
 import { LinkButton } from '@neup/components/ui/link-button';
 import { ArrowRight, Newspaper, Plus } from 'lucide-react';
 import { getNewsArticles } from '@/services/news';
-import { articleReference } from '@/services/news-reference';
-
-function formatPublishedTime(value: string | null): string {
-  if (!value) return 'Unpublished';
-  return new Date(value).toLocaleDateString();
-}
+import { articleReference, formatArticlePublishedTime } from '@/services/news-reference';
 
 export default async function ArticlesPage({ searchParams }: { searchParams: Promise<{ project?: string }> }) {
   const { project } = await searchParams;
@@ -48,7 +43,7 @@ export default async function ArticlesPage({ searchParams }: { searchParams: Pro
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-medium">{article.title}</span>
-                    <span className="block text-sm text-muted-foreground">{article.author} <span aria-hidden="true">|</span> {formatPublishedTime(article.publishedAt)}</span>
+                    <span className="block text-sm text-muted-foreground">{article.author} <span aria-hidden="true">|</span> {formatArticlePublishedTime(article.publishedAt)}</span>
                   </span>
                   <ArrowRight className="h-4 w-4" />
                 </div>
