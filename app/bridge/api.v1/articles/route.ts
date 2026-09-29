@@ -1,22 +1,29 @@
 import { NextResponse } from 'next/server';
 import { getArticles } from '@/services/articles';
 import { articleReference } from '@/services/news-reference';
+import { logApiError, requireProject } from '../members/_helpers';
 
-export async function GET() {
-  const result = await getArticles();
-  if (!result.success) return NextResponse.json({ success: false, error: result.error }, { status: 500 });
+function publicArticle(article: any) {
+  return {
+    slug: articleReference(article),
+    writtenAt: article.createdAt ?? article.publishedAt,
+    writtenBy: article.author,
+    title: article.title,
+    coverImageUrl: article.imageUrl ?? null,
+    metaDescription: article.metaDescription ?? null,
+    language: article.language ?? null,
+    tags: article.tags ?? [],
+  };
+}
 
-  return NextResponse.json({
-    success: true,
-    data: (result.articles ?? []).map((article) => ({
-      reference: articleReference(article),
-      writtenAt: article.createdAt ?? article.publishedAt,
-      writtenBy: article.author,
-      title: article.title,
-      coverImageUrl: article.imageUrl ?? null,
-      metaDescription: article.metaDescription ?? null,
-      language: article.language ?? null,
-      tags: article.tags ?? [],
-    })),
-  });
+export async function GET(request: Request) {
+  const validation = await requireProject(request);
+  if (validation instanceof Response) return validation;
+  try {
+    const result = await getArticles();
+    return NextResponse.json({ success: result.success, data: result.articles?.map(publicArticle), error: result.error }, { status: result.success ? 200 : 500 });
+  } catch (error) {
+    await logApiError('bridge.articles.get', error);
+    return NextResponse.json({ success: false, error: 'Unable to load articles right now.' }, { status: 500 });
+  }
 }
