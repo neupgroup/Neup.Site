@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { getNewsArticleByReference, updateNewsArticle, type NewsArticle } from '@/services/news';
+import { getArticleByReference, updateArticle, type Article } from '@/services/articles';
 import { articleReference } from '@/services/news-reference';
 import { Button } from '@neup/components/ui/button';
 import { Input } from '@neup/components/ui/input';
@@ -14,10 +14,10 @@ export default function EditArticlePage() {
   const params = useParams<{ slug: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [article, setArticle] = useState<NewsArticle | null>(null);
+  const [article, setArticle] = useState<Article | null>(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { getNewsArticleByReference(params.slug).then((result) => setArticle(result.article ?? null)); }, [params.slug]);
+  useEffect(() => { getArticleByReference(params.slug).then((result) => setArticle(result.article ?? null)); }, [params.slug]);
 
   if (!article) return <div>Loading article…</div>;
 
@@ -26,7 +26,7 @@ export default function EditArticlePage() {
     const currentArticle = article;
     if (!currentArticle) return;
     setSaving(true);
-    const result = await updateNewsArticle(currentArticle.id, currentArticle);
+    const result = await updateArticle(currentArticle.id, currentArticle);
     if (result.success) {
       const project = searchParams.get('project');
       router.push(`/articles/${articleReference(currentArticle)}${project ? `?project=${encodeURIComponent(project)}` : ''}`);

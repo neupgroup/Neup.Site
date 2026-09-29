@@ -6,11 +6,9 @@ import { revalidatePath } from 'next/cache';
 import { logger } from '@neup/logica/logger';
 import crypto from 'crypto';
 import { parseArticleReference, slugifyArticle } from '@/services/news-reference';
-import { getActiveProjectId } from '@/services/projects';
 
 export interface NewsArticle {
     id: string;
-    projectId?: string | null;
     slug?: string;
     title: string;
     content: string;
@@ -23,16 +21,13 @@ export interface NewsArticle {
 
 export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | 'publishedAt' | 'createdAt' | 'updatedAt'>> & { title: string }): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    const projectId = await getActiveProjectId();
-    if (!projectId) return { success: false, error: 'Project context is required.' };
     const slug = slugifyArticle(data.title);
     const id = crypto.randomUUID();
     const now = new Date();
 
-    await db.newsArticle.create({
+        await db.news.create({
       data: {
         id,
-        projectId,
         slug,
         title: data.title,
         author: data.author || 'Author Name',
@@ -56,13 +51,11 @@ export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | '
 
 export async function getNewsArticles(): Promise<{ success: boolean; articles?: NewsArticle[]; error?: string }> {
     try {
-        const records = await db.newsArticle.findMany({
-          where: { projectId: await getActiveProjectId() },
+        const records = await db.news.findMany({
           orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
         });
         const articles = records.map((record) => ({
           id: record.id,
-          projectId: record.projectId,
           slug: record.slug ?? undefined,
           title: record.title,
           content: record.content,
@@ -81,14 +74,13 @@ export async function getNewsArticles(): Promise<{ success: boolean; articles?: 
 
 export async function getNewsArticleById(id: string): Promise<{ success: boolean; article?: NewsArticle; error?: string }> {
     try {
-        const record = await db.newsArticle.findFirst({ where: { id, projectId: await getActiveProjectId() } });
+        const record = await db.news.findUnique({ where: { id } });
         if (!record) {
             return { success: false, error: 'News article not found.' };
         }
         
         const article: NewsArticle = {
             id: record.id,
-            projectId: record.projectId,
             slug: record.slug ?? undefined,
             title: record.title,
             content: record.content,
@@ -120,9 +112,8 @@ export async function getNewsArticleByReference(reference: string): Promise<{ su
 
 export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArticle, 'id'>>): Promise<{ success: boolean; error?: string }> {
   try {
-    const projectId = await getActiveProjectId();
-    const result = await db.newsArticle.updateMany({
-      where: { id, projectId },
+    const result = await db.news.updateMany({
+      where: { id },
       data: {
         ...(typeof data.title === 'string' ? { title: data.title } : {}),
         ...(typeof data.slug === 'string' ? { slug: data.slug } : {}),
@@ -145,8 +136,7 @@ export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArtic
 
 export async function deleteNewsArticle(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const projectId = await getActiveProjectId();
-        const result = await db.newsArticle.deleteMany({ where: { id, projectId } });
+        const result = await db.news.deleteMany({ where: { id } });
         if (!result.count) return { success: false, error: 'News article not found.' };
         revalidatePath('@neup/news');
         return { success: true };

@@ -1,6 +1,7 @@
 Table: projects, Model: Project
 Fields:
 > id: string, primary key;
+> projectId: string, nullable, references projects.id;
 > name: string, default: "";
 > url: string, nullable;
 > tier: string, default: "free";
@@ -49,6 +50,9 @@ Fields:
 > role: string;
 > status: string, default: "active"; values: active, paused, hidden;
 > imageUrl: string, nullable;
+> metaDescription: string, nullable;
+> language: string, nullable;
+> tags: jsonb, nullable;
 > order: int, nullable;
 > teamId: string, nullable, references teams.id;
 > permissions: jsonb, nullable;
@@ -81,7 +85,7 @@ Fields:
 > status: string;
 > appliedAt: timestamp, nullable;
 
-Table: news, Model: NewsArticle
+Table: news, Model: News
 Fields:
 > id: string, primary key;
 > projectId: string, nullable, references projects.id;
@@ -90,6 +94,25 @@ Fields:
 > content: string;
 > author: string;
 > imageUrl: string, nullable;
+> metaDescription: string, nullable;
+> language: string, nullable;
+> tags: jsonb, nullable;
+> publishedAt: timestamp, nullable;
+> createdAt: timestamp, nullable;
+> updatedAt: timestamp, nullable;
+
+Table: articles, Model: Article
+Fields:
+> id: string, primary key;
+> projectId: string, nullable, references projects.id;
+> slug: string, nullable;
+> title: string;
+> content: string;
+> author: string;
+> imageUrl: string, nullable;
+> metaDescription: string, nullable;
+> language: string, nullable;
+> tags: jsonb, nullable;
 > publishedAt: timestamp, nullable;
 > createdAt: timestamp, nullable;
 > updatedAt: timestamp, nullable;

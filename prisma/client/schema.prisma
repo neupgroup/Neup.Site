@@ -82,7 +82,7 @@ model Project {
   jobPostings            JobPosting[]
   forms                  Form[]
   formSubmissions        FormSubmission[]
-  newsArticles           NewsArticle[]
+  articles               Article[]
   defaultProjectAccounts Account[]             @relation("AccountDefaultProject")
 
   @@index([ownerAccountId])
@@ -522,21 +522,42 @@ model AppBaseBackup {
   @@map("appBaseBackups")
 }
 
-model NewsArticle {
-  id          String    @id
-  projectId   String?
-  slug        String?
-  title       String
-  content     String
-  author      String
-  imageUrl    String?
-  publishedAt DateTime?
-  createdAt   DateTime?
-  updatedAt   DateTime?
-  project     Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+model News {
+  id              String    @id
+  projectId       String?
+  slug            String?
+  title           String
+  content         String
+  author          String
+  imageUrl        String?
+  metaDescription String?
+  language        String?
+  tags            Json?
+  publishedAt     DateTime?
+  createdAt       DateTime?
+  updatedAt       DateTime?
+
+  @@map("news")
+}
+
+model Article {
+  id              String    @id
+  projectId       String?
+  slug            String?
+  title           String
+  content         String
+  author          String
+  imageUrl        String?
+  metaDescription String?
+  language        String?
+  tags            Json?
+  publishedAt     DateTime?
+  createdAt       DateTime?
+  updatedAt       DateTime?
+  project         Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, publishedAt])
-  @@map("news")
+  @@map("articles")
 }
 
 model SyncRequest {

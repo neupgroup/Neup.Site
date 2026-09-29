@@ -479,7 +479,7 @@ exports.Prisma.AppBaseBackupScalarFieldEnum = {
   backedUpBy: 'backedUpBy'
 };
 
-exports.Prisma.NewsArticleScalarFieldEnum = {
+exports.Prisma.NewsScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
   slug: 'slug',
@@ -487,6 +487,25 @@ exports.Prisma.NewsArticleScalarFieldEnum = {
   content: 'content',
   author: 'author',
   imageUrl: 'imageUrl',
+  metaDescription: 'metaDescription',
+  language: 'language',
+  tags: 'tags',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ArticleScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  slug: 'slug',
+  title: 'title',
+  content: 'content',
+  author: 'author',
+  imageUrl: 'imageUrl',
+  metaDescription: 'metaDescription',
+  language: 'language',
+  tags: 'tags',
   publishedAt: 'publishedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -582,7 +601,8 @@ exports.Prisma.ModelName = {
   Applicant: 'Applicant',
   ErrorLog: 'ErrorLog',
   AppBaseBackup: 'AppBaseBackup',
-  NewsArticle: 'NewsArticle',
+  News: 'News',
+  Article: 'Article',
   SyncRequest: 'SyncRequest',
   AssetModule: 'AssetModule',
   SyncerLog: 'SyncerLog'

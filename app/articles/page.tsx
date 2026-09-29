@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { LinkButton } from '@neup/components/ui/link-button';
 import { ArrowRight, Newspaper, Plus } from 'lucide-react';
-import { getNewsArticles } from '@/services/news';
+import { getArticles } from '@/services/articles';
 import { articleReference, formatArticlePublishedTime } from '@/services/news-reference';
 
 export default async function ArticlesPage({ searchParams }: { searchParams: Promise<{ project?: string }> }) {
   const { project } = await searchParams;
   const projectQuery = project ? `?project=${encodeURIComponent(project)}` : '';
-  const result = await getNewsArticles();
+  const result = await getArticles();
   const articles = result.articles ?? [];
 
   return (

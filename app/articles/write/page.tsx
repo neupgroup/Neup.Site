@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createNewsArticle } from '@/services/news';
+import { createArticle } from '@/services/articles';
 import { articleReference } from '@/services/news-reference';
 import { Button } from '@neup/components/ui/button';
 import { Input } from '@neup/components/ui/input';
@@ -21,7 +21,7 @@ export default function WriteArticlePage() {
     event.preventDefault();
     if (!title.trim()) return;
     setSaving(true);
-    const result = await createNewsArticle({ title, author, imageUrl, content });
+    const result = await createArticle({ title, author, imageUrl, content });
     if (result.success && result.id) {
       const project = searchParams.get('project');
       router.push(`/articles/${articleReference({ id: result.id, slug: title })}${project ? `?project=${encodeURIComponent(project)}` : ''}`);

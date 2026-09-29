@@ -169,10 +169,15 @@ export type ErrorLog = $Result.DefaultSelection<Prisma.$ErrorLogPayload>
  */
 export type AppBaseBackup = $Result.DefaultSelection<Prisma.$AppBaseBackupPayload>
 /**
- * Model NewsArticle
+ * Model News
  * 
  */
-export type NewsArticle = $Result.DefaultSelection<Prisma.$NewsArticlePayload>
+export type News = $Result.DefaultSelection<Prisma.$NewsPayload>
+/**
+ * Model Article
+ * 
+ */
+export type Article = $Result.DefaultSelection<Prisma.$ArticlePayload>
 /**
  * Model SyncRequest
  * 
@@ -621,14 +626,24 @@ export class PrismaClient<
   get appBaseBackup(): Prisma.AppBaseBackupDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.newsArticle`: Exposes CRUD operations for the **NewsArticle** model.
+   * `prisma.news`: Exposes CRUD operations for the **News** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more NewsArticles
-    * const newsArticles = await prisma.newsArticle.findMany()
+    * // Fetch zero or more News
+    * const news = await prisma.news.findMany()
     * ```
     */
-  get newsArticle(): Prisma.NewsArticleDelegate<ExtArgs, ClientOptions>;
+  get news(): Prisma.NewsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.article`: Exposes CRUD operations for the **Article** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Articles
+    * const articles = await prisma.article.findMany()
+    * ```
+    */
+  get article(): Prisma.ArticleDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.syncRequest`: Exposes CRUD operations for the **SyncRequest** model.
@@ -1124,7 +1139,8 @@ export namespace Prisma {
     Applicant: 'Applicant',
     ErrorLog: 'ErrorLog',
     AppBaseBackup: 'AppBaseBackup',
-    NewsArticle: 'NewsArticle',
+    News: 'News',
+    Article: 'Article',
     SyncRequest: 'SyncRequest',
     AssetModule: 'AssetModule',
     SyncerLog: 'SyncerLog'
@@ -1143,7 +1159,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "role" | "domain" | "project" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "newsArticle" | "syncRequest" | "assetModule" | "syncerLog"
+      modelProps: "account" | "role" | "domain" | "project" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "news" | "article" | "syncRequest" | "assetModule" | "syncerLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3441,77 +3457,151 @@ export namespace Prisma {
           }
         }
       }
-      NewsArticle: {
-        payload: Prisma.$NewsArticlePayload<ExtArgs>
-        fields: Prisma.NewsArticleFieldRefs
+      News: {
+        payload: Prisma.$NewsPayload<ExtArgs>
+        fields: Prisma.NewsFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.NewsArticleFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload> | null
+            args: Prisma.NewsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.NewsArticleFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+            args: Prisma.NewsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>
           }
           findFirst: {
-            args: Prisma.NewsArticleFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload> | null
+            args: Prisma.NewsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.NewsArticleFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+            args: Prisma.NewsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>
           }
           findMany: {
-            args: Prisma.NewsArticleFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>[]
+            args: Prisma.NewsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>[]
           }
           create: {
-            args: Prisma.NewsArticleCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+            args: Prisma.NewsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>
           }
           createMany: {
-            args: Prisma.NewsArticleCreateManyArgs<ExtArgs>
+            args: Prisma.NewsCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.NewsArticleCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>[]
+            args: Prisma.NewsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>[]
           }
           delete: {
-            args: Prisma.NewsArticleDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+            args: Prisma.NewsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>
           }
           update: {
-            args: Prisma.NewsArticleUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+            args: Prisma.NewsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>
           }
           deleteMany: {
-            args: Prisma.NewsArticleDeleteManyArgs<ExtArgs>
+            args: Prisma.NewsDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.NewsArticleUpdateManyArgs<ExtArgs>
+            args: Prisma.NewsUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.NewsArticleUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>[]
+            args: Prisma.NewsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>[]
           }
           upsert: {
-            args: Prisma.NewsArticleUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NewsArticlePayload>
+            args: Prisma.NewsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NewsPayload>
           }
           aggregate: {
-            args: Prisma.NewsArticleAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNewsArticle>
+            args: Prisma.NewsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNews>
           }
           groupBy: {
-            args: Prisma.NewsArticleGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NewsArticleGroupByOutputType>[]
+            args: Prisma.NewsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NewsGroupByOutputType>[]
           }
           count: {
-            args: Prisma.NewsArticleCountArgs<ExtArgs>
-            result: $Utils.Optional<NewsArticleCountAggregateOutputType> | number
+            args: Prisma.NewsCountArgs<ExtArgs>
+            result: $Utils.Optional<NewsCountAggregateOutputType> | number
+          }
+        }
+      }
+      Article: {
+        payload: Prisma.$ArticlePayload<ExtArgs>
+        fields: Prisma.ArticleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ArticleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ArticleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>
+          }
+          findFirst: {
+            args: Prisma.ArticleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ArticleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>
+          }
+          findMany: {
+            args: Prisma.ArticleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>[]
+          }
+          create: {
+            args: Prisma.ArticleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>
+          }
+          createMany: {
+            args: Prisma.ArticleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ArticleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>[]
+          }
+          delete: {
+            args: Prisma.ArticleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>
+          }
+          update: {
+            args: Prisma.ArticleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>
+          }
+          deleteMany: {
+            args: Prisma.ArticleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ArticleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ArticleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>[]
+          }
+          upsert: {
+            args: Prisma.ArticleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArticlePayload>
+          }
+          aggregate: {
+            args: Prisma.ArticleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateArticle>
+          }
+          groupBy: {
+            args: Prisma.ArticleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ArticleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ArticleCountArgs<ExtArgs>
+            result: $Utils.Optional<ArticleCountAggregateOutputType> | number
           }
         }
       }
@@ -3876,7 +3966,8 @@ export namespace Prisma {
     applicant?: ApplicantOmit
     errorLog?: ErrorLogOmit
     appBaseBackup?: AppBaseBackupOmit
-    newsArticle?: NewsArticleOmit
+    news?: NewsOmit
+    article?: ArticleOmit
     syncRequest?: SyncRequestOmit
     assetModule?: AssetModuleOmit
     syncerLog?: SyncerLogOmit
@@ -4012,7 +4103,7 @@ export namespace Prisma {
     jobPostings: number
     forms: number
     formSubmissions: number
-    newsArticles: number
+    articles: number
     defaultProjectAccounts: number
   }
 
@@ -4038,7 +4129,7 @@ export namespace Prisma {
     jobPostings?: boolean | ProjectCountOutputTypeCountJobPostingsArgs
     forms?: boolean | ProjectCountOutputTypeCountFormsArgs
     formSubmissions?: boolean | ProjectCountOutputTypeCountFormSubmissionsArgs
-    newsArticles?: boolean | ProjectCountOutputTypeCountNewsArticlesArgs
+    articles?: boolean | ProjectCountOutputTypeCountArticlesArgs
     defaultProjectAccounts?: boolean | ProjectCountOutputTypeCountDefaultProjectAccountsArgs
   }
 
@@ -4203,8 +4294,8 @@ export namespace Prisma {
   /**
    * ProjectCountOutputType without action
    */
-  export type ProjectCountOutputTypeCountNewsArticlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NewsArticleWhereInput
+  export type ProjectCountOutputTypeCountArticlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArticleWhereInput
   }
 
   /**
@@ -7954,7 +8045,7 @@ export namespace Prisma {
     jobPostings?: boolean | Project$jobPostingsArgs<ExtArgs>
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
-    newsArticles?: boolean | Project$newsArticlesArgs<ExtArgs>
+    articles?: boolean | Project$articlesArgs<ExtArgs>
     defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
@@ -8033,7 +8124,7 @@ export namespace Prisma {
     jobPostings?: boolean | Project$jobPostingsArgs<ExtArgs>
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
-    newsArticles?: boolean | Project$newsArticlesArgs<ExtArgs>
+    articles?: boolean | Project$articlesArgs<ExtArgs>
     defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -8064,7 +8155,7 @@ export namespace Prisma {
       jobPostings: Prisma.$JobPostingPayload<ExtArgs>[]
       forms: Prisma.$FormPayload<ExtArgs>[]
       formSubmissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
-      newsArticles: Prisma.$NewsArticlePayload<ExtArgs>[]
+      articles: Prisma.$ArticlePayload<ExtArgs>[]
       defaultProjectAccounts: Prisma.$AccountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -8497,7 +8588,7 @@ export namespace Prisma {
     jobPostings<T extends Project$jobPostingsArgs<ExtArgs> = {}>(args?: Subset<T, Project$jobPostingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobPostingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     forms<T extends Project$formsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     formSubmissions<T extends Project$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    newsArticles<T extends Project$newsArticlesArgs<ExtArgs> = {}>(args?: Subset<T, Project$newsArticlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    articles<T extends Project$articlesArgs<ExtArgs> = {}>(args?: Subset<T, Project$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     defaultProjectAccounts<T extends Project$defaultProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Project$defaultProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -9439,27 +9530,27 @@ export namespace Prisma {
   }
 
   /**
-   * Project.newsArticles
+   * Project.articles
    */
-  export type Project$newsArticlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$articlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the Article
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: ArticleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the Article
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: ArticleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NewsArticleInclude<ExtArgs> | null
-    where?: NewsArticleWhereInput
-    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
-    cursor?: NewsArticleWhereUniqueInput
+    include?: ArticleInclude<ExtArgs> | null
+    where?: ArticleWhereInput
+    orderBy?: ArticleOrderByWithRelationInput | ArticleOrderByWithRelationInput[]
+    cursor?: ArticleWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
+    distinct?: ArticleScalarFieldEnum | ArticleScalarFieldEnum[]
   }
 
   /**
@@ -39541,16 +39632,16 @@ export namespace Prisma {
 
 
   /**
-   * Model NewsArticle
+   * Model News
    */
 
-  export type AggregateNewsArticle = {
-    _count: NewsArticleCountAggregateOutputType | null
-    _min: NewsArticleMinAggregateOutputType | null
-    _max: NewsArticleMaxAggregateOutputType | null
+  export type AggregateNews = {
+    _count: NewsCountAggregateOutputType | null
+    _min: NewsMinAggregateOutputType | null
+    _max: NewsMaxAggregateOutputType | null
   }
 
-  export type NewsArticleMinAggregateOutputType = {
+  export type NewsMinAggregateOutputType = {
     id: string | null
     projectId: string | null
     slug: string | null
@@ -39558,12 +39649,14 @@ export namespace Prisma {
     content: string | null
     author: string | null
     imageUrl: string | null
+    metaDescription: string | null
+    language: string | null
     publishedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type NewsArticleMaxAggregateOutputType = {
+  export type NewsMaxAggregateOutputType = {
     id: string | null
     projectId: string | null
     slug: string | null
@@ -39571,12 +39664,14 @@ export namespace Prisma {
     content: string | null
     author: string | null
     imageUrl: string | null
+    metaDescription: string | null
+    language: string | null
     publishedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type NewsArticleCountAggregateOutputType = {
+  export type NewsCountAggregateOutputType = {
     id: number
     projectId: number
     slug: number
@@ -39584,6 +39679,9 @@ export namespace Prisma {
     content: number
     author: number
     imageUrl: number
+    metaDescription: number
+    language: number
+    tags: number
     publishedAt: number
     createdAt: number
     updatedAt: number
@@ -39591,7 +39689,7 @@ export namespace Prisma {
   }
 
 
-  export type NewsArticleMinAggregateInputType = {
+  export type NewsMinAggregateInputType = {
     id?: true
     projectId?: true
     slug?: true
@@ -39599,12 +39697,14 @@ export namespace Prisma {
     content?: true
     author?: true
     imageUrl?: true
+    metaDescription?: true
+    language?: true
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type NewsArticleMaxAggregateInputType = {
+  export type NewsMaxAggregateInputType = {
     id?: true
     projectId?: true
     slug?: true
@@ -39612,12 +39712,14 @@ export namespace Prisma {
     content?: true
     author?: true
     imageUrl?: true
+    metaDescription?: true
+    language?: true
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type NewsArticleCountAggregateInputType = {
+  export type NewsCountAggregateInputType = {
     id?: true
     projectId?: true
     slug?: true
@@ -39625,85 +39727,88 @@ export namespace Prisma {
     content?: true
     author?: true
     imageUrl?: true
+    metaDescription?: true
+    language?: true
+    tags?: true
     publishedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
   }
 
-  export type NewsArticleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which NewsArticle to aggregate.
+     * Filter which News to aggregate.
      */
-    where?: NewsArticleWhereInput
+    where?: NewsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NewsArticles to fetch.
+     * Determine the order of News to fetch.
      */
-    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    orderBy?: NewsOrderByWithRelationInput | NewsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: NewsArticleWhereUniqueInput
+    cursor?: NewsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NewsArticles from the position of the cursor.
+     * Take `±n` News from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NewsArticles.
+     * Skip the first `n` News.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned NewsArticles
+     * Count returned News
     **/
-    _count?: true | NewsArticleCountAggregateInputType
+    _count?: true | NewsCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: NewsArticleMinAggregateInputType
+    _min?: NewsMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: NewsArticleMaxAggregateInputType
+    _max?: NewsMaxAggregateInputType
   }
 
-  export type GetNewsArticleAggregateType<T extends NewsArticleAggregateArgs> = {
-        [P in keyof T & keyof AggregateNewsArticle]: P extends '_count' | 'count'
+  export type GetNewsAggregateType<T extends NewsAggregateArgs> = {
+        [P in keyof T & keyof AggregateNews]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateNewsArticle[P]>
-      : GetScalarType<T[P], AggregateNewsArticle[P]>
+        : GetScalarType<T[P], AggregateNews[P]>
+      : GetScalarType<T[P], AggregateNews[P]>
   }
 
 
 
 
-  export type NewsArticleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NewsArticleWhereInput
-    orderBy?: NewsArticleOrderByWithAggregationInput | NewsArticleOrderByWithAggregationInput[]
-    by: NewsArticleScalarFieldEnum[] | NewsArticleScalarFieldEnum
-    having?: NewsArticleScalarWhereWithAggregatesInput
+  export type NewsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NewsWhereInput
+    orderBy?: NewsOrderByWithAggregationInput | NewsOrderByWithAggregationInput[]
+    by: NewsScalarFieldEnum[] | NewsScalarFieldEnum
+    having?: NewsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: NewsArticleCountAggregateInputType | true
-    _min?: NewsArticleMinAggregateInputType
-    _max?: NewsArticleMaxAggregateInputType
+    _count?: NewsCountAggregateInputType | true
+    _min?: NewsMinAggregateInputType
+    _max?: NewsMaxAggregateInputType
   }
 
-  export type NewsArticleGroupByOutputType = {
+  export type NewsGroupByOutputType = {
     id: string
     projectId: string | null
     slug: string | null
@@ -39711,29 +39816,32 @@ export namespace Prisma {
     content: string
     author: string
     imageUrl: string | null
+    metaDescription: string | null
+    language: string | null
+    tags: JsonValue | null
     publishedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
-    _count: NewsArticleCountAggregateOutputType | null
-    _min: NewsArticleMinAggregateOutputType | null
-    _max: NewsArticleMaxAggregateOutputType | null
+    _count: NewsCountAggregateOutputType | null
+    _min: NewsMinAggregateOutputType | null
+    _max: NewsMaxAggregateOutputType | null
   }
 
-  type GetNewsArticleGroupByPayload<T extends NewsArticleGroupByArgs> = Prisma.PrismaPromise<
+  type GetNewsGroupByPayload<T extends NewsGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<NewsArticleGroupByOutputType, T['by']> &
+      PickEnumerable<NewsGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof NewsArticleGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof NewsGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], NewsArticleGroupByOutputType[P]>
-            : GetScalarType<T[P], NewsArticleGroupByOutputType[P]>
+              : GetScalarType<T[P], NewsGroupByOutputType[P]>
+            : GetScalarType<T[P], NewsGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type NewsArticleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type NewsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
     slug?: boolean
@@ -39741,13 +39849,15 @@ export namespace Prisma {
     content?: boolean
     author?: boolean
     imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    project?: boolean | NewsArticle$projectArgs<ExtArgs>
-  }, ExtArgs["result"]["newsArticle"]>
+  }, ExtArgs["result"]["news"]>
 
-  export type NewsArticleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type NewsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
     slug?: boolean
@@ -39755,13 +39865,15 @@ export namespace Prisma {
     content?: boolean
     author?: boolean
     imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    project?: boolean | NewsArticle$projectArgs<ExtArgs>
-  }, ExtArgs["result"]["newsArticle"]>
+  }, ExtArgs["result"]["news"]>
 
-  export type NewsArticleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type NewsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
     slug?: boolean
@@ -39769,13 +39881,15 @@ export namespace Prisma {
     content?: boolean
     author?: boolean
     imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    project?: boolean | NewsArticle$projectArgs<ExtArgs>
-  }, ExtArgs["result"]["newsArticle"]>
+  }, ExtArgs["result"]["news"]>
 
-  export type NewsArticleSelectScalar = {
+  export type NewsSelectScalar = {
     id?: boolean
     projectId?: boolean
     slug?: boolean
@@ -39783,27 +39897,19 @@ export namespace Prisma {
     content?: boolean
     author?: boolean
     imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type NewsArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "slug" | "title" | "content" | "author" | "imageUrl" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["newsArticle"]>
-  export type NewsArticleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | NewsArticle$projectArgs<ExtArgs>
-  }
-  export type NewsArticleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | NewsArticle$projectArgs<ExtArgs>
-  }
-  export type NewsArticleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    project?: boolean | NewsArticle$projectArgs<ExtArgs>
-  }
+  export type NewsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "slug" | "title" | "content" | "author" | "imageUrl" | "metaDescription" | "language" | "tags" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["news"]>
 
-  export type $NewsArticlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NewsArticle"
-    objects: {
-      project: Prisma.$ProjectPayload<ExtArgs> | null
-    }
+  export type $NewsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "News"
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
       projectId: string | null
@@ -39812,139 +39918,142 @@ export namespace Prisma {
       content: string
       author: string
       imageUrl: string | null
+      metaDescription: string | null
+      language: string | null
+      tags: Prisma.JsonValue | null
       publishedAt: Date | null
       createdAt: Date | null
       updatedAt: Date | null
-    }, ExtArgs["result"]["newsArticle"]>
+    }, ExtArgs["result"]["news"]>
     composites: {}
   }
 
-  type NewsArticleGetPayload<S extends boolean | null | undefined | NewsArticleDefaultArgs> = $Result.GetResult<Prisma.$NewsArticlePayload, S>
+  type NewsGetPayload<S extends boolean | null | undefined | NewsDefaultArgs> = $Result.GetResult<Prisma.$NewsPayload, S>
 
-  type NewsArticleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<NewsArticleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: NewsArticleCountAggregateInputType | true
+  type NewsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NewsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NewsCountAggregateInputType | true
     }
 
-  export interface NewsArticleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NewsArticle'], meta: { name: 'NewsArticle' } }
+  export interface NewsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['News'], meta: { name: 'News' } }
     /**
-     * Find zero or one NewsArticle that matches the filter.
-     * @param {NewsArticleFindUniqueArgs} args - Arguments to find a NewsArticle
+     * Find zero or one News that matches the filter.
+     * @param {NewsFindUniqueArgs} args - Arguments to find a News
      * @example
-     * // Get one NewsArticle
-     * const newsArticle = await prisma.newsArticle.findUnique({
+     * // Get one News
+     * const news = await prisma.news.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends NewsArticleFindUniqueArgs>(args: SelectSubset<T, NewsArticleFindUniqueArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends NewsFindUniqueArgs>(args: SelectSubset<T, NewsFindUniqueArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one NewsArticle that matches the filter or throw an error with `error.code='P2025'`
+     * Find one News that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {NewsArticleFindUniqueOrThrowArgs} args - Arguments to find a NewsArticle
+     * @param {NewsFindUniqueOrThrowArgs} args - Arguments to find a News
      * @example
-     * // Get one NewsArticle
-     * const newsArticle = await prisma.newsArticle.findUniqueOrThrow({
+     * // Get one News
+     * const news = await prisma.news.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends NewsArticleFindUniqueOrThrowArgs>(args: SelectSubset<T, NewsArticleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends NewsFindUniqueOrThrowArgs>(args: SelectSubset<T, NewsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first NewsArticle that matches the filter.
+     * Find the first News that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NewsArticleFindFirstArgs} args - Arguments to find a NewsArticle
+     * @param {NewsFindFirstArgs} args - Arguments to find a News
      * @example
-     * // Get one NewsArticle
-     * const newsArticle = await prisma.newsArticle.findFirst({
+     * // Get one News
+     * const news = await prisma.news.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends NewsArticleFindFirstArgs>(args?: SelectSubset<T, NewsArticleFindFirstArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends NewsFindFirstArgs>(args?: SelectSubset<T, NewsFindFirstArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first NewsArticle that matches the filter or
+     * Find the first News that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NewsArticleFindFirstOrThrowArgs} args - Arguments to find a NewsArticle
+     * @param {NewsFindFirstOrThrowArgs} args - Arguments to find a News
      * @example
-     * // Get one NewsArticle
-     * const newsArticle = await prisma.newsArticle.findFirstOrThrow({
+     * // Get one News
+     * const news = await prisma.news.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends NewsArticleFindFirstOrThrowArgs>(args?: SelectSubset<T, NewsArticleFindFirstOrThrowArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends NewsFindFirstOrThrowArgs>(args?: SelectSubset<T, NewsFindFirstOrThrowArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more NewsArticles that matches the filter.
+     * Find zero or more News that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NewsArticleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {NewsFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all NewsArticles
-     * const newsArticles = await prisma.newsArticle.findMany()
+     * // Get all News
+     * const news = await prisma.news.findMany()
      * 
-     * // Get first 10 NewsArticles
-     * const newsArticles = await prisma.newsArticle.findMany({ take: 10 })
+     * // Get first 10 News
+     * const news = await prisma.news.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const newsArticleWithIdOnly = await prisma.newsArticle.findMany({ select: { id: true } })
+     * const newsWithIdOnly = await prisma.news.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends NewsArticleFindManyArgs>(args?: SelectSubset<T, NewsArticleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends NewsFindManyArgs>(args?: SelectSubset<T, NewsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a NewsArticle.
-     * @param {NewsArticleCreateArgs} args - Arguments to create a NewsArticle.
+     * Create a News.
+     * @param {NewsCreateArgs} args - Arguments to create a News.
      * @example
-     * // Create one NewsArticle
-     * const NewsArticle = await prisma.newsArticle.create({
+     * // Create one News
+     * const News = await prisma.news.create({
      *   data: {
-     *     // ... data to create a NewsArticle
+     *     // ... data to create a News
      *   }
      * })
      * 
      */
-    create<T extends NewsArticleCreateArgs>(args: SelectSubset<T, NewsArticleCreateArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends NewsCreateArgs>(args: SelectSubset<T, NewsCreateArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many NewsArticles.
-     * @param {NewsArticleCreateManyArgs} args - Arguments to create many NewsArticles.
+     * Create many News.
+     * @param {NewsCreateManyArgs} args - Arguments to create many News.
      * @example
-     * // Create many NewsArticles
-     * const newsArticle = await prisma.newsArticle.createMany({
+     * // Create many News
+     * const news = await prisma.news.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends NewsArticleCreateManyArgs>(args?: SelectSubset<T, NewsArticleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends NewsCreateManyArgs>(args?: SelectSubset<T, NewsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many NewsArticles and returns the data saved in the database.
-     * @param {NewsArticleCreateManyAndReturnArgs} args - Arguments to create many NewsArticles.
+     * Create many News and returns the data saved in the database.
+     * @param {NewsCreateManyAndReturnArgs} args - Arguments to create many News.
      * @example
-     * // Create many NewsArticles
-     * const newsArticle = await prisma.newsArticle.createManyAndReturn({
+     * // Create many News
+     * const news = await prisma.news.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many NewsArticles and only return the `id`
-     * const newsArticleWithIdOnly = await prisma.newsArticle.createManyAndReturn({
+     * // Create many News and only return the `id`
+     * const newsWithIdOnly = await prisma.news.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -39954,28 +40063,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends NewsArticleCreateManyAndReturnArgs>(args?: SelectSubset<T, NewsArticleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends NewsCreateManyAndReturnArgs>(args?: SelectSubset<T, NewsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a NewsArticle.
-     * @param {NewsArticleDeleteArgs} args - Arguments to delete one NewsArticle.
+     * Delete a News.
+     * @param {NewsDeleteArgs} args - Arguments to delete one News.
      * @example
-     * // Delete one NewsArticle
-     * const NewsArticle = await prisma.newsArticle.delete({
+     * // Delete one News
+     * const News = await prisma.news.delete({
      *   where: {
-     *     // ... filter to delete one NewsArticle
+     *     // ... filter to delete one News
      *   }
      * })
      * 
      */
-    delete<T extends NewsArticleDeleteArgs>(args: SelectSubset<T, NewsArticleDeleteArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends NewsDeleteArgs>(args: SelectSubset<T, NewsDeleteArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one NewsArticle.
-     * @param {NewsArticleUpdateArgs} args - Arguments to update one NewsArticle.
+     * Update one News.
+     * @param {NewsUpdateArgs} args - Arguments to update one News.
      * @example
-     * // Update one NewsArticle
-     * const newsArticle = await prisma.newsArticle.update({
+     * // Update one News
+     * const news = await prisma.news.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -39985,30 +40094,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends NewsArticleUpdateArgs>(args: SelectSubset<T, NewsArticleUpdateArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends NewsUpdateArgs>(args: SelectSubset<T, NewsUpdateArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more NewsArticles.
-     * @param {NewsArticleDeleteManyArgs} args - Arguments to filter NewsArticles to delete.
+     * Delete zero or more News.
+     * @param {NewsDeleteManyArgs} args - Arguments to filter News to delete.
      * @example
-     * // Delete a few NewsArticles
-     * const { count } = await prisma.newsArticle.deleteMany({
+     * // Delete a few News
+     * const { count } = await prisma.news.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends NewsArticleDeleteManyArgs>(args?: SelectSubset<T, NewsArticleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends NewsDeleteManyArgs>(args?: SelectSubset<T, NewsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more NewsArticles.
+     * Update zero or more News.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NewsArticleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {NewsUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many NewsArticles
-     * const newsArticle = await prisma.newsArticle.updateMany({
+     * // Update many News
+     * const news = await prisma.news.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -40018,14 +40127,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends NewsArticleUpdateManyArgs>(args: SelectSubset<T, NewsArticleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends NewsUpdateManyArgs>(args: SelectSubset<T, NewsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more NewsArticles and returns the data updated in the database.
-     * @param {NewsArticleUpdateManyAndReturnArgs} args - Arguments to update many NewsArticles.
+     * Update zero or more News and returns the data updated in the database.
+     * @param {NewsUpdateManyAndReturnArgs} args - Arguments to update many News.
      * @example
-     * // Update many NewsArticles
-     * const newsArticle = await prisma.newsArticle.updateManyAndReturn({
+     * // Update many News
+     * const news = await prisma.news.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -40034,8 +40143,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more NewsArticles and only return the `id`
-     * const newsArticleWithIdOnly = await prisma.newsArticle.updateManyAndReturn({
+     * // Update zero or more News and only return the `id`
+     * const newsWithIdOnly = await prisma.news.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -40048,56 +40157,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends NewsArticleUpdateManyAndReturnArgs>(args: SelectSubset<T, NewsArticleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends NewsUpdateManyAndReturnArgs>(args: SelectSubset<T, NewsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one NewsArticle.
-     * @param {NewsArticleUpsertArgs} args - Arguments to update or create a NewsArticle.
+     * Create or update one News.
+     * @param {NewsUpsertArgs} args - Arguments to update or create a News.
      * @example
-     * // Update or create a NewsArticle
-     * const newsArticle = await prisma.newsArticle.upsert({
+     * // Update or create a News
+     * const news = await prisma.news.upsert({
      *   create: {
-     *     // ... data to create a NewsArticle
+     *     // ... data to create a News
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the NewsArticle we want to update
+     *     // ... the filter for the News we want to update
      *   }
      * })
      */
-    upsert<T extends NewsArticleUpsertArgs>(args: SelectSubset<T, NewsArticleUpsertArgs<ExtArgs>>): Prisma__NewsArticleClient<$Result.GetResult<Prisma.$NewsArticlePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends NewsUpsertArgs>(args: SelectSubset<T, NewsUpsertArgs<ExtArgs>>): Prisma__NewsClient<$Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of NewsArticles.
+     * Count the number of News.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NewsArticleCountArgs} args - Arguments to filter NewsArticles to count.
+     * @param {NewsCountArgs} args - Arguments to filter News to count.
      * @example
-     * // Count the number of NewsArticles
-     * const count = await prisma.newsArticle.count({
+     * // Count the number of News
+     * const count = await prisma.news.count({
      *   where: {
-     *     // ... the filter for the NewsArticles we want to count
+     *     // ... the filter for the News we want to count
      *   }
      * })
     **/
-    count<T extends NewsArticleCountArgs>(
-      args?: Subset<T, NewsArticleCountArgs>,
+    count<T extends NewsCountArgs>(
+      args?: Subset<T, NewsCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], NewsArticleCountAggregateOutputType>
+          : GetScalarType<T['select'], NewsCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a NewsArticle.
+     * Allows you to perform aggregations operations on a News.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NewsArticleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {NewsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -40117,13 +40226,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends NewsArticleAggregateArgs>(args: Subset<T, NewsArticleAggregateArgs>): Prisma.PrismaPromise<GetNewsArticleAggregateType<T>>
+    aggregate<T extends NewsAggregateArgs>(args: Subset<T, NewsAggregateArgs>): Prisma.PrismaPromise<GetNewsAggregateType<T>>
 
     /**
-     * Group by NewsArticle.
+     * Group by News.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NewsArticleGroupByArgs} args - Group by arguments.
+     * @param {NewsGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -40138,14 +40247,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends NewsArticleGroupByArgs,
+      T extends NewsGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NewsArticleGroupByArgs['orderBy'] }
-        : { orderBy?: NewsArticleGroupByArgs['orderBy'] },
+        ? { orderBy: NewsGroupByArgs['orderBy'] }
+        : { orderBy?: NewsGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -40194,22 +40303,21 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, NewsArticleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNewsArticleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, NewsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNewsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the NewsArticle model
+   * Fields of the News model
    */
-  readonly fields: NewsArticleFieldRefs;
+  readonly fields: NewsFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for NewsArticle.
+   * The delegate class that acts as a "Promise-like" for News.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__NewsArticleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__NewsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    project<T extends NewsArticle$projectArgs<ExtArgs> = {}>(args?: Subset<T, NewsArticle$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -40236,423 +40344,1541 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the NewsArticle model
+   * Fields of the News model
    */
-  interface NewsArticleFieldRefs {
-    readonly id: FieldRef<"NewsArticle", 'String'>
-    readonly projectId: FieldRef<"NewsArticle", 'String'>
-    readonly slug: FieldRef<"NewsArticle", 'String'>
-    readonly title: FieldRef<"NewsArticle", 'String'>
-    readonly content: FieldRef<"NewsArticle", 'String'>
-    readonly author: FieldRef<"NewsArticle", 'String'>
-    readonly imageUrl: FieldRef<"NewsArticle", 'String'>
-    readonly publishedAt: FieldRef<"NewsArticle", 'DateTime'>
-    readonly createdAt: FieldRef<"NewsArticle", 'DateTime'>
-    readonly updatedAt: FieldRef<"NewsArticle", 'DateTime'>
+  interface NewsFieldRefs {
+    readonly id: FieldRef<"News", 'String'>
+    readonly projectId: FieldRef<"News", 'String'>
+    readonly slug: FieldRef<"News", 'String'>
+    readonly title: FieldRef<"News", 'String'>
+    readonly content: FieldRef<"News", 'String'>
+    readonly author: FieldRef<"News", 'String'>
+    readonly imageUrl: FieldRef<"News", 'String'>
+    readonly metaDescription: FieldRef<"News", 'String'>
+    readonly language: FieldRef<"News", 'String'>
+    readonly tags: FieldRef<"News", 'Json'>
+    readonly publishedAt: FieldRef<"News", 'DateTime'>
+    readonly createdAt: FieldRef<"News", 'DateTime'>
+    readonly updatedAt: FieldRef<"News", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * NewsArticle findUnique
+   * News findUnique
    */
-  export type NewsArticleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the News
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: NewsSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the News
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: NewsOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
+     * Filter, which News to fetch.
      */
-    include?: NewsArticleInclude<ExtArgs> | null
-    /**
-     * Filter, which NewsArticle to fetch.
-     */
-    where: NewsArticleWhereUniqueInput
+    where: NewsWhereUniqueInput
   }
 
   /**
-   * NewsArticle findUniqueOrThrow
+   * News findUniqueOrThrow
    */
-  export type NewsArticleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the News
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: NewsSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the News
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: NewsOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
+     * Filter, which News to fetch.
      */
-    include?: NewsArticleInclude<ExtArgs> | null
-    /**
-     * Filter, which NewsArticle to fetch.
-     */
-    where: NewsArticleWhereUniqueInput
+    where: NewsWhereUniqueInput
   }
 
   /**
-   * NewsArticle findFirst
+   * News findFirst
    */
-  export type NewsArticleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the News
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: NewsSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the News
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: NewsOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
+     * Filter, which News to fetch.
      */
-    include?: NewsArticleInclude<ExtArgs> | null
-    /**
-     * Filter, which NewsArticle to fetch.
-     */
-    where?: NewsArticleWhereInput
+    where?: NewsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NewsArticles to fetch.
+     * Determine the order of News to fetch.
      */
-    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    orderBy?: NewsOrderByWithRelationInput | NewsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for NewsArticles.
+     * Sets the position for searching for News.
      */
-    cursor?: NewsArticleWhereUniqueInput
+    cursor?: NewsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NewsArticles from the position of the cursor.
+     * Take `±n` News from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NewsArticles.
+     * Skip the first `n` News.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of NewsArticles.
+     * Filter by unique combinations of News.
      */
-    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
+    distinct?: NewsScalarFieldEnum | NewsScalarFieldEnum[]
   }
 
   /**
-   * NewsArticle findFirstOrThrow
+   * News findFirstOrThrow
    */
-  export type NewsArticleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the News
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: NewsSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the News
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: NewsOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
+     * Filter, which News to fetch.
      */
-    include?: NewsArticleInclude<ExtArgs> | null
-    /**
-     * Filter, which NewsArticle to fetch.
-     */
-    where?: NewsArticleWhereInput
+    where?: NewsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NewsArticles to fetch.
+     * Determine the order of News to fetch.
      */
-    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    orderBy?: NewsOrderByWithRelationInput | NewsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for NewsArticles.
+     * Sets the position for searching for News.
      */
-    cursor?: NewsArticleWhereUniqueInput
+    cursor?: NewsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NewsArticles from the position of the cursor.
+     * Take `±n` News from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NewsArticles.
+     * Skip the first `n` News.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of NewsArticles.
+     * Filter by unique combinations of News.
      */
-    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
+    distinct?: NewsScalarFieldEnum | NewsScalarFieldEnum[]
   }
 
   /**
-   * NewsArticle findMany
+   * News findMany
    */
-  export type NewsArticleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the News
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: NewsSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the News
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: NewsOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
+     * Filter, which News to fetch.
      */
-    include?: NewsArticleInclude<ExtArgs> | null
-    /**
-     * Filter, which NewsArticles to fetch.
-     */
-    where?: NewsArticleWhereInput
+    where?: NewsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NewsArticles to fetch.
+     * Determine the order of News to fetch.
      */
-    orderBy?: NewsArticleOrderByWithRelationInput | NewsArticleOrderByWithRelationInput[]
+    orderBy?: NewsOrderByWithRelationInput | NewsOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing NewsArticles.
+     * Sets the position for listing News.
      */
-    cursor?: NewsArticleWhereUniqueInput
+    cursor?: NewsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NewsArticles from the position of the cursor.
+     * Take `±n` News from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NewsArticles.
+     * Skip the first `n` News.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of NewsArticles.
+     * Filter by unique combinations of News.
      */
-    distinct?: NewsArticleScalarFieldEnum | NewsArticleScalarFieldEnum[]
+    distinct?: NewsScalarFieldEnum | NewsScalarFieldEnum[]
   }
 
   /**
-   * NewsArticle create
+   * News create
    */
-  export type NewsArticleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the News
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: NewsSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the News
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: NewsOmit<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
+     * The data needed to create a News.
      */
-    include?: NewsArticleInclude<ExtArgs> | null
-    /**
-     * The data needed to create a NewsArticle.
-     */
-    data: XOR<NewsArticleCreateInput, NewsArticleUncheckedCreateInput>
+    data: XOR<NewsCreateInput, NewsUncheckedCreateInput>
   }
 
   /**
-   * NewsArticle createMany
+   * News createMany
    */
-  export type NewsArticleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many NewsArticles.
+     * The data used to create many News.
      */
-    data: NewsArticleCreateManyInput | NewsArticleCreateManyInput[]
+    data: NewsCreateManyInput | NewsCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * NewsArticle createManyAndReturn
+   * News createManyAndReturn
    */
-  export type NewsArticleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type NewsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the News
      */
-    select?: NewsArticleSelectCreateManyAndReturn<ExtArgs> | null
+    select?: NewsSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the News
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: NewsOmit<ExtArgs> | null
     /**
-     * The data used to create many NewsArticles.
+     * The data used to create many News.
      */
-    data: NewsArticleCreateManyInput | NewsArticleCreateManyInput[]
+    data: NewsCreateManyInput | NewsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * News update
+   */
+  export type NewsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the News
+     */
+    select?: NewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the News
+     */
+    omit?: NewsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a News.
+     */
+    data: XOR<NewsUpdateInput, NewsUncheckedUpdateInput>
+    /**
+     * Choose, which News to update.
+     */
+    where: NewsWhereUniqueInput
+  }
+
+  /**
+   * News updateMany
+   */
+  export type NewsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update News.
+     */
+    data: XOR<NewsUpdateManyMutationInput, NewsUncheckedUpdateManyInput>
+    /**
+     * Filter which News to update
+     */
+    where?: NewsWhereInput
+    /**
+     * Limit how many News to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * News updateManyAndReturn
+   */
+  export type NewsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the News
+     */
+    select?: NewsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the News
+     */
+    omit?: NewsOmit<ExtArgs> | null
+    /**
+     * The data used to update News.
+     */
+    data: XOR<NewsUpdateManyMutationInput, NewsUncheckedUpdateManyInput>
+    /**
+     * Filter which News to update
+     */
+    where?: NewsWhereInput
+    /**
+     * Limit how many News to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * News upsert
+   */
+  export type NewsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the News
+     */
+    select?: NewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the News
+     */
+    omit?: NewsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the News to update in case it exists.
+     */
+    where: NewsWhereUniqueInput
+    /**
+     * In case the News found by the `where` argument doesn't exist, create a new News with this data.
+     */
+    create: XOR<NewsCreateInput, NewsUncheckedCreateInput>
+    /**
+     * In case the News was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NewsUpdateInput, NewsUncheckedUpdateInput>
+  }
+
+  /**
+   * News delete
+   */
+  export type NewsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the News
+     */
+    select?: NewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the News
+     */
+    omit?: NewsOmit<ExtArgs> | null
+    /**
+     * Filter which News to delete.
+     */
+    where: NewsWhereUniqueInput
+  }
+
+  /**
+   * News deleteMany
+   */
+  export type NewsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which News to delete
+     */
+    where?: NewsWhereInput
+    /**
+     * Limit how many News to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * News without action
+   */
+  export type NewsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the News
+     */
+    select?: NewsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the News
+     */
+    omit?: NewsOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Article
+   */
+
+  export type AggregateArticle = {
+    _count: ArticleCountAggregateOutputType | null
+    _min: ArticleMinAggregateOutputType | null
+    _max: ArticleMaxAggregateOutputType | null
+  }
+
+  export type ArticleMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    slug: string | null
+    title: string | null
+    content: string | null
+    author: string | null
+    imageUrl: string | null
+    metaDescription: string | null
+    language: string | null
+    publishedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ArticleMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    slug: string | null
+    title: string | null
+    content: string | null
+    author: string | null
+    imageUrl: string | null
+    metaDescription: string | null
+    language: string | null
+    publishedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ArticleCountAggregateOutputType = {
+    id: number
+    projectId: number
+    slug: number
+    title: number
+    content: number
+    author: number
+    imageUrl: number
+    metaDescription: number
+    language: number
+    tags: number
+    publishedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ArticleMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    slug?: true
+    title?: true
+    content?: true
+    author?: true
+    imageUrl?: true
+    metaDescription?: true
+    language?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ArticleMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    slug?: true
+    title?: true
+    content?: true
+    author?: true
+    imageUrl?: true
+    metaDescription?: true
+    language?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ArticleCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    slug?: true
+    title?: true
+    content?: true
+    author?: true
+    imageUrl?: true
+    metaDescription?: true
+    language?: true
+    tags?: true
+    publishedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ArticleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Article to aggregate.
+     */
+    where?: ArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Articles to fetch.
+     */
+    orderBy?: ArticleOrderByWithRelationInput | ArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Articles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Articles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Articles
+    **/
+    _count?: true | ArticleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ArticleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ArticleMaxAggregateInputType
+  }
+
+  export type GetArticleAggregateType<T extends ArticleAggregateArgs> = {
+        [P in keyof T & keyof AggregateArticle]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateArticle[P]>
+      : GetScalarType<T[P], AggregateArticle[P]>
+  }
+
+
+
+
+  export type ArticleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArticleWhereInput
+    orderBy?: ArticleOrderByWithAggregationInput | ArticleOrderByWithAggregationInput[]
+    by: ArticleScalarFieldEnum[] | ArticleScalarFieldEnum
+    having?: ArticleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ArticleCountAggregateInputType | true
+    _min?: ArticleMinAggregateInputType
+    _max?: ArticleMaxAggregateInputType
+  }
+
+  export type ArticleGroupByOutputType = {
+    id: string
+    projectId: string | null
+    slug: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl: string | null
+    metaDescription: string | null
+    language: string | null
+    tags: JsonValue | null
+    publishedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    _count: ArticleCountAggregateOutputType | null
+    _min: ArticleMinAggregateOutputType | null
+    _max: ArticleMaxAggregateOutputType | null
+  }
+
+  type GetArticleGroupByPayload<T extends ArticleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ArticleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ArticleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ArticleGroupByOutputType[P]>
+            : GetScalarType<T[P], ArticleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ArticleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    slug?: boolean
+    title?: boolean
+    content?: boolean
+    author?: boolean
+    imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | Article$projectArgs<ExtArgs>
+  }, ExtArgs["result"]["article"]>
+
+  export type ArticleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    slug?: boolean
+    title?: boolean
+    content?: boolean
+    author?: boolean
+    imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | Article$projectArgs<ExtArgs>
+  }, ExtArgs["result"]["article"]>
+
+  export type ArticleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    slug?: boolean
+    title?: boolean
+    content?: boolean
+    author?: boolean
+    imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | Article$projectArgs<ExtArgs>
+  }, ExtArgs["result"]["article"]>
+
+  export type ArticleSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    slug?: boolean
+    title?: boolean
+    content?: boolean
+    author?: boolean
+    imageUrl?: boolean
+    metaDescription?: boolean
+    language?: boolean
+    tags?: boolean
+    publishedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ArticleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "slug" | "title" | "content" | "author" | "imageUrl" | "metaDescription" | "language" | "tags" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["article"]>
+  export type ArticleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | Article$projectArgs<ExtArgs>
+  }
+  export type ArticleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | Article$projectArgs<ExtArgs>
+  }
+  export type ArticleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | Article$projectArgs<ExtArgs>
+  }
+
+  export type $ArticlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Article"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string | null
+      slug: string | null
+      title: string
+      content: string
+      author: string
+      imageUrl: string | null
+      metaDescription: string | null
+      language: string | null
+      tags: Prisma.JsonValue | null
+      publishedAt: Date | null
+      createdAt: Date | null
+      updatedAt: Date | null
+    }, ExtArgs["result"]["article"]>
+    composites: {}
+  }
+
+  type ArticleGetPayload<S extends boolean | null | undefined | ArticleDefaultArgs> = $Result.GetResult<Prisma.$ArticlePayload, S>
+
+  type ArticleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ArticleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ArticleCountAggregateInputType | true
+    }
+
+  export interface ArticleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Article'], meta: { name: 'Article' } }
+    /**
+     * Find zero or one Article that matches the filter.
+     * @param {ArticleFindUniqueArgs} args - Arguments to find a Article
+     * @example
+     * // Get one Article
+     * const article = await prisma.article.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ArticleFindUniqueArgs>(args: SelectSubset<T, ArticleFindUniqueArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Article that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ArticleFindUniqueOrThrowArgs} args - Arguments to find a Article
+     * @example
+     * // Get one Article
+     * const article = await prisma.article.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ArticleFindUniqueOrThrowArgs>(args: SelectSubset<T, ArticleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Article that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArticleFindFirstArgs} args - Arguments to find a Article
+     * @example
+     * // Get one Article
+     * const article = await prisma.article.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ArticleFindFirstArgs>(args?: SelectSubset<T, ArticleFindFirstArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Article that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArticleFindFirstOrThrowArgs} args - Arguments to find a Article
+     * @example
+     * // Get one Article
+     * const article = await prisma.article.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ArticleFindFirstOrThrowArgs>(args?: SelectSubset<T, ArticleFindFirstOrThrowArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Articles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArticleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Articles
+     * const articles = await prisma.article.findMany()
+     * 
+     * // Get first 10 Articles
+     * const articles = await prisma.article.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const articleWithIdOnly = await prisma.article.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ArticleFindManyArgs>(args?: SelectSubset<T, ArticleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Article.
+     * @param {ArticleCreateArgs} args - Arguments to create a Article.
+     * @example
+     * // Create one Article
+     * const Article = await prisma.article.create({
+     *   data: {
+     *     // ... data to create a Article
+     *   }
+     * })
+     * 
+     */
+    create<T extends ArticleCreateArgs>(args: SelectSubset<T, ArticleCreateArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Articles.
+     * @param {ArticleCreateManyArgs} args - Arguments to create many Articles.
+     * @example
+     * // Create many Articles
+     * const article = await prisma.article.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ArticleCreateManyArgs>(args?: SelectSubset<T, ArticleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Articles and returns the data saved in the database.
+     * @param {ArticleCreateManyAndReturnArgs} args - Arguments to create many Articles.
+     * @example
+     * // Create many Articles
+     * const article = await prisma.article.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Articles and only return the `id`
+     * const articleWithIdOnly = await prisma.article.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ArticleCreateManyAndReturnArgs>(args?: SelectSubset<T, ArticleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Article.
+     * @param {ArticleDeleteArgs} args - Arguments to delete one Article.
+     * @example
+     * // Delete one Article
+     * const Article = await prisma.article.delete({
+     *   where: {
+     *     // ... filter to delete one Article
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ArticleDeleteArgs>(args: SelectSubset<T, ArticleDeleteArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Article.
+     * @param {ArticleUpdateArgs} args - Arguments to update one Article.
+     * @example
+     * // Update one Article
+     * const article = await prisma.article.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ArticleUpdateArgs>(args: SelectSubset<T, ArticleUpdateArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Articles.
+     * @param {ArticleDeleteManyArgs} args - Arguments to filter Articles to delete.
+     * @example
+     * // Delete a few Articles
+     * const { count } = await prisma.article.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ArticleDeleteManyArgs>(args?: SelectSubset<T, ArticleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Articles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArticleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Articles
+     * const article = await prisma.article.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ArticleUpdateManyArgs>(args: SelectSubset<T, ArticleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Articles and returns the data updated in the database.
+     * @param {ArticleUpdateManyAndReturnArgs} args - Arguments to update many Articles.
+     * @example
+     * // Update many Articles
+     * const article = await prisma.article.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Articles and only return the `id`
+     * const articleWithIdOnly = await prisma.article.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ArticleUpdateManyAndReturnArgs>(args: SelectSubset<T, ArticleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Article.
+     * @param {ArticleUpsertArgs} args - Arguments to update or create a Article.
+     * @example
+     * // Update or create a Article
+     * const article = await prisma.article.upsert({
+     *   create: {
+     *     // ... data to create a Article
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Article we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ArticleUpsertArgs>(args: SelectSubset<T, ArticleUpsertArgs<ExtArgs>>): Prisma__ArticleClient<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Articles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArticleCountArgs} args - Arguments to filter Articles to count.
+     * @example
+     * // Count the number of Articles
+     * const count = await prisma.article.count({
+     *   where: {
+     *     // ... the filter for the Articles we want to count
+     *   }
+     * })
+    **/
+    count<T extends ArticleCountArgs>(
+      args?: Subset<T, ArticleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ArticleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Article.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArticleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ArticleAggregateArgs>(args: Subset<T, ArticleAggregateArgs>): Prisma.PrismaPromise<GetArticleAggregateType<T>>
+
+    /**
+     * Group by Article.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArticleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ArticleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ArticleGroupByArgs['orderBy'] }
+        : { orderBy?: ArticleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ArticleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetArticleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Article model
+   */
+  readonly fields: ArticleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Article.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ArticleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends Article$projectArgs<ExtArgs> = {}>(args?: Subset<T, Article$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Article model
+   */
+  interface ArticleFieldRefs {
+    readonly id: FieldRef<"Article", 'String'>
+    readonly projectId: FieldRef<"Article", 'String'>
+    readonly slug: FieldRef<"Article", 'String'>
+    readonly title: FieldRef<"Article", 'String'>
+    readonly content: FieldRef<"Article", 'String'>
+    readonly author: FieldRef<"Article", 'String'>
+    readonly imageUrl: FieldRef<"Article", 'String'>
+    readonly metaDescription: FieldRef<"Article", 'String'>
+    readonly language: FieldRef<"Article", 'String'>
+    readonly tags: FieldRef<"Article", 'Json'>
+    readonly publishedAt: FieldRef<"Article", 'DateTime'>
+    readonly createdAt: FieldRef<"Article", 'DateTime'>
+    readonly updatedAt: FieldRef<"Article", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Article findUnique
+   */
+  export type ArticleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleInclude<ExtArgs> | null
+    /**
+     * Filter, which Article to fetch.
+     */
+    where: ArticleWhereUniqueInput
+  }
+
+  /**
+   * Article findUniqueOrThrow
+   */
+  export type ArticleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleInclude<ExtArgs> | null
+    /**
+     * Filter, which Article to fetch.
+     */
+    where: ArticleWhereUniqueInput
+  }
+
+  /**
+   * Article findFirst
+   */
+  export type ArticleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleInclude<ExtArgs> | null
+    /**
+     * Filter, which Article to fetch.
+     */
+    where?: ArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Articles to fetch.
+     */
+    orderBy?: ArticleOrderByWithRelationInput | ArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Articles.
+     */
+    cursor?: ArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Articles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Articles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Articles.
+     */
+    distinct?: ArticleScalarFieldEnum | ArticleScalarFieldEnum[]
+  }
+
+  /**
+   * Article findFirstOrThrow
+   */
+  export type ArticleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleInclude<ExtArgs> | null
+    /**
+     * Filter, which Article to fetch.
+     */
+    where?: ArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Articles to fetch.
+     */
+    orderBy?: ArticleOrderByWithRelationInput | ArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Articles.
+     */
+    cursor?: ArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Articles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Articles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Articles.
+     */
+    distinct?: ArticleScalarFieldEnum | ArticleScalarFieldEnum[]
+  }
+
+  /**
+   * Article findMany
+   */
+  export type ArticleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleInclude<ExtArgs> | null
+    /**
+     * Filter, which Articles to fetch.
+     */
+    where?: ArticleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Articles to fetch.
+     */
+    orderBy?: ArticleOrderByWithRelationInput | ArticleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Articles.
+     */
+    cursor?: ArticleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Articles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Articles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Articles.
+     */
+    distinct?: ArticleScalarFieldEnum | ArticleScalarFieldEnum[]
+  }
+
+  /**
+   * Article create
+   */
+  export type ArticleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArticleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Article.
+     */
+    data: XOR<ArticleCreateInput, ArticleUncheckedCreateInput>
+  }
+
+  /**
+   * Article createMany
+   */
+  export type ArticleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Articles.
+     */
+    data: ArticleCreateManyInput | ArticleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Article createManyAndReturn
+   */
+  export type ArticleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Article
+     */
+    select?: ArticleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Article
+     */
+    omit?: ArticleOmit<ExtArgs> | null
+    /**
+     * The data used to create many Articles.
+     */
+    data: ArticleCreateManyInput | ArticleCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NewsArticleIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: ArticleIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * NewsArticle update
+   * Article update
    */
-  export type NewsArticleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ArticleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the Article
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: ArticleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the Article
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: ArticleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NewsArticleInclude<ExtArgs> | null
+    include?: ArticleInclude<ExtArgs> | null
     /**
-     * The data needed to update a NewsArticle.
+     * The data needed to update a Article.
      */
-    data: XOR<NewsArticleUpdateInput, NewsArticleUncheckedUpdateInput>
+    data: XOR<ArticleUpdateInput, ArticleUncheckedUpdateInput>
     /**
-     * Choose, which NewsArticle to update.
+     * Choose, which Article to update.
      */
-    where: NewsArticleWhereUniqueInput
+    where: ArticleWhereUniqueInput
   }
 
   /**
-   * NewsArticle updateMany
+   * Article updateMany
    */
-  export type NewsArticleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ArticleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update NewsArticles.
+     * The data used to update Articles.
      */
-    data: XOR<NewsArticleUpdateManyMutationInput, NewsArticleUncheckedUpdateManyInput>
+    data: XOR<ArticleUpdateManyMutationInput, ArticleUncheckedUpdateManyInput>
     /**
-     * Filter which NewsArticles to update
+     * Filter which Articles to update
      */
-    where?: NewsArticleWhereInput
+    where?: ArticleWhereInput
     /**
-     * Limit how many NewsArticles to update.
+     * Limit how many Articles to update.
      */
     limit?: number
   }
 
   /**
-   * NewsArticle updateManyAndReturn
+   * Article updateManyAndReturn
    */
-  export type NewsArticleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ArticleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the Article
      */
-    select?: NewsArticleSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: ArticleSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the Article
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: ArticleOmit<ExtArgs> | null
     /**
-     * The data used to update NewsArticles.
+     * The data used to update Articles.
      */
-    data: XOR<NewsArticleUpdateManyMutationInput, NewsArticleUncheckedUpdateManyInput>
+    data: XOR<ArticleUpdateManyMutationInput, ArticleUncheckedUpdateManyInput>
     /**
-     * Filter which NewsArticles to update
+     * Filter which Articles to update
      */
-    where?: NewsArticleWhereInput
+    where?: ArticleWhereInput
     /**
-     * Limit how many NewsArticles to update.
+     * Limit how many Articles to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NewsArticleIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: ArticleIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * NewsArticle upsert
+   * Article upsert
    */
-  export type NewsArticleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ArticleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the Article
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: ArticleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the Article
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: ArticleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NewsArticleInclude<ExtArgs> | null
+    include?: ArticleInclude<ExtArgs> | null
     /**
-     * The filter to search for the NewsArticle to update in case it exists.
+     * The filter to search for the Article to update in case it exists.
      */
-    where: NewsArticleWhereUniqueInput
+    where: ArticleWhereUniqueInput
     /**
-     * In case the NewsArticle found by the `where` argument doesn't exist, create a new NewsArticle with this data.
+     * In case the Article found by the `where` argument doesn't exist, create a new Article with this data.
      */
-    create: XOR<NewsArticleCreateInput, NewsArticleUncheckedCreateInput>
+    create: XOR<ArticleCreateInput, ArticleUncheckedCreateInput>
     /**
-     * In case the NewsArticle was found with the provided `where` argument, update it with this data.
+     * In case the Article was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<NewsArticleUpdateInput, NewsArticleUncheckedUpdateInput>
+    update: XOR<ArticleUpdateInput, ArticleUncheckedUpdateInput>
   }
 
   /**
-   * NewsArticle delete
+   * Article delete
    */
-  export type NewsArticleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ArticleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the Article
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: ArticleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the Article
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: ArticleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NewsArticleInclude<ExtArgs> | null
+    include?: ArticleInclude<ExtArgs> | null
     /**
-     * Filter which NewsArticle to delete.
+     * Filter which Article to delete.
      */
-    where: NewsArticleWhereUniqueInput
+    where: ArticleWhereUniqueInput
   }
 
   /**
-   * NewsArticle deleteMany
+   * Article deleteMany
    */
-  export type NewsArticleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ArticleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which NewsArticles to delete
+     * Filter which Articles to delete
      */
-    where?: NewsArticleWhereInput
+    where?: ArticleWhereInput
     /**
-     * Limit how many NewsArticles to delete.
+     * Limit how many Articles to delete.
      */
     limit?: number
   }
 
   /**
-   * NewsArticle.project
+   * Article.project
    */
-  export type NewsArticle$projectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Article$projectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Project
      */
@@ -40669,21 +41895,21 @@ export namespace Prisma {
   }
 
   /**
-   * NewsArticle without action
+   * Article without action
    */
-  export type NewsArticleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ArticleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NewsArticle
+     * Select specific fields to fetch from the Article
      */
-    select?: NewsArticleSelect<ExtArgs> | null
+    select?: ArticleSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the NewsArticle
+     * Omit specific fields from the Article
      */
-    omit?: NewsArticleOmit<ExtArgs> | null
+    omit?: ArticleOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NewsArticleInclude<ExtArgs> | null
+    include?: ArticleInclude<ExtArgs> | null
   }
 
 
@@ -44251,7 +45477,7 @@ export namespace Prisma {
   export type AppBaseBackupScalarFieldEnum = (typeof AppBaseBackupScalarFieldEnum)[keyof typeof AppBaseBackupScalarFieldEnum]
 
 
-  export const NewsArticleScalarFieldEnum: {
+  export const NewsScalarFieldEnum: {
     id: 'id',
     projectId: 'projectId',
     slug: 'slug',
@@ -44259,12 +45485,34 @@ export namespace Prisma {
     content: 'content',
     author: 'author',
     imageUrl: 'imageUrl',
+    metaDescription: 'metaDescription',
+    language: 'language',
+    tags: 'tags',
     publishedAt: 'publishedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type NewsArticleScalarFieldEnum = (typeof NewsArticleScalarFieldEnum)[keyof typeof NewsArticleScalarFieldEnum]
+  export type NewsScalarFieldEnum = (typeof NewsScalarFieldEnum)[keyof typeof NewsScalarFieldEnum]
+
+
+  export const ArticleScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    slug: 'slug',
+    title: 'title',
+    content: 'content',
+    author: 'author',
+    imageUrl: 'imageUrl',
+    metaDescription: 'metaDescription',
+    language: 'language',
+    tags: 'tags',
+    publishedAt: 'publishedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
 
 
   export const SyncRequestScalarFieldEnum: {
@@ -44666,7 +45914,7 @@ export namespace Prisma {
     jobPostings?: JobPostingListRelationFilter
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
-    newsArticles?: NewsArticleListRelationFilter
+    articles?: ArticleListRelationFilter
     defaultProjectAccounts?: AccountListRelationFilter
   }
 
@@ -44706,7 +45954,7 @@ export namespace Prisma {
     jobPostings?: JobPostingOrderByRelationAggregateInput
     forms?: FormOrderByRelationAggregateInput
     formSubmissions?: FormSubmissionOrderByRelationAggregateInput
-    newsArticles?: NewsArticleOrderByRelationAggregateInput
+    articles?: ArticleOrderByRelationAggregateInput
     defaultProjectAccounts?: AccountOrderByRelationAggregateInput
   }
 
@@ -44749,7 +45997,7 @@ export namespace Prisma {
     jobPostings?: JobPostingListRelationFilter
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
-    newsArticles?: NewsArticleListRelationFilter
+    articles?: ArticleListRelationFilter
     defaultProjectAccounts?: AccountListRelationFilter
   }, "id">
 
@@ -46804,24 +48052,26 @@ export namespace Prisma {
     backedUpBy?: StringWithAggregatesFilter<"AppBaseBackup"> | string
   }
 
-  export type NewsArticleWhereInput = {
-    AND?: NewsArticleWhereInput | NewsArticleWhereInput[]
-    OR?: NewsArticleWhereInput[]
-    NOT?: NewsArticleWhereInput | NewsArticleWhereInput[]
-    id?: StringFilter<"NewsArticle"> | string
-    projectId?: StringNullableFilter<"NewsArticle"> | string | null
-    slug?: StringNullableFilter<"NewsArticle"> | string | null
-    title?: StringFilter<"NewsArticle"> | string
-    content?: StringFilter<"NewsArticle"> | string
-    author?: StringFilter<"NewsArticle"> | string
-    imageUrl?: StringNullableFilter<"NewsArticle"> | string | null
-    publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
-    createdAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
-    updatedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
-    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
+  export type NewsWhereInput = {
+    AND?: NewsWhereInput | NewsWhereInput[]
+    OR?: NewsWhereInput[]
+    NOT?: NewsWhereInput | NewsWhereInput[]
+    id?: StringFilter<"News"> | string
+    projectId?: StringNullableFilter<"News"> | string | null
+    slug?: StringNullableFilter<"News"> | string | null
+    title?: StringFilter<"News"> | string
+    content?: StringFilter<"News"> | string
+    author?: StringFilter<"News"> | string
+    imageUrl?: StringNullableFilter<"News"> | string | null
+    metaDescription?: StringNullableFilter<"News"> | string | null
+    language?: StringNullableFilter<"News"> | string | null
+    tags?: JsonNullableFilter<"News">
+    publishedAt?: DateTimeNullableFilter<"News"> | Date | string | null
+    createdAt?: DateTimeNullableFilter<"News"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"News"> | Date | string | null
   }
 
-  export type NewsArticleOrderByWithRelationInput = {
+  export type NewsOrderByWithRelationInput = {
     id?: SortOrder
     projectId?: SortOrderInput | SortOrder
     slug?: SortOrderInput | SortOrder
@@ -46829,30 +48079,129 @@ export namespace Prisma {
     content?: SortOrder
     author?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
+    metaDescription?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    tags?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrderInput | SortOrder
+  }
+
+  export type NewsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NewsWhereInput | NewsWhereInput[]
+    OR?: NewsWhereInput[]
+    NOT?: NewsWhereInput | NewsWhereInput[]
+    projectId?: StringNullableFilter<"News"> | string | null
+    slug?: StringNullableFilter<"News"> | string | null
+    title?: StringFilter<"News"> | string
+    content?: StringFilter<"News"> | string
+    author?: StringFilter<"News"> | string
+    imageUrl?: StringNullableFilter<"News"> | string | null
+    metaDescription?: StringNullableFilter<"News"> | string | null
+    language?: StringNullableFilter<"News"> | string | null
+    tags?: JsonNullableFilter<"News">
+    publishedAt?: DateTimeNullableFilter<"News"> | Date | string | null
+    createdAt?: DateTimeNullableFilter<"News"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"News"> | Date | string | null
+  }, "id">
+
+  export type NewsOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrderInput | SortOrder
+    slug?: SortOrderInput | SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    author?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    metaDescription?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    tags?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrderInput | SortOrder
+    _count?: NewsCountOrderByAggregateInput
+    _max?: NewsMaxOrderByAggregateInput
+    _min?: NewsMinOrderByAggregateInput
+  }
+
+  export type NewsScalarWhereWithAggregatesInput = {
+    AND?: NewsScalarWhereWithAggregatesInput | NewsScalarWhereWithAggregatesInput[]
+    OR?: NewsScalarWhereWithAggregatesInput[]
+    NOT?: NewsScalarWhereWithAggregatesInput | NewsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"News"> | string
+    projectId?: StringNullableWithAggregatesFilter<"News"> | string | null
+    slug?: StringNullableWithAggregatesFilter<"News"> | string | null
+    title?: StringWithAggregatesFilter<"News"> | string
+    content?: StringWithAggregatesFilter<"News"> | string
+    author?: StringWithAggregatesFilter<"News"> | string
+    imageUrl?: StringNullableWithAggregatesFilter<"News"> | string | null
+    metaDescription?: StringNullableWithAggregatesFilter<"News"> | string | null
+    language?: StringNullableWithAggregatesFilter<"News"> | string | null
+    tags?: JsonNullableWithAggregatesFilter<"News">
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"News"> | Date | string | null
+    createdAt?: DateTimeNullableWithAggregatesFilter<"News"> | Date | string | null
+    updatedAt?: DateTimeNullableWithAggregatesFilter<"News"> | Date | string | null
+  }
+
+  export type ArticleWhereInput = {
+    AND?: ArticleWhereInput | ArticleWhereInput[]
+    OR?: ArticleWhereInput[]
+    NOT?: ArticleWhereInput | ArticleWhereInput[]
+    id?: StringFilter<"Article"> | string
+    projectId?: StringNullableFilter<"Article"> | string | null
+    slug?: StringNullableFilter<"Article"> | string | null
+    title?: StringFilter<"Article"> | string
+    content?: StringFilter<"Article"> | string
+    author?: StringFilter<"Article"> | string
+    imageUrl?: StringNullableFilter<"Article"> | string | null
+    metaDescription?: StringNullableFilter<"Article"> | string | null
+    language?: StringNullableFilter<"Article"> | string | null
+    tags?: JsonNullableFilter<"Article">
+    publishedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    createdAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
+  }
+
+  export type ArticleOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrderInput | SortOrder
+    slug?: SortOrderInput | SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    author?: SortOrder
+    imageUrl?: SortOrderInput | SortOrder
+    metaDescription?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    tags?: SortOrderInput | SortOrder
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
     project?: ProjectOrderByWithRelationInput
   }
 
-  export type NewsArticleWhereUniqueInput = Prisma.AtLeast<{
+  export type ArticleWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    AND?: NewsArticleWhereInput | NewsArticleWhereInput[]
-    OR?: NewsArticleWhereInput[]
-    NOT?: NewsArticleWhereInput | NewsArticleWhereInput[]
-    projectId?: StringNullableFilter<"NewsArticle"> | string | null
-    slug?: StringNullableFilter<"NewsArticle"> | string | null
-    title?: StringFilter<"NewsArticle"> | string
-    content?: StringFilter<"NewsArticle"> | string
-    author?: StringFilter<"NewsArticle"> | string
-    imageUrl?: StringNullableFilter<"NewsArticle"> | string | null
-    publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
-    createdAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
-    updatedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+    AND?: ArticleWhereInput | ArticleWhereInput[]
+    OR?: ArticleWhereInput[]
+    NOT?: ArticleWhereInput | ArticleWhereInput[]
+    projectId?: StringNullableFilter<"Article"> | string | null
+    slug?: StringNullableFilter<"Article"> | string | null
+    title?: StringFilter<"Article"> | string
+    content?: StringFilter<"Article"> | string
+    author?: StringFilter<"Article"> | string
+    imageUrl?: StringNullableFilter<"Article"> | string | null
+    metaDescription?: StringNullableFilter<"Article"> | string | null
+    language?: StringNullableFilter<"Article"> | string | null
+    tags?: JsonNullableFilter<"Article">
+    publishedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    createdAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
     project?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
   }, "id">
 
-  export type NewsArticleOrderByWithAggregationInput = {
+  export type ArticleOrderByWithAggregationInput = {
     id?: SortOrder
     projectId?: SortOrderInput | SortOrder
     slug?: SortOrderInput | SortOrder
@@ -46860,28 +48209,34 @@ export namespace Prisma {
     content?: SortOrder
     author?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
+    metaDescription?: SortOrderInput | SortOrder
+    language?: SortOrderInput | SortOrder
+    tags?: SortOrderInput | SortOrder
     publishedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
-    _count?: NewsArticleCountOrderByAggregateInput
-    _max?: NewsArticleMaxOrderByAggregateInput
-    _min?: NewsArticleMinOrderByAggregateInput
+    _count?: ArticleCountOrderByAggregateInput
+    _max?: ArticleMaxOrderByAggregateInput
+    _min?: ArticleMinOrderByAggregateInput
   }
 
-  export type NewsArticleScalarWhereWithAggregatesInput = {
-    AND?: NewsArticleScalarWhereWithAggregatesInput | NewsArticleScalarWhereWithAggregatesInput[]
-    OR?: NewsArticleScalarWhereWithAggregatesInput[]
-    NOT?: NewsArticleScalarWhereWithAggregatesInput | NewsArticleScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"NewsArticle"> | string
-    projectId?: StringNullableWithAggregatesFilter<"NewsArticle"> | string | null
-    slug?: StringNullableWithAggregatesFilter<"NewsArticle"> | string | null
-    title?: StringWithAggregatesFilter<"NewsArticle"> | string
-    content?: StringWithAggregatesFilter<"NewsArticle"> | string
-    author?: StringWithAggregatesFilter<"NewsArticle"> | string
-    imageUrl?: StringNullableWithAggregatesFilter<"NewsArticle"> | string | null
-    publishedAt?: DateTimeNullableWithAggregatesFilter<"NewsArticle"> | Date | string | null
-    createdAt?: DateTimeNullableWithAggregatesFilter<"NewsArticle"> | Date | string | null
-    updatedAt?: DateTimeNullableWithAggregatesFilter<"NewsArticle"> | Date | string | null
+  export type ArticleScalarWhereWithAggregatesInput = {
+    AND?: ArticleScalarWhereWithAggregatesInput | ArticleScalarWhereWithAggregatesInput[]
+    OR?: ArticleScalarWhereWithAggregatesInput[]
+    NOT?: ArticleScalarWhereWithAggregatesInput | ArticleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Article"> | string
+    projectId?: StringNullableWithAggregatesFilter<"Article"> | string | null
+    slug?: StringNullableWithAggregatesFilter<"Article"> | string | null
+    title?: StringWithAggregatesFilter<"Article"> | string
+    content?: StringWithAggregatesFilter<"Article"> | string
+    author?: StringWithAggregatesFilter<"Article"> | string
+    imageUrl?: StringNullableWithAggregatesFilter<"Article"> | string | null
+    metaDescription?: StringNullableWithAggregatesFilter<"Article"> | string | null
+    language?: StringNullableWithAggregatesFilter<"Article"> | string | null
+    tags?: JsonNullableWithAggregatesFilter<"Article">
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"Article"> | Date | string | null
+    createdAt?: DateTimeNullableWithAggregatesFilter<"Article"> | Date | string | null
+    updatedAt?: DateTimeNullableWithAggregatesFilter<"Article"> | Date | string | null
   }
 
   export type SyncRequestWhereInput = {
@@ -47290,7 +48645,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -47330,7 +48685,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -47370,7 +48725,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -47410,7 +48765,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -49669,20 +51024,7 @@ export namespace Prisma {
     backedUpBy?: StringFieldUpdateOperationsInput | string
   }
 
-  export type NewsArticleCreateInput = {
-    id: string
-    slug?: string | null
-    title: string
-    content: string
-    author: string
-    imageUrl?: string | null
-    publishedAt?: Date | string | null
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    project?: ProjectCreateNestedOneWithoutNewsArticlesInput
-  }
-
-  export type NewsArticleUncheckedCreateInput = {
+  export type NewsCreateInput = {
     id: string
     projectId?: string | null
     slug?: string | null
@@ -49690,38 +51032,15 @@ export namespace Prisma {
     content: string
     author: string
     imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
   }
 
-  export type NewsArticleUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    author?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    project?: ProjectUpdateOneWithoutNewsArticlesNestedInput
-  }
-
-  export type NewsArticleUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    author?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type NewsArticleCreateManyInput = {
+  export type NewsUncheckedCreateInput = {
     id: string
     projectId?: string | null
     slug?: string | null
@@ -49729,24 +51048,15 @@ export namespace Prisma {
     content: string
     author: string
     imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
   }
 
-  export type NewsArticleUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    author?: StringFieldUpdateOperationsInput | string
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type NewsArticleUncheckedUpdateManyInput = {
+  export type NewsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     slug?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49754,6 +51064,184 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     author?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsCreateManyInput = {
+    id: string
+    projectId?: string | null
+    slug?: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: Date | string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+  }
+
+  export type NewsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type NewsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ArticleCreateInput = {
+    id: string
+    slug?: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: Date | string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    project?: ProjectCreateNestedOneWithoutArticlesInput
+  }
+
+  export type ArticleUncheckedCreateInput = {
+    id: string
+    projectId?: string | null
+    slug?: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: Date | string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+  }
+
+  export type ArticleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    project?: ProjectUpdateOneWithoutArticlesNestedInput
+  }
+
+  export type ArticleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ArticleCreateManyInput = {
+    id: string
+    projectId?: string | null
+    slug?: string | null
+    title: string
+    content: string
+    author: string
+    imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: Date | string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+  }
+
+  export type ArticleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ArticleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -50343,10 +51831,10 @@ export namespace Prisma {
     none?: FormSubmissionWhereInput
   }
 
-  export type NewsArticleListRelationFilter = {
-    every?: NewsArticleWhereInput
-    some?: NewsArticleWhereInput
-    none?: NewsArticleWhereInput
+  export type ArticleListRelationFilter = {
+    every?: ArticleWhereInput
+    some?: ArticleWhereInput
+    none?: ArticleWhereInput
   }
 
   export type AccountListRelationFilter = {
@@ -50435,7 +51923,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type NewsArticleOrderByRelationAggregateInput = {
+  export type ArticleOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -51646,7 +53134,7 @@ export namespace Prisma {
     backedUpBy?: SortOrder
   }
 
-  export type NewsArticleCountOrderByAggregateInput = {
+  export type NewsCountOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
     slug?: SortOrder
@@ -51654,12 +53142,15 @@ export namespace Prisma {
     content?: SortOrder
     author?: SortOrder
     imageUrl?: SortOrder
+    metaDescription?: SortOrder
+    language?: SortOrder
+    tags?: SortOrder
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type NewsArticleMaxOrderByAggregateInput = {
+  export type NewsMaxOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
     slug?: SortOrder
@@ -51667,12 +53158,14 @@ export namespace Prisma {
     content?: SortOrder
     author?: SortOrder
     imageUrl?: SortOrder
+    metaDescription?: SortOrder
+    language?: SortOrder
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type NewsArticleMinOrderByAggregateInput = {
+  export type NewsMinOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
     slug?: SortOrder
@@ -51680,6 +53173,54 @@ export namespace Prisma {
     content?: SortOrder
     author?: SortOrder
     imageUrl?: SortOrder
+    metaDescription?: SortOrder
+    language?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArticleCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    author?: SortOrder
+    imageUrl?: SortOrder
+    metaDescription?: SortOrder
+    language?: SortOrder
+    tags?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArticleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    author?: SortOrder
+    imageUrl?: SortOrder
+    metaDescription?: SortOrder
+    language?: SortOrder
+    publishedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArticleMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    slug?: SortOrder
+    title?: SortOrder
+    content?: SortOrder
+    author?: SortOrder
+    imageUrl?: SortOrder
+    metaDescription?: SortOrder
+    language?: SortOrder
     publishedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -52027,11 +53568,11 @@ export namespace Prisma {
     connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
   }
 
-  export type NewsArticleCreateNestedManyWithoutProjectInput = {
-    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
-    createMany?: NewsArticleCreateManyProjectInputEnvelope
-    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+  export type ArticleCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ArticleCreateWithoutProjectInput, ArticleUncheckedCreateWithoutProjectInput> | ArticleCreateWithoutProjectInput[] | ArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutProjectInput | ArticleCreateOrConnectWithoutProjectInput[]
+    createMany?: ArticleCreateManyProjectInputEnvelope
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
   export type AccountCreateNestedManyWithoutDefaultProjectAssetInput = {
@@ -52188,11 +53729,11 @@ export namespace Prisma {
     connect?: FormSubmissionWhereUniqueInput | FormSubmissionWhereUniqueInput[]
   }
 
-  export type NewsArticleUncheckedCreateNestedManyWithoutProjectInput = {
-    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
-    createMany?: NewsArticleCreateManyProjectInputEnvelope
-    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
+  export type ArticleUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ArticleCreateWithoutProjectInput, ArticleUncheckedCreateWithoutProjectInput> | ArticleCreateWithoutProjectInput[] | ArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutProjectInput | ArticleCreateOrConnectWithoutProjectInput[]
+    createMany?: ArticleCreateManyProjectInputEnvelope
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
   export type AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput = {
@@ -52500,18 +54041,18 @@ export namespace Prisma {
     deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
   }
 
-  export type NewsArticleUpdateManyWithoutProjectNestedInput = {
-    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
-    upsert?: NewsArticleUpsertWithWhereUniqueWithoutProjectInput | NewsArticleUpsertWithWhereUniqueWithoutProjectInput[]
-    createMany?: NewsArticleCreateManyProjectInputEnvelope
-    set?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    disconnect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    delete?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    update?: NewsArticleUpdateWithWhereUniqueWithoutProjectInput | NewsArticleUpdateWithWhereUniqueWithoutProjectInput[]
-    updateMany?: NewsArticleUpdateManyWithWhereWithoutProjectInput | NewsArticleUpdateManyWithWhereWithoutProjectInput[]
-    deleteMany?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
+  export type ArticleUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ArticleCreateWithoutProjectInput, ArticleUncheckedCreateWithoutProjectInput> | ArticleCreateWithoutProjectInput[] | ArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutProjectInput | ArticleCreateOrConnectWithoutProjectInput[]
+    upsert?: ArticleUpsertWithWhereUniqueWithoutProjectInput | ArticleUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ArticleCreateManyProjectInputEnvelope
+    set?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    disconnect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    delete?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    update?: ArticleUpdateWithWhereUniqueWithoutProjectInput | ArticleUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ArticleUpdateManyWithWhereWithoutProjectInput | ArticleUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
   }
 
   export type AccountUpdateManyWithoutDefaultProjectAssetNestedInput = {
@@ -52822,18 +54363,18 @@ export namespace Prisma {
     deleteMany?: FormSubmissionScalarWhereInput | FormSubmissionScalarWhereInput[]
   }
 
-  export type NewsArticleUncheckedUpdateManyWithoutProjectNestedInput = {
-    create?: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput> | NewsArticleCreateWithoutProjectInput[] | NewsArticleUncheckedCreateWithoutProjectInput[]
-    connectOrCreate?: NewsArticleCreateOrConnectWithoutProjectInput | NewsArticleCreateOrConnectWithoutProjectInput[]
-    upsert?: NewsArticleUpsertWithWhereUniqueWithoutProjectInput | NewsArticleUpsertWithWhereUniqueWithoutProjectInput[]
-    createMany?: NewsArticleCreateManyProjectInputEnvelope
-    set?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    disconnect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    delete?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    connect?: NewsArticleWhereUniqueInput | NewsArticleWhereUniqueInput[]
-    update?: NewsArticleUpdateWithWhereUniqueWithoutProjectInput | NewsArticleUpdateWithWhereUniqueWithoutProjectInput[]
-    updateMany?: NewsArticleUpdateManyWithWhereWithoutProjectInput | NewsArticleUpdateManyWithWhereWithoutProjectInput[]
-    deleteMany?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
+  export type ArticleUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ArticleCreateWithoutProjectInput, ArticleUncheckedCreateWithoutProjectInput> | ArticleCreateWithoutProjectInput[] | ArticleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ArticleCreateOrConnectWithoutProjectInput | ArticleCreateOrConnectWithoutProjectInput[]
+    upsert?: ArticleUpsertWithWhereUniqueWithoutProjectInput | ArticleUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ArticleCreateManyProjectInputEnvelope
+    set?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    disconnect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    delete?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+    update?: ArticleUpdateWithWhereUniqueWithoutProjectInput | ArticleUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ArticleUpdateManyWithWhereWithoutProjectInput | ArticleUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
   }
 
   export type AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput = {
@@ -53572,20 +55113,20 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAppBaseBackupsInput, ProjectUpdateWithoutAppBaseBackupsInput>, ProjectUncheckedUpdateWithoutAppBaseBackupsInput>
   }
 
-  export type ProjectCreateNestedOneWithoutNewsArticlesInput = {
-    create?: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutNewsArticlesInput
+  export type ProjectCreateNestedOneWithoutArticlesInput = {
+    create?: XOR<ProjectCreateWithoutArticlesInput, ProjectUncheckedCreateWithoutArticlesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutArticlesInput
     connect?: ProjectWhereUniqueInput
   }
 
-  export type ProjectUpdateOneWithoutNewsArticlesNestedInput = {
-    create?: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutNewsArticlesInput
-    upsert?: ProjectUpsertWithoutNewsArticlesInput
+  export type ProjectUpdateOneWithoutArticlesNestedInput = {
+    create?: XOR<ProjectCreateWithoutArticlesInput, ProjectUncheckedCreateWithoutArticlesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutArticlesInput
+    upsert?: ProjectUpsertWithoutArticlesInput
     disconnect?: ProjectWhereInput | boolean
     delete?: ProjectWhereInput | boolean
     connect?: ProjectWhereUniqueInput
-    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutNewsArticlesInput, ProjectUpdateWithoutNewsArticlesInput>, ProjectUncheckedUpdateWithoutNewsArticlesInput>
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutArticlesInput, ProjectUpdateWithoutArticlesInput>, ProjectUncheckedUpdateWithoutArticlesInput>
   }
 
   export type ProjectCreateNestedOneWithoutAssetModulesInput = {
@@ -53898,7 +55439,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutDefaultProjectAccountsInput = {
@@ -53937,7 +55478,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutDefaultProjectAccountsInput = {
@@ -54018,7 +55559,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput = {
@@ -54057,7 +55598,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type RoleUpsertWithWhereUniqueWithoutAccountInput = {
@@ -54123,7 +55664,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54162,7 +55703,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54246,7 +55787,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54285,7 +55826,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54359,7 +55900,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54398,7 +55939,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -54453,7 +55994,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -54492,7 +56033,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -55116,37 +56657,43 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type NewsArticleCreateWithoutProjectInput = {
+  export type ArticleCreateWithoutProjectInput = {
     id: string
     slug?: string | null
     title: string
     content: string
     author: string
     imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
   }
 
-  export type NewsArticleUncheckedCreateWithoutProjectInput = {
+  export type ArticleUncheckedCreateWithoutProjectInput = {
     id: string
     slug?: string | null
     title: string
     content: string
     author: string
     imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
   }
 
-  export type NewsArticleCreateOrConnectWithoutProjectInput = {
-    where: NewsArticleWhereUniqueInput
-    create: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput>
+  export type ArticleCreateOrConnectWithoutProjectInput = {
+    where: ArticleWhereUniqueInput
+    create: XOR<ArticleCreateWithoutProjectInput, ArticleUncheckedCreateWithoutProjectInput>
   }
 
-  export type NewsArticleCreateManyProjectInputEnvelope = {
-    data: NewsArticleCreateManyProjectInput | NewsArticleCreateManyProjectInput[]
+  export type ArticleCreateManyProjectInputEnvelope = {
+    data: ArticleCreateManyProjectInput | ArticleCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -55791,36 +57338,39 @@ export namespace Prisma {
     status?: StringFilter<"FormSubmission"> | string
   }
 
-  export type NewsArticleUpsertWithWhereUniqueWithoutProjectInput = {
-    where: NewsArticleWhereUniqueInput
-    update: XOR<NewsArticleUpdateWithoutProjectInput, NewsArticleUncheckedUpdateWithoutProjectInput>
-    create: XOR<NewsArticleCreateWithoutProjectInput, NewsArticleUncheckedCreateWithoutProjectInput>
+  export type ArticleUpsertWithWhereUniqueWithoutProjectInput = {
+    where: ArticleWhereUniqueInput
+    update: XOR<ArticleUpdateWithoutProjectInput, ArticleUncheckedUpdateWithoutProjectInput>
+    create: XOR<ArticleCreateWithoutProjectInput, ArticleUncheckedCreateWithoutProjectInput>
   }
 
-  export type NewsArticleUpdateWithWhereUniqueWithoutProjectInput = {
-    where: NewsArticleWhereUniqueInput
-    data: XOR<NewsArticleUpdateWithoutProjectInput, NewsArticleUncheckedUpdateWithoutProjectInput>
+  export type ArticleUpdateWithWhereUniqueWithoutProjectInput = {
+    where: ArticleWhereUniqueInput
+    data: XOR<ArticleUpdateWithoutProjectInput, ArticleUncheckedUpdateWithoutProjectInput>
   }
 
-  export type NewsArticleUpdateManyWithWhereWithoutProjectInput = {
-    where: NewsArticleScalarWhereInput
-    data: XOR<NewsArticleUpdateManyMutationInput, NewsArticleUncheckedUpdateManyWithoutProjectInput>
+  export type ArticleUpdateManyWithWhereWithoutProjectInput = {
+    where: ArticleScalarWhereInput
+    data: XOR<ArticleUpdateManyMutationInput, ArticleUncheckedUpdateManyWithoutProjectInput>
   }
 
-  export type NewsArticleScalarWhereInput = {
-    AND?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
-    OR?: NewsArticleScalarWhereInput[]
-    NOT?: NewsArticleScalarWhereInput | NewsArticleScalarWhereInput[]
-    id?: StringFilter<"NewsArticle"> | string
-    projectId?: StringNullableFilter<"NewsArticle"> | string | null
-    slug?: StringNullableFilter<"NewsArticle"> | string | null
-    title?: StringFilter<"NewsArticle"> | string
-    content?: StringFilter<"NewsArticle"> | string
-    author?: StringFilter<"NewsArticle"> | string
-    imageUrl?: StringNullableFilter<"NewsArticle"> | string | null
-    publishedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
-    createdAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
-    updatedAt?: DateTimeNullableFilter<"NewsArticle"> | Date | string | null
+  export type ArticleScalarWhereInput = {
+    AND?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
+    OR?: ArticleScalarWhereInput[]
+    NOT?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
+    id?: StringFilter<"Article"> | string
+    projectId?: StringNullableFilter<"Article"> | string | null
+    slug?: StringNullableFilter<"Article"> | string | null
+    title?: StringFilter<"Article"> | string
+    content?: StringFilter<"Article"> | string
+    author?: StringFilter<"Article"> | string
+    imageUrl?: StringNullableFilter<"Article"> | string | null
+    metaDescription?: StringNullableFilter<"Article"> | string | null
+    language?: StringNullableFilter<"Article"> | string | null
+    tags?: JsonNullableFilter<"Article">
+    publishedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    createdAt?: DateTimeNullableFilter<"Article"> | Date | string | null
+    updatedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
   }
 
   export type AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput = {
@@ -55889,7 +57439,7 @@ export namespace Prisma {
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -55928,7 +57478,7 @@ export namespace Prisma {
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56009,7 +57559,7 @@ export namespace Prisma {
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56048,7 +57598,7 @@ export namespace Prisma {
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56103,7 +57653,7 @@ export namespace Prisma {
     members?: MemberCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56142,7 +57692,7 @@ export namespace Prisma {
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56220,7 +57770,7 @@ export namespace Prisma {
     members?: MemberUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56259,7 +57809,7 @@ export namespace Prisma {
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56327,7 +57877,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56366,7 +57916,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56421,7 +57971,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56460,7 +58010,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56499,7 +58049,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56538,7 +58088,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56641,7 +58191,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56680,7 +58230,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56762,7 +58312,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56801,7 +58351,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -56887,7 +58437,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -56926,7 +58476,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57002,7 +58552,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57041,7 +58591,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57096,7 +58646,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57135,7 +58685,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57174,7 +58724,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57213,7 +58763,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57292,7 +58842,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57331,7 +58881,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57526,7 +59076,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57565,7 +59115,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57620,7 +59170,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57659,7 +59209,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57698,7 +59248,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57737,7 +59287,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57792,7 +59342,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57831,7 +59381,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -57870,7 +59420,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57909,7 +59459,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -57964,7 +59514,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58003,7 +59553,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58042,7 +59592,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58081,7 +59631,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58136,7 +59686,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58175,7 +59725,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58214,7 +59764,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58253,7 +59803,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58308,7 +59858,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58347,7 +59897,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58555,7 +60105,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58594,7 +60144,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58708,7 +60258,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58747,7 +60297,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -58898,7 +60448,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58937,7 +60487,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -58992,7 +60542,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59031,7 +60581,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59070,7 +60620,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59109,7 +60659,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59200,7 +60750,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59239,7 +60789,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59294,7 +60844,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59333,7 +60883,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59411,7 +60961,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59450,7 +61000,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59548,7 +61098,7 @@ export namespace Prisma {
     members?: MemberCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59587,7 +61137,7 @@ export namespace Prisma {
     members?: MemberUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59672,7 +61222,7 @@ export namespace Prisma {
     members?: MemberUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59711,7 +61261,7 @@ export namespace Prisma {
     members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59830,7 +61380,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59869,7 +61419,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -59924,7 +61474,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -59963,11 +61513,11 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type ProjectCreateWithoutNewsArticlesInput = {
+  export type ProjectCreateWithoutArticlesInput = {
     id: string
     name?: string
     url?: string | null
@@ -60006,7 +61556,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type ProjectUncheckedCreateWithoutNewsArticlesInput = {
+  export type ProjectUncheckedCreateWithoutArticlesInput = {
     id: string
     name?: string
     url?: string | null
@@ -60045,23 +61595,23 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
-  export type ProjectCreateOrConnectWithoutNewsArticlesInput = {
+  export type ProjectCreateOrConnectWithoutArticlesInput = {
     where: ProjectWhereUniqueInput
-    create: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
+    create: XOR<ProjectCreateWithoutArticlesInput, ProjectUncheckedCreateWithoutArticlesInput>
   }
 
-  export type ProjectUpsertWithoutNewsArticlesInput = {
-    update: XOR<ProjectUpdateWithoutNewsArticlesInput, ProjectUncheckedUpdateWithoutNewsArticlesInput>
-    create: XOR<ProjectCreateWithoutNewsArticlesInput, ProjectUncheckedCreateWithoutNewsArticlesInput>
+  export type ProjectUpsertWithoutArticlesInput = {
+    update: XOR<ProjectUpdateWithoutArticlesInput, ProjectUncheckedUpdateWithoutArticlesInput>
+    create: XOR<ProjectCreateWithoutArticlesInput, ProjectUncheckedCreateWithoutArticlesInput>
     where?: ProjectWhereInput
   }
 
-  export type ProjectUpdateToOneWithWhereWithoutNewsArticlesInput = {
+  export type ProjectUpdateToOneWithWhereWithoutArticlesInput = {
     where?: ProjectWhereInput
-    data: XOR<ProjectUpdateWithoutNewsArticlesInput, ProjectUncheckedUpdateWithoutNewsArticlesInput>
+    data: XOR<ProjectUpdateWithoutArticlesInput, ProjectUncheckedUpdateWithoutArticlesInput>
   }
 
-  export type ProjectUpdateWithoutNewsArticlesInput = {
+  export type ProjectUpdateWithoutArticlesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60100,7 +61650,7 @@ export namespace Prisma {
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
-  export type ProjectUncheckedUpdateWithoutNewsArticlesInput = {
+  export type ProjectUncheckedUpdateWithoutArticlesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60174,7 +61724,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -60213,7 +61763,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    newsArticles?: NewsArticleUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
   }
 
@@ -60268,7 +61818,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -60307,7 +61857,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    newsArticles?: NewsArticleUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
   }
 
@@ -60542,13 +62092,16 @@ export namespace Prisma {
     status: string
   }
 
-  export type NewsArticleCreateManyProjectInput = {
+  export type ArticleCreateManyProjectInput = {
     id: string
     slug?: string | null
     title: string
     content: string
     author: string
     imageUrl?: string | null
+    metaDescription?: string | null
+    language?: string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
@@ -61174,37 +62727,46 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
   }
 
-  export type NewsArticleUpdateWithoutProjectInput = {
+  export type ArticleUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     author?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type NewsArticleUncheckedUpdateWithoutProjectInput = {
+  export type ArticleUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     author?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type NewsArticleUncheckedUpdateManyWithoutProjectInput = {
+  export type ArticleUncheckedUpdateManyWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
     author?: StringFieldUpdateOperationsInput | string
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    metaDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: NullableJsonNullValueInput | InputJsonValue
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

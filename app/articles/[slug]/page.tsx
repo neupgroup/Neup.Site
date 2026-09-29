@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getNewsArticleByReference } from '@/services/news';
+import { getArticleByReference } from '@/services/articles';
 import { articleReference, formatArticlePublishedTime } from '@/services/news-reference';
 import { LinkButton } from '@neup/components/ui/link-button';
 import { DeleteArticleButton } from '@/components/articles/DeleteArticleButton';
@@ -8,7 +8,7 @@ export default async function ArticlePage({ params, searchParams }: { params: Pr
   const reference = (await params).slug;
   const { project } = await searchParams;
   const projectQuery = project ? `?project=${encodeURIComponent(project)}` : '';
-  const result = await getNewsArticleByReference(reference);
+  const result = await getArticleByReference(reference);
   if (!result.article) notFound();
   const article = result.article;
 
