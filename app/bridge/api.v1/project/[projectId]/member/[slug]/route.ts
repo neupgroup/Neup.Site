@@ -1,6 +1,6 @@
 /*
 ::neup.documentation::bridge-api-v1-project-member-detail
-::api GET /bridge/api.v1/project/[projectId]/member/[id]
+::api GET /bridge/api.v1/project/[projectId]/member/[slug]
 
 Fetches one project member by id or slug lookup.
 
@@ -21,19 +21,19 @@ import { NextResponse } from 'next/server';
 
 import { getProjectMember } from '@/services/bridge/project-members';
 
-export async function GET(_request: Request, context: { params: Promise<{ projectId: string; id: string }> }) {
-  const { projectId, id } = await context.params;
+export async function GET(_request: Request, context: { params: Promise<{ projectId: string; slug: string }> }) {
+  const { projectId, slug } = await context.params;
 
   if (!projectId.trim()) {
     return NextResponse.json({ success: false, error: 'Project ID is required.' }, { status: 400 });
   }
 
-  if (!id.trim()) {
+  if (!slug.trim()) {
     return NextResponse.json({ success: false, error: 'Member lookup is required.' }, { status: 400 });
   }
 
   try {
-    const result = await getProjectMember(projectId.trim(), id.trim());
+    const result = await getProjectMember(projectId.trim(), slug.trim());
 
     if (!result.success) {
       return NextResponse.json(result, { status: result.error === 'Member lookup is required.' ? 400 : 404 });

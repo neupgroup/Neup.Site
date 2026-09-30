@@ -33,12 +33,12 @@ function publicCareer<T extends { id: string }>(career: T) {
   return { ...withoutId, slug: `${slug}--${id}` };
 }
 
-type Context = { params: Promise<{ careerId: string }> };
+type Context = { params: Promise<{ slug: string }> };
 
 export async function GET(request: Request, context: Context) {
   const validation = await requireProject(request);
   if (validation instanceof Response) return validation;
-  const result = await getJobPostingById((await context.params).careerId);
+  const result = await getJobPostingById((await context.params).slug);
   return NextResponse.json({ success: result.success, data: result.posting ? publicCareer(result.posting) : undefined, error: result.error }, { status: result.success ? 200 : 404 });
 }
 
@@ -47,7 +47,7 @@ export async function PATCH(request: Request, context: Context) {
   if (validation instanceof Response) return validation;
   if (!validation.authenticated) return NextResponse.json({ success: false, error: 'Authentication token is required.' }, { status: 401 });
   try {
-    const reference = parseCareerReference((await context.params).careerId);
+    const reference = parseCareerReference((await context.params).slug);
     if (!reference) return NextResponse.json({ success: false, error: 'Career reference is invalid.' }, { status: 400 });
     const result = await updateJobPosting(reference.id, await request.json());
     return NextResponse.json(result, { status: result.success ? 200 : 400 });
@@ -58,7 +58,7 @@ export async function DELETE(request: Request, context: Context) {
   const validation = await requireProject(request);
   if (validation instanceof Response) return validation;
   if (!validation.authenticated) return NextResponse.json({ success: false, error: 'Authentication token is required.' }, { status: 401 });
-  const reference = parseCareerReference((await context.params).careerId);
+  const reference = parseCareerReference((await context.params).slug);
   if (!reference) return NextResponse.json({ success: false, error: 'Career reference is invalid.' }, { status: 400 });
   const result = await deleteJobPosting(reference.id);
   return NextResponse.json(result, { status: result.success ? 200 : 404 });

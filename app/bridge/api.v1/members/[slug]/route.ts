@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { deleteMember, getMember, updateMember } from '@/services/members';
 import { requireProject } from '../_helpers';
 
-type Context = { params: Promise<{ id: string }> };
+type Context = { params: Promise<{ slug: string }> };
 
 function apiMember(member: Record<string, unknown>) {
   const { id, imageUrl, slug, ...record } = member as Record<string, unknown> & { id?: string; imageUrl?: string | null; slug?: string };
@@ -18,7 +18,7 @@ function parseMemberReference(reference: string) {
 export async function GET(_request: Request, context: Context) {
   const validation = await requireProject(_request);
   if (validation instanceof Response) return validation;
-  const reference = parseMemberReference((await context.params).id);
+  const reference = parseMemberReference((await context.params).slug);
   if (!reference) {
     return NextResponse.json({ success: false, error: 'Member reference must use slug--id.' }, { status: 400 });
   }
@@ -35,7 +35,7 @@ export async function GET(_request: Request, context: Context) {
 
 export async function PATCH(request: Request, context: Context) {
   try {
-    const { id } = await context.params;
+    const { slug: id } = await context.params;
     const body = await request.json();
     if (body.status !== undefined && !['active', 'paused', 'hidden'].includes(body.status)) {
       return NextResponse.json({ success: false, error: 'Invalid status. Use active, paused, or hidden.' }, { status: 422 });
@@ -48,6 +48,6 @@ export async function PATCH(request: Request, context: Context) {
 }
 
 export async function DELETE(_request: Request, context: Context) {
-  const result = await deleteMember((await context.params).id);
+  const result = await deleteMember((await context.params).slug);
   return NextResponse.json(result, { status: result.success ? 200 : 404 });
 }

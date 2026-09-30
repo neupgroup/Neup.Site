@@ -1,3 +1,25 @@
+/**
+ * Articles collection API.
+ *
+ * Request:
+ *   curl https://example.com/bridge/api.v1/articles \
+ *     -H 'x-project: PROJECT_ID'
+ *
+ * Response:
+ *   {
+ *     "success": true,
+ *     "data": [{
+ *       "slug": "my-article--ARTICLE_UUID",
+ *       "writtenAt": "2026-09-30T08:30:00.000Z",
+ *       "writtenBy": "Author Name",
+ *       "title": "My Article",
+ *       "coverImageUrl": null,
+ *       "metaDescription": "Article summary.",
+ *       "language": "en",
+ *       "tags": ["guide", "updates"]
+ *     }]
+ *   }
+ */
 import { NextResponse } from 'next/server';
 import { getArticles } from '@/services/articles';
 import { articleReference } from '@/services/news-reference';

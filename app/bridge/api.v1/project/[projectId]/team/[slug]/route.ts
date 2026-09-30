@@ -1,6 +1,6 @@
 /*
 ::neup.documentation::bridge-api-v1-project-team-detail
-::api GET /bridge/api.v1/project/[projectId]/team/[id]
+::api GET /bridge/api.v1/project/[projectId]/team/[slug]
 
 Fetches one project team by id or slug lookup.
 
@@ -21,19 +21,19 @@ import { NextResponse } from 'next/server';
 
 import { getProjectTeam } from '@/services/bridge/project-teams';
 
-export async function GET(_request: Request, context: { params: Promise<{ projectId: string; id: string }> }) {
-  const { projectId, id } = await context.params;
+export async function GET(_request: Request, context: { params: Promise<{ projectId: string; slug: string }> }) {
+  const { projectId, slug } = await context.params;
 
   if (!projectId.trim()) {
     return NextResponse.json({ success: false, error: 'Project ID is required.' }, { status: 400 });
   }
 
-  if (!id.trim()) {
+  if (!slug.trim()) {
     return NextResponse.json({ success: false, error: 'Team lookup is required.' }, { status: 400 });
   }
 
   try {
-    const result = await getProjectTeam(projectId.trim(), id.trim());
+    const result = await getProjectTeam(projectId.trim(), slug.trim());
 
     if (!result.success) {
       return NextResponse.json(result, { status: result.error === 'Team lookup is required.' ? 400 : 404 });
