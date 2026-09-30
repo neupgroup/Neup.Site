@@ -17,8 +17,21 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 186 51% 60%;
-    --primary-foreground: 240 10% 3.9%;
+    /* Default app palette from @base/design.json color.primary. */
+    --primary-50: #F8FAFC;
+    --primary-100: #F1F5F9;
+    --primary-200: #E2E8F0;
+    --primary-300: #CBD5E1;
+    --primary-400: #94A3B8;
+    --primary-500: #64748B;
+    --primary-600: #475569;
+    --primary-700: #334155;
+    --primary-800: #1E293B;
+    --primary-900: #0F172A;
+    --primary-950: #020617;
+    --primary-1000: #000000;
+    --primary: 215 16% 47%;
+    --primary-foreground: 210 40% 98%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 5.9% 90%;

@@ -51,12 +51,10 @@ export async function getAssetsForAccount(authToken?: string | null): Promise<{ 
         const logoUrl = role.asset.profiles.find((entry) => entry.subject === 'brand.logo')?.value ?? null;
         const description =
           role.asset.profiles.find((entry) => entry.subject === 'brand.description')?.value ?? null;
-        const theme = ((role.asset.design as any)?.theme || createDefaultAssetTheme()) as any;
-
         assetsById.set(role.asset.id, {
           id: role.asset.id,
           name: role.asset.name,
-          logoUrl: resolveAssetLogoUrl(logoUrl, theme),
+          logoUrl: resolveAssetLogoUrl(logoUrl),
           description,
           isDefault: role.asset.id === account?.defaultProject,
         });

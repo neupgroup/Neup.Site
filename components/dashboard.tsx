@@ -254,11 +254,10 @@ function Header({
   const [accountBasicsLoading, setAccountBasicsLoading] = useState(!initialAccountBasics);
 
   const headerAsset = asset ?? initialAsset;
-  const profileName = headerAsset?.name;
-  const logoUrl = resolveAssetLogoUrl(headerAsset?.logoUrl, headerAsset?.theme);
+  const selectedSiteName = initialAsset?.name?.trim() || headerAsset?.name?.trim() || null;
+  const logoUrl = resolveAssetLogoUrl(headerAsset?.logoUrl);
   const isSvgLogo = isResolvedAssetLogoSvg(logoUrl);
   const isInlineLogo = logoUrl?.startsWith('data:image/') ?? false;
-  const hideSitename = headerAsset?.hideSitename;
 
   useEffect(() => {
     let active = true;
@@ -288,12 +287,12 @@ function Header({
     .join('') || 'A';
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow-lg">
+    <header className="sticky top-0 z-40 flex h-20 items-center border-b bg-background shadow-lg">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
-          <Link href={appendProject('/home', project)} className="flex items-center gap-4">
+          <Link href={appendProject('/home', project)} className="flex items-center gap-3">
             {((loading && !initialAsset) ? (
-              <Skeleton className="h-6 w-6" />
+              <Skeleton className="h-7 w-7" />
             ) : logoUrl ? (
               <div className="relative h-7 w-auto" style={{ aspectRatio: 'auto' }}>
                 {isInlineLogo ? (
@@ -315,20 +314,17 @@ function Header({
                 )}
               </div>
             ) : (
-              <Rocket className="h-6 w-6 text-primary" />
+              <Rocket className="h-7 w-7 text-primary" />
             ))}
 
-            {(!hideSitename && hideSitename !== null) && (
-              loading ? (
-                <div className="font-headline text-xl font-semibold tracking-tight">
-                  <Skeleton className="h-6 w-32" />
-                </div>
-              ) : (
-                <h1 className="font-headline text-xl font-semibold tracking-tight">
-                  {profileName?.trim() ? profileName : 'Neup.Sites'}
-                </h1>
-              )
-            )}
+            <div className="flex flex-col leading-none">
+              <span className="font-headline text-xl font-semibold tracking-tight">Neup.Sites</span>
+              {selectedSiteName && (
+                <span className="-mt-0.5 text-xs font-medium text-muted-foreground">
+                  {selectedSiteName}
+                </span>
+              )}
+            </div>
           </Link>
         </div>
         <div className="flex items-center gap-4">
