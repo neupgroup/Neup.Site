@@ -22,7 +22,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
-import { RichTextEditor } from '@neup/components/ui/rich-text-editor';
+import { RichTextEditor } from '@/components/articles/RichTextEditor';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({
@@ -133,7 +133,7 @@ export default function EditNewsContentPage({ params }: { params: Promise<{ slug
                 <FormField control={form.control} name="content" render={({ field }) => (
                 <FormItem>
                     <FormControl>
-                    <RichTextEditor {...field} />
+                    <RichTextEditor value={field.value} onChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

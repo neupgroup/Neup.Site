@@ -1,91 +1,47 @@
-
 import Link from 'next/link';
-import { getNewsArticles, type NewsArticle } from '@/services/news';
-import { Button } from '@neup/components/ui/button';
-import { LinkButton } from "@neup/components/ui/link-button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@neup/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@neup/components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
-import { AlertCircle, Plus, Newspaper } from 'lucide-react';
+import { getNewsArticles } from '@/services/news';
+import { LinkButton } from '@neup/components/ui/link-button';
+import { ArrowRight, Newspaper, Plus } from 'lucide-react';
+import { formatArticlePublishedTime } from '@/services/news-reference';
 import { generatePageMetadata } from '@neup/core/helpers/metadata';
 
 export async function generateMetadata() {
-    return generatePageMetadata({
-        title: 'News Articles',
-    });
+  return generatePageMetadata({ title: 'News Articles' });
 }
 
-export default async function NewsListPage() {
-  const { articles, error } = await getNewsArticles();
+export default async function NewsListPage({ searchParams }: { searchParams: Promise<{ project?: string }> }) {
+  const { project } = await searchParams;
+  const projectQuery = project ? `?project=${encodeURIComponent(project)}` : '';
+  const result = await getNewsArticles();
+  const articles = result.articles ?? [];
 
   return (
-    <div className="w-full">
-      <header className="flex items-center justify-between mb-8">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight">News Articles</h1>
-        <LinkButton variant="solid" href="/news/create">
-            <Plus className="mr-2 h-4 w-4" /> Create New Article
-          </LinkButton>
+    <div className="w-full space-y-8">
+      <header className="space-y-2">
+        <h1 className="font-headline text-2xl font-semibold tracking-tight">News</h1>
+        <p className="text-muted-foreground">Read and manage news published on your site.</p>
       </header>
-      <Card>
-        <CardHeader>
-          <CardTitle>Manage News</CardTitle>
-          <CardDescription>A list of all news articles.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="w-full">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          {!error && articles && articles.length === 0 ? (
-            <div className="text-center text-muted-foreground border-2 border-dashed rounded-lg p-12">
-              <Newspaper className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold">No Articles Yet</h3>
-              <p>Click "Create New Article" to get started.</p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Author</TableHead>
-                  <TableHead>Published</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {articles?.map((article) => (
-                  <TableRow key={article.id}>
-                    <TableCell className="font-medium">
-                        <Link href={`/news/${article.id}`} className="hover:underline">
-                            {article.title}
-                        </Link>
-                    </TableCell>
-                    <TableCell>{article.author}</TableCell>
-                    <TableCell>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : 'N/A'}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      {result.error ? <p className="text-destructive">{result.error}</p> : (
+        <div className="grid gap-4">
+          <LinkButton variant="plain" className="grid h-auto justify-start gap-4 rounded-lg border-2 border-dashed border-muted-foreground/40 bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5 md:grid-cols-[auto_1fr_auto] md:items-center" href={`/news/create${projectQuery}`}>
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted"><Plus className="h-5 w-5 text-muted-foreground" /></span>
+            <span><span className="block font-medium">Write a new news item</span><span className="block text-sm text-muted-foreground">Publish news on this site.</span></span>
+            <ArrowRight className="h-4 w-4" />
+          </LinkButton>
+          {articles.map((article) => (
+            <Link key={article.id} href={`/news/${article.id}${projectQuery}`} className="block">
+              <div className="rounded-lg border bg-card px-5 py-4 text-left transition-colors hover:border-primary hover:bg-primary/5">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted"><Newspaper className="h-5 w-5 text-muted-foreground" /></span>
+                  <span className="min-w-0 flex-1"><span className="block font-medium">{article.title}</span><span className="block text-sm text-muted-foreground">{article.author} <span aria-hidden="true">|</span> {formatArticlePublishedTime(article.publishedAt)}</span></span>
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </div>
+            </Link>
+          ))}
+          {!articles.length ? <div className="rounded-lg border-2 border-dashed p-12 text-center text-muted-foreground">No news yet.</div> : null}
+        </div>
+      )}
     </div>
   );
 }
-
-    

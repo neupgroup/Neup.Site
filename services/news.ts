@@ -6,9 +6,12 @@ import { revalidatePath } from 'next/cache';
 import { logger } from '@neup/logica/logger';
 import crypto from 'crypto';
 import { parseArticleReference, slugifyArticle } from '@/services/news-reference';
+import { getActiveProjectId } from '@/services/projects';
+import { getAccountId } from '@/services/accounts';
 
 export interface NewsArticle {
     id: string;
+    projectId?: string | null;
     slug?: string;
     title: string;
     content: string;
@@ -19,8 +22,27 @@ export interface NewsArticle {
     updatedAt?: string | null;
 }
 
+async function getAuthorizedProjectId(): Promise<string> {
+  const projectId = await getActiveProjectId({ required: true });
+  if (!projectId) throw new Error('Active project not found.');
+  const accountId = await getAccountId();
+  const project = await db.project.findFirst({
+    where: {
+      id: projectId,
+      OR: [
+        { ownerAccountId: accountId },
+        { roles: { some: { accountId } } },
+      ],
+    },
+    select: { id: true },
+  });
+  if (!project) throw new Error('You are not a member of this project.');
+  return project.id;
+}
+
 export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | 'publishedAt' | 'createdAt' | 'updatedAt'>> & { title: string }): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
+    const projectId = await getAuthorizedProjectId();
     const slug = slugifyArticle(data.title);
     const id = crypto.randomUUID();
     const now = new Date();
@@ -28,6 +50,7 @@ export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | '
         await db.news.create({
       data: {
         id,
+        projectId,
         slug,
         title: data.title,
         author: data.author || 'Author Name',
@@ -51,11 +74,14 @@ export async function createNewsArticle(data: Partial<Omit<NewsArticle, 'id' | '
 
 export async function getNewsArticles(): Promise<{ success: boolean; articles?: NewsArticle[]; error?: string }> {
     try {
+        const projectId = await getAuthorizedProjectId();
         const records = await db.news.findMany({
+          where: { projectId },
           orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
         });
         const articles = records.map((record) => ({
           id: record.id,
+          projectId: record.projectId,
           slug: record.slug ?? undefined,
           title: record.title,
           content: record.content,
@@ -74,13 +100,15 @@ export async function getNewsArticles(): Promise<{ success: boolean; articles?: 
 
 export async function getNewsArticleById(id: string): Promise<{ success: boolean; article?: NewsArticle; error?: string }> {
     try {
-        const record = await db.news.findUnique({ where: { id } });
+        const projectId = await getAuthorizedProjectId();
+        const record = await db.news.findFirst({ where: { id, projectId } });
         if (!record) {
             return { success: false, error: 'News article not found.' };
         }
         
         const article: NewsArticle = {
             id: record.id,
+            projectId: record.projectId,
             slug: record.slug ?? undefined,
             title: record.title,
             content: record.content,
@@ -112,8 +140,9 @@ export async function getNewsArticleByReference(reference: string): Promise<{ su
 
 export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArticle, 'id'>>): Promise<{ success: boolean; error?: string }> {
   try {
+    const projectId = await getAuthorizedProjectId();
     const result = await db.news.updateMany({
-      where: { id },
+      where: { id, projectId },
       data: {
         ...(typeof data.title === 'string' ? { title: data.title } : {}),
         ...(typeof data.slug === 'string' ? { slug: data.slug } : {}),
@@ -136,7 +165,8 @@ export async function updateNewsArticle(id: string, data: Partial<Omit<NewsArtic
 
 export async function deleteNewsArticle(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const result = await db.news.deleteMany({ where: { id } });
+        const projectId = await getAuthorizedProjectId();
+        const result = await db.news.deleteMany({ where: { id, projectId } });
         if (!result.count) return { success: false, error: 'News article not found.' };
         revalidatePath('@neup/news');
         return { success: true };

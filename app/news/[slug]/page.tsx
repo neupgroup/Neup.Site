@@ -1,81 +1,30 @@
-
 import { getNewsArticleById } from '@/services/news';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@neup/components/ui/card';
-import { Button } from '@neup/components/ui/button';
-import { LinkButton } from "@neup/components/ui/link-button";
-import { AlertCircle, ArrowLeft, Pencil, Settings } from 'lucide-react';
+import { LinkButton } from '@neup/components/ui/link-button';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
-import Link from 'next/link';
-import Image from 'next/image';
 import { generatePageMetadata } from '@neup/core/helpers/metadata';
+import { formatArticlePublishedTime } from '@/services/news-reference';
 
-export async function generateMetadata({ params }: { params: { slug: string }}) {
-    const { article } = await getNewsArticleById(params.slug);
-    return generatePageMetadata({
-      title: article?.title || 'View Article',
-    });
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const { article } = await getNewsArticleById(params.slug);
+  return generatePageMetadata({ title: article?.title || 'View News' });
 }
 
-export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function NewsDetailPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ project?: string }> }) {
   const { slug } = await params;
+  const { project } = await searchParams;
+  const projectQuery = project ? `?project=${encodeURIComponent(project)}` : '';
   const { article, error } = await getNewsArticleById(slug);
 
-  if (error || !article) {
-    return (
-      <div className="w-full max-w-4xl mx-auto">
-        <Alert variant="destructive" className="max-w-2xl">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error || 'Article not found.'}</AlertDescription>
-          <div className="mt-4">
-            <LinkButton variant="outlined" href="/news">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to News
-              </LinkButton>
-          </div>
-        </Alert>
-      </div>
-    );
-  }
+  if (error || !article) return <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertTitle>Error</AlertTitle><AlertDescription>{error || 'News not found.'}</AlertDescription><div className="mt-4"><LinkButton variant="outlined" href={`/news${projectQuery}`}><ArrowLeft className="mr-2 h-4 w-4" />Back to News</LinkButton></div></Alert>;
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="mb-4">
-        <LinkButton variant="plain" href="/news">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to News
-          </LinkButton>
-      </div>
-      <Card>
-        <CardHeader>
-          {article.imageUrl && (
-            <div className="relative w-full h-64 mb-4 rounded-t-lg overflow-hidden">
-                <Image src={article.imageUrl} alt={article.title} fill objectFit="cover" />
-            </div>
-          )}
-          <CardTitle className="text-4xl font-headline">{article.title}</CardTitle>
-          <CardDescription>
-            By {article.author} on {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : 'N/A'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="prose prose-lg dark:prose-invert max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: article.content }} />
-        </CardContent>
-        <CardFooter className="flex justify-end gap-2">
-           <LinkButton variant="outlined" href={`/news/${article.id}`}>
-              <Settings className="mr-2 h-4 w-4" /> Settings
-            </LinkButton>
-          <LinkButton href={`/news/${article.id}`}>
-              <Pencil className="mr-2 h-4 w-4" /> Edit Content
-            </LinkButton>
-        </CardFooter>
-      </Card>
+    <div className="w-full space-y-6">
+      <LinkButton variant="plain" href={`/news${projectQuery}`}><ArrowLeft className="mr-2 h-4 w-4" />Back to News</LinkButton>
+      {article.imageUrl ? <img src={article.imageUrl} alt={article.title} className="max-h-[420px] w-full rounded-lg object-cover" /> : null}
+      <div className="space-y-2"><h1 className="font-headline text-4xl font-semibold">{article.title}</h1><p className="text-sm text-muted-foreground">By {article.author} <span aria-hidden="true">|</span> {formatArticlePublishedTime(article.publishedAt)}</p></div>
+      <div className="max-w-none [&_p]:mb-4 [&_p]:leading-7 [&_h1]:mb-5 [&_h1]:mt-8 [&_h1]:font-headline [&_h1]:text-4xl [&_h1]:font-bold [&_h2]:mb-4 [&_h2]:mt-7 [&_h2]:font-headline [&_h2]:text-3xl [&_h2]:font-semibold [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:font-headline [&_h3]:text-2xl [&_h3]:font-semibold" dangerouslySetInnerHTML={{ __html: article.content }} />
+      <div className="pt-4"><div className="flex flex-wrap gap-3"><LinkButton variant="outlined" href={`/news/${article.id}/edit/content${projectQuery}`}>Edit content</LinkButton><LinkButton variant="outlined" href={`/news/${article.id}/settings${projectQuery}`}>Settings</LinkButton></div></div>
     </div>
   );
 }
