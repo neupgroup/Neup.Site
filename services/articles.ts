@@ -25,7 +25,7 @@ export interface Article {
 }
 
 /** Normalize HTML and Unicode whitespace before article content is persisted. */
-export function normalizeArticleContent(content: string): string {
+function normalizeArticleContent(content: string): string {
   return content
     .replace(/&(?:nbsp|NonBreakingSpace|ensp|emsp|thinsp|hairsp|verythinsp|mediumspace|ideographicspace);|&#(?:160|8194|8195|8201|8202|8203|x0*a0|x02002|x02003|x02009|x0200a|x0200b);/gi, ' ')
     .replace(/[\u00a0\u1680\u180e\u2000-\u200b\u202f\u205f\u3000\ufeff]/g, ' ');
