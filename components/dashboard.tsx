@@ -310,7 +310,7 @@ function Header({
                     height={28}
                     unoptimized={isSvgLogo}
                     className="h-7 w-auto"
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: 'contain', width: 'auto' }}
                   />
                 )}
               </div>

@@ -5,8 +5,9 @@ import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { formatArticlePublishedTime } from '@/services/news-reference';
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const { article } = await getNewsArticleById(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const { article } = await getNewsArticleById(slug);
   return generatePageMetadata({ title: article?.title || 'View News' });
 }
 
