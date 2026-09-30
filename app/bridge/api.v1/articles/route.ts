@@ -6,7 +6,9 @@
  *     -H 'x-project: PROJECT_ID'
  *
  * Response:
- *   {
+ *   status: 200
+ *   headers: { "content-type": "application/json" }
+ *   body: {
  *     "success": true,
  *     "data": [{
  *       "slug": "my-article--ARTICLE_UUID",

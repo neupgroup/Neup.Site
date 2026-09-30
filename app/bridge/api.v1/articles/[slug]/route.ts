@@ -6,13 +6,16 @@
  *     -H 'x-project: PROJECT_ID'
  *
  * Response:
- *   {
+ *   status: 200
+ *   headers: { "content-type": "application/json" }
+ *   body: {
  *     "success": true,
  *     "data": {
  *       "slug": "my-article--ARTICLE_UUID",
  *       "writtenAt": "2026-09-30T08:30:00.000Z",
  *       "writtenBy": "Author Name",
  *       "title": "My Article",
+ *       "content": "<p>Article HTML content.</p>",
  *       "coverImageUrl": null,
  *       "metaDescription": "Article summary.",
  *       "language": "en",
@@ -38,6 +41,7 @@ export async function GET(_request: Request, context: { params: Promise<{ slug: 
     return NextResponse.json({ success: true, data: {
       slug: articleReference(article), writtenAt: article.createdAt ?? article.publishedAt,
       writtenBy: article.author, title: article.title, coverImageUrl: article.imageUrl ?? null,
+      content: article.content,
       metaDescription: article.metaDescription ?? null, language: article.language ?? null, tags: article.tags ?? [],
     } });
   } catch (error) {
