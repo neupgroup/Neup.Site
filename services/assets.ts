@@ -26,7 +26,7 @@ export async function getAssetsForAccount(authToken?: string | null): Promise<{ 
   try {
     const account = await db.account.findUnique({
       where: { id: accountId },
-      select: { defaultProject: true },
+      select: { lastProject: true },
     });
 
     const roles = await db.role.findMany({
@@ -56,7 +56,7 @@ export async function getAssetsForAccount(authToken?: string | null): Promise<{ 
           name: role.asset.name,
           logoUrl: resolveAssetLogoUrl(logoUrl),
           description,
-          isDefault: role.asset.id === account?.defaultProject,
+          isDefault: role.asset.id === account?.lastProject,
         });
       }
     });
@@ -174,7 +174,7 @@ export async function setDefaultProjectForAccount(projectId: string): Promise<{ 
 
     await db.account.update({
       where: { id: accountId },
-      data: { defaultProject: project.id },
+      data: { lastProject: project.id },
     });
 
     return { success: true };

@@ -16,8 +16,8 @@ model Account {
   createdOn           DateTime @default(now())
   status              String   @default("active")
   moreDetails         Json?
-  defaultProject      String?
-  defaultProjectAsset Project? @relation("AccountDefaultProject", fields: [defaultProject], references: [id], onDelete: SetNull)
+  lastProject          String?
+  lastProjectAsset     Project? @relation("AccountLastProject", fields: [lastProject], references: [id], onDelete: SetNull)
   roles               Role[]
 
   @@map("accounts")
@@ -83,7 +83,7 @@ model Project {
   forms                  Form[]
   formSubmissions        FormSubmission[]
   articles               Article[]
-  defaultProjectAccounts Account[]             @relation("AccountDefaultProject")
+  lastProjectAccounts    Account[]             @relation("AccountLastProject")
 
   @@index([ownerAccountId])
   @@map("projects")

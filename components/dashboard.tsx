@@ -381,7 +381,7 @@ export function Dashboard({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [propertyId, setPropertyId] = useState<string | null>(null);
   const [currentUrl, setCurrentUrl] = useState('');
-  const [defaultProject, setDefaultProject] = useState<string | null>(null);
+  const [lastProject, setLastProject] = useState<string | null>(null);
   const project = searchParams.get('project');
 
   useEffect(() => {
@@ -394,7 +394,7 @@ export function Dashboard({
 
     getAssetsForAccount().then(({ assets }) => {
       if (cancelled) return;
-      setDefaultProject(assets?.find((asset) => asset.isDefault)?.id ?? null);
+      setLastProject(assets?.find((asset) => asset.isDefault)?.id ?? null);
     });
 
     return () => {
@@ -402,7 +402,7 @@ export function Dashboard({
     };
   }, [pathname, project]);
 
-  const projectForLinks = project ?? (pathname === '/switch' ? defaultProject : null);
+  const projectForLinks = project ?? (pathname === '/switch' ? lastProject : null);
 
   useEffect(() => {
     setPropertyId(project);

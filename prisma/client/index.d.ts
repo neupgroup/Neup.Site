@@ -4104,7 +4104,7 @@ export namespace Prisma {
     forms: number
     formSubmissions: number
     articles: number
-    defaultProjectAccounts: number
+    lastProjectAccounts: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4130,7 +4130,7 @@ export namespace Prisma {
     forms?: boolean | ProjectCountOutputTypeCountFormsArgs
     formSubmissions?: boolean | ProjectCountOutputTypeCountFormSubmissionsArgs
     articles?: boolean | ProjectCountOutputTypeCountArticlesArgs
-    defaultProjectAccounts?: boolean | ProjectCountOutputTypeCountDefaultProjectAccountsArgs
+    lastProjectAccounts?: boolean | ProjectCountOutputTypeCountLastProjectAccountsArgs
   }
 
   // Custom InputTypes
@@ -4301,7 +4301,7 @@ export namespace Prisma {
   /**
    * ProjectCountOutputType without action
    */
-  export type ProjectCountOutputTypeCountDefaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProjectCountOutputTypeCountLastProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
   }
 
@@ -4532,7 +4532,7 @@ export namespace Prisma {
     type: string | null
     createdOn: Date | null
     status: string | null
-    defaultProject: string | null
+    lastProject: string | null
   }
 
   export type AccountMaxAggregateOutputType = {
@@ -4543,7 +4543,7 @@ export namespace Prisma {
     type: string | null
     createdOn: Date | null
     status: string | null
-    defaultProject: string | null
+    lastProject: string | null
   }
 
   export type AccountCountAggregateOutputType = {
@@ -4555,7 +4555,7 @@ export namespace Prisma {
     createdOn: number
     status: number
     moreDetails: number
-    defaultProject: number
+    lastProject: number
     _all: number
   }
 
@@ -4568,7 +4568,7 @@ export namespace Prisma {
     type?: true
     createdOn?: true
     status?: true
-    defaultProject?: true
+    lastProject?: true
   }
 
   export type AccountMaxAggregateInputType = {
@@ -4579,7 +4579,7 @@ export namespace Prisma {
     type?: true
     createdOn?: true
     status?: true
-    defaultProject?: true
+    lastProject?: true
   }
 
   export type AccountCountAggregateInputType = {
@@ -4591,7 +4591,7 @@ export namespace Prisma {
     createdOn?: true
     status?: true
     moreDetails?: true
-    defaultProject?: true
+    lastProject?: true
     _all?: true
   }
 
@@ -4676,7 +4676,7 @@ export namespace Prisma {
     createdOn: Date
     status: string
     moreDetails: JsonValue | null
-    defaultProject: string | null
+    lastProject: string | null
     _count: AccountCountAggregateOutputType | null
     _min: AccountMinAggregateOutputType | null
     _max: AccountMaxAggregateOutputType | null
@@ -4705,8 +4705,8 @@ export namespace Prisma {
     createdOn?: boolean
     status?: boolean
     moreDetails?: boolean
-    defaultProject?: boolean
-    defaultProjectAsset?: boolean | Account$defaultProjectAssetArgs<ExtArgs>
+    lastProject?: boolean
+    lastProjectAsset?: boolean | Account$lastProjectAssetArgs<ExtArgs>
     roles?: boolean | Account$rolesArgs<ExtArgs>
     _count?: boolean | AccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
@@ -4720,8 +4720,8 @@ export namespace Prisma {
     createdOn?: boolean
     status?: boolean
     moreDetails?: boolean
-    defaultProject?: boolean
-    defaultProjectAsset?: boolean | Account$defaultProjectAssetArgs<ExtArgs>
+    lastProject?: boolean
+    lastProjectAsset?: boolean | Account$lastProjectAssetArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
 
   export type AccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4733,8 +4733,8 @@ export namespace Prisma {
     createdOn?: boolean
     status?: boolean
     moreDetails?: boolean
-    defaultProject?: boolean
-    defaultProjectAsset?: boolean | Account$defaultProjectAssetArgs<ExtArgs>
+    lastProject?: boolean
+    lastProjectAsset?: boolean | Account$lastProjectAssetArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
 
   export type AccountSelectScalar = {
@@ -4746,26 +4746,26 @@ export namespace Prisma {
     createdOn?: boolean
     status?: boolean
     moreDetails?: boolean
-    defaultProject?: boolean
+    lastProject?: boolean
   }
 
-  export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "displayName" | "displayImage" | "neupId" | "type" | "createdOn" | "status" | "moreDetails" | "defaultProject", ExtArgs["result"]["account"]>
+  export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "displayName" | "displayImage" | "neupId" | "type" | "createdOn" | "status" | "moreDetails" | "lastProject", ExtArgs["result"]["account"]>
   export type AccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    defaultProjectAsset?: boolean | Account$defaultProjectAssetArgs<ExtArgs>
+    lastProjectAsset?: boolean | Account$lastProjectAssetArgs<ExtArgs>
     roles?: boolean | Account$rolesArgs<ExtArgs>
     _count?: boolean | AccountCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    defaultProjectAsset?: boolean | Account$defaultProjectAssetArgs<ExtArgs>
+    lastProjectAsset?: boolean | Account$lastProjectAssetArgs<ExtArgs>
   }
   export type AccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    defaultProjectAsset?: boolean | Account$defaultProjectAssetArgs<ExtArgs>
+    lastProjectAsset?: boolean | Account$lastProjectAssetArgs<ExtArgs>
   }
 
   export type $AccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Account"
     objects: {
-      defaultProjectAsset: Prisma.$ProjectPayload<ExtArgs> | null
+      lastProjectAsset: Prisma.$ProjectPayload<ExtArgs> | null
       roles: Prisma.$RolePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -4777,7 +4777,7 @@ export namespace Prisma {
       createdOn: Date
       status: string
       moreDetails: Prisma.JsonValue | null
-      defaultProject: string | null
+      lastProject: string | null
     }, ExtArgs["result"]["account"]>
     composites: {}
   }
@@ -5172,7 +5172,7 @@ export namespace Prisma {
    */
   export interface Prisma__AccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    defaultProjectAsset<T extends Account$defaultProjectAssetArgs<ExtArgs> = {}>(args?: Subset<T, Account$defaultProjectAssetArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    lastProjectAsset<T extends Account$lastProjectAssetArgs<ExtArgs> = {}>(args?: Subset<T, Account$lastProjectAssetArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     roles<T extends Account$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Account$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5211,7 +5211,7 @@ export namespace Prisma {
     readonly createdOn: FieldRef<"Account", 'DateTime'>
     readonly status: FieldRef<"Account", 'String'>
     readonly moreDetails: FieldRef<"Account", 'Json'>
-    readonly defaultProject: FieldRef<"Account", 'String'>
+    readonly lastProject: FieldRef<"Account", 'String'>
   }
     
 
@@ -5613,9 +5613,9 @@ export namespace Prisma {
   }
 
   /**
-   * Account.defaultProjectAsset
+   * Account.lastProjectAsset
    */
-  export type Account$defaultProjectAssetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Account$lastProjectAssetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Project
      */
@@ -8046,7 +8046,7 @@ export namespace Prisma {
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
     articles?: boolean | Project$articlesArgs<ExtArgs>
-    defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
+    lastProjectAccounts?: boolean | Project$lastProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -8125,7 +8125,7 @@ export namespace Prisma {
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
     articles?: boolean | Project$articlesArgs<ExtArgs>
-    defaultProjectAccounts?: boolean | Project$defaultProjectAccountsArgs<ExtArgs>
+    lastProjectAccounts?: boolean | Project$lastProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8156,7 +8156,7 @@ export namespace Prisma {
       forms: Prisma.$FormPayload<ExtArgs>[]
       formSubmissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
       articles: Prisma.$ArticlePayload<ExtArgs>[]
-      defaultProjectAccounts: Prisma.$AccountPayload<ExtArgs>[]
+      lastProjectAccounts: Prisma.$AccountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8589,7 +8589,7 @@ export namespace Prisma {
     forms<T extends Project$formsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     formSubmissions<T extends Project$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     articles<T extends Project$articlesArgs<ExtArgs> = {}>(args?: Subset<T, Project$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    defaultProjectAccounts<T extends Project$defaultProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Project$defaultProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    lastProjectAccounts<T extends Project$lastProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Project$lastProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9554,9 +9554,9 @@ export namespace Prisma {
   }
 
   /**
-   * Project.defaultProjectAccounts
+   * Project.lastProjectAccounts
    */
-  export type Project$defaultProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$lastProjectAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -45034,7 +45034,7 @@ export namespace Prisma {
     createdOn: 'createdOn',
     status: 'status',
     moreDetails: 'moreDetails',
-    defaultProject: 'defaultProject'
+    lastProject: 'lastProject'
   };
 
   export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
@@ -45696,8 +45696,8 @@ export namespace Prisma {
     createdOn?: DateTimeFilter<"Account"> | Date | string
     status?: StringFilter<"Account"> | string
     moreDetails?: JsonNullableFilter<"Account">
-    defaultProject?: StringNullableFilter<"Account"> | string | null
-    defaultProjectAsset?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
+    lastProject?: StringNullableFilter<"Account"> | string | null
+    lastProjectAsset?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
     roles?: RoleListRelationFilter
   }
 
@@ -45710,8 +45710,8 @@ export namespace Prisma {
     createdOn?: SortOrder
     status?: SortOrder
     moreDetails?: SortOrderInput | SortOrder
-    defaultProject?: SortOrderInput | SortOrder
-    defaultProjectAsset?: ProjectOrderByWithRelationInput
+    lastProject?: SortOrderInput | SortOrder
+    lastProjectAsset?: ProjectOrderByWithRelationInput
     roles?: RoleOrderByRelationAggregateInput
   }
 
@@ -45727,8 +45727,8 @@ export namespace Prisma {
     createdOn?: DateTimeFilter<"Account"> | Date | string
     status?: StringFilter<"Account"> | string
     moreDetails?: JsonNullableFilter<"Account">
-    defaultProject?: StringNullableFilter<"Account"> | string | null
-    defaultProjectAsset?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
+    lastProject?: StringNullableFilter<"Account"> | string | null
+    lastProjectAsset?: XOR<ProjectNullableScalarRelationFilter, ProjectWhereInput> | null
     roles?: RoleListRelationFilter
   }, "id" | "neupId">
 
@@ -45741,7 +45741,7 @@ export namespace Prisma {
     createdOn?: SortOrder
     status?: SortOrder
     moreDetails?: SortOrderInput | SortOrder
-    defaultProject?: SortOrderInput | SortOrder
+    lastProject?: SortOrderInput | SortOrder
     _count?: AccountCountOrderByAggregateInput
     _max?: AccountMaxOrderByAggregateInput
     _min?: AccountMinOrderByAggregateInput
@@ -45759,7 +45759,7 @@ export namespace Prisma {
     createdOn?: DateTimeWithAggregatesFilter<"Account"> | Date | string
     status?: StringWithAggregatesFilter<"Account"> | string
     moreDetails?: JsonNullableWithAggregatesFilter<"Account">
-    defaultProject?: StringNullableWithAggregatesFilter<"Account"> | string | null
+    lastProject?: StringNullableWithAggregatesFilter<"Account"> | string | null
   }
 
   export type RoleWhereInput = {
@@ -45915,7 +45915,7 @@ export namespace Prisma {
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
     articles?: ArticleListRelationFilter
-    defaultProjectAccounts?: AccountListRelationFilter
+    lastProjectAccounts?: AccountListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -45955,7 +45955,7 @@ export namespace Prisma {
     forms?: FormOrderByRelationAggregateInput
     formSubmissions?: FormSubmissionOrderByRelationAggregateInput
     articles?: ArticleOrderByRelationAggregateInput
-    defaultProjectAccounts?: AccountOrderByRelationAggregateInput
+    lastProjectAccounts?: AccountOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -45998,7 +45998,7 @@ export namespace Prisma {
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
     articles?: ArticleListRelationFilter
-    defaultProjectAccounts?: AccountListRelationFilter
+    lastProjectAccounts?: AccountListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -48422,7 +48422,7 @@ export namespace Prisma {
     createdOn?: Date | string
     status?: string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: ProjectCreateNestedOneWithoutDefaultProjectAccountsInput
+    lastProjectAsset?: ProjectCreateNestedOneWithoutLastProjectAccountsInput
     roles?: RoleCreateNestedManyWithoutAccountInput
   }
 
@@ -48435,7 +48435,7 @@ export namespace Prisma {
     createdOn?: Date | string
     status?: string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProject?: string | null
+    lastProject?: string | null
     roles?: RoleUncheckedCreateNestedManyWithoutAccountInput
   }
 
@@ -48448,7 +48448,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: ProjectUpdateOneWithoutDefaultProjectAccountsNestedInput
+    lastProjectAsset?: ProjectUpdateOneWithoutLastProjectAccountsNestedInput
     roles?: RoleUpdateManyWithoutAccountNestedInput
   }
 
@@ -48461,7 +48461,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProject?: NullableStringFieldUpdateOperationsInput | string | null
+    lastProject?: NullableStringFieldUpdateOperationsInput | string | null
     roles?: RoleUncheckedUpdateManyWithoutAccountNestedInput
   }
 
@@ -48474,7 +48474,7 @@ export namespace Prisma {
     createdOn?: Date | string
     status?: string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProject?: string | null
+    lastProject?: string | null
   }
 
   export type AccountUpdateManyMutationInput = {
@@ -48497,7 +48497,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProject?: NullableStringFieldUpdateOperationsInput | string | null
+    lastProject?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RoleCreateInput = {
@@ -48646,7 +48646,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -48686,7 +48686,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUpdateInput = {
@@ -48726,7 +48726,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -48766,7 +48766,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -51528,7 +51528,7 @@ export namespace Prisma {
     createdOn?: SortOrder
     status?: SortOrder
     moreDetails?: SortOrder
-    defaultProject?: SortOrder
+    lastProject?: SortOrder
   }
 
   export type AccountMaxOrderByAggregateInput = {
@@ -51539,7 +51539,7 @@ export namespace Prisma {
     type?: SortOrder
     createdOn?: SortOrder
     status?: SortOrder
-    defaultProject?: SortOrder
+    lastProject?: SortOrder
   }
 
   export type AccountMinOrderByAggregateInput = {
@@ -51550,7 +51550,7 @@ export namespace Prisma {
     type?: SortOrder
     createdOn?: SortOrder
     status?: SortOrder
-    defaultProject?: SortOrder
+    lastProject?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -53305,9 +53305,9 @@ export namespace Prisma {
     status?: SortOrder
   }
 
-  export type ProjectCreateNestedOneWithoutDefaultProjectAccountsInput = {
-    create?: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutDefaultProjectAccountsInput
+  export type ProjectCreateNestedOneWithoutLastProjectAccountsInput = {
+    create?: XOR<ProjectCreateWithoutLastProjectAccountsInput, ProjectUncheckedCreateWithoutLastProjectAccountsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutLastProjectAccountsInput
     connect?: ProjectWhereUniqueInput
   }
 
@@ -53337,14 +53337,14 @@ export namespace Prisma {
     set?: Date | string
   }
 
-  export type ProjectUpdateOneWithoutDefaultProjectAccountsNestedInput = {
-    create?: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutDefaultProjectAccountsInput
-    upsert?: ProjectUpsertWithoutDefaultProjectAccountsInput
+  export type ProjectUpdateOneWithoutLastProjectAccountsNestedInput = {
+    create?: XOR<ProjectCreateWithoutLastProjectAccountsInput, ProjectUncheckedCreateWithoutLastProjectAccountsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutLastProjectAccountsInput
+    upsert?: ProjectUpsertWithoutLastProjectAccountsInput
     disconnect?: ProjectWhereInput | boolean
     delete?: ProjectWhereInput | boolean
     connect?: ProjectWhereUniqueInput
-    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutDefaultProjectAccountsInput, ProjectUpdateWithoutDefaultProjectAccountsInput>, ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput>
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutLastProjectAccountsInput, ProjectUpdateWithoutLastProjectAccountsInput>, ProjectUncheckedUpdateWithoutLastProjectAccountsInput>
   }
 
   export type RoleUpdateManyWithoutAccountNestedInput = {
@@ -53575,10 +53575,10 @@ export namespace Prisma {
     connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
-  export type AccountCreateNestedManyWithoutDefaultProjectAssetInput = {
-    create?: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput> | AccountCreateWithoutDefaultProjectAssetInput[] | AccountUncheckedCreateWithoutDefaultProjectAssetInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutDefaultProjectAssetInput | AccountCreateOrConnectWithoutDefaultProjectAssetInput[]
-    createMany?: AccountCreateManyDefaultProjectAssetInputEnvelope
+  export type AccountCreateNestedManyWithoutLastProjectAssetInput = {
+    create?: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput> | AccountCreateWithoutLastProjectAssetInput[] | AccountUncheckedCreateWithoutLastProjectAssetInput[]
+    connectOrCreate?: AccountCreateOrConnectWithoutLastProjectAssetInput | AccountCreateOrConnectWithoutLastProjectAssetInput[]
+    createMany?: AccountCreateManyLastProjectAssetInputEnvelope
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
   }
 
@@ -53736,10 +53736,10 @@ export namespace Prisma {
     connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
-  export type AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput = {
-    create?: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput> | AccountCreateWithoutDefaultProjectAssetInput[] | AccountUncheckedCreateWithoutDefaultProjectAssetInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutDefaultProjectAssetInput | AccountCreateOrConnectWithoutDefaultProjectAssetInput[]
-    createMany?: AccountCreateManyDefaultProjectAssetInputEnvelope
+  export type AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput = {
+    create?: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput> | AccountCreateWithoutLastProjectAssetInput[] | AccountUncheckedCreateWithoutLastProjectAssetInput[]
+    connectOrCreate?: AccountCreateOrConnectWithoutLastProjectAssetInput | AccountCreateOrConnectWithoutLastProjectAssetInput[]
+    createMany?: AccountCreateManyLastProjectAssetInputEnvelope
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
   }
 
@@ -54055,17 +54055,17 @@ export namespace Prisma {
     deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
   }
 
-  export type AccountUpdateManyWithoutDefaultProjectAssetNestedInput = {
-    create?: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput> | AccountCreateWithoutDefaultProjectAssetInput[] | AccountUncheckedCreateWithoutDefaultProjectAssetInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutDefaultProjectAssetInput | AccountCreateOrConnectWithoutDefaultProjectAssetInput[]
-    upsert?: AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput | AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput[]
-    createMany?: AccountCreateManyDefaultProjectAssetInputEnvelope
+  export type AccountUpdateManyWithoutLastProjectAssetNestedInput = {
+    create?: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput> | AccountCreateWithoutLastProjectAssetInput[] | AccountUncheckedCreateWithoutLastProjectAssetInput[]
+    connectOrCreate?: AccountCreateOrConnectWithoutLastProjectAssetInput | AccountCreateOrConnectWithoutLastProjectAssetInput[]
+    upsert?: AccountUpsertWithWhereUniqueWithoutLastProjectAssetInput | AccountUpsertWithWhereUniqueWithoutLastProjectAssetInput[]
+    createMany?: AccountCreateManyLastProjectAssetInputEnvelope
     set?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
     disconnect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
     delete?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    update?: AccountUpdateWithWhereUniqueWithoutDefaultProjectAssetInput | AccountUpdateWithWhereUniqueWithoutDefaultProjectAssetInput[]
-    updateMany?: AccountUpdateManyWithWhereWithoutDefaultProjectAssetInput | AccountUpdateManyWithWhereWithoutDefaultProjectAssetInput[]
+    update?: AccountUpdateWithWhereUniqueWithoutLastProjectAssetInput | AccountUpdateWithWhereUniqueWithoutLastProjectAssetInput[]
+    updateMany?: AccountUpdateManyWithWhereWithoutLastProjectAssetInput | AccountUpdateManyWithWhereWithoutLastProjectAssetInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
   }
 
@@ -54377,17 +54377,17 @@ export namespace Prisma {
     deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
   }
 
-  export type AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput = {
-    create?: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput> | AccountCreateWithoutDefaultProjectAssetInput[] | AccountUncheckedCreateWithoutDefaultProjectAssetInput[]
-    connectOrCreate?: AccountCreateOrConnectWithoutDefaultProjectAssetInput | AccountCreateOrConnectWithoutDefaultProjectAssetInput[]
-    upsert?: AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput | AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput[]
-    createMany?: AccountCreateManyDefaultProjectAssetInputEnvelope
+  export type AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput = {
+    create?: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput> | AccountCreateWithoutLastProjectAssetInput[] | AccountUncheckedCreateWithoutLastProjectAssetInput[]
+    connectOrCreate?: AccountCreateOrConnectWithoutLastProjectAssetInput | AccountCreateOrConnectWithoutLastProjectAssetInput[]
+    upsert?: AccountUpsertWithWhereUniqueWithoutLastProjectAssetInput | AccountUpsertWithWhereUniqueWithoutLastProjectAssetInput[]
+    createMany?: AccountCreateManyLastProjectAssetInputEnvelope
     set?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
     disconnect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
     delete?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-    update?: AccountUpdateWithWhereUniqueWithoutDefaultProjectAssetInput | AccountUpdateWithWhereUniqueWithoutDefaultProjectAssetInput[]
-    updateMany?: AccountUpdateManyWithWhereWithoutDefaultProjectAssetInput | AccountUpdateManyWithWhereWithoutDefaultProjectAssetInput[]
+    update?: AccountUpdateWithWhereUniqueWithoutLastProjectAssetInput | AccountUpdateWithWhereUniqueWithoutLastProjectAssetInput[]
+    updateMany?: AccountUpdateManyWithWhereWithoutLastProjectAssetInput | AccountUpdateManyWithWhereWithoutLastProjectAssetInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
   }
 
@@ -55403,7 +55403,7 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type ProjectCreateWithoutDefaultProjectAccountsInput = {
+  export type ProjectCreateWithoutLastProjectAccountsInput = {
     id: string
     name?: string
     url?: string | null
@@ -55442,7 +55442,7 @@ export namespace Prisma {
     articles?: ArticleCreateNestedManyWithoutProjectInput
   }
 
-  export type ProjectUncheckedCreateWithoutDefaultProjectAccountsInput = {
+  export type ProjectUncheckedCreateWithoutLastProjectAccountsInput = {
     id: string
     name?: string
     url?: string | null
@@ -55481,9 +55481,9 @@ export namespace Prisma {
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
   }
 
-  export type ProjectCreateOrConnectWithoutDefaultProjectAccountsInput = {
+  export type ProjectCreateOrConnectWithoutLastProjectAccountsInput = {
     where: ProjectWhereUniqueInput
-    create: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
+    create: XOR<ProjectCreateWithoutLastProjectAccountsInput, ProjectUncheckedCreateWithoutLastProjectAccountsInput>
   }
 
   export type RoleCreateWithoutAccountInput = {
@@ -55512,18 +55512,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ProjectUpsertWithoutDefaultProjectAccountsInput = {
-    update: XOR<ProjectUpdateWithoutDefaultProjectAccountsInput, ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput>
-    create: XOR<ProjectCreateWithoutDefaultProjectAccountsInput, ProjectUncheckedCreateWithoutDefaultProjectAccountsInput>
+  export type ProjectUpsertWithoutLastProjectAccountsInput = {
+    update: XOR<ProjectUpdateWithoutLastProjectAccountsInput, ProjectUncheckedUpdateWithoutLastProjectAccountsInput>
+    create: XOR<ProjectCreateWithoutLastProjectAccountsInput, ProjectUncheckedCreateWithoutLastProjectAccountsInput>
     where?: ProjectWhereInput
   }
 
-  export type ProjectUpdateToOneWithWhereWithoutDefaultProjectAccountsInput = {
+  export type ProjectUpdateToOneWithWhereWithoutLastProjectAccountsInput = {
     where?: ProjectWhereInput
-    data: XOR<ProjectUpdateWithoutDefaultProjectAccountsInput, ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput>
+    data: XOR<ProjectUpdateWithoutLastProjectAccountsInput, ProjectUncheckedUpdateWithoutLastProjectAccountsInput>
   }
 
-  export type ProjectUpdateWithoutDefaultProjectAccountsInput = {
+  export type ProjectUpdateWithoutLastProjectAccountsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55562,7 +55562,7 @@ export namespace Prisma {
     articles?: ArticleUpdateManyWithoutProjectNestedInput
   }
 
-  export type ProjectUncheckedUpdateWithoutDefaultProjectAccountsInput = {
+  export type ProjectUncheckedUpdateWithoutLastProjectAccountsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55665,7 +55665,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutRolesInput = {
@@ -55704,7 +55704,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutRolesInput = {
@@ -55721,7 +55721,7 @@ export namespace Prisma {
     createdOn?: Date | string
     status?: string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: ProjectCreateNestedOneWithoutDefaultProjectAccountsInput
+    lastProjectAsset?: ProjectCreateNestedOneWithoutLastProjectAccountsInput
   }
 
   export type AccountUncheckedCreateWithoutRolesInput = {
@@ -55733,7 +55733,7 @@ export namespace Prisma {
     createdOn?: Date | string
     status?: string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProject?: string | null
+    lastProject?: string | null
   }
 
   export type AccountCreateOrConnectWithoutRolesInput = {
@@ -55788,7 +55788,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutRolesInput = {
@@ -55827,7 +55827,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type AccountUpsertWithoutRolesInput = {
@@ -55850,7 +55850,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProjectAsset?: ProjectUpdateOneWithoutDefaultProjectAccountsNestedInput
+    lastProjectAsset?: ProjectUpdateOneWithoutLastProjectAccountsNestedInput
   }
 
   export type AccountUncheckedUpdateWithoutRolesInput = {
@@ -55862,7 +55862,7 @@ export namespace Prisma {
     createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     moreDetails?: NullableJsonNullValueInput | InputJsonValue
-    defaultProject?: NullableStringFieldUpdateOperationsInput | string | null
+    lastProject?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProjectCreateWithoutDomainEntriesInput = {
@@ -55901,7 +55901,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutDomainEntriesInput = {
@@ -55940,7 +55940,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutDomainEntriesInput = {
@@ -55995,7 +55995,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutDomainEntriesInput = {
@@ -56034,7 +56034,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type RoleCreateWithoutAssetInput = {
@@ -56697,7 +56697,7 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AccountCreateWithoutDefaultProjectAssetInput = {
+  export type AccountCreateWithoutLastProjectAssetInput = {
     id: string
     displayName?: string
     displayImage?: string
@@ -56709,7 +56709,7 @@ export namespace Prisma {
     roles?: RoleCreateNestedManyWithoutAccountInput
   }
 
-  export type AccountUncheckedCreateWithoutDefaultProjectAssetInput = {
+  export type AccountUncheckedCreateWithoutLastProjectAssetInput = {
     id: string
     displayName?: string
     displayImage?: string
@@ -56721,13 +56721,13 @@ export namespace Prisma {
     roles?: RoleUncheckedCreateNestedManyWithoutAccountInput
   }
 
-  export type AccountCreateOrConnectWithoutDefaultProjectAssetInput = {
+  export type AccountCreateOrConnectWithoutLastProjectAssetInput = {
     where: AccountWhereUniqueInput
-    create: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput>
+    create: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput>
   }
 
-  export type AccountCreateManyDefaultProjectAssetInputEnvelope = {
-    data: AccountCreateManyDefaultProjectAssetInput | AccountCreateManyDefaultProjectAssetInput[]
+  export type AccountCreateManyLastProjectAssetInputEnvelope = {
+    data: AccountCreateManyLastProjectAssetInput | AccountCreateManyLastProjectAssetInput[]
     skipDuplicates?: boolean
   }
 
@@ -57373,20 +57373,20 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
   }
 
-  export type AccountUpsertWithWhereUniqueWithoutDefaultProjectAssetInput = {
+  export type AccountUpsertWithWhereUniqueWithoutLastProjectAssetInput = {
     where: AccountWhereUniqueInput
-    update: XOR<AccountUpdateWithoutDefaultProjectAssetInput, AccountUncheckedUpdateWithoutDefaultProjectAssetInput>
-    create: XOR<AccountCreateWithoutDefaultProjectAssetInput, AccountUncheckedCreateWithoutDefaultProjectAssetInput>
+    update: XOR<AccountUpdateWithoutLastProjectAssetInput, AccountUncheckedUpdateWithoutLastProjectAssetInput>
+    create: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput>
   }
 
-  export type AccountUpdateWithWhereUniqueWithoutDefaultProjectAssetInput = {
+  export type AccountUpdateWithWhereUniqueWithoutLastProjectAssetInput = {
     where: AccountWhereUniqueInput
-    data: XOR<AccountUpdateWithoutDefaultProjectAssetInput, AccountUncheckedUpdateWithoutDefaultProjectAssetInput>
+    data: XOR<AccountUpdateWithoutLastProjectAssetInput, AccountUncheckedUpdateWithoutLastProjectAssetInput>
   }
 
-  export type AccountUpdateManyWithWhereWithoutDefaultProjectAssetInput = {
+  export type AccountUpdateManyWithWhereWithoutLastProjectAssetInput = {
     where: AccountScalarWhereInput
-    data: XOR<AccountUpdateManyMutationInput, AccountUncheckedUpdateManyWithoutDefaultProjectAssetInput>
+    data: XOR<AccountUpdateManyMutationInput, AccountUncheckedUpdateManyWithoutLastProjectAssetInput>
   }
 
   export type AccountScalarWhereInput = {
@@ -57401,7 +57401,7 @@ export namespace Prisma {
     createdOn?: DateTimeFilter<"Account"> | Date | string
     status?: StringFilter<"Account"> | string
     moreDetails?: JsonNullableFilter<"Account">
-    defaultProject?: StringNullableFilter<"Account"> | string | null
+    lastProject?: StringNullableFilter<"Account"> | string | null
   }
 
   export type ProjectCreateWithoutFormsInput = {
@@ -57440,7 +57440,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutFormsInput = {
@@ -57479,7 +57479,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutFormsInput = {
@@ -57560,7 +57560,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFormsInput = {
@@ -57599,7 +57599,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type FormSubmissionUpsertWithWhereUniqueWithoutFormInput = {
@@ -57654,7 +57654,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutFormSubmissionsInput = {
@@ -57693,7 +57693,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutFormSubmissionsInput = {
@@ -57771,7 +57771,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutFormSubmissionsInput = {
@@ -57810,7 +57810,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type FormUpsertWithoutSubmissionsInput = {
@@ -57878,7 +57878,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutProfilesInput = {
@@ -57917,7 +57917,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutProfilesInput = {
@@ -57972,7 +57972,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutProfilesInput = {
@@ -58011,7 +58011,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutPagesInput = {
@@ -58050,7 +58050,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutPagesInput = {
@@ -58089,7 +58089,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutPagesInput = {
@@ -58192,7 +58192,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutPagesInput = {
@@ -58231,7 +58231,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type PagePathUpsertWithWhereUniqueWithoutPageInput = {
@@ -58313,7 +58313,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutPathsInput = {
@@ -58352,7 +58352,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutPathsInput = {
@@ -58438,7 +58438,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutPathsInput = {
@@ -58477,7 +58477,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type PageUpsertWithoutPathsInput = {
@@ -58553,7 +58553,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutSectionsInput = {
@@ -58592,7 +58592,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutSectionsInput = {
@@ -58647,7 +58647,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSectionsInput = {
@@ -58686,7 +58686,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutSourcesInput = {
@@ -58725,7 +58725,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutSourcesInput = {
@@ -58764,7 +58764,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutSourcesInput = {
@@ -58843,7 +58843,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSourcesInput = {
@@ -58882,7 +58882,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type PageDataSourceBindingUpsertWithWhereUniqueWithoutSourceInput = {
@@ -59077,7 +59077,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutDatalistsInput = {
@@ -59116,7 +59116,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutDatalistsInput = {
@@ -59171,7 +59171,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutDatalistsInput = {
@@ -59210,7 +59210,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutRedirectsInput = {
@@ -59249,7 +59249,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutRedirectsInput = {
@@ -59288,7 +59288,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutRedirectsInput = {
@@ -59343,7 +59343,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutRedirectsInput = {
@@ -59382,7 +59382,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutEnvironmentsInput = {
@@ -59421,7 +59421,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
@@ -59460,7 +59460,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutEnvironmentsInput = {
@@ -59515,7 +59515,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
@@ -59554,7 +59554,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutStructuresInput = {
@@ -59593,7 +59593,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutStructuresInput = {
@@ -59632,7 +59632,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutStructuresInput = {
@@ -59687,7 +59687,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutStructuresInput = {
@@ -59726,7 +59726,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutDeploymentsInput = {
@@ -59765,7 +59765,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutDeploymentsInput = {
@@ -59804,7 +59804,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutDeploymentsInput = {
@@ -59859,7 +59859,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutDeploymentsInput = {
@@ -59898,7 +59898,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type AllocationCreateWithoutServerInput = {
@@ -60106,7 +60106,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutAllocationsInput = {
@@ -60145,7 +60145,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutAllocationsInput = {
@@ -60259,7 +60259,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutAllocationsInput = {
@@ -60298,7 +60298,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ServerCreateWithoutLogsInput = {
@@ -60449,7 +60449,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutCodeFilesInput = {
@@ -60488,7 +60488,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutCodeFilesInput = {
@@ -60543,7 +60543,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutCodeFilesInput = {
@@ -60582,7 +60582,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutTeamsInput = {
@@ -60621,7 +60621,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutTeamsInput = {
@@ -60660,7 +60660,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutTeamsInput = {
@@ -60751,7 +60751,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutTeamsInput = {
@@ -60790,7 +60790,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type MemberUpsertWithWhereUniqueWithoutTeamInput = {
@@ -60845,7 +60845,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutMembersInput = {
@@ -60884,7 +60884,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutMembersInput = {
@@ -60962,7 +60962,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutMembersInput = {
@@ -61001,7 +61001,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type TeamUpsertWithoutMembersInput = {
@@ -61099,7 +61099,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutJobPostingsInput = {
@@ -61138,7 +61138,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutJobPostingsInput = {
@@ -61223,7 +61223,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutJobPostingsInput = {
@@ -61262,7 +61262,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type JobPostingCreateWithoutApplicantsInput = {
@@ -61381,7 +61381,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutAppBaseBackupsInput = {
@@ -61420,7 +61420,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutAppBaseBackupsInput = {
@@ -61475,7 +61475,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutAppBaseBackupsInput = {
@@ -61514,7 +61514,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutArticlesInput = {
@@ -61553,7 +61553,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutArticlesInput = {
@@ -61592,7 +61592,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutArticlesInput = {
@@ -61647,7 +61647,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutArticlesInput = {
@@ -61686,7 +61686,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectCreateWithoutAssetModulesInput = {
@@ -61725,7 +61725,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectUncheckedCreateWithoutAssetModulesInput = {
@@ -61764,7 +61764,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
-    defaultProjectAccounts?: AccountUncheckedCreateNestedManyWithoutDefaultProjectAssetInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
   export type ProjectCreateOrConnectWithoutAssetModulesInput = {
@@ -61819,7 +61819,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutAssetModulesInput = {
@@ -61858,7 +61858,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
-    defaultProjectAccounts?: AccountUncheckedUpdateManyWithoutDefaultProjectAssetNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
   export type RoleCreateManyAccountInput = {
@@ -62107,7 +62107,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
   }
 
-  export type AccountCreateManyDefaultProjectAssetInput = {
+  export type AccountCreateManyLastProjectAssetInput = {
     id: string
     displayName?: string
     displayImage?: string
@@ -62772,7 +62772,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type AccountUpdateWithoutDefaultProjectAssetInput = {
+  export type AccountUpdateWithoutLastProjectAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     displayImage?: StringFieldUpdateOperationsInput | string
@@ -62784,7 +62784,7 @@ export namespace Prisma {
     roles?: RoleUpdateManyWithoutAccountNestedInput
   }
 
-  export type AccountUncheckedUpdateWithoutDefaultProjectAssetInput = {
+  export type AccountUncheckedUpdateWithoutLastProjectAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     displayImage?: StringFieldUpdateOperationsInput | string
@@ -62796,7 +62796,7 @@ export namespace Prisma {
     roles?: RoleUncheckedUpdateManyWithoutAccountNestedInput
   }
 
-  export type AccountUncheckedUpdateManyWithoutDefaultProjectAssetInput = {
+  export type AccountUncheckedUpdateManyWithoutLastProjectAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     displayImage?: StringFieldUpdateOperationsInput | string

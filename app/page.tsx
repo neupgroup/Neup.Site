@@ -16,22 +16,22 @@ export default async function Page({
     redirect(makeAppPath(`/home?project=${encodeURIComponent(project)}`));
   }
 
-  let defaultProject: string | null = null;
+  let lastProject: string | null = null;
 
   try {
     const accountId = await getAccountId();
     const account = await db.account.findUnique({
       where: { id: accountId },
-      select: { defaultProject: true },
+      select: { lastProject: true },
     });
 
-    defaultProject = account?.defaultProject?.trim() || null;
+    lastProject = account?.lastProject?.trim() || null;
   } catch {
     // Unauthenticated visitors continue to the project switcher.
   }
 
-  if (defaultProject) {
-    redirect(makeAppPath(`/home?project=${encodeURIComponent(defaultProject)}`));
+  if (lastProject) {
+    redirect(makeAppPath(`/home?project=${encodeURIComponent(lastProject)}`));
   }
 
   redirect(makeAppPath('@neup/switch'));

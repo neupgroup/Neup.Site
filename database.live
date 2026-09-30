@@ -15,7 +15,7 @@ Fields:
 > ownerAccountId: string, nullable, indexed;
 > status: string, nullable;
 > type: string, nullable;
-.. referenced by accounts.defaultProject;
+.. referenced by accounts.lastProject;
 
 Table: accounts, Model: Account
 Fields:
@@ -27,7 +27,7 @@ Fields:
 > createdOn: timestamp, default: current timestamp;
 > status: string, default: "active";
 > moreDetails: jsonb, nullable;
-> defaultProject: string, nullable, references projects.id, indexed;
+> lastProject: string, nullable, references projects.id, indexed;
 .. references roles;
 .. references pages, paths, sections, datalists, sources, environments, redirects, codeFiles, allocations, structures, deployments, appBaseBackups, assetModules, teams, members, roles, profiles;
 

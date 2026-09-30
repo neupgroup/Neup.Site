@@ -82,7 +82,7 @@ function AssetList() {
 
     const { toast } = useToast();
     const projectId = searchParams.get('project');
-    const defaultProjectId = allAssets.find((asset) => asset.isDefault)?.id ?? null;
+    const lastProjectId = allAssets.find((asset) => asset.isDefault)?.id ?? null;
 
     useEffect(() => {
         const fetchAssets = async () => {
@@ -168,7 +168,7 @@ function AssetList() {
         <div className="w-full space-y-6">
             <div>
                     <Link
-                        href={appendProject('/switch/new', projectId ?? defaultProjectId)}
+                        href={appendProject('/switch/new', projectId ?? lastProjectId)}
                         className={[
                             'flex w-full items-center gap-3 border p-4 transition-colors hover:bg-muted/90',
                             allAssets.length > 0 ? 'rounded-t-md border-b-0' : 'rounded-md',
