@@ -24,6 +24,13 @@ export interface Article {
   updatedAt?: string | null;
 }
 
+/** Normalize HTML and Unicode whitespace before article content is persisted. */
+export function normalizeArticleContent(content: string): string {
+  return content
+    .replace(/&(?:nbsp|NonBreakingSpace|ensp|emsp|thinsp|hairsp|verythinsp|mediumspace|ideographicspace);|&#(?:160|8194|8195|8201|8202|8203|x0*a0|x02002|x02003|x02009|x0200a|x0200b);/gi, ' ')
+    .replace(/[\u00a0\u1680\u180e\u2000-\u200b\u202f\u205f\u3000\ufeff]/g, ' ');
+}
+
 function mapArticle(record: any): Article {
   return {
     id: record.id, projectId: record.projectId, slug: record.slug ?? undefined,
@@ -45,7 +52,7 @@ export async function createArticle(data: Partial<Omit<Article, 'id' | 'publishe
     const now = new Date();
     await db.article.create({ data: {
       id, projectId, slug, title: data.title, author: data.author || 'Author Name',
-      content: data.content || '<p>Start writing your article here...</p>',
+      content: normalizeArticleContent(data.content || '<p>Start writing your article here...</p>'),
       imageUrl: data.imageUrl?.trim() || null, metaDescription: data.metaDescription?.trim() || null,
       language: data.language?.trim() || null, tags: data.tags?.length ? data.tags : Prisma.JsonNull,
       publishedAt: now, createdAt: now, updatedAt: now,
@@ -80,7 +87,7 @@ export async function updateArticle(id: string, data: Partial<Omit<Article, 'id'
   if (!projectId) return { success: false, error: 'Project context is required.' };
   const result = await db.article.updateMany({ where: { id, projectId }, data: {
     ...(typeof data.title === 'string' ? { title: data.title } : {}), ...(typeof data.author === 'string' ? { author: data.author } : {}),
-    ...(typeof data.content === 'string' ? { content: data.content } : {}), ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl?.trim() || null } : {}),
+    ...(typeof data.content === 'string' ? { content: normalizeArticleContent(data.content) } : {}), ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl?.trim() || null } : {}),
     ...(data.metaDescription !== undefined ? { metaDescription: data.metaDescription?.trim() || null } : {}), ...(data.language !== undefined ? { language: data.language?.trim() || null } : {}),
     ...(data.tags !== undefined ? { tags: data.tags?.length ? data.tags : Prisma.JsonNull } : {}), updatedAt: new Date(),
   }});
