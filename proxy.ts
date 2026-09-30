@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 import { logica } from '@neup/logica'
 import baseJson from '@base/application.json'
 import { decodeNeupIdToken } from '@neup/logica/account/token/verify'
+import { makeAppPath } from '@neup/core/appconfig'
 
 const AUTH_ME_PATH = '/bridge/api.v1/auth/me'
 const ACCOUNT_BASE_URL = 'https://neupgroup.com'
@@ -105,11 +106,11 @@ export async function proxy(request: NextRequest) {
     request.nextUrl.searchParams.get(PROJECT_QUERY_PARAM)?.trim() ||
     getProjectFromUrl(request.headers.get('referer') || '')
 
-  if (!project && !pathname.startsWith('/switch')) {
+  if (!project && pathname !== '/resolve-project') {
     const url = request.nextUrl.clone()
-    url.pathname = '/switch'
+    url.pathname = makeAppPath('/resolve-project')
     url.search = ''
-    url.searchParams.set('returnTo', `${pathname}${search}`)
+    url.searchParams.set('returnTo', request.url)
     return NextResponse.redirect(url)
   }
 

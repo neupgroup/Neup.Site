@@ -287,7 +287,7 @@ function Header({
     .join('') || 'A';
 
   return (
-    <header className="sticky top-0 z-40 flex h-20 items-center border-b bg-background shadow-lg">
+    <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background shadow-lg">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 lg:px-6">
         <div className="flex flex-col items-start group">
           <Link href={appendProject('/home', project)} className="flex items-center gap-3">
@@ -386,7 +386,7 @@ export function Dashboard({
 
   useEffect(() => {
     if (pathname !== '/switch' || project) {
-      setDefaultProject(null);
+      setLastProject(null);
       return;
     }
 

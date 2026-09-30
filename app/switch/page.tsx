@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { getAssetsForAccount, setDefaultProjectForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@neup/core/hooks/useToast';
 import { clearSession } from '@/inapp/helpers/session-manager';
@@ -16,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, Plus } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
+import { makeAppPath } from '@neup/core/appconfig';
 
 function ProjectRow({
     asset,
@@ -58,11 +59,6 @@ function ProjectRow({
                                     Selected
                                 </div>
                             )}
-                            {asset.isDefault && (
-                                <div className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                    Default
-                                </div>
-                            )}
                         </div>
                         <p className="text-sm text-muted-foreground font-mono">{asset.id}</p>
                     </div>
@@ -74,7 +70,6 @@ function ProjectRow({
 
 function AssetList() {
     const searchParams = useSearchParams();
-    const router = useRouter();
     const [allAssets, setAllAssets] = useState<AssetSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -82,7 +77,6 @@ function AssetList() {
 
     const { toast } = useToast();
     const projectId = searchParams.get('project');
-    const lastProjectId = allAssets.find((asset) => asset.isDefault)?.id ?? null;
 
     useEffect(() => {
         const fetchAssets = async () => {
@@ -110,38 +104,32 @@ function AssetList() {
 
     const prepareProjectSelection = (assetId: string) => {
         setActiveAssetId(assetId);
-
-        toast({
-            name: 'project-switch',
-            state: 'info',
-            convey: 'info',
-            title: 'Switching project',
-            description: 'Loading the selected project...',
-            dismissesOn: 2,
-        });
-
         clearSession();
     };
 
     const handleSelectAsset = async (assetId: string) => {
-        if (assetId === projectId) {
-            const result = await setDefaultProjectForAccount(assetId);
-            if (result.success) {
-                setAllAssets((prev) => prev.map((asset) => ({
-                    ...asset,
-                    isDefault: asset.id === assetId,
-                })));
-            }
+        const selectedAsset = allAssets.find((asset) => asset.id === assetId);
+        const result = await setDefaultProjectForAccount(assetId);
+
+        if (!result.success) {
             toast({
-                variant: result.success ? 'default' : 'destructive',
-                title: result.success ? 'Default project saved' : 'Unable to save default project',
-                description: result.success ? 'This project will open by default.' : result.error,
+                variant: 'destructive',
+                title: 'Unable to switch project',
+                description: result.error,
             });
             return;
         }
 
+        toast({
+            title: `You've switched to ${selectedAsset?.name || 'the selected'} Project`,
+            description: 'Your project is now active.',
+        });
+
         prepareProjectSelection(assetId);
-        router.replace(getProjectDestination(assetId));
+        const destination = new URL(window.location.href);
+        destination.searchParams.set('project', assetId);
+        window.history.replaceState({}, '', destination);
+        window.location.reload();
     };
 
     if (loading) {
@@ -168,7 +156,7 @@ function AssetList() {
         <div className="w-full space-y-6">
             <div>
                     <Link
-                        href={appendProject('/switch/new', projectId ?? lastProjectId)}
+                        href={appendProject('/switch/new', projectId)}
                         className={[
                             'flex w-full items-center gap-3 border p-4 transition-colors hover:bg-muted/90',
                             allAssets.length > 0 ? 'rounded-t-md border-b-0' : 'rounded-md',
