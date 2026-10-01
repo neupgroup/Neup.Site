@@ -511,6 +511,17 @@ exports.Prisma.ArticleScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ReviewScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  reviewer: 'reviewer',
+  content: 'content',
+  rating: 'rating',
+  createdOn: 'createdOn',
+  reply: 'reply',
+  repliedOn: 'repliedOn'
+};
+
 exports.Prisma.SyncRequestScalarFieldEnum = {
   id: 'id',
   source: 'source',
@@ -603,6 +614,7 @@ exports.Prisma.ModelName = {
   AppBaseBackup: 'AppBaseBackup',
   News: 'News',
   Article: 'Article',
+  Review: 'Review',
   SyncRequest: 'SyncRequest',
   AssetModule: 'AssetModule',
   SyncerLog: 'SyncerLog'

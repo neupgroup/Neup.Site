@@ -83,6 +83,7 @@ model Project {
   forms               Form[]
   formSubmissions     FormSubmission[]
   articles            Article[]
+  reviews             Review[]
   lastProjectAccounts Account[]             @relation("AccountLastProject")
 
   @@index([ownerAccountId])
@@ -558,6 +559,21 @@ model Article {
 
   @@index([projectId, publishedAt])
   @@map("articles")
+}
+
+model Review {
+  id        String    @id @default(cuid())
+  projectId String
+  reviewer  String
+  content   String?
+  rating    Int
+  createdOn DateTime  @default(now())
+  reply     String?
+  repliedOn DateTime?
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdOn])
+  @@map("reviews")
 }
 
 model SyncRequest {

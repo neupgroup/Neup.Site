@@ -136,3 +136,14 @@ Fields:
 > response: jsonb;
 > postedOn: timestamp, default current timestamp;
 > status: varchar(16);
+
+Table: reviews, Model: Review
+Fields:
+> id: string, primary key, auto generated;
+> projectId: string, references projects.id, indexed;
+> reviewer: string;
+> content: string, nullable;
+> rating: int;
+> createdOn: timestamp, default: current timestamp;
+> reply: string, nullable;
+> repliedOn: timestamp, nullable;

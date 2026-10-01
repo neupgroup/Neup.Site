@@ -61,6 +61,7 @@ import {
   ExternalLink,
   Globe,
   Inbox,
+  MessageSquareQuote,
 } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@neup/core/utils';
@@ -150,9 +151,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <div className="px-3 text-sm font-semibold text-muted-foreground">
           Manage
         </div>
-        <SidebarNavItem href="/manage/member" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></SidebarNavItem>
         <SidebarNavItem href="/manage/projects" currentPath={currentPath} project={project} onClick={onLinkClick}><FolderKanban className="h-4 w-4" /><span>Projects</span></SidebarNavItem>
-        <SidebarNavItem href="/careers" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Careers</span></SidebarNavItem>
         <SidebarNavItem href="/manage/billing" currentPath={currentPath} project={project} onClick={onLinkClick}><CreditCard className="h-4 w-4" /><span>Billing</span></SidebarNavItem>
         <SidebarNavItem href="/access" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Access</span></SidebarNavItem>
         <SidebarNavItem href="/manage/permissions" currentPath={currentPath} project={project} onClick={onLinkClick}><Shield className="h-4 w-4" /><span>Permissions</span></SidebarNavItem>
@@ -160,10 +159,23 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <SidebarNavItem href="/manage/contacts" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Contacts</span></SidebarNavItem>
         <SidebarNavItem href="/inbox" currentPath={currentPath} project={project} onClick={onLinkClick}><Inbox className="h-4 w-4" /><span>Inbox</span></SidebarNavItem>
         <ExternalAnalyticsNavLink propertyId={propertyId} currentUrl={currentUrl} onClick={onLinkClick}><BarChart className="h-4 w-4" /><span>Analytics</span><ExternalLink className="h-3.5 w-3.5" aria-label="Opens external page" /></ExternalAnalyticsNavLink>
-        <SidebarNavItem href="/products" currentPath={currentPath} project={project} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></SidebarNavItem>
         <SidebarNavItem href="/manage/syncer" currentPath={currentPath} project={project} onClick={onLinkClick}><RefreshCw className="h-4 w-4" /><span>Syncer</span></SidebarNavItem>
-        <SidebarNavItem href="/articles" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
         <SidebarNavItem href="/manage/referrals" currentPath={currentPath} project={project} onClick={onLinkClick}><Share2 className="h-4 w-4" /><span>Referrals</span></SidebarNavItem>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <div className="px-3 text-sm font-semibold text-muted-foreground">Content</div>
+        <SidebarNavItem href="/manage/member" currentPath={currentPath} project={project} onClick={onLinkClick}><Users className="h-4 w-4" /><span>Members</span></SidebarNavItem>
+        <SidebarNavItem href="/careers" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Careers</span></SidebarNavItem>
+        <SidebarNavItem href="/articles" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
+        <SidebarNavItem href="/reviews" currentPath={currentPath} project={project} onClick={onLinkClick}><MessageSquareQuote className="h-4 w-4" /><span>Reviews</span></SidebarNavItem>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <div className="px-3 text-sm font-semibold text-muted-foreground">Commerce</div>
+        <SidebarNavItem href="/products" currentPath={currentPath} project={project} onClick={onLinkClick}><Package className="h-4 w-4" /><span>Products</span></SidebarNavItem>
+        <SidebarNavItem href="/products/add" currentPath={currentPath} project={project} onClick={onLinkClick}><Plus className="h-4 w-4" /><span>Add Product</span></SidebarNavItem>
+        <SidebarNavItem href="/products/list/overview" currentPath={currentPath} project={project} onClick={onLinkClick}><List className="h-4 w-4" /><span>Category, List</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">

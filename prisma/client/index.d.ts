@@ -179,6 +179,11 @@ export type News = $Result.DefaultSelection<Prisma.$NewsPayload>
  */
 export type Article = $Result.DefaultSelection<Prisma.$ArticlePayload>
 /**
+ * Model Review
+ * 
+ */
+export type Review = $Result.DefaultSelection<Prisma.$ReviewPayload>
+/**
  * Model SyncRequest
  * 
  */
@@ -644,6 +649,16 @@ export class PrismaClient<
     * ```
     */
   get article(): Prisma.ArticleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.review`: Exposes CRUD operations for the **Review** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Reviews
+    * const reviews = await prisma.review.findMany()
+    * ```
+    */
+  get review(): Prisma.ReviewDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.syncRequest`: Exposes CRUD operations for the **SyncRequest** model.
@@ -1141,6 +1156,7 @@ export namespace Prisma {
     AppBaseBackup: 'AppBaseBackup',
     News: 'News',
     Article: 'Article',
+    Review: 'Review',
     SyncRequest: 'SyncRequest',
     AssetModule: 'AssetModule',
     SyncerLog: 'SyncerLog'
@@ -1159,7 +1175,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "role" | "domain" | "project" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "news" | "article" | "syncRequest" | "assetModule" | "syncerLog"
+      modelProps: "account" | "role" | "domain" | "project" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "news" | "article" | "review" | "syncRequest" | "assetModule" | "syncerLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3605,6 +3621,80 @@ export namespace Prisma {
           }
         }
       }
+      Review: {
+        payload: Prisma.$ReviewPayload<ExtArgs>
+        fields: Prisma.ReviewFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ReviewFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ReviewFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          findFirst: {
+            args: Prisma.ReviewFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ReviewFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          findMany: {
+            args: Prisma.ReviewFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
+          }
+          create: {
+            args: Prisma.ReviewCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          createMany: {
+            args: Prisma.ReviewCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ReviewCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
+          }
+          delete: {
+            args: Prisma.ReviewDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          update: {
+            args: Prisma.ReviewUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          deleteMany: {
+            args: Prisma.ReviewDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ReviewUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ReviewUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
+          }
+          upsert: {
+            args: Prisma.ReviewUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
+          }
+          aggregate: {
+            args: Prisma.ReviewAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateReview>
+          }
+          groupBy: {
+            args: Prisma.ReviewGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ReviewGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ReviewCountArgs<ExtArgs>
+            result: $Utils.Optional<ReviewCountAggregateOutputType> | number
+          }
+        }
+      }
       SyncRequest: {
         payload: Prisma.$SyncRequestPayload<ExtArgs>
         fields: Prisma.SyncRequestFieldRefs
@@ -3968,6 +4058,7 @@ export namespace Prisma {
     appBaseBackup?: AppBaseBackupOmit
     news?: NewsOmit
     article?: ArticleOmit
+    review?: ReviewOmit
     syncRequest?: SyncRequestOmit
     assetModule?: AssetModuleOmit
     syncerLog?: SyncerLogOmit
@@ -4104,6 +4195,7 @@ export namespace Prisma {
     forms: number
     formSubmissions: number
     articles: number
+    reviews: number
     lastProjectAccounts: number
   }
 
@@ -4130,6 +4222,7 @@ export namespace Prisma {
     forms?: boolean | ProjectCountOutputTypeCountFormsArgs
     formSubmissions?: boolean | ProjectCountOutputTypeCountFormSubmissionsArgs
     articles?: boolean | ProjectCountOutputTypeCountArticlesArgs
+    reviews?: boolean | ProjectCountOutputTypeCountReviewsArgs
     lastProjectAccounts?: boolean | ProjectCountOutputTypeCountLastProjectAccountsArgs
   }
 
@@ -4296,6 +4389,13 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountArticlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ArticleWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
   }
 
   /**
@@ -8046,6 +8146,7 @@ export namespace Prisma {
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
     articles?: boolean | Project$articlesArgs<ExtArgs>
+    reviews?: boolean | Project$reviewsArgs<ExtArgs>
     lastProjectAccounts?: boolean | Project$lastProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
@@ -8125,6 +8226,7 @@ export namespace Prisma {
     forms?: boolean | Project$formsArgs<ExtArgs>
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
     articles?: boolean | Project$articlesArgs<ExtArgs>
+    reviews?: boolean | Project$reviewsArgs<ExtArgs>
     lastProjectAccounts?: boolean | Project$lastProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -8156,6 +8258,7 @@ export namespace Prisma {
       forms: Prisma.$FormPayload<ExtArgs>[]
       formSubmissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
       articles: Prisma.$ArticlePayload<ExtArgs>[]
+      reviews: Prisma.$ReviewPayload<ExtArgs>[]
       lastProjectAccounts: Prisma.$AccountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -8589,6 +8692,7 @@ export namespace Prisma {
     forms<T extends Project$formsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     formSubmissions<T extends Project$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     articles<T extends Project$articlesArgs<ExtArgs> = {}>(args?: Subset<T, Project$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reviews<T extends Project$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Project$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     lastProjectAccounts<T extends Project$lastProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Project$lastProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -9551,6 +9655,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ArticleScalarFieldEnum | ArticleScalarFieldEnum[]
+  }
+
+  /**
+   * Project.reviews
+   */
+  export type Project$reviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    cursor?: ReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
   }
 
   /**
@@ -41914,6 +42042,1142 @@ export namespace Prisma {
 
 
   /**
+   * Model Review
+   */
+
+  export type AggregateReview = {
+    _count: ReviewCountAggregateOutputType | null
+    _avg: ReviewAvgAggregateOutputType | null
+    _sum: ReviewSumAggregateOutputType | null
+    _min: ReviewMinAggregateOutputType | null
+    _max: ReviewMaxAggregateOutputType | null
+  }
+
+  export type ReviewAvgAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type ReviewSumAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type ReviewMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    reviewer: string | null
+    content: string | null
+    rating: number | null
+    createdOn: Date | null
+    reply: string | null
+    repliedOn: Date | null
+  }
+
+  export type ReviewMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    reviewer: string | null
+    content: string | null
+    rating: number | null
+    createdOn: Date | null
+    reply: string | null
+    repliedOn: Date | null
+  }
+
+  export type ReviewCountAggregateOutputType = {
+    id: number
+    projectId: number
+    reviewer: number
+    content: number
+    rating: number
+    createdOn: number
+    reply: number
+    repliedOn: number
+    _all: number
+  }
+
+
+  export type ReviewAvgAggregateInputType = {
+    rating?: true
+  }
+
+  export type ReviewSumAggregateInputType = {
+    rating?: true
+  }
+
+  export type ReviewMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    reviewer?: true
+    content?: true
+    rating?: true
+    createdOn?: true
+    reply?: true
+    repliedOn?: true
+  }
+
+  export type ReviewMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    reviewer?: true
+    content?: true
+    rating?: true
+    createdOn?: true
+    reply?: true
+    repliedOn?: true
+  }
+
+  export type ReviewCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    reviewer?: true
+    content?: true
+    rating?: true
+    createdOn?: true
+    reply?: true
+    repliedOn?: true
+    _all?: true
+  }
+
+  export type ReviewAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Review to aggregate.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Reviews
+    **/
+    _count?: true | ReviewCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ReviewAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ReviewSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ReviewMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ReviewMaxAggregateInputType
+  }
+
+  export type GetReviewAggregateType<T extends ReviewAggregateArgs> = {
+        [P in keyof T & keyof AggregateReview]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReview[P]>
+      : GetScalarType<T[P], AggregateReview[P]>
+  }
+
+
+
+
+  export type ReviewGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithAggregationInput | ReviewOrderByWithAggregationInput[]
+    by: ReviewScalarFieldEnum[] | ReviewScalarFieldEnum
+    having?: ReviewScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ReviewCountAggregateInputType | true
+    _avg?: ReviewAvgAggregateInputType
+    _sum?: ReviewSumAggregateInputType
+    _min?: ReviewMinAggregateInputType
+    _max?: ReviewMaxAggregateInputType
+  }
+
+  export type ReviewGroupByOutputType = {
+    id: string
+    projectId: string
+    reviewer: string
+    content: string | null
+    rating: number
+    createdOn: Date
+    reply: string | null
+    repliedOn: Date | null
+    _count: ReviewCountAggregateOutputType | null
+    _avg: ReviewAvgAggregateOutputType | null
+    _sum: ReviewSumAggregateOutputType | null
+    _min: ReviewMinAggregateOutputType | null
+    _max: ReviewMaxAggregateOutputType | null
+  }
+
+  type GetReviewGroupByPayload<T extends ReviewGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ReviewGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ReviewGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ReviewGroupByOutputType[P]>
+            : GetScalarType<T[P], ReviewGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ReviewSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    reviewer?: boolean
+    content?: boolean
+    rating?: boolean
+    createdOn?: boolean
+    reply?: boolean
+    repliedOn?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
+
+  export type ReviewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    reviewer?: boolean
+    content?: boolean
+    rating?: boolean
+    createdOn?: boolean
+    reply?: boolean
+    repliedOn?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
+
+  export type ReviewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    reviewer?: boolean
+    content?: boolean
+    rating?: boolean
+    createdOn?: boolean
+    reply?: boolean
+    repliedOn?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
+
+  export type ReviewSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    reviewer?: boolean
+    content?: boolean
+    rating?: boolean
+    createdOn?: boolean
+    reply?: boolean
+    repliedOn?: boolean
+  }
+
+  export type ReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "reviewer" | "content" | "rating" | "createdOn" | "reply" | "repliedOn", ExtArgs["result"]["review"]>
+  export type ReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+  export type ReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+  export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+
+  export type $ReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Review"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      reviewer: string
+      content: string | null
+      rating: number
+      createdOn: Date
+      reply: string | null
+      repliedOn: Date | null
+    }, ExtArgs["result"]["review"]>
+    composites: {}
+  }
+
+  type ReviewGetPayload<S extends boolean | null | undefined | ReviewDefaultArgs> = $Result.GetResult<Prisma.$ReviewPayload, S>
+
+  type ReviewCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ReviewFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ReviewCountAggregateInputType | true
+    }
+
+  export interface ReviewDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Review'], meta: { name: 'Review' } }
+    /**
+     * Find zero or one Review that matches the filter.
+     * @param {ReviewFindUniqueArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ReviewFindUniqueArgs>(args: SelectSubset<T, ReviewFindUniqueArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Review that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ReviewFindUniqueOrThrowArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ReviewFindUniqueOrThrowArgs>(args: SelectSubset<T, ReviewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Review that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewFindFirstArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ReviewFindFirstArgs>(args?: SelectSubset<T, ReviewFindFirstArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Review that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewFindFirstOrThrowArgs} args - Arguments to find a Review
+     * @example
+     * // Get one Review
+     * const review = await prisma.review.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ReviewFindFirstOrThrowArgs>(args?: SelectSubset<T, ReviewFindFirstOrThrowArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Reviews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Reviews
+     * const reviews = await prisma.review.findMany()
+     * 
+     * // Get first 10 Reviews
+     * const reviews = await prisma.review.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const reviewWithIdOnly = await prisma.review.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ReviewFindManyArgs>(args?: SelectSubset<T, ReviewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Review.
+     * @param {ReviewCreateArgs} args - Arguments to create a Review.
+     * @example
+     * // Create one Review
+     * const Review = await prisma.review.create({
+     *   data: {
+     *     // ... data to create a Review
+     *   }
+     * })
+     * 
+     */
+    create<T extends ReviewCreateArgs>(args: SelectSubset<T, ReviewCreateArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Reviews.
+     * @param {ReviewCreateManyArgs} args - Arguments to create many Reviews.
+     * @example
+     * // Create many Reviews
+     * const review = await prisma.review.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ReviewCreateManyArgs>(args?: SelectSubset<T, ReviewCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Reviews and returns the data saved in the database.
+     * @param {ReviewCreateManyAndReturnArgs} args - Arguments to create many Reviews.
+     * @example
+     * // Create many Reviews
+     * const review = await prisma.review.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Reviews and only return the `id`
+     * const reviewWithIdOnly = await prisma.review.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ReviewCreateManyAndReturnArgs>(args?: SelectSubset<T, ReviewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Review.
+     * @param {ReviewDeleteArgs} args - Arguments to delete one Review.
+     * @example
+     * // Delete one Review
+     * const Review = await prisma.review.delete({
+     *   where: {
+     *     // ... filter to delete one Review
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ReviewDeleteArgs>(args: SelectSubset<T, ReviewDeleteArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Review.
+     * @param {ReviewUpdateArgs} args - Arguments to update one Review.
+     * @example
+     * // Update one Review
+     * const review = await prisma.review.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ReviewUpdateArgs>(args: SelectSubset<T, ReviewUpdateArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Reviews.
+     * @param {ReviewDeleteManyArgs} args - Arguments to filter Reviews to delete.
+     * @example
+     * // Delete a few Reviews
+     * const { count } = await prisma.review.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ReviewDeleteManyArgs>(args?: SelectSubset<T, ReviewDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Reviews
+     * const review = await prisma.review.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ReviewUpdateManyArgs>(args: SelectSubset<T, ReviewUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Reviews and returns the data updated in the database.
+     * @param {ReviewUpdateManyAndReturnArgs} args - Arguments to update many Reviews.
+     * @example
+     * // Update many Reviews
+     * const review = await prisma.review.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Reviews and only return the `id`
+     * const reviewWithIdOnly = await prisma.review.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ReviewUpdateManyAndReturnArgs>(args: SelectSubset<T, ReviewUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Review.
+     * @param {ReviewUpsertArgs} args - Arguments to update or create a Review.
+     * @example
+     * // Update or create a Review
+     * const review = await prisma.review.upsert({
+     *   create: {
+     *     // ... data to create a Review
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Review we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ReviewUpsertArgs>(args: SelectSubset<T, ReviewUpsertArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Reviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewCountArgs} args - Arguments to filter Reviews to count.
+     * @example
+     * // Count the number of Reviews
+     * const count = await prisma.review.count({
+     *   where: {
+     *     // ... the filter for the Reviews we want to count
+     *   }
+     * })
+    **/
+    count<T extends ReviewCountArgs>(
+      args?: Subset<T, ReviewCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ReviewCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Review.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ReviewAggregateArgs>(args: Subset<T, ReviewAggregateArgs>): Prisma.PrismaPromise<GetReviewAggregateType<T>>
+
+    /**
+     * Group by Review.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ReviewGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ReviewGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ReviewGroupByArgs['orderBy'] }
+        : { orderBy?: ReviewGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ReviewGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReviewGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Review model
+   */
+  readonly fields: ReviewFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Review.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Review model
+   */
+  interface ReviewFieldRefs {
+    readonly id: FieldRef<"Review", 'String'>
+    readonly projectId: FieldRef<"Review", 'String'>
+    readonly reviewer: FieldRef<"Review", 'String'>
+    readonly content: FieldRef<"Review", 'String'>
+    readonly rating: FieldRef<"Review", 'Int'>
+    readonly createdOn: FieldRef<"Review", 'DateTime'>
+    readonly reply: FieldRef<"Review", 'String'>
+    readonly repliedOn: FieldRef<"Review", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Review findUnique
+   */
+  export type ReviewFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review findUniqueOrThrow
+   */
+  export type ReviewFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review findFirst
+   */
+  export type ReviewFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reviews.
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reviews.
+     */
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * Review findFirstOrThrow
+   */
+  export type ReviewFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Review to fetch.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Reviews.
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reviews.
+     */
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * Review findMany
+   */
+  export type ReviewFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which Reviews to fetch.
+     */
+    where?: ReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Reviews to fetch.
+     */
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Reviews.
+     */
+    cursor?: ReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Reviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Reviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Reviews.
+     */
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * Review create
+   */
+  export type ReviewCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Review.
+     */
+    data: XOR<ReviewCreateInput, ReviewUncheckedCreateInput>
+  }
+
+  /**
+   * Review createMany
+   */
+  export type ReviewCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Reviews.
+     */
+    data: ReviewCreateManyInput | ReviewCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Review createManyAndReturn
+   */
+  export type ReviewCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * The data used to create many Reviews.
+     */
+    data: ReviewCreateManyInput | ReviewCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Review update
+   */
+  export type ReviewUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Review.
+     */
+    data: XOR<ReviewUpdateInput, ReviewUncheckedUpdateInput>
+    /**
+     * Choose, which Review to update.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review updateMany
+   */
+  export type ReviewUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Reviews.
+     */
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyInput>
+    /**
+     * Filter which Reviews to update
+     */
+    where?: ReviewWhereInput
+    /**
+     * Limit how many Reviews to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Review updateManyAndReturn
+   */
+  export type ReviewUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * The data used to update Reviews.
+     */
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyInput>
+    /**
+     * Filter which Reviews to update
+     */
+    where?: ReviewWhereInput
+    /**
+     * Limit how many Reviews to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Review upsert
+   */
+  export type ReviewUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Review to update in case it exists.
+     */
+    where: ReviewWhereUniqueInput
+    /**
+     * In case the Review found by the `where` argument doesn't exist, create a new Review with this data.
+     */
+    create: XOR<ReviewCreateInput, ReviewUncheckedCreateInput>
+    /**
+     * In case the Review was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ReviewUpdateInput, ReviewUncheckedUpdateInput>
+  }
+
+  /**
+   * Review delete
+   */
+  export type ReviewDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    /**
+     * Filter which Review to delete.
+     */
+    where: ReviewWhereUniqueInput
+  }
+
+  /**
+   * Review deleteMany
+   */
+  export type ReviewDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Reviews to delete
+     */
+    where?: ReviewWhereInput
+    /**
+     * Limit how many Reviews to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Review without action
+   */
+  export type ReviewDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Review
+     */
+    omit?: ReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model SyncRequest
    */
 
@@ -45515,6 +46779,20 @@ export namespace Prisma {
   export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
 
 
+  export const ReviewScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    reviewer: 'reviewer',
+    content: 'content',
+    rating: 'rating',
+    createdOn: 'createdOn',
+    reply: 'reply',
+    repliedOn: 'repliedOn'
+  };
+
+  export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
+
+
   export const SyncRequestScalarFieldEnum: {
     id: 'id',
     source: 'source',
@@ -45915,6 +47193,7 @@ export namespace Prisma {
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
     articles?: ArticleListRelationFilter
+    reviews?: ReviewListRelationFilter
     lastProjectAccounts?: AccountListRelationFilter
   }
 
@@ -45955,6 +47234,7 @@ export namespace Prisma {
     forms?: FormOrderByRelationAggregateInput
     formSubmissions?: FormSubmissionOrderByRelationAggregateInput
     articles?: ArticleOrderByRelationAggregateInput
+    reviews?: ReviewOrderByRelationAggregateInput
     lastProjectAccounts?: AccountOrderByRelationAggregateInput
   }
 
@@ -45998,6 +47278,7 @@ export namespace Prisma {
     forms?: FormListRelationFilter
     formSubmissions?: FormSubmissionListRelationFilter
     articles?: ArticleListRelationFilter
+    reviews?: ReviewListRelationFilter
     lastProjectAccounts?: AccountListRelationFilter
   }, "id">
 
@@ -48239,6 +49520,78 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Article"> | Date | string | null
   }
 
+  export type ReviewWhereInput = {
+    AND?: ReviewWhereInput | ReviewWhereInput[]
+    OR?: ReviewWhereInput[]
+    NOT?: ReviewWhereInput | ReviewWhereInput[]
+    id?: StringFilter<"Review"> | string
+    projectId?: StringFilter<"Review"> | string
+    reviewer?: StringFilter<"Review"> | string
+    content?: StringNullableFilter<"Review"> | string | null
+    rating?: IntFilter<"Review"> | number
+    createdOn?: DateTimeFilter<"Review"> | Date | string
+    reply?: StringNullableFilter<"Review"> | string | null
+    repliedOn?: DateTimeNullableFilter<"Review"> | Date | string | null
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+  }
+
+  export type ReviewOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    reviewer?: SortOrder
+    content?: SortOrderInput | SortOrder
+    rating?: SortOrder
+    createdOn?: SortOrder
+    reply?: SortOrderInput | SortOrder
+    repliedOn?: SortOrderInput | SortOrder
+    project?: ProjectOrderByWithRelationInput
+  }
+
+  export type ReviewWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ReviewWhereInput | ReviewWhereInput[]
+    OR?: ReviewWhereInput[]
+    NOT?: ReviewWhereInput | ReviewWhereInput[]
+    projectId?: StringFilter<"Review"> | string
+    reviewer?: StringFilter<"Review"> | string
+    content?: StringNullableFilter<"Review"> | string | null
+    rating?: IntFilter<"Review"> | number
+    createdOn?: DateTimeFilter<"Review"> | Date | string
+    reply?: StringNullableFilter<"Review"> | string | null
+    repliedOn?: DateTimeNullableFilter<"Review"> | Date | string | null
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+  }, "id">
+
+  export type ReviewOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    reviewer?: SortOrder
+    content?: SortOrderInput | SortOrder
+    rating?: SortOrder
+    createdOn?: SortOrder
+    reply?: SortOrderInput | SortOrder
+    repliedOn?: SortOrderInput | SortOrder
+    _count?: ReviewCountOrderByAggregateInput
+    _avg?: ReviewAvgOrderByAggregateInput
+    _max?: ReviewMaxOrderByAggregateInput
+    _min?: ReviewMinOrderByAggregateInput
+    _sum?: ReviewSumOrderByAggregateInput
+  }
+
+  export type ReviewScalarWhereWithAggregatesInput = {
+    AND?: ReviewScalarWhereWithAggregatesInput | ReviewScalarWhereWithAggregatesInput[]
+    OR?: ReviewScalarWhereWithAggregatesInput[]
+    NOT?: ReviewScalarWhereWithAggregatesInput | ReviewScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Review"> | string
+    projectId?: StringWithAggregatesFilter<"Review"> | string
+    reviewer?: StringWithAggregatesFilter<"Review"> | string
+    content?: StringNullableWithAggregatesFilter<"Review"> | string | null
+    rating?: IntWithAggregatesFilter<"Review"> | number
+    createdOn?: DateTimeWithAggregatesFilter<"Review"> | Date | string
+    reply?: StringNullableWithAggregatesFilter<"Review"> | string | null
+    repliedOn?: DateTimeNullableWithAggregatesFilter<"Review"> | Date | string | null
+  }
+
   export type SyncRequestWhereInput = {
     AND?: SyncRequestWhereInput | SyncRequestWhereInput[]
     OR?: SyncRequestWhereInput[]
@@ -48646,6 +49999,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -48686,6 +50040,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -48726,6 +50081,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -48766,6 +50122,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -51247,6 +52604,82 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type ReviewCreateInput = {
+    id?: string
+    reviewer: string
+    content?: string | null
+    rating: number
+    createdOn?: Date | string
+    reply?: string | null
+    repliedOn?: Date | string | null
+    project: ProjectCreateNestedOneWithoutReviewsInput
+  }
+
+  export type ReviewUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    reviewer: string
+    content?: string | null
+    rating: number
+    createdOn?: Date | string
+    reply?: string | null
+    repliedOn?: Date | string | null
+  }
+
+  export type ReviewUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reviewer?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    reply?: NullableStringFieldUpdateOperationsInput | string | null
+    repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    project?: ProjectUpdateOneRequiredWithoutReviewsNestedInput
+  }
+
+  export type ReviewUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    reviewer?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    reply?: NullableStringFieldUpdateOperationsInput | string | null
+    repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ReviewCreateManyInput = {
+    id?: string
+    projectId: string
+    reviewer: string
+    content?: string | null
+    rating: number
+    createdOn?: Date | string
+    reply?: string | null
+    repliedOn?: Date | string | null
+  }
+
+  export type ReviewUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reviewer?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    reply?: NullableStringFieldUpdateOperationsInput | string | null
+    repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ReviewUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    reviewer?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    reply?: NullableStringFieldUpdateOperationsInput | string | null
+    repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type SyncRequestCreateInput = {
     id?: string
     source: string
@@ -51837,6 +53270,12 @@ export namespace Prisma {
     none?: ArticleWhereInput
   }
 
+  export type ReviewListRelationFilter = {
+    every?: ReviewWhereInput
+    some?: ReviewWhereInput
+    none?: ReviewWhereInput
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -51924,6 +53363,10 @@ export namespace Prisma {
   }
 
   export type ArticleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ReviewOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -53226,6 +54669,47 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type ReviewCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    reviewer?: SortOrder
+    content?: SortOrder
+    rating?: SortOrder
+    createdOn?: SortOrder
+    reply?: SortOrder
+    repliedOn?: SortOrder
+  }
+
+  export type ReviewAvgOrderByAggregateInput = {
+    rating?: SortOrder
+  }
+
+  export type ReviewMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    reviewer?: SortOrder
+    content?: SortOrder
+    rating?: SortOrder
+    createdOn?: SortOrder
+    reply?: SortOrder
+    repliedOn?: SortOrder
+  }
+
+  export type ReviewMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    reviewer?: SortOrder
+    content?: SortOrder
+    rating?: SortOrder
+    createdOn?: SortOrder
+    reply?: SortOrder
+    repliedOn?: SortOrder
+  }
+
+  export type ReviewSumOrderByAggregateInput = {
+    rating?: SortOrder
+  }
+
   export type SyncRequestCountOrderByAggregateInput = {
     id?: SortOrder
     source?: SortOrder
@@ -53575,6 +55059,13 @@ export namespace Prisma {
     connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
   }
 
+  export type ReviewCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ReviewCreateWithoutProjectInput, ReviewUncheckedCreateWithoutProjectInput> | ReviewCreateWithoutProjectInput[] | ReviewUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutProjectInput | ReviewCreateOrConnectWithoutProjectInput[]
+    createMany?: ReviewCreateManyProjectInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
   export type AccountCreateNestedManyWithoutLastProjectAssetInput = {
     create?: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput> | AccountCreateWithoutLastProjectAssetInput[] | AccountUncheckedCreateWithoutLastProjectAssetInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutLastProjectAssetInput | AccountCreateOrConnectWithoutLastProjectAssetInput[]
@@ -53734,6 +55225,13 @@ export namespace Prisma {
     connectOrCreate?: ArticleCreateOrConnectWithoutProjectInput | ArticleCreateOrConnectWithoutProjectInput[]
     createMany?: ArticleCreateManyProjectInputEnvelope
     connect?: ArticleWhereUniqueInput | ArticleWhereUniqueInput[]
+  }
+
+  export type ReviewUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ReviewCreateWithoutProjectInput, ReviewUncheckedCreateWithoutProjectInput> | ReviewCreateWithoutProjectInput[] | ReviewUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutProjectInput | ReviewCreateOrConnectWithoutProjectInput[]
+    createMany?: ReviewCreateManyProjectInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
   export type AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput = {
@@ -54053,6 +55551,20 @@ export namespace Prisma {
     update?: ArticleUpdateWithWhereUniqueWithoutProjectInput | ArticleUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: ArticleUpdateManyWithWhereWithoutProjectInput | ArticleUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
+  }
+
+  export type ReviewUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ReviewCreateWithoutProjectInput, ReviewUncheckedCreateWithoutProjectInput> | ReviewCreateWithoutProjectInput[] | ReviewUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutProjectInput | ReviewCreateOrConnectWithoutProjectInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutProjectInput | ReviewUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ReviewCreateManyProjectInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutProjectInput | ReviewUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutProjectInput | ReviewUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
   }
 
   export type AccountUpdateManyWithoutLastProjectAssetNestedInput = {
@@ -54375,6 +55887,20 @@ export namespace Prisma {
     update?: ArticleUpdateWithWhereUniqueWithoutProjectInput | ArticleUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: ArticleUpdateManyWithWhereWithoutProjectInput | ArticleUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: ArticleScalarWhereInput | ArticleScalarWhereInput[]
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ReviewCreateWithoutProjectInput, ReviewUncheckedCreateWithoutProjectInput> | ReviewCreateWithoutProjectInput[] | ReviewUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutProjectInput | ReviewCreateOrConnectWithoutProjectInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutProjectInput | ReviewUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ReviewCreateManyProjectInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutProjectInput | ReviewUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutProjectInput | ReviewUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
   }
 
   export type AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput = {
@@ -55129,6 +56655,20 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutArticlesInput, ProjectUpdateWithoutArticlesInput>, ProjectUncheckedUpdateWithoutArticlesInput>
   }
 
+  export type ProjectCreateNestedOneWithoutReviewsInput = {
+    create?: XOR<ProjectCreateWithoutReviewsInput, ProjectUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutReviewsInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutReviewsNestedInput = {
+    create?: XOR<ProjectCreateWithoutReviewsInput, ProjectUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutReviewsInput
+    upsert?: ProjectUpsertWithoutReviewsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutReviewsInput, ProjectUpdateWithoutReviewsInput>, ProjectUncheckedUpdateWithoutReviewsInput>
+  }
+
   export type ProjectCreateNestedOneWithoutAssetModulesInput = {
     create?: XOR<ProjectCreateWithoutAssetModulesInput, ProjectUncheckedCreateWithoutAssetModulesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutAssetModulesInput
@@ -55440,6 +56980,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutLastProjectAccountsInput = {
@@ -55479,6 +57020,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutLastProjectAccountsInput = {
@@ -55560,6 +57102,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutLastProjectAccountsInput = {
@@ -55599,6 +57142,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type RoleUpsertWithWhereUniqueWithoutAccountInput = {
@@ -55665,6 +57209,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -55704,6 +57249,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -55788,6 +57334,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -55827,6 +57374,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -55901,6 +57449,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -55940,6 +57489,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -55995,6 +57545,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -56034,6 +57585,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -56694,6 +58246,36 @@ export namespace Prisma {
 
   export type ArticleCreateManyProjectInputEnvelope = {
     data: ArticleCreateManyProjectInput | ArticleCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReviewCreateWithoutProjectInput = {
+    id?: string
+    reviewer: string
+    content?: string | null
+    rating: number
+    createdOn?: Date | string
+    reply?: string | null
+    repliedOn?: Date | string | null
+  }
+
+  export type ReviewUncheckedCreateWithoutProjectInput = {
+    id?: string
+    reviewer: string
+    content?: string | null
+    rating: number
+    createdOn?: Date | string
+    reply?: string | null
+    repliedOn?: Date | string | null
+  }
+
+  export type ReviewCreateOrConnectWithoutProjectInput = {
+    where: ReviewWhereUniqueInput
+    create: XOR<ReviewCreateWithoutProjectInput, ReviewUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ReviewCreateManyProjectInputEnvelope = {
+    data: ReviewCreateManyProjectInput | ReviewCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -57373,6 +58955,36 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Article"> | Date | string | null
   }
 
+  export type ReviewUpsertWithWhereUniqueWithoutProjectInput = {
+    where: ReviewWhereUniqueInput
+    update: XOR<ReviewUpdateWithoutProjectInput, ReviewUncheckedUpdateWithoutProjectInput>
+    create: XOR<ReviewCreateWithoutProjectInput, ReviewUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ReviewUpdateWithWhereUniqueWithoutProjectInput = {
+    where: ReviewWhereUniqueInput
+    data: XOR<ReviewUpdateWithoutProjectInput, ReviewUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type ReviewUpdateManyWithWhereWithoutProjectInput = {
+    where: ReviewScalarWhereInput
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type ReviewScalarWhereInput = {
+    AND?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    OR?: ReviewScalarWhereInput[]
+    NOT?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    id?: StringFilter<"Review"> | string
+    projectId?: StringFilter<"Review"> | string
+    reviewer?: StringFilter<"Review"> | string
+    content?: StringNullableFilter<"Review"> | string | null
+    rating?: IntFilter<"Review"> | number
+    createdOn?: DateTimeFilter<"Review"> | Date | string
+    reply?: StringNullableFilter<"Review"> | string | null
+    repliedOn?: DateTimeNullableFilter<"Review"> | Date | string | null
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutLastProjectAssetInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutLastProjectAssetInput, AccountUncheckedUpdateWithoutLastProjectAssetInput>
@@ -57440,6 +59052,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57479,6 +59092,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57560,6 +59174,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -57599,6 +59214,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -57654,6 +59270,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57693,6 +59310,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57771,6 +59389,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -57810,6 +59429,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -57878,6 +59498,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57917,6 +59538,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57972,6 +59594,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58011,6 +59634,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58050,6 +59674,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58089,6 +59714,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58192,6 +59818,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58231,6 +59858,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58313,6 +59941,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58352,6 +59981,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58438,6 +60068,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58477,6 +60108,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58553,6 +60185,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58592,6 +60225,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58647,6 +60281,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58686,6 +60321,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58725,6 +60361,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58764,6 +60401,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -58843,6 +60481,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58882,6 +60521,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59077,6 +60717,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59116,6 +60757,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59171,6 +60813,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59210,6 +60853,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59249,6 +60893,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59288,6 +60933,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59343,6 +60989,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59382,6 +61029,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59421,6 +61069,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59460,6 +61109,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59515,6 +61165,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59554,6 +61205,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59593,6 +61245,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59632,6 +61285,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59687,6 +61341,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59726,6 +61381,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59765,6 +61421,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59804,6 +61461,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59859,6 +61517,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59898,6 +61557,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60106,6 +61766,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60145,6 +61806,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60259,6 +61921,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60298,6 +61961,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60449,6 +62113,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60488,6 +62153,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60543,6 +62209,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60582,6 +62249,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60621,6 +62289,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60660,6 +62329,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60751,6 +62421,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60790,6 +62461,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60845,6 +62517,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60884,6 +62557,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60962,6 +62636,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61001,6 +62676,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61099,6 +62775,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61138,6 +62815,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61223,6 +62901,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61262,6 +62941,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61381,6 +63061,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61420,6 +63101,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61475,6 +63157,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61514,6 +63197,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61553,6 +63237,7 @@ export namespace Prisma {
     jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61592,6 +63277,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61647,6 +63333,7 @@ export namespace Prisma {
     jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61686,6 +63373,183 @@ export namespace Prisma {
     jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
+  }
+
+  export type ProjectCreateWithoutReviewsInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainCreateNestedManyWithoutAssetInput
+    profiles?: ProfileCreateNestedManyWithoutAssetInput
+    pages?: PageCreateNestedManyWithoutAssetInput
+    paths?: PagePathCreateNestedManyWithoutAssetInput
+    sections?: SectionCreateNestedManyWithoutAssetInput
+    datalists?: DatalistCreateNestedManyWithoutAssetInput
+    sources?: DataSourceCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableCreateNestedManyWithoutAssetInput
+    redirects?: RedirectCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileCreateNestedManyWithoutAssetInput
+    allocations?: AllocationCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
+    teams?: TeamCreateNestedManyWithoutAssetInput
+    members?: MemberCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
+  }
+
+  export type ProjectUncheckedCreateWithoutReviewsInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
+    profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
+    pages?: PageUncheckedCreateNestedManyWithoutAssetInput
+    paths?: PagePathUncheckedCreateNestedManyWithoutAssetInput
+    sections?: SectionUncheckedCreateNestedManyWithoutAssetInput
+    datalists?: DatalistUncheckedCreateNestedManyWithoutAssetInput
+    sources?: DataSourceUncheckedCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableUncheckedCreateNestedManyWithoutAssetInput
+    redirects?: RedirectUncheckedCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileUncheckedCreateNestedManyWithoutAssetInput
+    allocations?: AllocationUncheckedCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureUncheckedCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentUncheckedCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupUncheckedCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
+    teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
+    members?: MemberUncheckedCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
+  }
+
+  export type ProjectCreateOrConnectWithoutReviewsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutReviewsInput, ProjectUncheckedCreateWithoutReviewsInput>
+  }
+
+  export type ProjectUpsertWithoutReviewsInput = {
+    update: XOR<ProjectUpdateWithoutReviewsInput, ProjectUncheckedUpdateWithoutReviewsInput>
+    create: XOR<ProjectCreateWithoutReviewsInput, ProjectUncheckedCreateWithoutReviewsInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutReviewsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutReviewsInput, ProjectUncheckedUpdateWithoutReviewsInput>
+  }
+
+  export type ProjectUpdateWithoutReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUpdateManyWithoutAssetNestedInput
+    pages?: PageUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUpdateManyWithoutAssetNestedInput
+    sections?: SectionUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
+    teams?: TeamUpdateManyWithoutAssetNestedInput
+    members?: MemberUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
+    pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUncheckedUpdateManyWithoutAssetNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUncheckedUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUncheckedUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUncheckedUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUncheckedUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUncheckedUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUncheckedUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUncheckedUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUncheckedUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUncheckedUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
+    members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61725,6 +63589,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61764,6 +63629,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61819,6 +63685,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61858,6 +63725,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62105,6 +63973,16 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+  }
+
+  export type ReviewCreateManyProjectInput = {
+    id?: string
+    reviewer: string
+    content?: string | null
+    rating: number
+    createdOn?: Date | string
+    reply?: string | null
+    repliedOn?: Date | string | null
   }
 
   export type AccountCreateManyLastProjectAssetInput = {
@@ -62770,6 +64648,36 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ReviewUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reviewer?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    reply?: NullableStringFieldUpdateOperationsInput | string | null
+    repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ReviewUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reviewer?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    reply?: NullableStringFieldUpdateOperationsInput | string | null
+    repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reviewer?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: IntFieldUpdateOperationsInput | number
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    reply?: NullableStringFieldUpdateOperationsInput | string | null
+    repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AccountUpdateWithoutLastProjectAssetInput = {
