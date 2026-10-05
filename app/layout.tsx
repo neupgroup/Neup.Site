@@ -8,10 +8,13 @@ import { getSelfAccountBasics } from '@/services/accounts';
 import { initializeUserAccount } from '@/services/auth/initialize';
 import { cn } from '@neup/core/utils';
 import { AppLayoutClient } from './layout-client';
+import { getAppDescription } from '@neup/logica/base/identity';
+import { getFavicon } from '@neup/logica/base/assets';
 
 
 export const metadata: Metadata = {
-  description: 'Visually build your website.',
+  description: getAppDescription(),
+  icons: { icon: getFavicon() },
 };
 
 export default async function RootLayout({

@@ -10,9 +10,9 @@
     "prebuild": "npm run setup -- --mode prebuild",
     "postbuild": "npm run setup -- --mode postbuild",
     "predev": "npm run setup -- --mode predev",
-    "dev": "sudo next dev --turbopack --experimental-https --hostname dev.neupgroup.com --port 443",
+    "dev": "next dev --turbopack --experimental-https --hostname dev.neupgroup.com --port 7483",
     "build": "npx prisma generate && npx next build",
-    "start": "next start",
+    "start": "next start --port 7483",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate"

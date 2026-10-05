@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { getLogo } from '@neup/logica/base/assets';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { getAssetsForAccount, setDefaultProjectForAccount, type AssetSummary } from '@/services/assets';
@@ -47,7 +48,7 @@ function ProjectRow({
                         <Avatar className="h-12 w-12 rounded-[1rem]">
                             {asset.logoUrl ? <AvatarImage src={asset.logoUrl} alt={asset.name} /> : null}
                             <AvatarFallback className="rounded-[1rem] bg-muted">
-                                <Image src="@neup/logo.svg" alt="Neup.Sites" width={24} height={24} className="h-6 w-6" />
+                                <Image src={getLogo().url} alt={getLogo().alt} width={24} height={24} className="h-6 w-6" />
                             </AvatarFallback>
                         </Avatar>
                     </div>

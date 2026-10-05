@@ -77,6 +77,8 @@ import { useToast } from '@neup/core/hooks/useToast';
 import { useState, useEffect } from 'react';
 import { ScrollArea } from '@neup/components/ui/scroll-area';
 import { isResolvedAssetLogoSvg, resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
+import { getLogo } from '@neup/logica/base/assets';
+import { getAppName } from '@neup/logica/base/identity';
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { getSelfAccountBasics, type SelfAccountBasics } from '@/services/accounts';
 import { appendProject } from '@/inapp/helpers/application-mode';
@@ -326,11 +328,11 @@ function Header({
                 )}
               </div>
             ) : (
-              <Rocket className="h-7 w-7 text-primary" />
+              <Image src={getLogo().url} alt={getLogo().alt} width={28} height={28} className="h-7 w-7 object-contain" />
             ))}
 
             <div className="flex flex-col leading-none">
-              <span className="font-headline text-xl font-semibold tracking-tight">Neup.Sites</span>
+              <span className="font-headline text-xl font-semibold tracking-tight">{getAppName()}</span>
               {selectedSiteName && (
                 <span className="-mt-0.5 text-xs font-medium text-muted-foreground">
                   {selectedSiteName}
