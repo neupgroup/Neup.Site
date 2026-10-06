@@ -84,6 +84,7 @@ model Project {
   formSubmissions        FormSubmission[]
   articles               Article[]
   reviews                Review[]
+  blocks                 Block[]
   lastProjectAccounts    Account[]             @relation("AccountLastProject")
 
   @@index([ownerAccountId])
@@ -575,6 +576,40 @@ model Review {
 
   @@index([projectId, createdOn])
   @@map("reviews")
+}
+
+model BlockTemplate {
+  id            String   @id @default(uuid())
+  name          String
+  slug          String   @db.VarChar(24)
+  media         Json?
+  type          String   @default("page")
+  description   String?
+  version       String?
+  payload       Json?
+  code          String?  @db.Text
+  compatibility Json?
+  createdOn     DateTime @default(now())
+  lastUpdated   DateTime @updatedAt
+  blocks        Block[]
+
+  @@map("block_templates")
+}
+
+model Block {
+  id           String         @id @default(uuid())
+  projectId    String
+  name         String
+  slug         String
+  templateId   String?
+  payload      Json?
+  lastUpdated  DateTime       @updatedAt
+  project      Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  template     BlockTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([templateId])
+  @@map("blocks")
 }
 
 model SyncRequest {

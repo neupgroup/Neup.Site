@@ -147,3 +147,29 @@ Fields:
 > createdOn: timestamp, default: current timestamp;
 > reply: string, nullable;
 > repliedOn: timestamp, nullable;
+
+Table: block_templates, Model: BlockTemplate
+Fields:
+> id: uuid, primary key, auto generated;
+> name: string;
+> slug: varchar(24);
+> media: jsonb, nullable;
+> type: string, default: "page"; values: page, section, element;
+> description: string, nullable;
+> version: string, nullable;
+> payload: jsonb, nullable;
+> code: text, nullable;
+> compatibility: jsonb, nullable;
+> createdOn: timestamp, default current timestamp;
+> lastUpdated: timestamp, auto updated;
+.. references blocks;
+
+Table: blocks, Model: Block
+Fields:
+> id: uuid, primary key, auto generated;
+> projectId: string, references projects.id, indexed;
+> name: string;
+> slug: string;
+> templateId: uuid, nullable, references block_templates.id, indexed;
+> payload: jsonb, nullable;
+> lastUpdated: timestamp, auto updated;
