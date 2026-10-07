@@ -62,6 +62,7 @@ import {
   Globe,
   Inbox,
   MessageSquareQuote,
+  Blocks,
 } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@neup/core/utils';
@@ -171,6 +172,7 @@ function MainNavContent({ currentPath, currentUrl, isAuthenticated, propertyId, 
         <SidebarNavItem href="/careers" currentPath={currentPath} project={project} onClick={onLinkClick}><Briefcase className="h-4 w-4" /><span>Careers</span></SidebarNavItem>
         <SidebarNavItem href="/articles" currentPath={currentPath} project={project} onClick={onLinkClick}><Newspaper className="h-4 w-4" /><span>Articles</span></SidebarNavItem>
         <SidebarNavItem href="/reviews" currentPath={currentPath} project={project} onClick={onLinkClick}><MessageSquareQuote className="h-4 w-4" /><span>Reviews</span></SidebarNavItem>
+        <SidebarNavItem href="/blocks" currentPath={currentPath} project={project} onClick={onLinkClick}><Blocks className="h-4 w-4" /><span>Blocks</span></SidebarNavItem>
       </div>
 
       <div className="mt-4 space-y-2">

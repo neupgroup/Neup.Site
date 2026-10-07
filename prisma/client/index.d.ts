@@ -184,6 +184,16 @@ export type Article = $Result.DefaultSelection<Prisma.$ArticlePayload>
  */
 export type Review = $Result.DefaultSelection<Prisma.$ReviewPayload>
 /**
+ * Model BlockTemplate
+ * 
+ */
+export type BlockTemplate = $Result.DefaultSelection<Prisma.$BlockTemplatePayload>
+/**
+ * Model Block
+ * 
+ */
+export type Block = $Result.DefaultSelection<Prisma.$BlockPayload>
+/**
  * Model SyncRequest
  * 
  */
@@ -659,6 +669,26 @@ export class PrismaClient<
     * ```
     */
   get review(): Prisma.ReviewDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.blockTemplate`: Exposes CRUD operations for the **BlockTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BlockTemplates
+    * const blockTemplates = await prisma.blockTemplate.findMany()
+    * ```
+    */
+  get blockTemplate(): Prisma.BlockTemplateDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.block`: Exposes CRUD operations for the **Block** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Blocks
+    * const blocks = await prisma.block.findMany()
+    * ```
+    */
+  get block(): Prisma.BlockDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.syncRequest`: Exposes CRUD operations for the **SyncRequest** model.
@@ -1157,6 +1187,8 @@ export namespace Prisma {
     News: 'News',
     Article: 'Article',
     Review: 'Review',
+    BlockTemplate: 'BlockTemplate',
+    Block: 'Block',
     SyncRequest: 'SyncRequest',
     AssetModule: 'AssetModule',
     SyncerLog: 'SyncerLog'
@@ -1175,7 +1207,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "role" | "domain" | "project" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "news" | "article" | "review" | "syncRequest" | "assetModule" | "syncerLog"
+      modelProps: "account" | "role" | "domain" | "project" | "form" | "formSubmission" | "profile" | "page" | "pagePath" | "section" | "template" | "dataSource" | "pageDataSourceBinding" | "datalist" | "redirect" | "environmentVariable" | "siteStructure" | "deployment" | "server" | "allocation" | "serverLog" | "serverCommand" | "codeFile" | "linkedAccount" | "apiToken" | "team" | "member" | "jobPosting" | "applicant" | "errorLog" | "appBaseBackup" | "news" | "article" | "review" | "blockTemplate" | "block" | "syncRequest" | "assetModule" | "syncerLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3695,6 +3727,154 @@ export namespace Prisma {
           }
         }
       }
+      BlockTemplate: {
+        payload: Prisma.$BlockTemplatePayload<ExtArgs>
+        fields: Prisma.BlockTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BlockTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BlockTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.BlockTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BlockTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.BlockTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.BlockTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.BlockTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BlockTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.BlockTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>
+          }
+          update: {
+            args: Prisma.BlockTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.BlockTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BlockTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BlockTemplateUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>[]
+          }
+          upsert: {
+            args: Prisma.BlockTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.BlockTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBlockTemplate>
+          }
+          groupBy: {
+            args: Prisma.BlockTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BlockTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BlockTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<BlockTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
+      Block: {
+        payload: Prisma.$BlockPayload<ExtArgs>
+        fields: Prisma.BlockFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BlockFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BlockFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>
+          }
+          findFirst: {
+            args: Prisma.BlockFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BlockFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>
+          }
+          findMany: {
+            args: Prisma.BlockFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>[]
+          }
+          create: {
+            args: Prisma.BlockCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>
+          }
+          createMany: {
+            args: Prisma.BlockCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BlockCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>[]
+          }
+          delete: {
+            args: Prisma.BlockDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>
+          }
+          update: {
+            args: Prisma.BlockUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>
+          }
+          deleteMany: {
+            args: Prisma.BlockDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BlockUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BlockUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>[]
+          }
+          upsert: {
+            args: Prisma.BlockUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BlockPayload>
+          }
+          aggregate: {
+            args: Prisma.BlockAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBlock>
+          }
+          groupBy: {
+            args: Prisma.BlockGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BlockGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BlockCountArgs<ExtArgs>
+            result: $Utils.Optional<BlockCountAggregateOutputType> | number
+          }
+        }
+      }
       SyncRequest: {
         payload: Prisma.$SyncRequestPayload<ExtArgs>
         fields: Prisma.SyncRequestFieldRefs
@@ -4059,6 +4239,8 @@ export namespace Prisma {
     news?: NewsOmit
     article?: ArticleOmit
     review?: ReviewOmit
+    blockTemplate?: BlockTemplateOmit
+    block?: BlockOmit
     syncRequest?: SyncRequestOmit
     assetModule?: AssetModuleOmit
     syncerLog?: SyncerLogOmit
@@ -4196,6 +4378,7 @@ export namespace Prisma {
     formSubmissions: number
     articles: number
     reviews: number
+    blocks: number
     lastProjectAccounts: number
   }
 
@@ -4223,6 +4406,7 @@ export namespace Prisma {
     formSubmissions?: boolean | ProjectCountOutputTypeCountFormSubmissionsArgs
     articles?: boolean | ProjectCountOutputTypeCountArticlesArgs
     reviews?: boolean | ProjectCountOutputTypeCountReviewsArgs
+    blocks?: boolean | ProjectCountOutputTypeCountBlocksArgs
     lastProjectAccounts?: boolean | ProjectCountOutputTypeCountLastProjectAccountsArgs
   }
 
@@ -4396,6 +4580,13 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ReviewWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountBlocksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlockWhereInput
   }
 
   /**
@@ -4607,6 +4798,37 @@ export namespace Prisma {
    */
   export type JobPostingCountOutputTypeCountApplicantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApplicantWhereInput
+  }
+
+
+  /**
+   * Count Type BlockTemplateCountOutputType
+   */
+
+  export type BlockTemplateCountOutputType = {
+    blocks: number
+  }
+
+  export type BlockTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    blocks?: boolean | BlockTemplateCountOutputTypeCountBlocksArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BlockTemplateCountOutputType without action
+   */
+  export type BlockTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplateCountOutputType
+     */
+    select?: BlockTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BlockTemplateCountOutputType without action
+   */
+  export type BlockTemplateCountOutputTypeCountBlocksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlockWhereInput
   }
 
 
@@ -8147,6 +8369,7 @@ export namespace Prisma {
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
     articles?: boolean | Project$articlesArgs<ExtArgs>
     reviews?: boolean | Project$reviewsArgs<ExtArgs>
+    blocks?: boolean | Project$blocksArgs<ExtArgs>
     lastProjectAccounts?: boolean | Project$lastProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
@@ -8227,6 +8450,7 @@ export namespace Prisma {
     formSubmissions?: boolean | Project$formSubmissionsArgs<ExtArgs>
     articles?: boolean | Project$articlesArgs<ExtArgs>
     reviews?: boolean | Project$reviewsArgs<ExtArgs>
+    blocks?: boolean | Project$blocksArgs<ExtArgs>
     lastProjectAccounts?: boolean | Project$lastProjectAccountsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -8259,6 +8483,7 @@ export namespace Prisma {
       formSubmissions: Prisma.$FormSubmissionPayload<ExtArgs>[]
       articles: Prisma.$ArticlePayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
+      blocks: Prisma.$BlockPayload<ExtArgs>[]
       lastProjectAccounts: Prisma.$AccountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -8693,6 +8918,7 @@ export namespace Prisma {
     formSubmissions<T extends Project$formSubmissionsArgs<ExtArgs> = {}>(args?: Subset<T, Project$formSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FormSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     articles<T extends Project$articlesArgs<ExtArgs> = {}>(args?: Subset<T, Project$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviews<T extends Project$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Project$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    blocks<T extends Project$blocksArgs<ExtArgs> = {}>(args?: Subset<T, Project$blocksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     lastProjectAccounts<T extends Project$lastProjectAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Project$lastProjectAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -9679,6 +9905,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
+   * Project.blocks
+   */
+  export type Project$blocksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    where?: BlockWhereInput
+    orderBy?: BlockOrderByWithRelationInput | BlockOrderByWithRelationInput[]
+    cursor?: BlockWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BlockScalarFieldEnum | BlockScalarFieldEnum[]
   }
 
   /**
@@ -43178,6 +43428,2272 @@ export namespace Prisma {
 
 
   /**
+   * Model BlockTemplate
+   */
+
+  export type AggregateBlockTemplate = {
+    _count: BlockTemplateCountAggregateOutputType | null
+    _min: BlockTemplateMinAggregateOutputType | null
+    _max: BlockTemplateMaxAggregateOutputType | null
+  }
+
+  export type BlockTemplateMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    slug: string | null
+    type: string | null
+    description: string | null
+    version: string | null
+    code: string | null
+    createdOn: Date | null
+    lastUpdated: Date | null
+  }
+
+  export type BlockTemplateMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    slug: string | null
+    type: string | null
+    description: string | null
+    version: string | null
+    code: string | null
+    createdOn: Date | null
+    lastUpdated: Date | null
+  }
+
+  export type BlockTemplateCountAggregateOutputType = {
+    id: number
+    name: number
+    slug: number
+    media: number
+    type: number
+    description: number
+    version: number
+    payload: number
+    code: number
+    compatibility: number
+    createdOn: number
+    lastUpdated: number
+    _all: number
+  }
+
+
+  export type BlockTemplateMinAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    type?: true
+    description?: true
+    version?: true
+    code?: true
+    createdOn?: true
+    lastUpdated?: true
+  }
+
+  export type BlockTemplateMaxAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    type?: true
+    description?: true
+    version?: true
+    code?: true
+    createdOn?: true
+    lastUpdated?: true
+  }
+
+  export type BlockTemplateCountAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    media?: true
+    type?: true
+    description?: true
+    version?: true
+    payload?: true
+    code?: true
+    compatibility?: true
+    createdOn?: true
+    lastUpdated?: true
+    _all?: true
+  }
+
+  export type BlockTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BlockTemplate to aggregate.
+     */
+    where?: BlockTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlockTemplates to fetch.
+     */
+    orderBy?: BlockTemplateOrderByWithRelationInput | BlockTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BlockTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlockTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlockTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BlockTemplates
+    **/
+    _count?: true | BlockTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BlockTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BlockTemplateMaxAggregateInputType
+  }
+
+  export type GetBlockTemplateAggregateType<T extends BlockTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateBlockTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBlockTemplate[P]>
+      : GetScalarType<T[P], AggregateBlockTemplate[P]>
+  }
+
+
+
+
+  export type BlockTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlockTemplateWhereInput
+    orderBy?: BlockTemplateOrderByWithAggregationInput | BlockTemplateOrderByWithAggregationInput[]
+    by: BlockTemplateScalarFieldEnum[] | BlockTemplateScalarFieldEnum
+    having?: BlockTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BlockTemplateCountAggregateInputType | true
+    _min?: BlockTemplateMinAggregateInputType
+    _max?: BlockTemplateMaxAggregateInputType
+  }
+
+  export type BlockTemplateGroupByOutputType = {
+    id: string
+    name: string
+    slug: string
+    media: JsonValue | null
+    type: string
+    description: string | null
+    version: string | null
+    payload: JsonValue | null
+    code: string | null
+    compatibility: JsonValue | null
+    createdOn: Date
+    lastUpdated: Date
+    _count: BlockTemplateCountAggregateOutputType | null
+    _min: BlockTemplateMinAggregateOutputType | null
+    _max: BlockTemplateMaxAggregateOutputType | null
+  }
+
+  type GetBlockTemplateGroupByPayload<T extends BlockTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BlockTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BlockTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BlockTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], BlockTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BlockTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    media?: boolean
+    type?: boolean
+    description?: boolean
+    version?: boolean
+    payload?: boolean
+    code?: boolean
+    compatibility?: boolean
+    createdOn?: boolean
+    lastUpdated?: boolean
+    blocks?: boolean | BlockTemplate$blocksArgs<ExtArgs>
+    _count?: boolean | BlockTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["blockTemplate"]>
+
+  export type BlockTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    media?: boolean
+    type?: boolean
+    description?: boolean
+    version?: boolean
+    payload?: boolean
+    code?: boolean
+    compatibility?: boolean
+    createdOn?: boolean
+    lastUpdated?: boolean
+  }, ExtArgs["result"]["blockTemplate"]>
+
+  export type BlockTemplateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    media?: boolean
+    type?: boolean
+    description?: boolean
+    version?: boolean
+    payload?: boolean
+    code?: boolean
+    compatibility?: boolean
+    createdOn?: boolean
+    lastUpdated?: boolean
+  }, ExtArgs["result"]["blockTemplate"]>
+
+  export type BlockTemplateSelectScalar = {
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    media?: boolean
+    type?: boolean
+    description?: boolean
+    version?: boolean
+    payload?: boolean
+    code?: boolean
+    compatibility?: boolean
+    createdOn?: boolean
+    lastUpdated?: boolean
+  }
+
+  export type BlockTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "media" | "type" | "description" | "version" | "payload" | "code" | "compatibility" | "createdOn" | "lastUpdated", ExtArgs["result"]["blockTemplate"]>
+  export type BlockTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    blocks?: boolean | BlockTemplate$blocksArgs<ExtArgs>
+    _count?: boolean | BlockTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type BlockTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type BlockTemplateIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $BlockTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BlockTemplate"
+    objects: {
+      blocks: Prisma.$BlockPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      slug: string
+      media: Prisma.JsonValue | null
+      type: string
+      description: string | null
+      version: string | null
+      payload: Prisma.JsonValue | null
+      code: string | null
+      compatibility: Prisma.JsonValue | null
+      createdOn: Date
+      lastUpdated: Date
+    }, ExtArgs["result"]["blockTemplate"]>
+    composites: {}
+  }
+
+  type BlockTemplateGetPayload<S extends boolean | null | undefined | BlockTemplateDefaultArgs> = $Result.GetResult<Prisma.$BlockTemplatePayload, S>
+
+  type BlockTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BlockTemplateFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BlockTemplateCountAggregateInputType | true
+    }
+
+  export interface BlockTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BlockTemplate'], meta: { name: 'BlockTemplate' } }
+    /**
+     * Find zero or one BlockTemplate that matches the filter.
+     * @param {BlockTemplateFindUniqueArgs} args - Arguments to find a BlockTemplate
+     * @example
+     * // Get one BlockTemplate
+     * const blockTemplate = await prisma.blockTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BlockTemplateFindUniqueArgs>(args: SelectSubset<T, BlockTemplateFindUniqueArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BlockTemplate that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BlockTemplateFindUniqueOrThrowArgs} args - Arguments to find a BlockTemplate
+     * @example
+     * // Get one BlockTemplate
+     * const blockTemplate = await prisma.blockTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BlockTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, BlockTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BlockTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockTemplateFindFirstArgs} args - Arguments to find a BlockTemplate
+     * @example
+     * // Get one BlockTemplate
+     * const blockTemplate = await prisma.blockTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BlockTemplateFindFirstArgs>(args?: SelectSubset<T, BlockTemplateFindFirstArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BlockTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockTemplateFindFirstOrThrowArgs} args - Arguments to find a BlockTemplate
+     * @example
+     * // Get one BlockTemplate
+     * const blockTemplate = await prisma.blockTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BlockTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, BlockTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BlockTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BlockTemplates
+     * const blockTemplates = await prisma.blockTemplate.findMany()
+     * 
+     * // Get first 10 BlockTemplates
+     * const blockTemplates = await prisma.blockTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const blockTemplateWithIdOnly = await prisma.blockTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BlockTemplateFindManyArgs>(args?: SelectSubset<T, BlockTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BlockTemplate.
+     * @param {BlockTemplateCreateArgs} args - Arguments to create a BlockTemplate.
+     * @example
+     * // Create one BlockTemplate
+     * const BlockTemplate = await prisma.blockTemplate.create({
+     *   data: {
+     *     // ... data to create a BlockTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends BlockTemplateCreateArgs>(args: SelectSubset<T, BlockTemplateCreateArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BlockTemplates.
+     * @param {BlockTemplateCreateManyArgs} args - Arguments to create many BlockTemplates.
+     * @example
+     * // Create many BlockTemplates
+     * const blockTemplate = await prisma.blockTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BlockTemplateCreateManyArgs>(args?: SelectSubset<T, BlockTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BlockTemplates and returns the data saved in the database.
+     * @param {BlockTemplateCreateManyAndReturnArgs} args - Arguments to create many BlockTemplates.
+     * @example
+     * // Create many BlockTemplates
+     * const blockTemplate = await prisma.blockTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BlockTemplates and only return the `id`
+     * const blockTemplateWithIdOnly = await prisma.blockTemplate.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BlockTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, BlockTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BlockTemplate.
+     * @param {BlockTemplateDeleteArgs} args - Arguments to delete one BlockTemplate.
+     * @example
+     * // Delete one BlockTemplate
+     * const BlockTemplate = await prisma.blockTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one BlockTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BlockTemplateDeleteArgs>(args: SelectSubset<T, BlockTemplateDeleteArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BlockTemplate.
+     * @param {BlockTemplateUpdateArgs} args - Arguments to update one BlockTemplate.
+     * @example
+     * // Update one BlockTemplate
+     * const blockTemplate = await prisma.blockTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BlockTemplateUpdateArgs>(args: SelectSubset<T, BlockTemplateUpdateArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BlockTemplates.
+     * @param {BlockTemplateDeleteManyArgs} args - Arguments to filter BlockTemplates to delete.
+     * @example
+     * // Delete a few BlockTemplates
+     * const { count } = await prisma.blockTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BlockTemplateDeleteManyArgs>(args?: SelectSubset<T, BlockTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BlockTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BlockTemplates
+     * const blockTemplate = await prisma.blockTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BlockTemplateUpdateManyArgs>(args: SelectSubset<T, BlockTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BlockTemplates and returns the data updated in the database.
+     * @param {BlockTemplateUpdateManyAndReturnArgs} args - Arguments to update many BlockTemplates.
+     * @example
+     * // Update many BlockTemplates
+     * const blockTemplate = await prisma.blockTemplate.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BlockTemplates and only return the `id`
+     * const blockTemplateWithIdOnly = await prisma.blockTemplate.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BlockTemplateUpdateManyAndReturnArgs>(args: SelectSubset<T, BlockTemplateUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BlockTemplate.
+     * @param {BlockTemplateUpsertArgs} args - Arguments to update or create a BlockTemplate.
+     * @example
+     * // Update or create a BlockTemplate
+     * const blockTemplate = await prisma.blockTemplate.upsert({
+     *   create: {
+     *     // ... data to create a BlockTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BlockTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BlockTemplateUpsertArgs>(args: SelectSubset<T, BlockTemplateUpsertArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BlockTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockTemplateCountArgs} args - Arguments to filter BlockTemplates to count.
+     * @example
+     * // Count the number of BlockTemplates
+     * const count = await prisma.blockTemplate.count({
+     *   where: {
+     *     // ... the filter for the BlockTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends BlockTemplateCountArgs>(
+      args?: Subset<T, BlockTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BlockTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BlockTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BlockTemplateAggregateArgs>(args: Subset<T, BlockTemplateAggregateArgs>): Prisma.PrismaPromise<GetBlockTemplateAggregateType<T>>
+
+    /**
+     * Group by BlockTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BlockTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BlockTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: BlockTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BlockTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBlockTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BlockTemplate model
+   */
+  readonly fields: BlockTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BlockTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BlockTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    blocks<T extends BlockTemplate$blocksArgs<ExtArgs> = {}>(args?: Subset<T, BlockTemplate$blocksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BlockTemplate model
+   */
+  interface BlockTemplateFieldRefs {
+    readonly id: FieldRef<"BlockTemplate", 'String'>
+    readonly name: FieldRef<"BlockTemplate", 'String'>
+    readonly slug: FieldRef<"BlockTemplate", 'String'>
+    readonly media: FieldRef<"BlockTemplate", 'Json'>
+    readonly type: FieldRef<"BlockTemplate", 'String'>
+    readonly description: FieldRef<"BlockTemplate", 'String'>
+    readonly version: FieldRef<"BlockTemplate", 'String'>
+    readonly payload: FieldRef<"BlockTemplate", 'Json'>
+    readonly code: FieldRef<"BlockTemplate", 'String'>
+    readonly compatibility: FieldRef<"BlockTemplate", 'Json'>
+    readonly createdOn: FieldRef<"BlockTemplate", 'DateTime'>
+    readonly lastUpdated: FieldRef<"BlockTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BlockTemplate findUnique
+   */
+  export type BlockTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which BlockTemplate to fetch.
+     */
+    where: BlockTemplateWhereUniqueInput
+  }
+
+  /**
+   * BlockTemplate findUniqueOrThrow
+   */
+  export type BlockTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which BlockTemplate to fetch.
+     */
+    where: BlockTemplateWhereUniqueInput
+  }
+
+  /**
+   * BlockTemplate findFirst
+   */
+  export type BlockTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which BlockTemplate to fetch.
+     */
+    where?: BlockTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlockTemplates to fetch.
+     */
+    orderBy?: BlockTemplateOrderByWithRelationInput | BlockTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BlockTemplates.
+     */
+    cursor?: BlockTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlockTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlockTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BlockTemplates.
+     */
+    distinct?: BlockTemplateScalarFieldEnum | BlockTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * BlockTemplate findFirstOrThrow
+   */
+  export type BlockTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which BlockTemplate to fetch.
+     */
+    where?: BlockTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlockTemplates to fetch.
+     */
+    orderBy?: BlockTemplateOrderByWithRelationInput | BlockTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BlockTemplates.
+     */
+    cursor?: BlockTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlockTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlockTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BlockTemplates.
+     */
+    distinct?: BlockTemplateScalarFieldEnum | BlockTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * BlockTemplate findMany
+   */
+  export type BlockTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which BlockTemplates to fetch.
+     */
+    where?: BlockTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BlockTemplates to fetch.
+     */
+    orderBy?: BlockTemplateOrderByWithRelationInput | BlockTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BlockTemplates.
+     */
+    cursor?: BlockTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BlockTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BlockTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BlockTemplates.
+     */
+    distinct?: BlockTemplateScalarFieldEnum | BlockTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * BlockTemplate create
+   */
+  export type BlockTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BlockTemplate.
+     */
+    data: XOR<BlockTemplateCreateInput, BlockTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * BlockTemplate createMany
+   */
+  export type BlockTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BlockTemplates.
+     */
+    data: BlockTemplateCreateManyInput | BlockTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BlockTemplate createManyAndReturn
+   */
+  export type BlockTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to create many BlockTemplates.
+     */
+    data: BlockTemplateCreateManyInput | BlockTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BlockTemplate update
+   */
+  export type BlockTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BlockTemplate.
+     */
+    data: XOR<BlockTemplateUpdateInput, BlockTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which BlockTemplate to update.
+     */
+    where: BlockTemplateWhereUniqueInput
+  }
+
+  /**
+   * BlockTemplate updateMany
+   */
+  export type BlockTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BlockTemplates.
+     */
+    data: XOR<BlockTemplateUpdateManyMutationInput, BlockTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which BlockTemplates to update
+     */
+    where?: BlockTemplateWhereInput
+    /**
+     * Limit how many BlockTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BlockTemplate updateManyAndReturn
+   */
+  export type BlockTemplateUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to update BlockTemplates.
+     */
+    data: XOR<BlockTemplateUpdateManyMutationInput, BlockTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which BlockTemplates to update
+     */
+    where?: BlockTemplateWhereInput
+    /**
+     * Limit how many BlockTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BlockTemplate upsert
+   */
+  export type BlockTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BlockTemplate to update in case it exists.
+     */
+    where: BlockTemplateWhereUniqueInput
+    /**
+     * In case the BlockTemplate found by the `where` argument doesn't exist, create a new BlockTemplate with this data.
+     */
+    create: XOR<BlockTemplateCreateInput, BlockTemplateUncheckedCreateInput>
+    /**
+     * In case the BlockTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BlockTemplateUpdateInput, BlockTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * BlockTemplate delete
+   */
+  export type BlockTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which BlockTemplate to delete.
+     */
+    where: BlockTemplateWhereUniqueInput
+  }
+
+  /**
+   * BlockTemplate deleteMany
+   */
+  export type BlockTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BlockTemplates to delete
+     */
+    where?: BlockTemplateWhereInput
+    /**
+     * Limit how many BlockTemplates to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BlockTemplate.blocks
+   */
+  export type BlockTemplate$blocksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    where?: BlockWhereInput
+    orderBy?: BlockOrderByWithRelationInput | BlockOrderByWithRelationInput[]
+    cursor?: BlockWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BlockScalarFieldEnum | BlockScalarFieldEnum[]
+  }
+
+  /**
+   * BlockTemplate without action
+   */
+  export type BlockTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Block
+   */
+
+  export type AggregateBlock = {
+    _count: BlockCountAggregateOutputType | null
+    _min: BlockMinAggregateOutputType | null
+    _max: BlockMaxAggregateOutputType | null
+  }
+
+  export type BlockMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    name: string | null
+    slug: string | null
+    templateId: string | null
+    lastUpdated: Date | null
+  }
+
+  export type BlockMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    name: string | null
+    slug: string | null
+    templateId: string | null
+    lastUpdated: Date | null
+  }
+
+  export type BlockCountAggregateOutputType = {
+    id: number
+    projectId: number
+    name: number
+    slug: number
+    templateId: number
+    payload: number
+    lastUpdated: number
+    _all: number
+  }
+
+
+  export type BlockMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    name?: true
+    slug?: true
+    templateId?: true
+    lastUpdated?: true
+  }
+
+  export type BlockMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    name?: true
+    slug?: true
+    templateId?: true
+    lastUpdated?: true
+  }
+
+  export type BlockCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    name?: true
+    slug?: true
+    templateId?: true
+    payload?: true
+    lastUpdated?: true
+    _all?: true
+  }
+
+  export type BlockAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Block to aggregate.
+     */
+    where?: BlockWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blocks to fetch.
+     */
+    orderBy?: BlockOrderByWithRelationInput | BlockOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BlockWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blocks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blocks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Blocks
+    **/
+    _count?: true | BlockCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BlockMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BlockMaxAggregateInputType
+  }
+
+  export type GetBlockAggregateType<T extends BlockAggregateArgs> = {
+        [P in keyof T & keyof AggregateBlock]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBlock[P]>
+      : GetScalarType<T[P], AggregateBlock[P]>
+  }
+
+
+
+
+  export type BlockGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BlockWhereInput
+    orderBy?: BlockOrderByWithAggregationInput | BlockOrderByWithAggregationInput[]
+    by: BlockScalarFieldEnum[] | BlockScalarFieldEnum
+    having?: BlockScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BlockCountAggregateInputType | true
+    _min?: BlockMinAggregateInputType
+    _max?: BlockMaxAggregateInputType
+  }
+
+  export type BlockGroupByOutputType = {
+    id: string
+    projectId: string
+    name: string
+    slug: string
+    templateId: string | null
+    payload: JsonValue | null
+    lastUpdated: Date
+    _count: BlockCountAggregateOutputType | null
+    _min: BlockMinAggregateOutputType | null
+    _max: BlockMaxAggregateOutputType | null
+  }
+
+  type GetBlockGroupByPayload<T extends BlockGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BlockGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BlockGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BlockGroupByOutputType[P]>
+            : GetScalarType<T[P], BlockGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BlockSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    templateId?: boolean
+    payload?: boolean
+    lastUpdated?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    template?: boolean | Block$templateArgs<ExtArgs>
+  }, ExtArgs["result"]["block"]>
+
+  export type BlockSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    templateId?: boolean
+    payload?: boolean
+    lastUpdated?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    template?: boolean | Block$templateArgs<ExtArgs>
+  }, ExtArgs["result"]["block"]>
+
+  export type BlockSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    templateId?: boolean
+    payload?: boolean
+    lastUpdated?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    template?: boolean | Block$templateArgs<ExtArgs>
+  }, ExtArgs["result"]["block"]>
+
+  export type BlockSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    name?: boolean
+    slug?: boolean
+    templateId?: boolean
+    payload?: boolean
+    lastUpdated?: boolean
+  }
+
+  export type BlockOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "name" | "slug" | "templateId" | "payload" | "lastUpdated", ExtArgs["result"]["block"]>
+  export type BlockInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    template?: boolean | Block$templateArgs<ExtArgs>
+  }
+  export type BlockIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    template?: boolean | Block$templateArgs<ExtArgs>
+  }
+  export type BlockIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    template?: boolean | Block$templateArgs<ExtArgs>
+  }
+
+  export type $BlockPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Block"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+      template: Prisma.$BlockTemplatePayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      name: string
+      slug: string
+      templateId: string | null
+      payload: Prisma.JsonValue | null
+      lastUpdated: Date
+    }, ExtArgs["result"]["block"]>
+    composites: {}
+  }
+
+  type BlockGetPayload<S extends boolean | null | undefined | BlockDefaultArgs> = $Result.GetResult<Prisma.$BlockPayload, S>
+
+  type BlockCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BlockFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BlockCountAggregateInputType | true
+    }
+
+  export interface BlockDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Block'], meta: { name: 'Block' } }
+    /**
+     * Find zero or one Block that matches the filter.
+     * @param {BlockFindUniqueArgs} args - Arguments to find a Block
+     * @example
+     * // Get one Block
+     * const block = await prisma.block.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BlockFindUniqueArgs>(args: SelectSubset<T, BlockFindUniqueArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Block that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BlockFindUniqueOrThrowArgs} args - Arguments to find a Block
+     * @example
+     * // Get one Block
+     * const block = await prisma.block.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BlockFindUniqueOrThrowArgs>(args: SelectSubset<T, BlockFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Block that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockFindFirstArgs} args - Arguments to find a Block
+     * @example
+     * // Get one Block
+     * const block = await prisma.block.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BlockFindFirstArgs>(args?: SelectSubset<T, BlockFindFirstArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Block that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockFindFirstOrThrowArgs} args - Arguments to find a Block
+     * @example
+     * // Get one Block
+     * const block = await prisma.block.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BlockFindFirstOrThrowArgs>(args?: SelectSubset<T, BlockFindFirstOrThrowArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Blocks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Blocks
+     * const blocks = await prisma.block.findMany()
+     * 
+     * // Get first 10 Blocks
+     * const blocks = await prisma.block.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const blockWithIdOnly = await prisma.block.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BlockFindManyArgs>(args?: SelectSubset<T, BlockFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Block.
+     * @param {BlockCreateArgs} args - Arguments to create a Block.
+     * @example
+     * // Create one Block
+     * const Block = await prisma.block.create({
+     *   data: {
+     *     // ... data to create a Block
+     *   }
+     * })
+     * 
+     */
+    create<T extends BlockCreateArgs>(args: SelectSubset<T, BlockCreateArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Blocks.
+     * @param {BlockCreateManyArgs} args - Arguments to create many Blocks.
+     * @example
+     * // Create many Blocks
+     * const block = await prisma.block.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BlockCreateManyArgs>(args?: SelectSubset<T, BlockCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Blocks and returns the data saved in the database.
+     * @param {BlockCreateManyAndReturnArgs} args - Arguments to create many Blocks.
+     * @example
+     * // Create many Blocks
+     * const block = await prisma.block.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Blocks and only return the `id`
+     * const blockWithIdOnly = await prisma.block.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BlockCreateManyAndReturnArgs>(args?: SelectSubset<T, BlockCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Block.
+     * @param {BlockDeleteArgs} args - Arguments to delete one Block.
+     * @example
+     * // Delete one Block
+     * const Block = await prisma.block.delete({
+     *   where: {
+     *     // ... filter to delete one Block
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BlockDeleteArgs>(args: SelectSubset<T, BlockDeleteArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Block.
+     * @param {BlockUpdateArgs} args - Arguments to update one Block.
+     * @example
+     * // Update one Block
+     * const block = await prisma.block.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BlockUpdateArgs>(args: SelectSubset<T, BlockUpdateArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Blocks.
+     * @param {BlockDeleteManyArgs} args - Arguments to filter Blocks to delete.
+     * @example
+     * // Delete a few Blocks
+     * const { count } = await prisma.block.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BlockDeleteManyArgs>(args?: SelectSubset<T, BlockDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Blocks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Blocks
+     * const block = await prisma.block.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BlockUpdateManyArgs>(args: SelectSubset<T, BlockUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Blocks and returns the data updated in the database.
+     * @param {BlockUpdateManyAndReturnArgs} args - Arguments to update many Blocks.
+     * @example
+     * // Update many Blocks
+     * const block = await prisma.block.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Blocks and only return the `id`
+     * const blockWithIdOnly = await prisma.block.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BlockUpdateManyAndReturnArgs>(args: SelectSubset<T, BlockUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Block.
+     * @param {BlockUpsertArgs} args - Arguments to update or create a Block.
+     * @example
+     * // Update or create a Block
+     * const block = await prisma.block.upsert({
+     *   create: {
+     *     // ... data to create a Block
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Block we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BlockUpsertArgs>(args: SelectSubset<T, BlockUpsertArgs<ExtArgs>>): Prisma__BlockClient<$Result.GetResult<Prisma.$BlockPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Blocks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockCountArgs} args - Arguments to filter Blocks to count.
+     * @example
+     * // Count the number of Blocks
+     * const count = await prisma.block.count({
+     *   where: {
+     *     // ... the filter for the Blocks we want to count
+     *   }
+     * })
+    **/
+    count<T extends BlockCountArgs>(
+      args?: Subset<T, BlockCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BlockCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Block.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BlockAggregateArgs>(args: Subset<T, BlockAggregateArgs>): Prisma.PrismaPromise<GetBlockAggregateType<T>>
+
+    /**
+     * Group by Block.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BlockGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BlockGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BlockGroupByArgs['orderBy'] }
+        : { orderBy?: BlockGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BlockGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBlockGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Block model
+   */
+  readonly fields: BlockFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Block.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BlockClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    template<T extends Block$templateArgs<ExtArgs> = {}>(args?: Subset<T, Block$templateArgs<ExtArgs>>): Prisma__BlockTemplateClient<$Result.GetResult<Prisma.$BlockTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Block model
+   */
+  interface BlockFieldRefs {
+    readonly id: FieldRef<"Block", 'String'>
+    readonly projectId: FieldRef<"Block", 'String'>
+    readonly name: FieldRef<"Block", 'String'>
+    readonly slug: FieldRef<"Block", 'String'>
+    readonly templateId: FieldRef<"Block", 'String'>
+    readonly payload: FieldRef<"Block", 'Json'>
+    readonly lastUpdated: FieldRef<"Block", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Block findUnique
+   */
+  export type BlockFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * Filter, which Block to fetch.
+     */
+    where: BlockWhereUniqueInput
+  }
+
+  /**
+   * Block findUniqueOrThrow
+   */
+  export type BlockFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * Filter, which Block to fetch.
+     */
+    where: BlockWhereUniqueInput
+  }
+
+  /**
+   * Block findFirst
+   */
+  export type BlockFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * Filter, which Block to fetch.
+     */
+    where?: BlockWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blocks to fetch.
+     */
+    orderBy?: BlockOrderByWithRelationInput | BlockOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Blocks.
+     */
+    cursor?: BlockWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blocks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blocks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Blocks.
+     */
+    distinct?: BlockScalarFieldEnum | BlockScalarFieldEnum[]
+  }
+
+  /**
+   * Block findFirstOrThrow
+   */
+  export type BlockFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * Filter, which Block to fetch.
+     */
+    where?: BlockWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blocks to fetch.
+     */
+    orderBy?: BlockOrderByWithRelationInput | BlockOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Blocks.
+     */
+    cursor?: BlockWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blocks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blocks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Blocks.
+     */
+    distinct?: BlockScalarFieldEnum | BlockScalarFieldEnum[]
+  }
+
+  /**
+   * Block findMany
+   */
+  export type BlockFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * Filter, which Blocks to fetch.
+     */
+    where?: BlockWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Blocks to fetch.
+     */
+    orderBy?: BlockOrderByWithRelationInput | BlockOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Blocks.
+     */
+    cursor?: BlockWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Blocks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Blocks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Blocks.
+     */
+    distinct?: BlockScalarFieldEnum | BlockScalarFieldEnum[]
+  }
+
+  /**
+   * Block create
+   */
+  export type BlockCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Block.
+     */
+    data: XOR<BlockCreateInput, BlockUncheckedCreateInput>
+  }
+
+  /**
+   * Block createMany
+   */
+  export type BlockCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Blocks.
+     */
+    data: BlockCreateManyInput | BlockCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Block createManyAndReturn
+   */
+  export type BlockCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * The data used to create many Blocks.
+     */
+    data: BlockCreateManyInput | BlockCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Block update
+   */
+  export type BlockUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Block.
+     */
+    data: XOR<BlockUpdateInput, BlockUncheckedUpdateInput>
+    /**
+     * Choose, which Block to update.
+     */
+    where: BlockWhereUniqueInput
+  }
+
+  /**
+   * Block updateMany
+   */
+  export type BlockUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Blocks.
+     */
+    data: XOR<BlockUpdateManyMutationInput, BlockUncheckedUpdateManyInput>
+    /**
+     * Filter which Blocks to update
+     */
+    where?: BlockWhereInput
+    /**
+     * Limit how many Blocks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Block updateManyAndReturn
+   */
+  export type BlockUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * The data used to update Blocks.
+     */
+    data: XOR<BlockUpdateManyMutationInput, BlockUncheckedUpdateManyInput>
+    /**
+     * Filter which Blocks to update
+     */
+    where?: BlockWhereInput
+    /**
+     * Limit how many Blocks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Block upsert
+   */
+  export type BlockUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Block to update in case it exists.
+     */
+    where: BlockWhereUniqueInput
+    /**
+     * In case the Block found by the `where` argument doesn't exist, create a new Block with this data.
+     */
+    create: XOR<BlockCreateInput, BlockUncheckedCreateInput>
+    /**
+     * In case the Block was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BlockUpdateInput, BlockUncheckedUpdateInput>
+  }
+
+  /**
+   * Block delete
+   */
+  export type BlockDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+    /**
+     * Filter which Block to delete.
+     */
+    where: BlockWhereUniqueInput
+  }
+
+  /**
+   * Block deleteMany
+   */
+  export type BlockDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Blocks to delete
+     */
+    where?: BlockWhereInput
+    /**
+     * Limit how many Blocks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Block.template
+   */
+  export type Block$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BlockTemplate
+     */
+    select?: BlockTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BlockTemplate
+     */
+    omit?: BlockTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockTemplateInclude<ExtArgs> | null
+    where?: BlockTemplateWhereInput
+  }
+
+  /**
+   * Block without action
+   */
+  export type BlockDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Block
+     */
+    select?: BlockSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Block
+     */
+    omit?: BlockOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BlockInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model SyncRequest
    */
 
@@ -46793,6 +49309,37 @@ export namespace Prisma {
   export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
 
 
+  export const BlockTemplateScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    slug: 'slug',
+    media: 'media',
+    type: 'type',
+    description: 'description',
+    version: 'version',
+    payload: 'payload',
+    code: 'code',
+    compatibility: 'compatibility',
+    createdOn: 'createdOn',
+    lastUpdated: 'lastUpdated'
+  };
+
+  export type BlockTemplateScalarFieldEnum = (typeof BlockTemplateScalarFieldEnum)[keyof typeof BlockTemplateScalarFieldEnum]
+
+
+  export const BlockScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    name: 'name',
+    slug: 'slug',
+    templateId: 'templateId',
+    payload: 'payload',
+    lastUpdated: 'lastUpdated'
+  };
+
+  export type BlockScalarFieldEnum = (typeof BlockScalarFieldEnum)[keyof typeof BlockScalarFieldEnum]
+
+
   export const SyncRequestScalarFieldEnum: {
     id: 'id',
     source: 'source',
@@ -47194,6 +49741,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionListRelationFilter
     articles?: ArticleListRelationFilter
     reviews?: ReviewListRelationFilter
+    blocks?: BlockListRelationFilter
     lastProjectAccounts?: AccountListRelationFilter
   }
 
@@ -47235,6 +49783,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionOrderByRelationAggregateInput
     articles?: ArticleOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
+    blocks?: BlockOrderByRelationAggregateInput
     lastProjectAccounts?: AccountOrderByRelationAggregateInput
   }
 
@@ -47279,6 +49828,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionListRelationFilter
     articles?: ArticleListRelationFilter
     reviews?: ReviewListRelationFilter
+    blocks?: BlockListRelationFilter
     lastProjectAccounts?: AccountListRelationFilter
   }, "id">
 
@@ -49592,6 +52142,164 @@ export namespace Prisma {
     repliedOn?: DateTimeNullableWithAggregatesFilter<"Review"> | Date | string | null
   }
 
+  export type BlockTemplateWhereInput = {
+    AND?: BlockTemplateWhereInput | BlockTemplateWhereInput[]
+    OR?: BlockTemplateWhereInput[]
+    NOT?: BlockTemplateWhereInput | BlockTemplateWhereInput[]
+    id?: StringFilter<"BlockTemplate"> | string
+    name?: StringFilter<"BlockTemplate"> | string
+    slug?: StringFilter<"BlockTemplate"> | string
+    media?: JsonNullableFilter<"BlockTemplate">
+    type?: StringFilter<"BlockTemplate"> | string
+    description?: StringNullableFilter<"BlockTemplate"> | string | null
+    version?: StringNullableFilter<"BlockTemplate"> | string | null
+    payload?: JsonNullableFilter<"BlockTemplate">
+    code?: StringNullableFilter<"BlockTemplate"> | string | null
+    compatibility?: JsonNullableFilter<"BlockTemplate">
+    createdOn?: DateTimeFilter<"BlockTemplate"> | Date | string
+    lastUpdated?: DateTimeFilter<"BlockTemplate"> | Date | string
+    blocks?: BlockListRelationFilter
+  }
+
+  export type BlockTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    media?: SortOrderInput | SortOrder
+    type?: SortOrder
+    description?: SortOrderInput | SortOrder
+    version?: SortOrderInput | SortOrder
+    payload?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    compatibility?: SortOrderInput | SortOrder
+    createdOn?: SortOrder
+    lastUpdated?: SortOrder
+    blocks?: BlockOrderByRelationAggregateInput
+  }
+
+  export type BlockTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BlockTemplateWhereInput | BlockTemplateWhereInput[]
+    OR?: BlockTemplateWhereInput[]
+    NOT?: BlockTemplateWhereInput | BlockTemplateWhereInput[]
+    name?: StringFilter<"BlockTemplate"> | string
+    slug?: StringFilter<"BlockTemplate"> | string
+    media?: JsonNullableFilter<"BlockTemplate">
+    type?: StringFilter<"BlockTemplate"> | string
+    description?: StringNullableFilter<"BlockTemplate"> | string | null
+    version?: StringNullableFilter<"BlockTemplate"> | string | null
+    payload?: JsonNullableFilter<"BlockTemplate">
+    code?: StringNullableFilter<"BlockTemplate"> | string | null
+    compatibility?: JsonNullableFilter<"BlockTemplate">
+    createdOn?: DateTimeFilter<"BlockTemplate"> | Date | string
+    lastUpdated?: DateTimeFilter<"BlockTemplate"> | Date | string
+    blocks?: BlockListRelationFilter
+  }, "id">
+
+  export type BlockTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    media?: SortOrderInput | SortOrder
+    type?: SortOrder
+    description?: SortOrderInput | SortOrder
+    version?: SortOrderInput | SortOrder
+    payload?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    compatibility?: SortOrderInput | SortOrder
+    createdOn?: SortOrder
+    lastUpdated?: SortOrder
+    _count?: BlockTemplateCountOrderByAggregateInput
+    _max?: BlockTemplateMaxOrderByAggregateInput
+    _min?: BlockTemplateMinOrderByAggregateInput
+  }
+
+  export type BlockTemplateScalarWhereWithAggregatesInput = {
+    AND?: BlockTemplateScalarWhereWithAggregatesInput | BlockTemplateScalarWhereWithAggregatesInput[]
+    OR?: BlockTemplateScalarWhereWithAggregatesInput[]
+    NOT?: BlockTemplateScalarWhereWithAggregatesInput | BlockTemplateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BlockTemplate"> | string
+    name?: StringWithAggregatesFilter<"BlockTemplate"> | string
+    slug?: StringWithAggregatesFilter<"BlockTemplate"> | string
+    media?: JsonNullableWithAggregatesFilter<"BlockTemplate">
+    type?: StringWithAggregatesFilter<"BlockTemplate"> | string
+    description?: StringNullableWithAggregatesFilter<"BlockTemplate"> | string | null
+    version?: StringNullableWithAggregatesFilter<"BlockTemplate"> | string | null
+    payload?: JsonNullableWithAggregatesFilter<"BlockTemplate">
+    code?: StringNullableWithAggregatesFilter<"BlockTemplate"> | string | null
+    compatibility?: JsonNullableWithAggregatesFilter<"BlockTemplate">
+    createdOn?: DateTimeWithAggregatesFilter<"BlockTemplate"> | Date | string
+    lastUpdated?: DateTimeWithAggregatesFilter<"BlockTemplate"> | Date | string
+  }
+
+  export type BlockWhereInput = {
+    AND?: BlockWhereInput | BlockWhereInput[]
+    OR?: BlockWhereInput[]
+    NOT?: BlockWhereInput | BlockWhereInput[]
+    id?: StringFilter<"Block"> | string
+    projectId?: StringFilter<"Block"> | string
+    name?: StringFilter<"Block"> | string
+    slug?: StringFilter<"Block"> | string
+    templateId?: StringNullableFilter<"Block"> | string | null
+    payload?: JsonNullableFilter<"Block">
+    lastUpdated?: DateTimeFilter<"Block"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    template?: XOR<BlockTemplateNullableScalarRelationFilter, BlockTemplateWhereInput> | null
+  }
+
+  export type BlockOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    templateId?: SortOrderInput | SortOrder
+    payload?: SortOrderInput | SortOrder
+    lastUpdated?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+    template?: BlockTemplateOrderByWithRelationInput
+  }
+
+  export type BlockWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BlockWhereInput | BlockWhereInput[]
+    OR?: BlockWhereInput[]
+    NOT?: BlockWhereInput | BlockWhereInput[]
+    projectId?: StringFilter<"Block"> | string
+    name?: StringFilter<"Block"> | string
+    slug?: StringFilter<"Block"> | string
+    templateId?: StringNullableFilter<"Block"> | string | null
+    payload?: JsonNullableFilter<"Block">
+    lastUpdated?: DateTimeFilter<"Block"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    template?: XOR<BlockTemplateNullableScalarRelationFilter, BlockTemplateWhereInput> | null
+  }, "id">
+
+  export type BlockOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    templateId?: SortOrderInput | SortOrder
+    payload?: SortOrderInput | SortOrder
+    lastUpdated?: SortOrder
+    _count?: BlockCountOrderByAggregateInput
+    _max?: BlockMaxOrderByAggregateInput
+    _min?: BlockMinOrderByAggregateInput
+  }
+
+  export type BlockScalarWhereWithAggregatesInput = {
+    AND?: BlockScalarWhereWithAggregatesInput | BlockScalarWhereWithAggregatesInput[]
+    OR?: BlockScalarWhereWithAggregatesInput[]
+    NOT?: BlockScalarWhereWithAggregatesInput | BlockScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Block"> | string
+    projectId?: StringWithAggregatesFilter<"Block"> | string
+    name?: StringWithAggregatesFilter<"Block"> | string
+    slug?: StringWithAggregatesFilter<"Block"> | string
+    templateId?: StringNullableWithAggregatesFilter<"Block"> | string | null
+    payload?: JsonNullableWithAggregatesFilter<"Block">
+    lastUpdated?: DateTimeWithAggregatesFilter<"Block"> | Date | string
+  }
+
   export type SyncRequestWhereInput = {
     AND?: SyncRequestWhereInput | SyncRequestWhereInput[]
     OR?: SyncRequestWhereInput[]
@@ -50000,6 +52708,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -50041,6 +52750,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -50082,6 +52792,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -50123,6 +52834,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -52680,6 +55392,183 @@ export namespace Prisma {
     repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type BlockTemplateCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: string
+    description?: string | null
+    version?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    lastUpdated?: Date | string
+    blocks?: BlockCreateNestedManyWithoutTemplateInput
+  }
+
+  export type BlockTemplateUncheckedCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: string
+    description?: string | null
+    version?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    lastUpdated?: Date | string
+    blocks?: BlockUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type BlockTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+    blocks?: BlockUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type BlockTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+    blocks?: BlockUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type BlockTemplateCreateManyInput = {
+    id?: string
+    name: string
+    slug: string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: string
+    description?: string | null
+    version?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    lastUpdated?: Date | string
+  }
+
+  export type BlockTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlockTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlockCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+    project: ProjectCreateNestedOneWithoutBlocksInput
+    template?: BlockTemplateCreateNestedOneWithoutBlocksInput
+  }
+
+  export type BlockUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    name: string
+    slug: string
+    templateId?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+  }
+
+  export type BlockUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutBlocksNestedInput
+    template?: BlockTemplateUpdateOneWithoutBlocksNestedInput
+  }
+
+  export type BlockUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlockCreateManyInput = {
+    id?: string
+    projectId: string
+    name: string
+    slug: string
+    templateId?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+  }
+
+  export type BlockUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlockUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SyncRequestCreateInput = {
     id?: string
     source: string
@@ -53276,6 +56165,12 @@ export namespace Prisma {
     none?: ReviewWhereInput
   }
 
+  export type BlockListRelationFilter = {
+    every?: BlockWhereInput
+    some?: BlockWhereInput
+    none?: BlockWhereInput
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -53367,6 +56262,10 @@ export namespace Prisma {
   }
 
   export type ReviewOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BlockOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -54710,6 +57609,78 @@ export namespace Prisma {
     rating?: SortOrder
   }
 
+  export type BlockTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    media?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    version?: SortOrder
+    payload?: SortOrder
+    code?: SortOrder
+    compatibility?: SortOrder
+    createdOn?: SortOrder
+    lastUpdated?: SortOrder
+  }
+
+  export type BlockTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    version?: SortOrder
+    code?: SortOrder
+    createdOn?: SortOrder
+    lastUpdated?: SortOrder
+  }
+
+  export type BlockTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    version?: SortOrder
+    code?: SortOrder
+    createdOn?: SortOrder
+    lastUpdated?: SortOrder
+  }
+
+  export type BlockTemplateNullableScalarRelationFilter = {
+    is?: BlockTemplateWhereInput | null
+    isNot?: BlockTemplateWhereInput | null
+  }
+
+  export type BlockCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    templateId?: SortOrder
+    payload?: SortOrder
+    lastUpdated?: SortOrder
+  }
+
+  export type BlockMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    templateId?: SortOrder
+    lastUpdated?: SortOrder
+  }
+
+  export type BlockMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    templateId?: SortOrder
+    lastUpdated?: SortOrder
+  }
+
   export type SyncRequestCountOrderByAggregateInput = {
     id?: SortOrder
     source?: SortOrder
@@ -55066,6 +58037,13 @@ export namespace Prisma {
     connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
+  export type BlockCreateNestedManyWithoutProjectInput = {
+    create?: XOR<BlockCreateWithoutProjectInput, BlockUncheckedCreateWithoutProjectInput> | BlockCreateWithoutProjectInput[] | BlockUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutProjectInput | BlockCreateOrConnectWithoutProjectInput[]
+    createMany?: BlockCreateManyProjectInputEnvelope
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+  }
+
   export type AccountCreateNestedManyWithoutLastProjectAssetInput = {
     create?: XOR<AccountCreateWithoutLastProjectAssetInput, AccountUncheckedCreateWithoutLastProjectAssetInput> | AccountCreateWithoutLastProjectAssetInput[] | AccountUncheckedCreateWithoutLastProjectAssetInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutLastProjectAssetInput | AccountCreateOrConnectWithoutLastProjectAssetInput[]
@@ -55232,6 +58210,13 @@ export namespace Prisma {
     connectOrCreate?: ReviewCreateOrConnectWithoutProjectInput | ReviewCreateOrConnectWithoutProjectInput[]
     createMany?: ReviewCreateManyProjectInputEnvelope
     connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+  }
+
+  export type BlockUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<BlockCreateWithoutProjectInput, BlockUncheckedCreateWithoutProjectInput> | BlockCreateWithoutProjectInput[] | BlockUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutProjectInput | BlockCreateOrConnectWithoutProjectInput[]
+    createMany?: BlockCreateManyProjectInputEnvelope
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
   }
 
   export type AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput = {
@@ -55565,6 +58550,20 @@ export namespace Prisma {
     update?: ReviewUpdateWithWhereUniqueWithoutProjectInput | ReviewUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: ReviewUpdateManyWithWhereWithoutProjectInput | ReviewUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type BlockUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<BlockCreateWithoutProjectInput, BlockUncheckedCreateWithoutProjectInput> | BlockCreateWithoutProjectInput[] | BlockUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutProjectInput | BlockCreateOrConnectWithoutProjectInput[]
+    upsert?: BlockUpsertWithWhereUniqueWithoutProjectInput | BlockUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: BlockCreateManyProjectInputEnvelope
+    set?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    disconnect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    delete?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    update?: BlockUpdateWithWhereUniqueWithoutProjectInput | BlockUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: BlockUpdateManyWithWhereWithoutProjectInput | BlockUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: BlockScalarWhereInput | BlockScalarWhereInput[]
   }
 
   export type AccountUpdateManyWithoutLastProjectAssetNestedInput = {
@@ -55901,6 +58900,20 @@ export namespace Prisma {
     update?: ReviewUpdateWithWhereUniqueWithoutProjectInput | ReviewUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: ReviewUpdateManyWithWhereWithoutProjectInput | ReviewUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type BlockUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<BlockCreateWithoutProjectInput, BlockUncheckedCreateWithoutProjectInput> | BlockCreateWithoutProjectInput[] | BlockUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutProjectInput | BlockCreateOrConnectWithoutProjectInput[]
+    upsert?: BlockUpsertWithWhereUniqueWithoutProjectInput | BlockUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: BlockCreateManyProjectInputEnvelope
+    set?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    disconnect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    delete?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    update?: BlockUpdateWithWhereUniqueWithoutProjectInput | BlockUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: BlockUpdateManyWithWhereWithoutProjectInput | BlockUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: BlockScalarWhereInput | BlockScalarWhereInput[]
   }
 
   export type AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput = {
@@ -56669,6 +59682,78 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutReviewsInput, ProjectUpdateWithoutReviewsInput>, ProjectUncheckedUpdateWithoutReviewsInput>
   }
 
+  export type BlockCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<BlockCreateWithoutTemplateInput, BlockUncheckedCreateWithoutTemplateInput> | BlockCreateWithoutTemplateInput[] | BlockUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutTemplateInput | BlockCreateOrConnectWithoutTemplateInput[]
+    createMany?: BlockCreateManyTemplateInputEnvelope
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+  }
+
+  export type BlockUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<BlockCreateWithoutTemplateInput, BlockUncheckedCreateWithoutTemplateInput> | BlockCreateWithoutTemplateInput[] | BlockUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutTemplateInput | BlockCreateOrConnectWithoutTemplateInput[]
+    createMany?: BlockCreateManyTemplateInputEnvelope
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+  }
+
+  export type BlockUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<BlockCreateWithoutTemplateInput, BlockUncheckedCreateWithoutTemplateInput> | BlockCreateWithoutTemplateInput[] | BlockUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutTemplateInput | BlockCreateOrConnectWithoutTemplateInput[]
+    upsert?: BlockUpsertWithWhereUniqueWithoutTemplateInput | BlockUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: BlockCreateManyTemplateInputEnvelope
+    set?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    disconnect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    delete?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    update?: BlockUpdateWithWhereUniqueWithoutTemplateInput | BlockUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: BlockUpdateManyWithWhereWithoutTemplateInput | BlockUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: BlockScalarWhereInput | BlockScalarWhereInput[]
+  }
+
+  export type BlockUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<BlockCreateWithoutTemplateInput, BlockUncheckedCreateWithoutTemplateInput> | BlockCreateWithoutTemplateInput[] | BlockUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: BlockCreateOrConnectWithoutTemplateInput | BlockCreateOrConnectWithoutTemplateInput[]
+    upsert?: BlockUpsertWithWhereUniqueWithoutTemplateInput | BlockUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: BlockCreateManyTemplateInputEnvelope
+    set?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    disconnect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    delete?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    connect?: BlockWhereUniqueInput | BlockWhereUniqueInput[]
+    update?: BlockUpdateWithWhereUniqueWithoutTemplateInput | BlockUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: BlockUpdateManyWithWhereWithoutTemplateInput | BlockUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: BlockScalarWhereInput | BlockScalarWhereInput[]
+  }
+
+  export type ProjectCreateNestedOneWithoutBlocksInput = {
+    create?: XOR<ProjectCreateWithoutBlocksInput, ProjectUncheckedCreateWithoutBlocksInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutBlocksInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type BlockTemplateCreateNestedOneWithoutBlocksInput = {
+    create?: XOR<BlockTemplateCreateWithoutBlocksInput, BlockTemplateUncheckedCreateWithoutBlocksInput>
+    connectOrCreate?: BlockTemplateCreateOrConnectWithoutBlocksInput
+    connect?: BlockTemplateWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutBlocksNestedInput = {
+    create?: XOR<ProjectCreateWithoutBlocksInput, ProjectUncheckedCreateWithoutBlocksInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutBlocksInput
+    upsert?: ProjectUpsertWithoutBlocksInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutBlocksInput, ProjectUpdateWithoutBlocksInput>, ProjectUncheckedUpdateWithoutBlocksInput>
+  }
+
+  export type BlockTemplateUpdateOneWithoutBlocksNestedInput = {
+    create?: XOR<BlockTemplateCreateWithoutBlocksInput, BlockTemplateUncheckedCreateWithoutBlocksInput>
+    connectOrCreate?: BlockTemplateCreateOrConnectWithoutBlocksInput
+    upsert?: BlockTemplateUpsertWithoutBlocksInput
+    disconnect?: BlockTemplateWhereInput | boolean
+    delete?: BlockTemplateWhereInput | boolean
+    connect?: BlockTemplateWhereUniqueInput
+    update?: XOR<XOR<BlockTemplateUpdateToOneWithWhereWithoutBlocksInput, BlockTemplateUpdateWithoutBlocksInput>, BlockTemplateUncheckedUpdateWithoutBlocksInput>
+  }
+
   export type ProjectCreateNestedOneWithoutAssetModulesInput = {
     create?: XOR<ProjectCreateWithoutAssetModulesInput, ProjectUncheckedCreateWithoutAssetModulesInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutAssetModulesInput
@@ -56981,6 +60066,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutLastProjectAccountsInput = {
@@ -57021,6 +60107,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutLastProjectAccountsInput = {
@@ -57103,6 +60190,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutLastProjectAccountsInput = {
@@ -57143,6 +60231,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type RoleUpsertWithWhereUniqueWithoutAccountInput = {
@@ -57210,6 +60299,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57250,6 +60340,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57335,6 +60426,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -57375,6 +60467,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -57450,6 +60543,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57490,6 +60584,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -57546,6 +60641,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -57586,6 +60682,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -58276,6 +61373,34 @@ export namespace Prisma {
 
   export type ReviewCreateManyProjectInputEnvelope = {
     data: ReviewCreateManyProjectInput | ReviewCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BlockCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    slug: string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+    template?: BlockTemplateCreateNestedOneWithoutBlocksInput
+  }
+
+  export type BlockUncheckedCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    slug: string
+    templateId?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+  }
+
+  export type BlockCreateOrConnectWithoutProjectInput = {
+    where: BlockWhereUniqueInput
+    create: XOR<BlockCreateWithoutProjectInput, BlockUncheckedCreateWithoutProjectInput>
+  }
+
+  export type BlockCreateManyProjectInputEnvelope = {
+    data: BlockCreateManyProjectInput | BlockCreateManyProjectInput[]
     skipDuplicates?: boolean
   }
 
@@ -58985,6 +62110,35 @@ export namespace Prisma {
     repliedOn?: DateTimeNullableFilter<"Review"> | Date | string | null
   }
 
+  export type BlockUpsertWithWhereUniqueWithoutProjectInput = {
+    where: BlockWhereUniqueInput
+    update: XOR<BlockUpdateWithoutProjectInput, BlockUncheckedUpdateWithoutProjectInput>
+    create: XOR<BlockCreateWithoutProjectInput, BlockUncheckedCreateWithoutProjectInput>
+  }
+
+  export type BlockUpdateWithWhereUniqueWithoutProjectInput = {
+    where: BlockWhereUniqueInput
+    data: XOR<BlockUpdateWithoutProjectInput, BlockUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type BlockUpdateManyWithWhereWithoutProjectInput = {
+    where: BlockScalarWhereInput
+    data: XOR<BlockUpdateManyMutationInput, BlockUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type BlockScalarWhereInput = {
+    AND?: BlockScalarWhereInput | BlockScalarWhereInput[]
+    OR?: BlockScalarWhereInput[]
+    NOT?: BlockScalarWhereInput | BlockScalarWhereInput[]
+    id?: StringFilter<"Block"> | string
+    projectId?: StringFilter<"Block"> | string
+    name?: StringFilter<"Block"> | string
+    slug?: StringFilter<"Block"> | string
+    templateId?: StringNullableFilter<"Block"> | string | null
+    payload?: JsonNullableFilter<"Block">
+    lastUpdated?: DateTimeFilter<"Block"> | Date | string
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutLastProjectAssetInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutLastProjectAssetInput, AccountUncheckedUpdateWithoutLastProjectAssetInput>
@@ -59053,6 +62207,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59093,6 +62248,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59175,6 +62331,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59215,6 +62372,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59271,6 +62429,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59311,6 +62470,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59390,6 +62550,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59430,6 +62591,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59499,6 +62661,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59539,6 +62702,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59595,6 +62759,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59635,6 +62800,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59675,6 +62841,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59715,6 +62882,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59819,6 +62987,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59859,6 +63028,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -59942,6 +63112,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -59982,6 +63153,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60069,6 +63241,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60109,6 +63282,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60186,6 +63360,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60226,6 +63401,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60282,6 +63458,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60322,6 +63499,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60362,6 +63540,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60402,6 +63581,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60482,6 +63662,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60522,6 +63703,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60718,6 +63900,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60758,6 +63941,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60814,6 +63998,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60854,6 +64039,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -60894,6 +64080,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60934,6 +64121,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -60990,6 +64178,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61030,6 +64219,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61070,6 +64260,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61110,6 +64301,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61166,6 +64358,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61206,6 +64399,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61246,6 +64440,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61286,6 +64481,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61342,6 +64538,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61382,6 +64579,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61422,6 +64620,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61462,6 +64661,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61518,6 +64718,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61558,6 +64759,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61767,6 +64969,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61807,6 +65010,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -61922,6 +65126,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -61962,6 +65167,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62114,6 +65320,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62154,6 +65361,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62210,6 +65418,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62250,6 +65459,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62290,6 +65500,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62330,6 +65541,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62422,6 +65634,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62462,6 +65675,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62518,6 +65732,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62558,6 +65773,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62637,6 +65853,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62677,6 +65894,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62776,6 +65994,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62816,6 +66035,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -62902,6 +66122,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -62942,6 +66163,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63062,6 +66284,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63102,6 +66325,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63158,6 +66382,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63198,6 +66423,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63238,6 +66464,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63278,6 +66505,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63334,6 +66562,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63374,6 +66603,7 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63414,6 +66644,7 @@ export namespace Prisma {
     forms?: FormCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63454,6 +66685,7 @@ export namespace Prisma {
     forms?: FormUncheckedCreateNestedManyWithoutProjectInput
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63510,6 +66742,7 @@ export namespace Prisma {
     forms?: FormUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63550,7 +66783,308 @@ export namespace Prisma {
     forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
+  }
+
+  export type BlockCreateWithoutTemplateInput = {
+    id?: string
+    name: string
+    slug: string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+    project: ProjectCreateNestedOneWithoutBlocksInput
+  }
+
+  export type BlockUncheckedCreateWithoutTemplateInput = {
+    id?: string
+    projectId: string
+    name: string
+    slug: string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+  }
+
+  export type BlockCreateOrConnectWithoutTemplateInput = {
+    where: BlockWhereUniqueInput
+    create: XOR<BlockCreateWithoutTemplateInput, BlockUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type BlockCreateManyTemplateInputEnvelope = {
+    data: BlockCreateManyTemplateInput | BlockCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BlockUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: BlockWhereUniqueInput
+    update: XOR<BlockUpdateWithoutTemplateInput, BlockUncheckedUpdateWithoutTemplateInput>
+    create: XOR<BlockCreateWithoutTemplateInput, BlockUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type BlockUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: BlockWhereUniqueInput
+    data: XOR<BlockUpdateWithoutTemplateInput, BlockUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type BlockUpdateManyWithWhereWithoutTemplateInput = {
+    where: BlockScalarWhereInput
+    data: XOR<BlockUpdateManyMutationInput, BlockUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type ProjectCreateWithoutBlocksInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainCreateNestedManyWithoutAssetInput
+    profiles?: ProfileCreateNestedManyWithoutAssetInput
+    pages?: PageCreateNestedManyWithoutAssetInput
+    paths?: PagePathCreateNestedManyWithoutAssetInput
+    sections?: SectionCreateNestedManyWithoutAssetInput
+    datalists?: DatalistCreateNestedManyWithoutAssetInput
+    sources?: DataSourceCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableCreateNestedManyWithoutAssetInput
+    redirects?: RedirectCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileCreateNestedManyWithoutAssetInput
+    allocations?: AllocationCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleCreateNestedManyWithoutAssetInput
+    teams?: TeamCreateNestedManyWithoutAssetInput
+    members?: MemberCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingCreateNestedManyWithoutAssetInput
+    forms?: FormCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
+    articles?: ArticleCreateNestedManyWithoutProjectInput
+    reviews?: ReviewCreateNestedManyWithoutProjectInput
+    lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
+  }
+
+  export type ProjectUncheckedCreateWithoutBlocksInput = {
+    id: string
+    name?: string
+    url?: string | null
+    tier?: string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    ownerAccountId?: string | null
+    status?: string | null
+    type?: string | null
+    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
+    domainEntries?: DomainUncheckedCreateNestedManyWithoutAssetInput
+    profiles?: ProfileUncheckedCreateNestedManyWithoutAssetInput
+    pages?: PageUncheckedCreateNestedManyWithoutAssetInput
+    paths?: PagePathUncheckedCreateNestedManyWithoutAssetInput
+    sections?: SectionUncheckedCreateNestedManyWithoutAssetInput
+    datalists?: DatalistUncheckedCreateNestedManyWithoutAssetInput
+    sources?: DataSourceUncheckedCreateNestedManyWithoutAssetInput
+    environments?: EnvironmentVariableUncheckedCreateNestedManyWithoutAssetInput
+    redirects?: RedirectUncheckedCreateNestedManyWithoutAssetInput
+    codeFiles?: CodeFileUncheckedCreateNestedManyWithoutAssetInput
+    allocations?: AllocationUncheckedCreateNestedManyWithoutAssetInput
+    structures?: SiteStructureUncheckedCreateNestedManyWithoutAssetInput
+    deployments?: DeploymentUncheckedCreateNestedManyWithoutAssetInput
+    appBaseBackups?: AppBaseBackupUncheckedCreateNestedManyWithoutAssetInput
+    assetModules?: AssetModuleUncheckedCreateNestedManyWithoutAssetInput
+    teams?: TeamUncheckedCreateNestedManyWithoutAssetInput
+    members?: MemberUncheckedCreateNestedManyWithoutAssetInput
+    jobPostings?: JobPostingUncheckedCreateNestedManyWithoutAssetInput
+    forms?: FormUncheckedCreateNestedManyWithoutProjectInput
+    formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
+    articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
+  }
+
+  export type ProjectCreateOrConnectWithoutBlocksInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutBlocksInput, ProjectUncheckedCreateWithoutBlocksInput>
+  }
+
+  export type BlockTemplateCreateWithoutBlocksInput = {
+    id?: string
+    name: string
+    slug: string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: string
+    description?: string | null
+    version?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    lastUpdated?: Date | string
+  }
+
+  export type BlockTemplateUncheckedCreateWithoutBlocksInput = {
+    id?: string
+    name: string
+    slug: string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: string
+    description?: string | null
+    version?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: Date | string
+    lastUpdated?: Date | string
+  }
+
+  export type BlockTemplateCreateOrConnectWithoutBlocksInput = {
+    where: BlockTemplateWhereUniqueInput
+    create: XOR<BlockTemplateCreateWithoutBlocksInput, BlockTemplateUncheckedCreateWithoutBlocksInput>
+  }
+
+  export type ProjectUpsertWithoutBlocksInput = {
+    update: XOR<ProjectUpdateWithoutBlocksInput, ProjectUncheckedUpdateWithoutBlocksInput>
+    create: XOR<ProjectCreateWithoutBlocksInput, ProjectUncheckedCreateWithoutBlocksInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutBlocksInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutBlocksInput, ProjectUncheckedUpdateWithoutBlocksInput>
+  }
+
+  export type ProjectUpdateWithoutBlocksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUpdateManyWithoutAssetNestedInput
+    pages?: PageUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUpdateManyWithoutAssetNestedInput
+    sections?: SectionUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUpdateManyWithoutAssetNestedInput
+    teams?: TeamUpdateManyWithoutAssetNestedInput
+    members?: MemberUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUpdateManyWithoutAssetNestedInput
+    forms?: FormUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutBlocksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    tier?: StringFieldUpdateOperationsInput | string
+    modules?: NullableJsonNullValueInput | InputJsonValue
+    icons?: NullableJsonNullValueInput | InputJsonValue
+    domains?: NullableJsonNullValueInput | InputJsonValue
+    design?: NullableJsonNullValueInput | InputJsonValue
+    features?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
+    domainEntries?: DomainUncheckedUpdateManyWithoutAssetNestedInput
+    profiles?: ProfileUncheckedUpdateManyWithoutAssetNestedInput
+    pages?: PageUncheckedUpdateManyWithoutAssetNestedInput
+    paths?: PagePathUncheckedUpdateManyWithoutAssetNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutAssetNestedInput
+    datalists?: DatalistUncheckedUpdateManyWithoutAssetNestedInput
+    sources?: DataSourceUncheckedUpdateManyWithoutAssetNestedInput
+    environments?: EnvironmentVariableUncheckedUpdateManyWithoutAssetNestedInput
+    redirects?: RedirectUncheckedUpdateManyWithoutAssetNestedInput
+    codeFiles?: CodeFileUncheckedUpdateManyWithoutAssetNestedInput
+    allocations?: AllocationUncheckedUpdateManyWithoutAssetNestedInput
+    structures?: SiteStructureUncheckedUpdateManyWithoutAssetNestedInput
+    deployments?: DeploymentUncheckedUpdateManyWithoutAssetNestedInput
+    appBaseBackups?: AppBaseBackupUncheckedUpdateManyWithoutAssetNestedInput
+    assetModules?: AssetModuleUncheckedUpdateManyWithoutAssetNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutAssetNestedInput
+    members?: MemberUncheckedUpdateManyWithoutAssetNestedInput
+    jobPostings?: JobPostingUncheckedUpdateManyWithoutAssetNestedInput
+    forms?: FormUncheckedUpdateManyWithoutProjectNestedInput
+    formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
+    articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
+  }
+
+  export type BlockTemplateUpsertWithoutBlocksInput = {
+    update: XOR<BlockTemplateUpdateWithoutBlocksInput, BlockTemplateUncheckedUpdateWithoutBlocksInput>
+    create: XOR<BlockTemplateCreateWithoutBlocksInput, BlockTemplateUncheckedCreateWithoutBlocksInput>
+    where?: BlockTemplateWhereInput
+  }
+
+  export type BlockTemplateUpdateToOneWithWhereWithoutBlocksInput = {
+    where?: BlockTemplateWhereInput
+    data: XOR<BlockTemplateUpdateWithoutBlocksInput, BlockTemplateUncheckedUpdateWithoutBlocksInput>
+  }
+
+  export type BlockTemplateUpdateWithoutBlocksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlockTemplateUncheckedUpdateWithoutBlocksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    media?: NullableJsonNullValueInput | InputJsonValue
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    version?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    compatibility?: NullableJsonNullValueInput | InputJsonValue
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectCreateWithoutAssetModulesInput = {
@@ -63590,6 +67124,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionCreateNestedManyWithoutProjectInput
     articles?: ArticleCreateNestedManyWithoutProjectInput
     reviews?: ReviewCreateNestedManyWithoutProjectInput
+    blocks?: BlockCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63630,6 +67165,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedCreateNestedManyWithoutProjectInput
     articles?: ArticleUncheckedCreateNestedManyWithoutProjectInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutProjectInput
+    blocks?: BlockUncheckedCreateNestedManyWithoutProjectInput
     lastProjectAccounts?: AccountUncheckedCreateNestedManyWithoutLastProjectAssetInput
   }
 
@@ -63686,6 +67222,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUpdateManyWithoutProjectNestedInput
     articles?: ArticleUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63726,6 +67263,7 @@ export namespace Prisma {
     formSubmissions?: FormSubmissionUncheckedUpdateManyWithoutProjectNestedInput
     articles?: ArticleUncheckedUpdateManyWithoutProjectNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutProjectNestedInput
+    blocks?: BlockUncheckedUpdateManyWithoutProjectNestedInput
     lastProjectAccounts?: AccountUncheckedUpdateManyWithoutLastProjectAssetNestedInput
   }
 
@@ -63983,6 +67521,15 @@ export namespace Prisma {
     createdOn?: Date | string
     reply?: string | null
     repliedOn?: Date | string | null
+  }
+
+  export type BlockCreateManyProjectInput = {
+    id?: string
+    name: string
+    slug: string
+    templateId?: string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
   }
 
   export type AccountCreateManyLastProjectAssetInput = {
@@ -64680,6 +68227,33 @@ export namespace Prisma {
     repliedOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type BlockUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: BlockTemplateUpdateOneWithoutBlocksNestedInput
+  }
+
+  export type BlockUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlockUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AccountUpdateWithoutLastProjectAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
@@ -65017,6 +68591,42 @@ export namespace Prisma {
     coverLetter?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     appliedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BlockCreateManyTemplateInput = {
+    id?: string
+    projectId: string
+    name: string
+    slug: string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: Date | string
+  }
+
+  export type BlockUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutBlocksNestedInput
+  }
+
+  export type BlockUncheckedUpdateWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BlockUncheckedUpdateManyWithoutTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    payload?: NullableJsonNullValueInput | InputJsonValue
+    lastUpdated?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

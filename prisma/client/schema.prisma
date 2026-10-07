@@ -8,17 +8,17 @@ datasource db {
 }
 
 model Account {
-  id                  String   @id
-  displayName         String   @default("")
-  displayImage        String   @default("")
-  neupId              String?  @unique
-  type                String   @default("individual")
-  createdOn           DateTime @default(now())
-  status              String   @default("active")
-  moreDetails         Json?
-  lastProject          String?
-  lastProjectAsset     Project? @relation("AccountLastProject", fields: [lastProject], references: [id], onDelete: SetNull)
-  roles               Role[]
+  id               String   @id
+  displayName      String   @default("")
+  displayImage     String   @default("")
+  neupId           String?  @unique
+  type             String   @default("individual")
+  createdOn        DateTime @default(now())
+  status           String   @default("active")
+  moreDetails      Json?
+  lastProject      String?
+  lastProjectAsset Project? @relation("AccountLastProject", fields: [lastProject], references: [id], onDelete: SetNull)
+  roles            Role[]
 
   @@map("accounts")
 }
@@ -47,59 +47,59 @@ model Domain {
 }
 
 model Project {
-  id                     String                @id
-  name                   String                @default("")
-  url                    String?
-  tier                   String                @default("free")
-  modules                Json?
-  icons                  Json?
-  domains                Json?
-  design                 Json?
-  features               Json?
-  createdAt              DateTime?
-  updatedAt              DateTime?
-  roles                  Role[]
-  domainEntries          Domain[]
-  profiles               Profile[]
-  ownerAccountId         String?
-  status                 String?
-  type                   String?
-  pages                  Page[]
-  paths                  PagePath[]
-  sections               Section[]
-  datalists              Datalist[]
-  sources                DataSource[]
-  environments           EnvironmentVariable[]
-  redirects              Redirect[]
-  codeFiles              CodeFile[]
-  allocations            Allocation[]
-  structures             SiteStructure[]
-  deployments            Deployment[]
-  appBaseBackups         AppBaseBackup[]
-  assetModules           AssetModule[]
-  teams                  Team[]
-  members                Member[]
-  jobPostings            JobPosting[]
-  forms                  Form[]
-  formSubmissions        FormSubmission[]
-  articles               Article[]
-  reviews                Review[]
-  blocks                 Block[]
-  lastProjectAccounts    Account[]             @relation("AccountLastProject")
+  id                  String                @id
+  name                String                @default("")
+  url                 String?
+  tier                String                @default("free")
+  modules             Json?
+  icons               Json?
+  domains             Json?
+  design              Json?
+  features            Json?
+  createdAt           DateTime?
+  updatedAt           DateTime?
+  roles               Role[]
+  domainEntries       Domain[]
+  profiles            Profile[]
+  ownerAccountId      String?
+  status              String?
+  type                String?
+  pages               Page[]
+  paths               PagePath[]
+  sections            Section[]
+  datalists           Datalist[]
+  sources             DataSource[]
+  environments        EnvironmentVariable[]
+  redirects           Redirect[]
+  codeFiles           CodeFile[]
+  allocations         Allocation[]
+  structures          SiteStructure[]
+  deployments         Deployment[]
+  appBaseBackups      AppBaseBackup[]
+  assetModules        AssetModule[]
+  teams               Team[]
+  members             Member[]
+  jobPostings         JobPosting[]
+  forms               Form[]
+  formSubmissions     FormSubmission[]
+  articles            Article[]
+  reviews             Review[]
+  blocks              Block[]
+  lastProjectAccounts Account[]             @relation("AccountLastProject")
 
   @@index([ownerAccountId])
   @@map("projects")
 }
 
 model Form {
-  id           String           @id @default(cuid())
-  projectId    String
-  name         String
-  slug         String
-  fields       Json
-  createdOn    DateTime         @default(now())
-  project      Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  submissions  FormSubmission[]
+  id          String           @id @default(cuid())
+  projectId   String
+  name        String
+  slug        String
+  fields      Json
+  createdOn   DateTime         @default(now())
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  submissions FormSubmission[]
 
   @@unique([projectId, slug])
   @@index([projectId, createdOn])
@@ -107,14 +107,14 @@ model Form {
 }
 
 model FormSubmission {
-  id         String   @id @default(cuid())
-  projectId  String
-  formId     String
-  response   Json
-  postedOn   DateTime @default(now())
-  status     String   @db.VarChar(16)
-  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  form       Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  projectId String
+  formId    String
+  response  Json
+  postedOn  DateTime @default(now())
+  status    String   @db.VarChar(16)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
 
   @@index([projectId, postedOn])
   @@index([formId, postedOn])
@@ -122,10 +122,10 @@ model FormSubmission {
 }
 
 model Profile {
-  id      String @id @default(cuid())
+  id      String  @id @default(cuid())
   assetId String
   subject String
-  value   String @db.VarChar(512)
+  value   String  @db.VarChar(512)
   asset   Project @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
@@ -479,7 +479,6 @@ model JobPosting {
   asset          Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, createdAt])
-
   @@map("hiring")
 }
 
@@ -526,19 +525,19 @@ model AppBaseBackup {
 }
 
 model News {
-  id          String    @id
-  projectId   String?
-  slug        String?
-  title       String
-  content     String
-  author      String
-  imageUrl    String?
+  id              String    @id
+  projectId       String?
+  slug            String?
+  title           String
+  content         String
+  author          String
+  imageUrl        String?
   metaDescription String?
-  language    String?
-  tags        Json?
-  publishedAt DateTime?
-  createdAt   DateTime?
-  updatedAt   DateTime?
+  language        String?
+  tags            Json?
+  publishedAt     DateTime?
+  createdAt       DateTime?
+  updatedAt       DateTime?
 
   @@map("news")
 }
@@ -564,15 +563,15 @@ model Article {
 }
 
 model Review {
-  id         String    @id @default(cuid())
-  projectId  String
-  reviewer   String
-  content    String?
-  rating     Int
-  createdOn  DateTime  @default(now())
-  reply      String?
-  repliedOn  DateTime?
-  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String    @id @default(cuid())
+  projectId String
+  reviewer  String
+  content   String?
+  rating    Int
+  createdOn DateTime  @default(now())
+  reply     String?
+  repliedOn DateTime?
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId, createdOn])
   @@map("reviews")
@@ -597,15 +596,15 @@ model BlockTemplate {
 }
 
 model Block {
-  id           String         @id @default(uuid())
-  projectId    String
-  name         String
-  slug         String
-  templateId   String?
-  payload      Json?
-  lastUpdated  DateTime       @updatedAt
-  project      Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  template     BlockTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  id          String         @id @default(uuid())
+  projectId   String
+  name        String
+  slug        String
+  templateId  String?
+  payload     Json?
+  lastUpdated DateTime       @updatedAt
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  template    BlockTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([templateId])
@@ -625,7 +624,7 @@ model SyncRequest {
 }
 
 model AssetModule {
-  id      String @id @default(cuid())
+  id      String  @id @default(cuid())
   assetId String
   title   String
   status  String

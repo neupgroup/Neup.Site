@@ -522,6 +522,31 @@ exports.Prisma.ReviewScalarFieldEnum = {
   repliedOn: 'repliedOn'
 };
 
+exports.Prisma.BlockTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  media: 'media',
+  type: 'type',
+  description: 'description',
+  version: 'version',
+  payload: 'payload',
+  code: 'code',
+  compatibility: 'compatibility',
+  createdOn: 'createdOn',
+  lastUpdated: 'lastUpdated'
+};
+
+exports.Prisma.BlockScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  name: 'name',
+  slug: 'slug',
+  templateId: 'templateId',
+  payload: 'payload',
+  lastUpdated: 'lastUpdated'
+};
+
 exports.Prisma.SyncRequestScalarFieldEnum = {
   id: 'id',
   source: 'source',
@@ -615,6 +640,8 @@ exports.Prisma.ModelName = {
   News: 'News',
   Article: 'Article',
   Review: 'Review',
+  BlockTemplate: 'BlockTemplate',
+  Block: 'Block',
   SyncRequest: 'SyncRequest',
   AssetModule: 'AssetModule',
   SyncerLog: 'SyncerLog'
