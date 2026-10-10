@@ -13,7 +13,7 @@ import {
   Trash2,
   UploadCloud,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Button } from '@neup/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';

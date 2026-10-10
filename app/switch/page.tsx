@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getLogo } from '@neup/logica/base/assets';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useSearchParams } from 'next/navigation';
 import { getAssetsForAccount, setDefaultProjectForAccount, type AssetSummary } from '@/services/assets';
 import { useToast } from '@neup/core/hooks/useToast';

@@ -18,7 +18,7 @@ import { getSiteServers } from '@/services/servers';
 import { getAppBaseFiles, getAppBaseFileContent, saveAppBaseFileContent, backupAppBaseFile, createAppBaseFile } from '@/services/app-base';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@neup/components/ui/dialog';
 import { Textarea } from '@neup/components/ui/textarea';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import {
   Table,
   TableBody,

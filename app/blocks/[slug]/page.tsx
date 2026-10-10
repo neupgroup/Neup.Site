@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Blocks, Pencil } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@neup/components/ui/card';

@@ -2,7 +2,7 @@
 'use client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@neup/components/ui/card';
 import { List } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 
 const statusSections = [
     { title: 'Storage', href: 'storage', description: 'View disk usage and partition details.' },

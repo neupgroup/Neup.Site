@@ -5,7 +5,7 @@ import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@neup/components/ui/card';
 import { ArrowLeft, Pencil } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { notFound } from 'next/navigation';
 

@@ -1,270 +1,59 @@
-
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { saveAsset } from '@/services/editor/asset';
-import type { Asset } from '@/services/asset/type';
-
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@neup/components/ui/card';
-import { Button } from '@neup/components/ui/button';
-import { LinkButton } from "@neup/components/ui/link-button";
-import { Input } from '@neup/components/ui/input';
-import { Label } from '@neup/components/ui/label';
-import { Textarea } from '@neup/components/ui/textarea';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
-import { useToast } from '@neup/core/hooks/useToast';
-import { Save, Loader2, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
-import { useProfile } from '@/inapp/context/ProfileContext';
-import { Skeleton } from '@neup/components/ui/skeleton';
-import { cn } from '@neup/core/utils';
+import { Link } from '@neup/components/ui/link';
+import { ChevronRight, Image, Share2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { Switch } from '@neup/components/ui/switch';
-import Link from 'next/link';
-import { usePageTitle } from '@neup/core/hooks/use-page-title';
 import { appendProject } from '@/inapp/helpers/application-mode';
+import IdentityEditor from '@/components/identity-editor';
 
-export const SocialProfileSchema = z.object({
-    platformName: z.string().min(1, 'Platform name is required'),
-    url: z.string().min(1, 'URL is required'),
-});
+const sections = [
+  {
+    title: 'Branding Assets',
+    description: 'Manage your logo and site icons.',
+    href: '/identity/assets',
+    icon: Image,
+  },
+  {
+    title: 'Socials and Connections',
+    description: 'Manage social media links and phone numbers.',
+    href: '/identity/connections',
+    icon: Share2,
+  },
+];
 
-export const ProfileFormSchema = z.object({
-    name: z.string().min(1, 'Profile Name is required'),
-    hideSitename: z.boolean().default(false),
-    description: z.string().optional(),
-    socialProfiles: z.array(SocialProfileSchema).max(9, 'You can add a maximum of 9 social profiles.'),
-    contactEmail: z.array(z.object({ value: z.string().email() })).max(9, 'You can add a maximum of 9 emails.'),
-    contactPhone: z.array(z.object({ value: z.string() })).max(9, 'You can add a maximum of 9 phone numbers.'),
-}).refine(data => !data.hideSitename, {
-    message: "You cannot hide the asset name.",
-    path: ["hideSitename"],
-});
+export default function IdentityPage() {
+  const searchParams = useSearchParams();
+  const project = searchParams.get('project');
 
-
-export type ProfileFormData = z.infer<typeof ProfileFormSchema>;
-
-export default function ProfilePage() {
-    const { asset, setAsset, loading } = useProfile();
-    const { toast } = useToast();
-    usePageTitle('Profile Settings');
-    const searchParams = useSearchParams();
-    const project = searchParams.get('project');
-
-    const form = useForm<ProfileFormData>({
-        resolver: zodResolver(ProfileFormSchema),
-        defaultValues: {
-            name: '',
-            hideSitename: false,
-            description: '',
-            socialProfiles: [],
-            contactEmail: [],
-            contactPhone: [],
-        },
-    });
-
-    const { fields: socialFields, append: appendSocial, remove: removeSocial } = useFieldArray({
-        control: form.control,
-        name: 'socialProfiles',
-    });
-    const { fields: emailFields, append: appendEmail, remove: removeEmail } = useFieldArray({
-        control: form.control,
-        name: 'contactEmail',
-    });
-    const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({
-        control: form.control,
-        name: 'contactPhone',
-    });
-
-    useEffect(() => {
-        if (loading) return;
-
-        const removeUrlPrefix = (url: string | undefined): string => {
-            if (!url) return '';
-            return url.replace(/^(https?:\/\/)/, '');
-        }
-
-        if (asset) {
-            form.reset({
-                name: asset.name,
-                hideSitename: asset.hideSitename || false,
-                description: asset.description || '',
-                socialProfiles: asset.socialProfiles?.map(p => ({ ...p, url: removeUrlPrefix(p.url) })) || [],
-                contactEmail: asset.contactEmail || [],
-                contactPhone: asset.contactPhone || [],
-            });
-        } else {
-            toast({ variant: 'destructive', title: 'Notice', description: 'Could not load asset data. A new asset profile will be created on save.' });
-            form.reset({
-                name: 'My New Asset',
-                hideSitename: false,
-                description: 'A brief description of my new asset.',
-                socialProfiles: [],
-                contactEmail: [],
-                contactPhone: [],
-            })
-        }
-    }, [loading, asset, form, toast]);
-
-    const onSubmit = async (data: ProfileFormData) => {
-        const dataToSave = {
-            ...asset, // carry over all existing fields
-            ...data, // overwrite with form data
-        };
-
-        const result = await saveAsset(dataToSave);
-
-        if (result.success && result.id) {
-            toast({ title: 'Profile Saved', description: 'Your asset information has been updated.' });
-            const newAssetData = {
-                ...(asset || { id: result.id, tier: 'free', url: '' }),
-                ...dataToSave,
-            };
-            setAsset(newAssetData as Asset);
-        } else {
-            toast({ variant: 'destructive', title: 'Error', description: result.error });
-        }
-    };
-
-    const descriptionLength = form.watch('description')?.length || 0;
-
-    const descIndicatorColor = () => {
-        if (descriptionLength >= 60 && descriptionLength <= 180) return 'bg-green-500';
-        if (descriptionLength > 180 && descriptionLength <= 220) return 'bg-orange-500';
-        if (descriptionLength > 220) return 'bg-red-500';
-        return 'bg-muted';
-    };
-
-    if (loading) {
-        return (
-            <div className="w-full max-w-4xl mx-auto space-y-8">
-                <Skeleton className="h-12 w-1/3" />
-                <Skeleton className="h-64 w-full" />
-                <Skeleton className="h-64 w-full" />
-            </div>
-        );
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-4xl mx-auto space-y-8">
-                <header>
-                    <h1 className="text-3xl font-bold font-headline">Profile</h1>
-                    <p className="text-muted-foreground">Manage your asset's public information.</p>
-                </header>
-
-                <Card>
-                    <CardHeader>
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <CardTitle>Asset Information</CardTitle>
-                                <CardDescription>This information may be used across your site.</CardDescription>
-                            </div>
-                            <LinkButton variant="outlined" href={appendProject('/settings/identity/logo', project)}>
-                                    <ImageIcon className="mr-2" /> Manage Logos
-                                </LinkButton>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem><FormLabel>Asset Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField
-                            control={form.control}
-                            name="hideSitename"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                    <div className="space-y-0.5">
-                                        <FormLabel>Hide Asset Name</FormLabel>
-                                        <FormDescription>
-                                            Enable this if your logo already contains the site name.
-                                        </FormDescription>
-                                    </div>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField control={form.control} name="description" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Short Description</FormLabel>
-                                <FormControl><Textarea {...field} /></FormControl>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <div className={cn("w-2 h-2 rounded-full", descIndicatorColor())}></div>
-                                    <span>{descriptionLength} characters</span>
-                                </div>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Social Profiles</CardTitle>
-                        <CardDescription>Links to your social media accounts.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {socialFields.map((field, index) => (
-                            <div key={field.id} className="flex items-end gap-2">
-                                <FormField control={form.control} name={`socialProfiles.${index}.platformName`} render={({ field }) => (
-                                    <FormItem className="flex-1"><FormLabel>Platform</FormLabel><FormControl><Input {...field} placeholder="e.g., Twitter" /></FormControl><FormMessage /></FormItem>
-                                )} />
-                                <FormField control={form.control} name={`socialProfiles.${index}.url`} render={({ field }) => (
-                                    <FormItem className="flex-1"><FormLabel>URL</FormLabel><FormControl><Input {...field} placeholder="twitter.com/username" /></FormControl><FormMessage /></FormItem>
-                                )} />
-                                <Button htmlType="button" variant="solid" convey="danger" size="icon" onClick={() => removeSocial(index)}><Trash2 /></Button>
-                            </div>
-                        ))}
-                        {socialFields.length < 9 && <Button htmlType="button" variant="outlined" onClick={() => appendSocial({ platformName: '', url: '' })}><Plus className="mr-2" /> Add Social Profile</Button>}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Contact Information</CardTitle>
-                        <CardDescription>How people can get in touch.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Contact Emails</Label>
-                            {emailFields.map((field, index) => (
-                                <div key={field.id} className="flex items-center gap-2">
-                                    <FormField control={form.control} name={`contactEmail.${index}.value`} render={({ field }) => (
-                                        <FormItem className="flex-1"><FormControl><Input type="email" {...field} placeholder="you@example.com" /></FormControl><FormMessage /></FormItem>
-                                    )} />
-                                    <Button htmlType="button" variant="solid" convey="danger" size="icon" onClick={() => removeEmail(index)}><Trash2 /></Button>
-                                </div>
-                            ))}
-                            {emailFields.length < 9 && <Button htmlType="button" variant="outlined" size="sm" onClick={() => appendEmail({ value: '' })}><Plus className="mr-2" /> Add Email</Button>}
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Contact Phone Numbers</Label>
-                            {phoneFields.map((field, index) => (
-                                <div key={field.id} className="flex items-center gap-2">
-                                    <FormField control={form.control} name={`contactPhone.${index}.value`} render={({ field }) => (
-                                        <FormItem className="flex-1"><FormControl><Input type="tel" {...field} placeholder="+1 (555) 123-4567" /></FormControl><FormMessage /></FormItem>
-                                    )} />
-                                    <Button htmlType="button" variant="solid" convey="danger" size="icon" onClick={() => removePhone(index)}><Trash2 /></Button>
-                                </div>
-                            ))}
-                            {phoneFields.length < 9 && <Button htmlType="button" variant="outlined" size="sm" onClick={() => appendPhone({ value: '' })}><Plus className="mr-2" /> Add Phone</Button>}
-                        </div>
-                    </CardContent>
-                </Card>
-                <CardFooter>
-                    <Button variant="solid" htmlType="submit" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2" />}
-                        Save All Changes
-                    </Button>
-                </CardFooter>
-            </form>
-        </Form>
-    );
+  return (
+    <div className="space-y-10">
+      <IdentityEditor section="identity" />
+      <section className="w-full space-y-4" aria-label="More identity changes">
+        <div>
+          <h2 className="font-headline text-xl font-semibold">Make more changes</h2>
+          <p className="text-sm text-muted-foreground">Manage your branding assets, social links, and contact details.</p>
+        </div>
+        <div className="space-y-0">
+          {sections.map(({ title, description, href, icon: Icon }) => (
+            <Link
+              key={href}
+              href={appendProject(href, project)}
+              className="flex w-full items-center justify-between gap-4 border border-b-0 p-4 transition-colors first:rounded-t-md last:rounded-b-md last:border-b hover:bg-muted/30"
+            >
+              <div className="flex min-w-0 items-start gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
+                  <Icon className="h-6 w-6 text-primary" />
+                </div>
+                <div className="min-w-0 space-y-1">
+                  <div className="font-semibold">{title}</div>
+                  <p className="text-sm text-muted-foreground">{description}</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
 }

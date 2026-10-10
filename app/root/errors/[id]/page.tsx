@@ -9,7 +9,7 @@ import { Skeleton } from '@neup/components/ui/skeleton';
 import { getErrorLogById, type ErrorLog } from '@/services/errors';
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Separator } from '@neup/components/ui/separator';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 

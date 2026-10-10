@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { ArrowLeft, Shield, Users } from 'lucide-react';
 
 import { Badge } from '@neup/components/ui/badge';

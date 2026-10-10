@@ -20,7 +20,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { createAllocation } from '@/services/allocations';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 
 const formSchema = z.object({
   assetId: z.string().min(1, 'Asset ID is required'),

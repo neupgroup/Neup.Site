@@ -26,7 +26,7 @@ import {
 } from '@neup/components/ui/alert-dialog';
 import { AlertCircle, ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Badge } from '@neup/components/ui/badge';

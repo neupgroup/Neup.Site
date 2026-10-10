@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { GripVertical, Pencil, Users } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 

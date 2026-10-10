@@ -18,7 +18,7 @@ import { Label } from '@neup/components/ui/label';
 import { Save, ArrowLeft, Loader2, Code, Settings } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { getSource, updateSource, type Source } from '@/services/editor/sources';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle } from 'lucide-react';

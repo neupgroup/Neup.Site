@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { ChevronRight, FolderKanban } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';

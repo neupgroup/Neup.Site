@@ -72,9 +72,12 @@ export interface Asset {
   hideSitename?: boolean;
   hideLogo?: boolean;
   description?: string;
+  tagline?: string;
   socialProfiles?: { platformName: string; url: string; }[];
   contactEmail?: { value: string; }[];
   contactPhone?: { value: string; }[];
+  contactLocation?: string;
+  mailingAddress?: string;
   modules?: { [key: string]: any };
   theme?: Partial<AssetTheme>;
   features?: AssetFeatures;

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { ArrowLeft, Package } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@neup/components/ui/card';
 import { appendProject } from '@/inapp/helpers/application-mode';

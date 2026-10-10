@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useSearchParams } from 'next/navigation';
 import { FileUploader } from '@neup/components/ui/file-uploader';
 import { useProfile } from '@/inapp/context/ProfileContext';
@@ -58,7 +58,7 @@ export default function LogoUploadPage() {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8">
       <header className="flex items-center justify-between">
-        <LinkButton variant="outlined" href={appendProject('/settings/identity', project)}>
+        <LinkButton variant="outlined" href={appendProject('/identity/assets', project)}>
                 <ArrowLeft className="mr-2" /> Back to Profile
             </LinkButton>
       </header>

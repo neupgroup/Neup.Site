@@ -9,7 +9,7 @@ import { Skeleton } from '@neup/components/ui/skeleton';
 import { getErrorLogsAction, type ErrorLog } from '@/services/errors';
 import { Button } from '@neup/components/ui/button';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const ErrorsPage = () => {

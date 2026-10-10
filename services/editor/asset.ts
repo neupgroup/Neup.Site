@@ -56,8 +56,11 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
 
     const contactEmailFromDb = subjectToValues.get('contact.email')?.map((value) => ({ value })) ?? [];
     const contactPhoneFromDb = subjectToValues.get('contact.phone')?.map((value) => ({ value })) ?? [];
+    const contactLocationFromDb = subjectToValues.get('contact.location')?.[0];
+    const mailingAddressFromDb = subjectToValues.get('contact.mailingAddress')?.[0];
     const logoUrlFromDb = subjectToValues.get('brand.logo')?.[0];
     const descriptionFromDb = subjectToValues.get('brand.description')?.[0];
+    const taglineFromDb = subjectToValues.get('brand.tagline')?.[0];
 
     const data = record as any;
     const design = (record.design as any) || {};
@@ -73,9 +76,12 @@ export async function getAsset(): Promise<{ success: boolean, asset?: Asset, err
       hideSitename: design.hideSitename || false,
       hideLogo: design.hideLogo || false,
       description: descriptionFromDb ?? data.description,
+      tagline: taglineFromDb ?? data.tagline,
       socialProfiles: socialProfilesFromDb.length ? socialProfilesFromDb : (data.socialProfiles || []),
       contactEmail: contactEmailFromDb.length ? contactEmailFromDb : (data.contactEmail || []),
       contactPhone: contactPhoneFromDb.length ? contactPhoneFromDb : (data.contactPhone || []),
+      contactLocation: contactLocationFromDb ?? data.contactLocation,
+      mailingAddress: mailingAddressFromDb ?? data.mailingAddress,
       modules: data.modules || {},
       features: data.features || {},
       theme,
@@ -104,9 +110,12 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
       theme: nextTheme,
       logoUrl,
       description,
+      tagline,
       socialProfiles,
       contactEmail,
       contactPhone,
+      contactLocation,
+      mailingAddress,
       ...assetDataPatch
     } = data;
 
@@ -165,11 +174,14 @@ export async function saveAsset(data: Partial<Omit<Asset, 'id'>>) {
       name: typeof data.name === 'string' ? data.name : undefined,
       logoUrl: typeof logoUrl === 'string' ? logoUrl : undefined,
       description: typeof description === 'string' ? description : undefined,
+      tagline: typeof tagline === 'string' ? tagline : undefined,
       hideLogo: typeof nextHideLogo === 'boolean' ? nextHideLogo : undefined,
       hideSitename: typeof nextHideSitename === 'boolean' ? nextHideSitename : undefined,
       socialProfiles,
       contactEmail,
       contactPhone,
+      contactLocation,
+      mailingAddress,
     });
     if (!profileSync.success) return { success: false, error: profileSync.error || 'Failed to sync profile subjects.' };
 

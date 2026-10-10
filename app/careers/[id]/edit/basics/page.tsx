@@ -8,7 +8,7 @@ import { LinkButton } from "@neup/components/ui/link-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, ArrowLeft, Pencil, Users, Save, X, Loader2, Plus, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Badge } from '@neup/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { use, useEffect, useState } from 'react';

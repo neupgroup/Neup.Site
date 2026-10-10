@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
 import { Github } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useToast } from '@neup/core/hooks/useToast';
 import { appendProject } from '@/inapp/helpers/application-mode';
 

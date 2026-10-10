@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle, RotateCcw, HardDrive } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useToast } from '@neup/core/hooks/useToast';
 import { getAppBaseBackups, restoreAppBaseBackup } from '@/services/app-base';
 import { type AppBaseBackup } from '@/services/app-base/type';

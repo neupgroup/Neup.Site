@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { getApplicantsForJob, type Applicant } from '@/services/applicants';
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";

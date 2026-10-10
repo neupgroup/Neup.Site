@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { getAllocations } from '@/services/allocations';
 import { Allocation } from '@/services/server/allocation/type';
 import { Button } from '@neup/components/ui/button';

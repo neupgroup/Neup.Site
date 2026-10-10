@@ -14,7 +14,7 @@ user's basic account identity without redirecting into asset profile editing.
 
 import { useEffect, useState } from 'react';
 import { AlertCircle, ChevronRight, KeyRound, Pencil, User } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Skeleton } from '@neup/components/ui/skeleton';

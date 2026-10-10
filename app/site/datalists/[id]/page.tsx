@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useRouter } from 'next/navigation';
 import { getDatalist, deleteDatalist } from '@/services/datalists';
 import { Datalist } from '@/services/datalist/type';

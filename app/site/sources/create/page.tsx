@@ -17,7 +17,7 @@ import { Label } from '@neup/components/ui/label';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { createSource, SourceType } from '@/services/editor/sources';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
 
 export default function CreateSourcePage() {

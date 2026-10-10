@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { getNewsArticles } from '@/services/news';
 import { LinkButton } from '@neup/components/ui/link-button';
 import { ArrowRight, Newspaper, Plus } from 'lucide-react';

@@ -2,7 +2,7 @@
 'use client';
 import { HardDrive, Wifi, ListTree } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@neup/components/ui/card';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 
 const statusSections = [
     { title: 'Storage & Files', href: 'storage', description: 'View disk usage and browse files.', icon: HardDrive },

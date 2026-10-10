@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useTransition, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@neup/components/ui/card';
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
@@ -90,9 +90,9 @@ const ServerInfoCard = ({ server: initialServer }: ServerInfoCardProps) => {
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <DetailItem icon={Globe} label="Public IP">
-                            <a href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline">
+                            <Link href={`http://${server.publicIp}`} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline">
                                 {server.publicIp}
-                            </a>
+                            </Link>
                         </DetailItem>
                         <DetailItem icon={Warehouse} label="Provider">
                             <p className="truncate">{server.provider || 'N/A'}</p>

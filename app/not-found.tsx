@@ -12,7 +12,7 @@ header, sidebar, theme, and spacing.
 ::end
 */
 
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Home } from 'lucide-react';
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";

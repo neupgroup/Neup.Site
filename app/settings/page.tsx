@@ -1,6 +1,6 @@
 
 'use client';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useSearchParams } from 'next/navigation';
 import { ChevronRight, Users, Network, User, KeyRound, Terminal, RefreshCw, Palette, Home, Upload, Download, Sparkles } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
@@ -66,11 +66,11 @@ export default function SettingsPage() {
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </div>
           </Link>
-          <Link href={appendProject('/settings/identity', project)} className="block w-full border-x border-b-0 p-4 transition-colors hover:bg-muted/30">
+          <Link href={appendProject('/identity', project)} className="block w-full border-x border-b-0 p-4 transition-colors hover:bg-muted/30">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted"><User className="h-6 w-6 text-primary" /></div>
-                <div><h3 className="font-semibold">Identity</h3><p className="text-sm text-muted-foreground">Manage your site identity and contact information.</p></div>
+                <div><h3 className="font-semibold">Identity</h3><p className="text-sm text-muted-foreground">Manage your site assets, social links, and contact information.</p></div>
               </div>
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </div>

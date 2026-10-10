@@ -6,7 +6,7 @@ import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
 import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 
 import { getServer } from '@/services/servers';
 import type { Server } from '@/services/server/type';

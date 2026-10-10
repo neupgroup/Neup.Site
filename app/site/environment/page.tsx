@@ -21,7 +21,7 @@ import { getEnvironmentVariables, deleteEnvironmentVariable } from '@/services/e
 import { EnvironmentVariable } from '@/services/environment/type';
 import { FileLock, Plus, Trash2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CardFooter } from '@neup/components/ui/card';
 

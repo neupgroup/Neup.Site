@@ -123,10 +123,13 @@ export async function syncAssetProfileSubjects(input: {
   name?: string;
   logoUrl?: string | null;
   description?: string | null;
+  tagline?: string | null;
   hideLogo?: boolean;
   hideSitename?: boolean;
   contactEmail?: { value: string }[];
   contactPhone?: { value: string }[];
+  contactLocation?: string;
+  mailingAddress?: string;
   socialProfiles?: { platformName: string; url: string }[];
 }): Promise<{ success: boolean; error?: string }> {
   try {
@@ -150,6 +153,10 @@ export async function syncAssetProfileSubjects(input: {
 
     if (typeof input.description === 'string') {
       ops.push(replaceProfileSubjectValues({ assetId, subject: 'brand.description', values: [input.description] }));
+    }
+
+    if (typeof input.tagline === 'string') {
+      ops.push(replaceProfileSubjectValues({ assetId, subject: 'brand.tagline', values: [input.tagline] }));
     }
 
     if (typeof input.hideLogo === 'boolean') {
@@ -192,6 +199,14 @@ export async function syncAssetProfileSubjects(input: {
       );
     }
 
+    if (typeof input.contactLocation === 'string') {
+      ops.push(replaceProfileSubjectValues({ assetId, subject: 'contact.location', values: [input.contactLocation] }));
+    }
+
+    if (typeof input.mailingAddress === 'string') {
+      ops.push(replaceProfileSubjectValues({ assetId, subject: 'contact.mailingAddress', values: [input.mailingAddress] }));
+    }
+
     if (input.socialProfiles) {
       const entries: ProfileEntryInput[] = input.socialProfiles
         .map((profile) => {
@@ -199,7 +214,7 @@ export async function syncAssetProfileSubjects(input: {
           if (!key) return null;
           return {
             subject: `socialProfile.${key}`,
-            value: normalizeUrl(profile.url),
+            value: profile.url.trim(),
           };
         })
         .filter(Boolean) as ProfileEntryInput[];

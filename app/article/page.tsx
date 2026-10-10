@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
 import { Newspaper, Plus } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 
 export default function ArticleListPage() {
   return (

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { getForms } from '@/services/forms';
 import { LinkButton } from '@neup/components/ui/link-button';
 import { Plus } from 'lucide-react';

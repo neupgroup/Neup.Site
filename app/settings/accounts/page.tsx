@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@neup/components/ui/card';
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Github, Trash2 } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { getLinkedAccounts, deleteLinkedAccount } from '@/services/accounts';

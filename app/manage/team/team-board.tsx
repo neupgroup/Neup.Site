@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { GripVertical, Pencil } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';

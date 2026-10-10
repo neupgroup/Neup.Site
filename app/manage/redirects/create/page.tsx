@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 
 import { useToast } from '@neup/core/hooks/useToast';
 import { createRedirect } from '@/services/redirects';

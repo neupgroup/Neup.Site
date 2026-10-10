@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { getServers } from '@/services/servers';
 import type { Server } from '@/services/server/type';
 import { Button } from '@neup/components/ui/button';

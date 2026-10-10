@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { MessageSquareQuote } from 'lucide-react';
 import { appendProject } from '@/inapp/helpers/application-mode';
 import { prisma as db } from '@neup/core/database/prisma';

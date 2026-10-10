@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@neup/core/hooks/useToast';
 import { getRedirects, deleteRedirect, deployRedirects } from '@/services/redirects';

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { ArrowRight, Blocks, Plus } from 'lucide-react';
 import { appendProject } from '@/inapp/helpers/application-mode';
 

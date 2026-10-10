@@ -20,7 +20,7 @@ import { Textarea } from '@neup/components/ui/textarea';
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { createServer } from '@/services/servers';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Server } from '@/services/server/type';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@neup/components/ui/select';
 import { Switch } from '@neup/components/ui/switch';

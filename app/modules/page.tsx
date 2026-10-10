@@ -11,7 +11,7 @@ import { Skeleton } from '@neup/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import allPossibleModules from '@/services/site/modules/list.json';
 
 export default function SiteModulesPage() {

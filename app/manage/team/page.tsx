@@ -5,7 +5,7 @@ import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
 import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { AlertCircle, UserPlus, Users } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { TeamBoard } from './team-board';
 
 export const dynamic = 'force-dynamic';

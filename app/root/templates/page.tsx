@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { getTemplates, deleteTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';
 import { Button } from '@neup/components/ui/button';

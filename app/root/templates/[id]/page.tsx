@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useRouter } from 'next/navigation';
 import { getTemplate, deleteTemplate } from '@/services/editor/templates';
 import { Template } from '@/services/template/type';

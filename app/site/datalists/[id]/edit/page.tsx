@@ -18,7 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { useToast } from '@neup/core/hooks/useToast';
 import { Save, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({

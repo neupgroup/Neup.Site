@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@neup/compo
 import { Save, ArrowLeft, Loader2, AlertCircle, Settings } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { getNewsArticleById, updateNewsArticle, type NewsArticle } from '@/services/news';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Skeleton } from '@neup/components/ui/skeleton';

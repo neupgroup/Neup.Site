@@ -11,7 +11,7 @@ import { Textarea } from '@neup/components/ui/textarea';
 import { useToast } from '@neup/core/hooks/useToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
 import { useForm } from 'react-hook-form';

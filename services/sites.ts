@@ -5,6 +5,7 @@ import { prisma as db } from '@neup/core/database/prisma';
 import { getAccountId } from './accounts';
 import type { Asset } from '@/services/asset/type';
 import { resolveAssetLogoUrl } from '@/inapp/helpers/asset/logo';
+import { getSocialProfileUrl } from '@/services/profile/social-url';
 
 /**
  * Fetches all assets owned by the current account ID.
@@ -36,7 +37,7 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
         if (entry.subject.startsWith('socialProfile.')) {
           const platformName = entry.subject.slice('socialProfile.'.length);
           if (platformName) {
-            socialProfiles.push({ platformName, url: entry.value });
+            socialProfiles.push({ platformName, url: getSocialProfileUrl(platformName, entry.value) });
           }
         }
       });
@@ -45,6 +46,8 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
       const description = subjectToValues.get('brand.description')?.[0];
       const contactEmail = subjectToValues.get('contact.email')?.map((value) => ({ value })) ?? [];
       const contactPhone = subjectToValues.get('contact.phone')?.map((value) => ({ value })) ?? [];
+      const contactLocation = subjectToValues.get('contact.location')?.[0];
+      const mailingAddress = subjectToValues.get('contact.mailingAddress')?.[0];
       const design = (record.design as any) || {};
       const theme = (design.theme as Asset['theme']) ?? undefined;
 
@@ -63,6 +66,8 @@ export async function getSitesForAccount(): Promise<{ sites?: Asset[]; error?: s
         socialProfiles,
         contactEmail,
         contactPhone,
+        contactLocation,
+        mailingAddress,
         modules: (record.modules as Asset['modules']) ?? {},
         theme,
         ownerAccountId: record.ownerAccountId ?? undefined,

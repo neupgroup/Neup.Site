@@ -30,7 +30,7 @@ import { Switch } from '@neup/components/ui/switch';
 import { useToast } from '@neup/core/hooks/useToast';
 import { createEnvironmentVariable } from '@/services/environment';
 import { ArrowLeft, Plus, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';
 
 const formSchema = z.object({

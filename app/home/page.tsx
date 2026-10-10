@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@neup/components/ui/card';
 import { Button } from '@neup/components/ui/button';
 import { LinkButton } from "@neup/components/ui/link-button";
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { Users, FileText, Puzzle, Palette, Newspaper } from 'lucide-react';
 import { generatePageMetadata } from '@neup/core/helpers/metadata';
 import { appendProject } from '@/inapp/helpers/application-mode';

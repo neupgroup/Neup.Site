@@ -1,5 +1,5 @@
 import { Shield, Users } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';

@@ -15,5 +15,7 @@ export interface Profile {
   socialProfiles: SocialProfile[];
   contactEmail: { value: string; }[];
   contactPhone: { value: string; }[];
+  contactLocation?: string;
+  mailingAddress?: string;
   updatedAt?: string | null;
 }

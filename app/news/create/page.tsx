@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@neup/core/hooks/useToast';
 import { createNewsArticle } from '@/services/news';
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePageTitle } from '@neup/core/hooks/use-page-title';

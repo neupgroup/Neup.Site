@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@neup/components/ui/link';
 import { FileText, Inbox, List, Plus } from 'lucide-react';
 import { getFormSubmissions } from '@/services/forms';
 import { format } from 'date-fns';
